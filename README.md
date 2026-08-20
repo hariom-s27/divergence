@@ -180,6 +180,7 @@ Rule 247(4) names something called "a valuer of virtual digital assets." But For
 | [D43](divergence/DECISION-D43.md) | Which exact Featherless model fills each role, and the discovery that every `meta-llama` model id is locked behind a license on this account |
 | [D44](divergence/DECISION-D44.md) | Featherless only, no silent fallback to another provider, general repo cleanup, and re-freezing the pre-registered ground truth |
 | [D45](divergence/DECISION-D45.md) | Steps 27, 29 and 31, the first real end to end runs. Five real bugs found, only by actually running the system, none of them visible just from reading the code |
+| [D46](divergence/DECISION-D46.md) | `schema.json` was amended three times after the ground truth freeze commit. Disclosed on purpose, why none of the three touch the actual pre-registration |
 
 ## Evaluation
 
@@ -187,7 +188,7 @@ We test three arms (decision D39), across six cases, using five metrics plus a S
 
 [`evaluation-design.md`](divergence/step21drop/evaluation-design.md), section 7, states in advance exactly what result would prove our claim wrong. This was written before we ran a single arm.
 
-The ground truth is committed to this repository before any model is run on it, and `results.md` will quote the exact commit hash as proof. That commit is our pre-registration. See decision D44 for why that hash actually matters.
+The ground truth is committed to this repository before any model is run on it, and [`results.md`](divergence/results.md) quotes the exact commit hash as proof. That commit is our pre-registration. See decision D44 for why that hash actually matters, and D46 for the three schema amendments made after that commit and why they are disclosed rather than silent.
 
 ## Honest limitations
 
