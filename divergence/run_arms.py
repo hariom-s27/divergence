@@ -159,10 +159,22 @@ def load_corpus():
 
 
 def find_case(case):
-    # cases/ first: it's what eval/score.py and m3b_citation_coverage.py both
-    # resolve to (ROOT/cases), and it's the copy citations_expected[] was
-    # actually filled in on 20 Aug. step21drop/cases/ is the Step 21 drop
-    # snapshot -- checking it first would silently prefer stale ground truth.
+    # D49: input.md (mechanically generated from frozen ground truth,
+    # 21 Aug) is the complete document -- prefer it over case.md, which
+    # D48 found was missing facts ground truth expects (counterparty name,
+    # invoice number; C3 was missing its own amount/asset). It only ever
+    # lives under step21drop/cases/, so check that exact file FIRST, before
+    # falling into the case.md search below -- case.md exists in both
+    # directories and would otherwise win by directory order alone.
+    input_md = os.path.join(HERE, "step21drop", "cases", case, "input.md")
+    if os.path.exists(input_md):
+        return input_md
+
+    # cases/ before step21drop/cases/ for case.md, same reason as before:
+    # it's what eval/score.py and m3b_citation_coverage.py both resolve to
+    # (ROOT/cases), the copy citations_expected[] was actually filled into
+    # on 20 Aug. step21drop/cases/ is the Step 21 drop snapshot -- checking
+    # it first would silently prefer stale ground truth.
     for base in (os.path.join(HERE, "cases"),
                  os.path.join(HERE, "step21drop", "cases")):
         p = os.path.join(base, case, "case.md")

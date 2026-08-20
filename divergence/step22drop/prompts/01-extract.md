@@ -45,18 +45,50 @@ THREE RULES. Each one is enforced by code after you respond.
    this node fails silently (F10).
 
 ────────────────────────────────────────────────────────────────────────
-WHAT TO EXTRACT
+WHAT TO EXTRACT — USE THESE EXACT FIELD NAMES
 ────────────────────────────────────────────────────────────────────────
 
-Extract every field the document actually supports. Do not invent fields
-that are not present — an absent field belongs in `missing[]`, which is a
-different node's job, not yours. At minimum, look for:
+D45/D48 found this node inventing a new name for a concept every case
+(`asset_currency`, `currency`, `counterparty_name`...) that a downstream
+check was already looking for under a different, fixed name. A correct
+extraction under the wrong key scored as a miss. The fix is not a smarter
+extractor, it is not inventing names at all: use the key from this list
+whenever the concept applies, always spelled exactly as shown here.
 
-  amount, asset/currency, settlement date and time (with timezone if
-  stated), the payment instrument or channel (bank wire / NEFT / crypto
-  network), invoice number, invoice amount and currency, the counterparty
-  name as declared, supplier and recipient location if stated, and any bank
-  reference (SWIFT/UTR/tx hash).
+  amount                     the numeric payment value
+  asset                      the currency or token — "INR", "USD", "USDC", etc.
+  settlement_datetime_ist    when the payment settled, IST, ISO 8601
+  settlement_datetime_utc    the same instant in UTC, ONLY if the document
+                              states or shows a UTC timestamp separately
+  counterparty_declared      the counterparty name exactly as the document
+                              states it — confidence declared_only unless
+                              something independently confirms it
+  counterparty_verified      true/false — is there something in the document
+                              BEYOND the name itself (a KYC/registration
+                              statement) that confirms this counterparty's
+                              identity, not just that a name was typed
+  invoice_no                 the invoice number as printed
+  invoice_amount_usd         the invoice's own stated USD-equivalent value,
+                              ONLY if the document states one separately
+                              from the settlement amount
+  supplier_location          the supplier's stated location
+  recipient_location         the recipient's stated location
+  bank_involved               true/false — did a bank appear anywhere in the
+                              settlement path (a wire, NEFT, a bank-issued
+                              certificate), or was this a direct wallet
+                              transfer with no bank at any point
+  firc_present                true/false, ONLY if the document is a bank
+                              transaction — did the bank issue a Foreign
+                              Inward Remittance Certificate
+  purpose_code                ONLY if a bank wire states one — the RBI
+                              purpose code on the transfer
+
+Extract a field ONLY if the document actually supports it — an absent field
+belongs in `missing[]` (a different node's job), never a guessed value here.
+If the document plainly contains a fact that is NOT one of the names above
+(a bank reference number, a tax ID, anything else genuinely present but
+outside this list), do not force it into `facts{}` under an invented key —
+put it in `extraction_notes` instead, described in plain language.
 
 Numbers and dates are where this node is most often wrong (F8, F9). If a
 currency symbol is ambiguous (₹ vs $, or a bare number with no unit visible
@@ -84,9 +116,9 @@ OUTPUT — JSON only. No prose before or after.
 }
 
 `extraction_notes` may be empty only if nothing limited the extraction.
-Field names: lower_snake_case, stable across cases — do not invent a new
-name for the same concept each time (e.g. always `settlement_datetime`,
-never sometimes `payment_date`).
+Field names come ONLY from the list above ("WHAT TO EXTRACT"). Do not
+invent a new name for a concept already on that list, and do not put a
+concept from that list under a different key.
 ```
 
 ---
