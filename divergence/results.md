@@ -84,7 +84,7 @@ Mean across the six cases moved from **11.8% to 94.6%**. That is the real effect
 | **C1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **1/1**\* | **—** |
 | C2 | A | Qwen2.5-72B | 9.1% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
 | C2 | B | Qwen2.5-72B | 9.1% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
-| **C2** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **12/1** | **—** |
+| **C2** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **1/1**\* | **—** |
 | C3 | A | Qwen2.5-72B | 0.0% | 100.0% | 66.7% | 50.0% | 0.0% | 2/5 | — |
 | C3 | B | Qwen2.5-72B | 0.0% | 100.0% | 50.0% | 40.0% | 0.0% | 2/5 | — |
 | **C3** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **12/5** | **—** |
@@ -98,7 +98,7 @@ Mean across the six cases moved from **11.8% to 94.6%**. That is the real effect
 | D1 | B | Qwen2.5-72B | 0.0% | 75.0% | 50.0% | 40.0% | 0.0% | 2/12 | — |
 | **D1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **25.0%** | **50.0%** | **100.0%** | **0.0%** | **12/12** | **—** |
 
-\* C1 and C5's M4 columns were updated after Block E1 (below) gave each its own real valuation instead of D1's borrowed one — see that section for why the count dropped and what it now means.
+\* C1, C2, and C5's M4 columns were updated after Block E1 and the Firecrawl follow-up below gave each its own real valuation instead of D1's borrowed one — see those sections for why the count dropped and what it now means.
 
 Citation recall, mean by arm, 21-Aug documents: arm A 0.100, arm B 0.100, arm C **0.307** (n=5, same sample size as before). Arm C improved; arms A/B moved slightly the other way. **Correction, D52: this is not temperature variance** — every run through Block E1 was actually still at temperature 0 (see D52), so the honest explanation is the changed input document (`input.md` replacing `case.md`), not sampling. Not a regression worth chasing tonight either way.
 
@@ -159,7 +159,19 @@ D47 disclosed that every non-D1 record's `valuation` block was silently D1's own
 
 **Both now match ground truth's own `methods_expected` exactly** (C1: 1/1, C5: 2/2) — the pre-registered ground truth had already anticipated this shape; the pipeline's output simply hadn't matched it until tonight.
 
-**C2, C3, C4 are not fixed.** C2 is genuinely determinate too (a Wednesday wire, a day SBI did publish a rate) but building its real single-value proof needs the actual 17 June 2026 SBI rate, which isn't in the corpus — typing a plausible number in rather than collecting it would be the exact fabrication this project's valuation lattice exists to refuse. Left disclosed, not faked.
+**C2, C3, C4 are not fixed** *(update below — C2 now is)*. C2 is genuinely determinate too (a Wednesday wire, a day SBI did publish a rate) but building its real single-value proof needs the actual 17 June 2026 SBI rate, which isn't in the corpus — typing a plausible number in rather than collecting it would be the exact fabrication this project's valuation lattice exists to refuse. Left disclosed, not faked.
+
+---
+
+## C2 fixed, and a correction about what C3/C4 actually still need
+
+Checked `corpus/tier-a/SBI-TTBR-DATA.md`'s own front matter before reaching for a new tool: its `source_url` is `github.com/sahilgupta/sbi-fx-ratekeeper`, a real, live, actively-maintained public archive of SBI's daily rate PDFs — not a one-off scrape. Fetched `SBI_REFERENCE_RATES_USD.csv` directly (`gh api` to find it, then a direct fetch — no Firecrawl needed for a structured GitHub CSV). It has real rows through 2026-06-17 09:12, TT BUY **94.05** — exactly C2's date, exactly the rate its false-abstention proof needed. Cross-checked the existing corpus figures against this same live source first (25 June 94.00, 29 June 93.95, 23 June 94.30 all matched exactly) before trusting the new number.
+
+**C2's record now carries its own single-method, zero-spread valuation** (₹3,76,200, no dispute — 17 June is an ordinary Wednesday with a normally-published rate, unlike D1/C5's four-day weekend hole). Building it surfaced two more real bugs in `node3_valuation.py` (both fixed): the per-method `date_choice.reason` text and the uncertainty-budget's "which official date" line both unconditionally asserted *"no rate was published on the settlement date"* — true for D1/C5, **false** for C2, where a rate plainly was published. Both are now conditioned on whether more than one official candidate actually exists. D1's own default path re-verified unaffected before committing.
+
+**C2 also matches ground truth's `methods_expected: 1` exactly** — three for three now (C1, C2, C5) between the pipeline's real output and what pre-registration already expected.
+
+**Correction to what's said about C3 and C4 above: they do not need SBI rate data at all.** Both are VDA (USDC) receipts, and Block D's own fix this same night (the Rule 206/207 gate) established that Rule 206 — the provision that names the SBI rate — never reaches a VDA in the first place, foreign currency only. C3 and C4's real valuation lattices need CoinDCX-style crypto market data (a daily candle, a USDC/USDT peg reading) for 23 June and 18 June respectively, not an SBI sheet. That data was not collected tonight. Said plainly here rather than left as the same "needs SBI data" framing repeated from before this was actually checked.
 
 ---
 
@@ -192,6 +204,6 @@ You can trust that this table reflects real variance, specifically because D52 i
 - **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
 - **Rule 243(8)(e) misapplied as D1's valuation method** — the second defect the Rule 206 fix surfaced in the same spot (Block D). Ground truth expects Rule 57's lacuna instead. Not fixed tonight.
 - **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.
-- `node3_valuation.py` generalized for C2, C3, C4 (D47/D51 — C1 and C5 are done) — needs SBI/FBIL sheet data for their specific dates that was never collected
+- `node3_valuation.py` generalized for C3, C4 (D47/D51 — C1, C2, C5 are done) — needs CoinDCX-style crypto market data (candle + USDC/USDT peg) for 23 June and 18 June respectively, not SBI data (corrected above)
 - M5's contract gap — see `README.md`'s Honest Limitations
 - Prior-art check (Block C) — OBJ-1 (does software already solve this) done, see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND evidence (do real people hit this) not yet done

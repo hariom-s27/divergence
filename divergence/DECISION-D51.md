@@ -91,3 +91,34 @@ non-D1 cases (C1, C5) are fixed; C2, C3, C4 are not.
 > placeholder we flagged the night we found it, because building their real
 > answer honestly needs rate data for dates we haven't captured, and we're
 > not going to type a number in to make the table look more finished."
+
+---
+
+## Addendum — C2 fixed too; a correction about C3/C4
+
+`corpus/tier-a/SBI-TTBR-DATA.md`'s own front matter names its source: a
+real, live, actively-maintained GitHub archive
+(`sahilgupta/sbi-fx-ratekeeper`), not a one-off capture. Fetched its CSV
+directly and found real rows for every date already in the corpus (25/29
+June matched exactly) plus 17 June — 94.05 — exactly what C2 needed. C2 is
+a plain USD wire, no crypto leg, an ordinary Wednesday with a normally
+published rate: one method, zero spread, patched into
+`runs/21aug/C2_pipeline.json` the same way as C1/C5. Matches ground
+truth's `methods_expected: 1` exactly — three for three now.
+
+Building it found two more real bugs in `node3_valuation.py`: the
+per-method `date_choice.reason` and the uncertainty budget's "which
+official date" line both unconditionally asserted *"no rate was published
+on the settlement date,"* true for D1/C5's four-day weekend hole, **false**
+for a case where a rate plainly was published. Both are now conditioned on
+whether more than one official candidate exists at all. D1's default path
+re-verified unaffected.
+
+**This addendum also corrects what's said above about C3 and C4.** They do
+not need SBI data — Block D's own Rule 206/207 gate fix, the same night,
+established that Rule 206 (the provision naming the SBI rate) never
+reaches a VDA at all. C3 and C4 need CoinDCX-style crypto market data for
+their dates instead, which was not collected tonight. The original framing
+above ("needs SBI/FBIL sheet data") was written before this was checked
+against the fix already sitting in the same day's work — corrected here
+rather than silently edited away.

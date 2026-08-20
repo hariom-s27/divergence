@@ -1,0 +1,18 @@
+{
+  "_source_note": "D54/Block on Firecrawl follow-up: C2's SBI TT buying rate for 17 June 2026, fetched directly from the same source already cited in corpus/tier-a/SBI-TTBR-DATA.md (sahilgupta/sbi-fx-ratekeeper, the live, real, actively-maintained archive). C2 is a plain USD wire -- no crypto leg, no candle/peg block. Unlike C5/D1/C3, 17 June is a normal Wednesday with a published rate, so there is exactly ONE official candidate, not two -- no date-choice dispute at all. This is C2's own genuine false-abstention proof, same shape as C1's.",
+  "invoice_units": 4000.0,
+  "receipt_date": "2026-06-17",
+  "weekday": "Wednesday",
+  "official_candidates": [
+    {
+      "date": "2026-06-17",
+      "label": "published on the settlement date itself -- no gap",
+      "ttbr": 94.05,
+      "sheet_datetime": "2026-06-17 09:12",
+      "source": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+      "file": "https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf",
+      "retrieved": "2026-08-21",
+      "note": "Fetched directly from sahilgupta/sbi-fx-ratekeeper's SBI_REFERENCE_RATES_USD.csv, the same archive corpus/tier-a/SBI-TTBR-DATA.md already cites for D1's dates. SBI published normally this Wednesday -- no four-day hole like the 28 June weekend."
+    }
+  ]
+}

@@ -149,6 +149,11 @@ def build(d, units, has_candle):
 
     # ── the official leg: one method per published date ──────────────────
     # Independent of the market reading. Crossing them would double-count.
+    # D54: date_choice only describes a real dispute when there IS one --
+    # a single candidate means the rate published normally on the
+    # settlement date, which is the ordinary case (C2), not the four-day
+    # weekend gap (D1/C5), and the text must not claim otherwise.
+    has_dispute = len(officials) > 1
     for off in officials:
         methods.append({
             "label": f"SBI TTBR {off['date']} ({off['label']})",
@@ -163,14 +168,16 @@ def build(d, units, has_candle):
             "mandated_by": None,
             "date_used": off["date"],
             "date_choice": {
-                "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate "
-                          "was not published on that date. Rule 206 provides no fallback; Rule 207(1) "
-                          "does, for payments out — and Rule 206 borrows its definition from Rule 207 "
-                          "without borrowing that sentence.",
+                "reason": ("The receipt settled on a Sunday. The SBI telegraphic transfer buying rate "
+                           "was not published on that date. Rule 206 provides no fallback; Rule 207(1) "
+                           "does, for payments out — and Rule 206 borrows its definition from Rule 207 "
+                           "without borrowing that sentence.") if has_dispute else
+                          f"SBI published a rate on the settlement date itself ({off['date']}) -- "
+                          "no fallback question arises.",
                 "candidates": [{"date": o["date"], "ttbr": o["ttbr"], "label": o["label"]}
                                for o in officials],
-                "chosen": None,
-                "prescribed_by": None,
+                "chosen": off["date"] if not has_dispute else None,
+                "prescribed_by": "published on settlement date" if not has_dispute else None,
                 "difference_inr": round(abs(officials[0]["ttbr"] - officials[-1]["ttbr"]) * units, 2),
             },
         })
@@ -201,6 +208,15 @@ def budget(d, officials, mkts, pxs, units, has_candle):
     """Decompose the spread by contributing source. Metrology, not hand-waving."""
     lo_off = min(o["ttbr"] for o in officials)
     hi_off = max(o["ttbr"] for o in officials)
+
+    # D54: a single official candidate means a rate WAS published on the
+    # settlement date -- there is no "which date" dispute to decompose at
+    # all. The old text ("no rate was published... stepping back or
+    # forward") is simply false in that case (found live fixing C2, whose
+    # date has one candidate, not two -- C5/D1's four-day gap is the
+    # exception, not the rule this budget line should assume).
+    if len(officials) < 2:
+        return []
 
     lines = [
         {"source": "which official date",

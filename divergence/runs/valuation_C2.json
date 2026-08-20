@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-08-20T18:21:07.964026+00:00",
+  "invoice_units": 4000.0,
+  "receipt_date": "2026-06-17",
+  "weekday": "Wednesday",
+  "valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "rate": 94.05,
+        "inr_value": 376200.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf",
+          "retrieved": "2026-08-21",
+          "tier": "primary_archived",
+          "note": "Fetched directly from sahilgupta/sbi-fx-ratekeeper's SBI_REFERENCE_RATES_USD.csv, the same archive corpus/tier-a/SBI-TTBR-DATA.md already cites for D1's dates. SBI published normally this Wednesday -- no four-day hole like the 28 June weekend."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-17",
+        "date_choice": {
+          "reason": "SBI published a rate on the settlement date itself (2026-06-17) -- no fallback question arises.",
+          "candidates": [
+            {
+              "date": "2026-06-17",
+              "ttbr": 94.05,
+              "label": "published on the settlement date itself -- no gap"
+            }
+          ],
+          "chosen": "2026-06-17",
+          "prescribed_by": "published on settlement date",
+          "difference_inr": 0.0
+        }
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0,
+      "between": [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": true
+  }
+}

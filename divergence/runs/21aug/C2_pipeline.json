@@ -105,242 +105,43 @@
   "valuation": {
     "methods": [
       {
-        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
-        "rate": 94.0,
-        "inr_value": 470000.0,
+        "label": "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "rate": 94.05,
+        "inr_value": 376200.0,
         "observability": "L2",
         "source": {
           "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
-          "url": "2026062614_15.pdf",
-          "retrieved": "2026-08-12",
+          "url": "https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf",
+          "retrieved": "2026-08-21",
           "tier": "primary_archived",
-          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+          "note": "Fetched directly from sahilgupta/sbi-fx-ratekeeper's SBI_REFERENCE_RATES_USD.csv, the same archive corpus/tier-a/SBI-TTBR-DATA.md already cites for D1's dates. SBI published normally this Wednesday -- no four-day hole like the 28 June weekend."
         },
         "mandated_by": null,
-        "date_used": "2026-06-25",
+        "date_used": "2026-06-17",
         "date_choice": {
-          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "reason": "SBI published a rate on the settlement date itself (2026-06-17) -- no fallback question arises.",
           "candidates": [
             {
-              "date": "2026-06-25",
-              "ttbr": 94.0,
-              "label": "last published BEFORE the receipt"
-            },
-            {
-              "date": "2026-06-29",
-              "ttbr": 93.95,
-              "label": "next published AFTER the receipt"
+              "date": "2026-06-17",
+              "ttbr": 94.05,
+              "label": "published on the settlement date itself -- no gap"
             }
           ],
-          "chosen": null,
-          "prescribed_by": null,
-          "difference_inr": 250.0
+          "chosen": "2026-06-17",
+          "prescribed_by": "published on settlement date",
+          "difference_inr": 0.0
         }
-      },
-      {
-        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
-        "rate": 93.95,
-        "inr_value": 469750.0,
-        "observability": "L2",
-        "source": {
-          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
-          "url": "2026062919_15.pdf",
-          "retrieved": "2026-08-12",
-          "tier": "primary_archived",
-          "note": ""
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-29",
-        "date_choice": {
-          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
-          "candidates": [
-            {
-              "date": "2026-06-25",
-              "ttbr": 94.0,
-              "label": "last published BEFORE the receipt"
-            },
-            {
-              "date": "2026-06-29",
-              "ttbr": 93.95,
-              "label": "next published AFTER the receipt"
-            }
-          ],
-          "chosen": null,
-          "prescribed_by": null,
-          "difference_inr": 250.0
-        }
-      },
-      {
-        "label": "domestic market, open x retrieved peg",
-        "rate": 102.943113,
-        "inr_value": 514715.57,
-        "observability": "L2",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg",
-          "retrieved": "2026-08-19",
-          "tier": "primary_live",
-          "note": "opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, open x assumed par",
-        "rate": 102.83,
-        "inr_value": 514150.0,
-        "observability": "L3",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (open); peg: assumed par",
-          "retrieved": "2026-08-19",
-          "tier": "derived",
-          "note": "opening print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, high x retrieved peg",
-        "rate": 103.523751,
-        "inr_value": 517618.76,
-        "observability": "L2",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg",
-          "retrieved": "2026-08-19",
-          "tier": "primary_live",
-          "note": "highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, high x assumed par",
-        "rate": 103.41,
-        "inr_value": 517050.0,
-        "observability": "L3",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (high); peg: assumed par",
-          "retrieved": "2026-08-19",
-          "tier": "derived",
-          "note": "highest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, low x retrieved peg",
-        "rate": 102.422541,
-        "inr_value": 512112.71,
-        "observability": "L2",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (low); peg: retrieved peg",
-          "retrieved": "2026-08-19",
-          "tier": "primary_live",
-          "note": "lowest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, low x assumed par",
-        "rate": 102.31,
-        "inr_value": 511550.0,
-        "observability": "L3",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (low); peg: assumed par",
-          "retrieved": "2026-08-19",
-          "tier": "derived",
-          "note": "lowest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, close x retrieved peg",
-        "rate": 102.943113,
-        "inr_value": 514715.57,
-        "observability": "L2",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (close); peg: retrieved peg",
-          "retrieved": "2026-08-19",
-          "tier": "primary_live",
-          "note": "closing print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, close x assumed par",
-        "rate": 102.83,
-        "inr_value": 514150.0,
-        "observability": "L3",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (close); peg: assumed par",
-          "retrieved": "2026-08-19",
-          "tier": "derived",
-          "note": "closing print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, typical x retrieved peg",
-        "rate": 102.963135,
-        "inr_value": 514815.68,
-        "observability": "L2",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: retrieved peg",
-          "retrieved": "2026-08-19",
-          "tier": "derived",
-          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; Binance USDC/USDT close 1.0011 on 2026-06-28"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
-      },
-      {
-        "label": "domestic market, typical x assumed par",
-        "rate": 102.85,
-        "inr_value": 514250.0,
-        "observability": "L3",
-        "source": {
-          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: assumed par",
-          "retrieved": "2026-08-19",
-          "tier": "derived",
-          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
-        },
-        "mandated_by": null,
-        "date_used": "2026-06-28"
       }
     ],
     "spread": {
-      "inr": 47868.76,
-      "percent": 10.1903,
+      "inr": 0.0,
+      "percent": 0.0,
       "between": [
-        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
-        "domestic market, high x retrieved peg"
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
       ]
     },
-    "uncertainty_budget": [
-      {
-        "source": "domestic premium",
-        "inr": 44715.57,
-        "explanation": "The Indian market price of the token against the official rupee rate for a dollar. This is the bulk of the gap and it is the part everyone argues about."
-      },
-      {
-        "source": "which official date",
-        "inr": 250.0,
-        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
-      },
-      {
-        "source": "which price within the day",
-        "inr": 5506.05,
-        "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule choosing between them."
-      },
-      {
-        "source": "the proxy",
-        "inr": 565.57,
-        "explanation": "The retrieved pair is USDT/INR. The receipt was USDC. The figure is USDT/INR x USDC/USDT, and treating the peg as exactly 1.0000 is a further choice."
-      }
-    ],
+    "uncertainty_budget": [],
     "no_rate_published": true
   },
   "regimes": [
