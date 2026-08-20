@@ -226,6 +226,42 @@ You can trust that this table reflects real variance, specifically because D52 i
 
 ---
 
+## Block F, 21 August: final D1 fix cycle, three seeds, freeze
+
+Three defects were found and fixed in sequence tonight, each fix's own re-run
+surfacing the next: Rule 206 (D50) → Rule 243(8)(e) (D50 addendum, D54) → a
+fourth, found reading `D1_v3_pipeline.json` after it went out: s.393(1)'s TDS
+conclusion said *"no deduction obligation arises... as the recipient is
+outside India"* — s.393(1) addresses the person responsible for **paying**,
+not the recipient, and Priya is the resident recipient, not outside India in
+any sense the section cares about. Node 5's own attack on `D1_v3` already
+said this in different words before it was read: *"s.393(1) applies to
+payments made to residents, not non-residents... the conclusion... is
+incorrect."* A fourth instance of the identical scope-reach failure, on the
+same record, the same night. Fixed in `step22drop/prompts/03-income-tax.md`
+with an S.393(1) SCOPE GATE, same shape as the Rule 206/207 gate and the
+Rule 243 guidance already there — one generalized pattern applied a fourth
+time, not a fourth special-cased patch.
+
+`D1_v3_pipeline.json`'s `valuation_method.citation.provision` was also found
+to still read `Rule 243(8)(e)` — the provision considered and rejected, not
+the provision the `lacuna` conclusion actually rests on (Rule 57, read with
+Rule 56 for the date). Fixed in the same prompt edit: the citation template
+now says explicitly to cite the provision that was checked and found not to
+reach, never the rejected one.
+
+**Pre-registered before any of the three seed runs below were executed:**
+the demo record is generated from the first seed (`DIVERGENCE_SEED=1`, then
+`2`, then `3` if needed) whose record is schema-valid and whose `regimes[]`
+contains all three expected objects (`income_tax_on_receipt`,
+`valuation_method`, and TDS/penalty folded correctly per the prompt). This
+rule was written into this file before any of the three runs were started.
+All three seeds' M1/M2/M3/M4 are reported below regardless of which one is
+selected — the selection rule picks the demo record, it does not hide the
+other two.
+
+<!-- FILLED IN AFTER THE RUNS, NOT BEFORE -->
+
 ## Where we lose
 
 Every finding below is already documented elsewhere in this file or in a decision doc. Collected here, in one place, because a reader should not have to hunt through the night's chronology to find out where the pipeline is actually worse than the alternative, or wrong outright. Nothing here is softened and nothing carries a mitigating clause.

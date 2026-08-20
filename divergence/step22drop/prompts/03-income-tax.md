@@ -145,6 +145,20 @@ c) VALUATION METHOD — which provision prescribes how to determine the
 
 d) TDS — does any deduction obligation arise? Read the table headings.
 
+   S.393(1) SCOPE GATE — CHECK THIS BEFORE CONCLUDING EITHER WAY. s.393(1)
+   addresses THE PERSON RESPONSIBLE FOR PAYING — the payer, not the
+   recipient. Before writing any sentence about who does or does not have a
+   deduction obligation, state explicitly, in `reasoning`, which role each
+   party in these facts occupies: is the taxpayer this record is about the
+   payer, or the recipient? A resident who RECEIVES a cross-border payment
+   is not "outside India" for s.393(1) purposes and is not the person the
+   section addresses at all merely because the payer is abroad — the
+   section's own subject is the payer's obligation, not the recipient's
+   residence or location. Do not conclude "no deduction obligation because
+   the recipient is outside India" for a resident recipient — check whose
+   obligation the section actually creates before writing the outcome
+   sentence.
+
 e) PENALTY POSITION — what does s.439(8) require of a disclosed position?
 
 ────────────────────────────────────────────────────────────────────────
@@ -211,7 +225,7 @@ see DECISION-D46.md.
       "outcome": "<one sentence: does a provision in the text prescribe how to value this asset in rupees, or not -- if not, say so plainly, do not reach for the nearest rule>",
       "certainty": "lacuna if no provision's own scope reaches these facts; settled ONLY if one genuinely does",
       "citation": {
-        "provision": "<the provision closest to reaching, cited so a reader can check it -- NOT Rule 243 unless its own reporting-obligations scope genuinely covers this taxpayer, which it does not for an individual receiving a payment>",
+        "provision": "<the provision the LACUNA CONCLUSION ITSELF RESTS ON -- the provision you checked and found does not reach, not the last provision you happened to look at. For a VDA receipt with no method found, that is Rule 57 (its table, read with column B) -- cite Rule 57, not Rule 243. Rule 56 governs the DATE, not the method; if you need to name the date provision too, do it in `reasoning`, not in this field. NEVER put Rule 243 in this field -- its reporting-obligations scope does not cover an individual receiving a payment; if you checked it, say so in `reasoning` only>",
         "former_citation": "<or null>",
         "tax_year": "FY 2026-27",
         "verified": false
@@ -256,6 +270,8 @@ in advance — see DECISION-D46.md.
 | **F5** fabricated citation | ~20% | rule 1, enforced by the matcher |
 | **F1** silent rate selection | ~100% | rule 4 — the figure is not his to choose |
 | **scope-reach, real (not predicted)** — Rule 206 applied to a VDA it never scopes to | found live, 21 Aug, by node 5 | the Rule 206/207 gate under (b) |
+| **scope-reach, real (not predicted)** — Rule 243(8)(e) cited as this taxpayer's valuation method when its own scope is RCASP reporting obligations | found live, 21 Aug, by node 5 | RULE 243 IS NOT A VALUATION METHOD FOR A TAXPAYER, under (c); see DECISION-D50.md's addendum |
+| **scope-reach, real (not predicted)** — s.393(1) TDS conclusion inverted the role it addresses, treating the resident recipient as if she were "outside India" and therefore outside the section's reach | found live, 21 Aug, by node 5, on unplanted data | the s.393(1) SCOPE GATE under (d) |
 
 **Note what rule 1 does that an instruction cannot.** Telling a model "only cite
 what I gave you" is a request. String-matching every citation against the

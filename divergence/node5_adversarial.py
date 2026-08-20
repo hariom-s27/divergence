@@ -180,7 +180,8 @@ def _reject_upward_revisions(attacked, regimes):
         if before is None or before not in _CERTAINTY_ORDER or dg not in _CERTAINTY_ORDER:
             continue
         if _CERTAINTY_ORDER.index(dg) <= _CERTAINTY_ORDER.index(before):
-            rejected.append({"target": a.get("target"), "was": before, "proposed": dg})
+            kind = "upward" if _CERTAINTY_ORDER.index(dg) < _CERTAINTY_ORDER.index(before) else "tie"
+            rejected.append({"target": a.get("target"), "was": before, "proposed": dg, "kind": kind})
             a["downgraded_to"] = None
     return rejected
 
@@ -207,8 +208,9 @@ def check(regimes, missing, valuation, tax_year, model="adversarial"):
     rejected = _reject_upward_revisions(parsed["attacked"], regimes)
     limits = list(parsed.get("limits", []))
     for rj in rejected:
+        label = "proposed an upward revision" if rj["kind"] == "upward" else "proposed a non-downgrade (same certainty)"
         limits.append(
-            f"node 5 proposed an upward revision on an attack (was {rj['was']!r}, "
+            f"node 5 {label} on an attack (was {rj['was']!r}, "
             f"proposed downgraded_to={rj['proposed']!r}); rejected in code, "
             f"attack text kept, downgraded_to dropped. target: {rj['target']!r}"
         )
