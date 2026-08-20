@@ -1,0 +1,250 @@
+{
+  "arm": "A",
+  "case": "C2",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "case_2026-104",
+    "generated_at": "2026-06-29T14:05:00Z",
+    "corpus_frozen_at": "2026-06-29T14:05:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-104",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-104"
+      },
+      "invoice_date": {
+        "value": "2026-06-17",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-17"
+      },
+      "supplier": {
+        "value": "Resident individual, freelance service provider, India.",
+        "confidence": "certain",
+        "source_span": "Supplier: Resident individual, freelance service provider, India."
+      },
+      "recipient": {
+        "value": "Cascade Data Inc, outside India.",
+        "confidence": "certain",
+        "source_span": "Recipient: Cascade Data Inc, outside India."
+      },
+      "line_item_description": {
+        "value": "Professional / consulting services rendered.",
+        "confidence": "certain",
+        "source_span": "Line item: Professional / consulting services rendered."
+      },
+      "invoice_value_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Invoice value: USD 4,000."
+      },
+      "payment_received_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Payment of USD 4,000 received by SWIFT wire transfer, credited to the supplier's account on 17 June 2026 at 14:05 IST."
+      },
+      "payment_received_date": {
+        "value": "2026-06-17",
+        "confidence": "certain",
+        "source_span": "Payment of USD 4,000 received by SWIFT wire transfer, credited to the supplier's account on 17 June 2026 at 14:05 IST."
+      },
+      "purpose_code": {
+        "value": "P0802",
+        "confidence": "certain",
+        "source_span": "Purpose code declared on the wire: P0802."
+      },
+      "bank_document": {
+        "value": "Foreign Inward Remittance Certificate (FIRC)",
+        "confidence": "certain",
+        "source_span": "Bank has issued a Foreign Inward Remittance Certificate (FIRC) for this credit."
+      },
+      "counterparty_verification": {
+        "value": "Cascade Data Inc's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment).",
+        "confidence": "certain",
+        "source_span": "Counterparty verification: Cascade Data Inc's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment)."
+      }
+    },
+    "missing": [
+      {
+        "item": "Detailed breakdown of services provided",
+        "why_absent": "Not provided in the invoice",
+        "blocks": [
+          "income_tax",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Copy of the FIRC",
+        "why_absent": "Not attached",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the purpose code P0802",
+        "why_absent": "Not provided",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 376000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR Data",
+            "retrieved": "2026-06-29",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 375800,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR Data",
+            "retrieved": "2026-06-29",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 200,
+        "percent": 0.0532,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Variation in TT BR between 2026-06-25 and 2026-06-29",
+          "inr": 200,
+          "explanation": "The TT BR on 2026-06-25 is 94.00, while on 2026-06-29 it is 93.95, leading to a difference of 200 INR in the valuation."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income of INR 376,000 (using the TT BR on 2026-06-25) is taxable under the head 'Income from Other Sources'.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services is an export of services and is zero-rated for GST purposes.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of payment is compliant with FEMA as it was received through an authorized person and a FIRC has been issued.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Copy of the FIRC"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of the receipt is based on the TT BR on the last day of the tax year, which is 2026-06-25.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The exact TT BR on the date of receipt (2026-06-17) is not available, so the closest available rates (2026-06-25 and 2026-06-29) are used.",
+      "The detailed breakdown of services provided is not available, which may be required for further scrutiny by tax authorities.",
+      "The copy of the FIRC is not attached, which is necessary for compliance with FEMA."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T13:58:23.197770+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C2": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7589,
+          "out_tokens": 1834,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7589,
+      "total_out_tokens": 1834,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

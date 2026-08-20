@@ -1,0 +1,270 @@
+{
+  "arm": "B",
+  "case": "C2",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "case_2026-104",
+    "generated_at": "2023-10-05T12:00:00Z",
+    "corpus_frozen_at": "2023-10-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-104",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-104"
+      },
+      "invoice_date": {
+        "value": "2026-06-17",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-17"
+      },
+      "supplier_type": {
+        "value": "Resident individual, freelance service provider, India",
+        "confidence": "certain",
+        "source_span": "Resident individual, freelance service provider, India."
+      },
+      "recipient_type": {
+        "value": "Cascade Data Inc, outside India",
+        "confidence": "certain",
+        "source_span": "Cascade Data Inc, outside India."
+      },
+      "line_item_description": {
+        "value": "Professional / consulting services rendered",
+        "confidence": "certain",
+        "source_span": "Professional / consulting services rendered."
+      },
+      "invoice_value_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Invoice value: USD 4,000."
+      },
+      "payment_received": {
+        "value": "USD 4,000",
+        "confidence": "certain",
+        "source_span": "Payment of USD 4,000 received by SWIFT wire transfer, credited to the supplier's account on 17 June 2026 at 14:05 IST."
+      },
+      "payment_date": {
+        "value": "2026-06-17",
+        "confidence": "certain",
+        "source_span": "credited to the supplier's account on 17 June 2026 at 14:05 IST."
+      },
+      "payment_method": {
+        "value": "SWIFT wire transfer",
+        "confidence": "certain",
+        "source_span": "Payment of USD 4,000 received by SWIFT wire transfer"
+      },
+      "purpose_code": {
+        "value": "P0802",
+        "confidence": "certain",
+        "source_span": "Purpose code declared on the wire: P0802."
+      },
+      "firc_issued": {
+        "value": "Yes",
+        "confidence": "certain",
+        "source_span": "Bank has issued a Foreign Inward Remittance Certificate (FIRC) for this credit."
+      },
+      "counterparty_verification": {
+        "value": "Completed",
+        "confidence": "certain",
+        "source_span": "Cascade Data Inc's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment)."
+      }
+    },
+    "missing": [
+      {
+        "item": "Exchange rate on the date of receipt (2026-06-17)",
+        "why_absent": "Not provided in the SBI TT BR data",
+        "blocks": [
+          "income_tax",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the service provided",
+        "why_absent": "Not specified in the invoice",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Proof of export of services",
+        "why_absent": "Not provided",
+        "blocks": [
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Declaration of export of services to the Reserve Bank",
+        "why_absent": "Not provided",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 376000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR DATA",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1), ITR2026-RULE-207(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 375800,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR DATA",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1), ITR2026-RULE-207(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 200,
+        "percent": 0.0532,
+        "between": [
+          "Telegraphic Transfer Buying Rate on 2026-06-25",
+          "Telegraphic Transfer Buying Rate on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Exchange rate on the date of receipt (2026-06-17) not provided",
+          "inr": 200,
+          "explanation": "The exact exchange rate on the date of receipt is not available, leading to a potential spread of 200 INR."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income of USD 4,000 received by the resident individual is taxable in Indian rupees based on the exchange rate on the last day of the tax year.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1), ITR2026-RULE-207(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate on the date of receipt (2026-06-17)"
+        ]
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of professional services to a recipient outside India qualifies as an export of services, and the payment received in convertible foreign exchange is compliant with GST regulations.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Proof of export of services",
+          "Declaration of export of services to the Reserve Bank"
+        ]
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of foreign exchange from a non-resident is compliant with FEMA regulations, provided the necessary declarations and documentation are in place.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "FEMA-3(3)(c), FEMA-7(3), FEMA-8",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Declaration of export of services to the Reserve Bank"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of the foreign exchange received is based on the telegraphic transfer buying rate on the last day of the tax year, as mandated by the Income Tax Rules.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1), ITR2026-RULE-207(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate on the date of receipt (2026-06-17)"
+        ]
+      }
+    ],
+    "limits": [
+      "The exact exchange rate on the date of receipt (2026-06-17) is not provided, leading to uncertainty in the valuation of the income received.",
+      "Proof of export of services and declaration to the Reserve Bank are required to fully comply with GST and FEMA regulations."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T14:18:43.482479+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": "C2_pipeline.json",
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_C2": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7725,
+          "out_tokens": 1872,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7725,
+      "total_out_tokens": 1872,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

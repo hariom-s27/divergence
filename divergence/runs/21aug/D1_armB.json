@@ -1,0 +1,308 @@
+{
+  "arm": "B",
+  "case": "D1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "case_2026-114",
+    "generated_at": "2026-06-28T12:00:00Z",
+    "corpus_frozen_at": "2026-06-28T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-114",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-114"
+      },
+      "invoice_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-28"
+      },
+      "supplier_type": {
+        "value": "Resident individual, freelance service provider, India.",
+        "confidence": "certain",
+        "source_span": "Resident individual, freelance service provider, India."
+      },
+      "recipient_type": {
+        "value": "Northbay Systems LLC, outside India.",
+        "confidence": "certain",
+        "source_span": "Northbay Systems LLC, outside India."
+      },
+      "line_item_description": {
+        "value": "Professional / consulting services rendered.",
+        "confidence": "certain",
+        "source_span": "Professional / consulting services rendered."
+      },
+      "invoice_value_usdc": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "Invoice value: 5,000 USDC."
+      },
+      "invoice_value_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Invoice raised in USD equivalent terms: USD 4,000."
+      },
+      "payment_received": {
+        "value": "5,000 USDC",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST. (2026-06-27T21:44:00Z UTC.)"
+      },
+      "payment_received_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST. (2026-06-27T21:44:00Z UTC.)"
+      },
+      "payment_received_time": {
+        "value": "03:14 IST",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST. (2026-06-27T21:44:00Z UTC.)"
+      },
+      "payment_received_utc": {
+        "value": "2026-06-27T21:44:00Z",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST. (2026-06-27T21:44:00Z UTC.)"
+      },
+      "payment_method": {
+        "value": "self-custody wallet",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST. (2026-06-27T21:44:00Z UTC.)"
+      },
+      "counterparty_verification": {
+        "value": "Not verified",
+        "confidence": "certain",
+        "source_span": "Northbay Systems LLC's business identity has NOT been independently verified. No registration or KYC check has been performed against this name."
+      }
+    },
+    "missing": [
+      {
+        "item": "Counterparty's business identity verification",
+        "why_absent": "Not performed",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Declaration of export of services to the Reserve Bank",
+        "why_absent": "Not provided",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the service provided",
+        "why_absent": "Not specified",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Proof of payment in convertible foreign exchange",
+        "why_absent": "Not provided",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the recipient's location and status",
+        "why_absent": "Not specified",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the supplier's business activities and turnover",
+        "why_absent": "Not specified",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 470000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR Data",
+            "retrieved": "2026-06-28",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 469750,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR Data",
+            "retrieved": "2026-06-28",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 250,
+        "percent": 0.0523,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "No published TT BR on 2026-06-28",
+          "inr": 250,
+          "explanation": "The TT BR on the payment date (2026-06-28) is not available, leading to a spread between the nearest available dates (2026-06-25 and 2026-06-29)."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The supplier is liable to pay income tax on the receipt of 5,000 USDC, valued at INR 469,750 to 470,000 based on the TT BR on 2026-06-25 or 2026-06-29.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Proof of payment in convertible foreign exchange",
+          "Details of the supplier's business activities and turnover"
+        ]
+      },
+      {
+        "regime": "income_tax_on_transfer",
+        "outcome": "The supplier is not liable to TDS on the transfer of virtual digital assets as the payment is in USDC, not Indian currency.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-393(1)(vi)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services qualifies as an export of services, and the payment is in convertible foreign exchange, thus exempt from GST.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Details of the service provided",
+          "Details of the recipient's location and status"
+        ]
+      },
+      {
+        "regime": "fema",
+        "outcome": "The transaction may violate FEMA as the payment was received without going through an authorized person, and the counterparty's identity has not been verified.",
+        "certainty": "contested",
+        "citation": {
+          "provision": "FEMA-3-7-8(3)(b)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Counterparty's business identity verification",
+          "Declaration of export of services to the Reserve Bank",
+          "Proof of payment in convertible foreign exchange"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of the payment in INR is based on the TT BR on the nearest available dates (2026-06-25 and 2026-06-29) as the TT BR on the payment date (2026-06-28) is not available.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "No published TT BR on 2026-06-28"
+        ]
+      }
+    ],
+    "limits": [
+      "The exact TT BR on the payment date (2026-06-28) is not available, leading to a valuation spread.",
+      "The counterparty's business identity has not been verified, which may impact compliance with FEMA.",
+      "The details of the service provided and the recipient's location and status are not specified, which may affect the applicability of GST and income tax provisions."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T14:07:14.319359+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": "D1_pipeline.json",
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_D1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7745,
+          "out_tokens": 2383,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7745,
+      "total_out_tokens": 2383,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

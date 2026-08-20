@@ -1,0 +1,295 @@
+{
+  "arm": "B",
+  "case": "C1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "case_2026-101",
+    "generated_at": "2023-10-05T12:00:00Z",
+    "corpus_frozen_at": "2023-10-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-101",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-101"
+      },
+      "invoice_date": {
+        "value": "2026-06-16",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-16"
+      },
+      "supplier_type": {
+        "value": "Resident individual, freelance service provider, India",
+        "confidence": "certain",
+        "source_span": "Supplier: Resident individual, freelance service provider, India."
+      },
+      "recipient_company": {
+        "value": "Meridian Analytics Pvt Ltd, India",
+        "confidence": "certain",
+        "source_span": "Recipient: Meridian Analytics Pvt Ltd, India."
+      },
+      "line_item_description": {
+        "value": "Professional / consulting services rendered",
+        "confidence": "certain",
+        "source_span": "Line item: Professional / consulting services rendered."
+      },
+      "invoice_value": {
+        "value": 85000,
+        "confidence": "certain",
+        "source_span": "Invoice value: Rs 85,000."
+      },
+      "payment_amount": {
+        "value": 85000,
+        "confidence": "certain",
+        "source_span": "Payment of Rs 85,000 received by NEFT bank transfer, credited to the supplier's account on 16 June 2026 at 11:20 IST."
+      },
+      "payment_method": {
+        "value": "NEFT bank transfer",
+        "confidence": "certain",
+        "source_span": "Payment of Rs 85,000 received by NEFT bank transfer, credited to the supplier's account on 16 June 2026 at 11:20 IST."
+      },
+      "payment_date": {
+        "value": "2026-06-16",
+        "confidence": "certain",
+        "source_span": "Payment of Rs 85,000 received by NEFT bank transfer, credited to the supplier's account on 16 June 2026 at 11:20 IST."
+      },
+      "counterparty_verification": {
+        "value": "Meridian Analytics Pvt Ltd's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment).",
+        "confidence": "certain",
+        "source_span": "Counterparty verification: Meridian Analytics Pvt Ltd's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment)."
+      }
+    },
+    "missing": [
+      {
+        "item": "Details of the service provided",
+        "why_absent": "Not specified in the invoice",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the recipient's business activities",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the supplier's business activities",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the supplier's tax registration",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the recipient's tax registration",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the recipient's financial statements",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the supplier's financial statements",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the recipient's compliance with TDS/TCS",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the supplier's compliance with TDS/TCS",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 85000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI-TTBR-DATA.md",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 85000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI-TTBR-DATA.md",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 0.0,
+        "percent": 0.0,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "No foreign currency involved",
+          "inr": 0.0,
+          "explanation": "The payment was made in Indian rupees, so no foreign exchange rate is applicable."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The recipient is required to deduct TDS at 1% on the payment of Rs 85,000.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-393(1)(vi)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The transaction is a domestic supply and not an export of services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The transaction does not involve foreign exchange and is therefore not subject to FEMA regulations.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3-7-8(3)(a)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation methods are based on the telegraphic transfer buying rate, but no foreign currency is involved in this transaction.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The details of the service provided, the business activities of both parties, and their tax registrations and financial statements are missing, which could affect the accuracy of the tax and regulatory compliance analysis."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T14:08:52.508793+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": "C1_pipeline.json",
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_C1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7708,
+          "out_tokens": 1841,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7708,
+      "total_out_tokens": 1841,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

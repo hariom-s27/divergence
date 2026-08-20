@@ -1,0 +1,235 @@
+{
+  "arm": "A",
+  "case": "C5",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "case_2026-112",
+    "generated_at": "2026-06-28T12:00:00Z",
+    "corpus_frozen_at": "2026-06-28T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-112",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-112"
+      },
+      "invoice_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-28"
+      },
+      "supplier": {
+        "value": "Resident individual, freelance service provider, India.",
+        "confidence": "certain",
+        "source_span": "Supplier: Resident individual, freelance service provider, India."
+      },
+      "recipient": {
+        "value": "Cascade Data Inc, outside India.",
+        "confidence": "certain",
+        "source_span": "Recipient: Cascade Data Inc, outside India."
+      },
+      "line_item_description": {
+        "value": "Professional / consulting services rendered.",
+        "confidence": "certain",
+        "source_span": "Line item: Professional / consulting services rendered."
+      },
+      "invoice_value_usd": {
+        "value": 3000,
+        "confidence": "certain",
+        "source_span": "Invoice value: USD 3,000."
+      },
+      "payment_received_usd": {
+        "value": 3000,
+        "confidence": "certain",
+        "source_span": "Payment of USD 3,000 received by SWIFT wire transfer, credited to the supplier's account on 28 June 2026 at 00:00 IST."
+      },
+      "payment_received_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Payment of USD 3,000 received by SWIFT wire transfer, credited to the supplier's account on 28 June 2026 at 00:00 IST."
+      },
+      "payment_method": {
+        "value": "SWIFT wire transfer",
+        "confidence": "certain",
+        "source_span": "Payment of USD 3,000 received by SWIFT wire transfer, credited to the supplier's account on 28 June 2026 at 00:00 IST."
+      },
+      "counterparty_verification": {
+        "value": "Cascade Data Inc's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment).",
+        "confidence": "certain",
+        "source_span": "Counterparty verification: Cascade Data Inc's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment)."
+      }
+    },
+    "missing": [
+      {
+        "item": "Form 167",
+        "why_absent": "Not provided in the case details.",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Fair market value determination for virtual digital assets",
+        "why_absent": "No specific guidance provided for this case.",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 282000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-28",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 281850,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-28",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 150,
+        "percent": 0.0532,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "TTBR not published on 2026-06-28",
+          "inr": 150,
+          "explanation": "The TTBR for 2026-06-28 is not available, so the closest available rates are used."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income of INR 281,850 (using the TTBR on 2026-06-29) is taxable under the head 'Profits and Gains of Business or Profession'.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services is an export of services and is zero-rated for GST.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of payment from a foreign entity is compliant with FEMA, as evidenced by the FIRC.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of the receipt is based on the TTBR on 2026-06-29, as the TTBR for 2026-06-28 is not available.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Form 167"
+        ]
+      }
+    ],
+    "limits": [
+      "The TTBR for 2026-06-28 is not available, leading to the use of the closest available rates.",
+      "The valuation method for virtual digital assets is not explicitly provided, and additional guidance may be required."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T14:04:51.229564+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C5": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7576,
+          "out_tokens": 1690,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7576,
+      "total_out_tokens": 1690,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

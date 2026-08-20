@@ -1,0 +1,230 @@
+{
+  "arm": "A",
+  "case": "C4",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "case_2026-106",
+    "generated_at": "2026-06-29T12:00:00Z",
+    "corpus_frozen_at": "2026-06-29T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-106",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-106"
+      },
+      "invoice_date": {
+        "value": "2026-06-18",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-18"
+      },
+      "supplier": {
+        "value": "Resident individual, freelance service provider, India.",
+        "confidence": "certain",
+        "source_span": "Supplier: Resident individual, freelance service provider, India."
+      },
+      "recipient": {
+        "value": "@dmitri_builds (Discord handle), outside India.",
+        "confidence": "certain",
+        "source_span": "Recipient: @dmitri_builds (Discord handle), outside India."
+      },
+      "line_item": {
+        "value": "Professional / consulting services rendered. Invoice value: 400 USDC.",
+        "confidence": "certain",
+        "source_span": "Line item: Professional / consulting services rendered. Invoice value: 400 USDC."
+      },
+      "payment_received": {
+        "value": "400 USDC received to the supplier's self-custody wallet on 18 June 2026 at 09:12 IST.",
+        "confidence": "certain",
+        "source_span": "Payment confirmation: Payment of 400 USDC received to the supplier's self-custody wallet on 18 June 2026 at 09:12 IST."
+      },
+      "counterparty_verification": {
+        "value": "Counterparty verification: @dmitri_builds (Discord handle)'s business identity has NOT been independently verified. No registration or KYC check has been performed against this name.",
+        "confidence": "certain",
+        "source_span": "Counterparty verification: @dmitri_builds (Discord handle)'s business identity has NOT been independently verified. No registration or KYC check has been performed against this name."
+      }
+    },
+    "missing": [
+      {
+        "item": "KYC verification of counterparty",
+        "why_absent": "Not performed",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Bank statement or other proof of receipt",
+        "why_absent": "No bank involved",
+        "blocks": [
+          "income_tax",
+          "fema"
+        ],
+        "obtainable": "no"
+      },
+      {
+        "item": "Form 167 (if applicable)",
+        "why_absent": "Not provided",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 37600.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-29",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 37580.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-29",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 20.0,
+        "percent": 0.0532,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Variation in TTBR between 2026-06-25 and 2026-06-29",
+          "inr": 20.0,
+          "explanation": "The TTBR on 2026-06-25 is 94.00, while on 2026-06-29 it is 93.95, leading to a difference of 20 INR in the valuation of 400 USDC."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income of 37600 INR (using the TTBR on 2026-06-25) is taxable under the head 'Profits and gains of business or profession'.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services is an export of services, and hence, is zero-rated for GST purposes.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of 400 USDC in a self-custody wallet without involving an authorized person is a violation of FEMA, specifically section 3(c).",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3-7-8(3)(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "KYC verification of counterparty"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of 400 USDC to INR is based on the TTBR on 2026-06-25, which is 94.00, resulting in 37600 INR.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The valuation method is based on the TTBR on 2026-06-25, but the TTBR on 2026-06-29 is also considered to provide a range. The actual value could fall within this range.",
+      "The lack of KYC verification of the counterparty poses a risk under FEMA, and the taxpayer should obtain this verification to comply with regulatory requirements.",
+      "The absence of a bank statement or other proof of receipt complicates the documentation for income tax and FEMA compliance."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T14:03:19.120425+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C4": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7578,
+          "out_tokens": 1726,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7578,
+      "total_out_tokens": 1726,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

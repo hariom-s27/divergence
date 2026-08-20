@@ -56,11 +56,69 @@ All six cases now have complete, schema-valid, full-pipeline (arm C) records. No
 
 ---
 
+## Block A/B, 21 August: real input documents + the field-name fix, re-run on all 18
+
+D48 found the root cause of M1's near-zero numbers: five case files never had a real input document, and ground truth's field names never matched what `01-extract.md` told the extractor to call them. Both are now fixed — see [`DECISION-D49.md`](DECISION-D49.md) for the document generator, and [`01-extract.md`](step22drop/prompts/01-extract.md) for the explicit 13-field contract added to the prompt. All 18 arm x case combinations were re-run against `step21drop/cases/<CASE>/input.md` instead of the old `case.md`. Saved to `runs/21aug/`, kept separate from the 20 Aug runs above rather than overwriting them.
+
+**M1, before and after, arm C only:**
+
+| Case | M1, 20 Aug (old `case.md`) | M1, 21 Aug (new `input.md` + field contract) |
+|---|---|---|
+| C1 | 11.1% | **100.0%** |
+| C2 | 9.1% | **100.0%** |
+| C3 | 0.0% | **100.0%** |
+| C4 | 22.2% | **77.8%** |
+| C5 | 10.0% | **90.0%** |
+| D1 | 18.2% | **100.0%** |
+
+Mean across the six cases moved from **11.8% to 94.6%**. That is the real effect of D48/D49's fix, not a scoring change — nothing about `eval/score.py`'s `m1_extraction()` changed between the two tables.
+
+**Arms A and B's M1 did not move (still 0.0-9.1%), on the same new documents.** This is expected, not a bug: the field-name contract was added to `01-extract.md`, the pipeline's own node-1 prompt — not to `baseline-prompt.md` or `arm-b-cot.md`, which represent naive and token-matched-but-unengineered prompting on purpose. The honest reading is that giving a model complete input closes most of the gap by itself (C1/C2/D1 all reach 100% once the document is complete), but the field-name contract is doing real, separate work too — arms A/B had the same complete documents and stayed near zero, because nothing ever told them what to call each field.
+
+**Full 21-Aug table, all 18 rows:**
+
+| Case | Arm | Model | M1 extract | M2 recall | M2 prec | M3 valid | M3 stale | M4 methods | M5 false abst |
+|---|---|---|---|---|---|---|---|---|---|
+| C1 | A | Qwen2.5-72B | 0.0% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
+| C1 | B | Qwen2.5-72B | 0.0% | — | 0.0% | 25.0% | 0.0% | 2/1 | — |
+| **C1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **12/1** | **—** |
+| C2 | A | Qwen2.5-72B | 9.1% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
+| C2 | B | Qwen2.5-72B | 9.1% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
+| **C2** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **12/1** | **—** |
+| C3 | A | Qwen2.5-72B | 0.0% | 100.0% | 66.7% | 50.0% | 0.0% | 2/5 | — |
+| C3 | B | Qwen2.5-72B | 0.0% | 100.0% | 50.0% | 40.0% | 0.0% | 2/5 | — |
+| **C3** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **12/5** | **—** |
+| C4 | A | Qwen2.5-72B | 0.0% | 100.0% | 66.7% | 50.0% | 0.0% | 2/10 | — |
+| C4 | B | Qwen2.5-72B | 0.0% | 100.0% | 40.0% | 40.0% | 0.0% | 2/10 | — |
+| **C4** | **C** | **Qwen2.5-7B+72B** | **77.8%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **12/10** | **—** |
+| C5 | A | Qwen2.5-72B | 0.0% | 0.0% | 0.0% | 50.0% | 0.0% | 2/2 | — |
+| C5 | B | Qwen2.5-72B | 0.0% | 100.0% | 33.3% | 50.0% | 0.0% | 2/2 | — |
+| **C5** | **C** | **Qwen2.5-7B+72B** | **90.0%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **12/2** | **—** |
+| D1 | A | Qwen2.5-72B | 0.0% | 25.0% | 66.7% | 50.0% | 0.0% | 2/12 | — |
+| D1 | B | Qwen2.5-72B | 0.0% | 75.0% | 50.0% | 40.0% | 0.0% | 2/12 | — |
+| **D1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **25.0%** | **50.0%** | **100.0%** | **0.0%** | **12/12** | **—** |
+
+Citation recall, mean by arm, 21-Aug documents: arm A 0.100, arm B 0.100, arm C **0.307** (n=5, same sample size as before). Arm C improved; arms A/B moved slightly the other way, which reads as ordinary run-to-run variance now that temperature is not pinned to 0, not a regression worth chasing tonight.
+
+### C3's own prediction, checked honestly, and it did not hold
+
+C3's case file states plainly: *"the date choice is closed, the valuation method is still open. The system should report FEWER gaps here than in D1. If it reports the same number, it is not reading the facts."* With real documents, D1 reports 2 gaps (declaration of payment for services; independent verification of the counterparty's identity) and **C3 reports 3** (declaration of service payment; income tax deduction; valuation date) — more, not fewer. This is reported as a finding, not adjusted or explained away. Two honest possibilities, neither checked yet: gap detector is over-flagging a TDS/deduction question C3 does not actually have open, or C3's ground truth under-specifies what should already be closed. Worth investigating before the next results.md revision, not before this one goes out with the number as measured.
+
+### Arm B failed to hold the schema on C3, on the first attempt
+
+First run of arm B on C3 returned `'gst_export' is not one of ['income_tax', 'gst', 'fema', 'valuation']` — a real baseline failure, not repaired, recorded as `schema_valid: false` before being re-run for the table above. Kept here rather than only in the retried record: an unscaffolded baseline inventing its own regime label instead of the schema's enum is exactly the kind of failure the schema-conformance metric exists to catch.
+
+### An infrastructure finding, not a methodology one
+
+Four of six arm-B calls failed on the first attempt tonight with `Concurrency limit exceeded... Total needed: 8 units... plan limit: 4 units` — a genuine Featherless-side collision, not a code bug (confirmed by reading the recorded `error` field directly rather than guessing). Root cause: a background pipeline run was stopped mid-flight shortly before, and the server-side concurrency slot did not appear to release as fast as the local process did. Retried individually a few minutes later and all four succeeded cleanly. No code changed for this — the fix is procedural: don't stop a background run and immediately start another 72B call against the same key.
+
+---
+
 ## Still open before this table is the final one
 
 - Node 5, the adversarial checker (Step 5) — has never run at all
 - Three seeds on D1, all arms (Step 4) — only possible now that temperature is `default`, not `0`
-- M1's field-naming fix (Step 2) — necessary but, per D48, no longer sufficient on its own
-- Producing real input documents for C1, C2, C3, C4, C5 and re-freezing those cases (D48) — a scope decision, not yet scheduled against Steps 6-9's dates
+- **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
 - `node3_valuation.py` generalized beyond the single canonical case (D47) — needs per-case SBI/FBIL sheet data that was never collected
 - M5's contract gap — see `README.md`'s Honest Limitations
+- Prior-art check (Block C) — OBJ-1 (does software already solve this) done, see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND evidence (do real people hit this) not yet done

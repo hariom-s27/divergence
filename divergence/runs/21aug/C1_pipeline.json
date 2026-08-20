@@ -1,0 +1,430 @@
+{
+  "record_id": "C1",
+  "generated_at": "2026-08-20T13:45:25.345004+00:00",
+  "corpus_frozen_at": "2026-08-19T00:00:00Z",
+  "tax_year": "FY 2026-27",
+  "facts": {
+    "invoice_no": {
+      "value": "2026-101",
+      "confidence": "certain",
+      "source_span": "Invoice No: 2026-101"
+    },
+    "invoice_date": {
+      "value": "2026-06-16",
+      "confidence": "certain",
+      "source_span": "Invoice Date: 2026-06-16"
+    },
+    "supplier_location": {
+      "value": "India",
+      "confidence": "certain",
+      "source_span": "Resident individual, freelance service provider, India."
+    },
+    "recipient_location": {
+      "value": "India",
+      "confidence": "certain",
+      "source_span": "Meridian Analytics Pvt Ltd, India."
+    },
+    "settlement_datetime_ist": {
+      "value": "2026-06-16T11:20:00+05:30",
+      "confidence": "certain",
+      "source_span": "credited to the supplier's account on 16 June 2026 at 11:20 IST"
+    },
+    "settlement_datetime_utc": {
+      "value": "2026-06-16T05:50:00Z",
+      "confidence": "certain",
+      "source_span": "credited to the supplier's account on 16 June 2026 at 11:20 IST"
+    },
+    "amount": {
+      "value": 85000,
+      "confidence": "certain",
+      "source_span": "Payment of Rs 85,000 received"
+    },
+    "asset": {
+      "value": "INR",
+      "confidence": "certain",
+      "source_span": "Payment of Rs 85,000 received"
+    },
+    "bank_involved": {
+      "value": true,
+      "confidence": "certain",
+      "source_span": "NEFT bank transfer"
+    },
+    "purpose_code": {
+      "value": null,
+      "confidence": "unresolved",
+      "source_span": "no foreign exchange leg involved"
+    },
+    "counterparty_declared": {
+      "value": "Meridian Analytics Pvt Ltd",
+      "confidence": "certain",
+      "source_span": "Meridian Analytics Pvt Ltd, India."
+    },
+    "counterparty_verified": {
+      "value": true,
+      "confidence": "certain",
+      "source_span": "Meridian Analytics Pvt Ltd's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment)"
+    }
+  },
+  "missing": [
+    {
+      "item": "Recipient of service located outside India",
+      "why_absent": "The recipient location is given as India, and there is no information indicating the recipient is located outside India.",
+      "blocks": [
+        "income_tax",
+        "gst",
+        "fema",
+        "valuation"
+      ],
+      "obtainable": "no"
+    }
+  ],
+  "valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 470000.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062614_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 469750.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "domestic market, open x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, open x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "opening print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x retrieved peg",
+        "rate": 103.523751,
+        "inr_value": 517618.76,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x assumed par",
+        "rate": 103.41,
+        "inr_value": 517050.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "highest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x retrieved peg",
+        "rate": 102.422541,
+        "inr_value": 512112.71,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "lowest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x assumed par",
+        "rate": 102.31,
+        "inr_value": 511550.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "lowest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "closing print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "closing print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x retrieved peg",
+        "rate": 102.963135,
+        "inr_value": 514815.68,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x assumed par",
+        "rate": 102.85,
+        "inr_value": 514250.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      }
+    ],
+    "spread": {
+      "inr": 47868.76,
+      "percent": 10.1903,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "domestic market, high x retrieved peg"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "domestic premium",
+        "inr": 44715.57,
+        "explanation": "The Indian market price of the token against the official rupee rate for a dollar. This is the bulk of the gap and it is the part everyone argues about."
+      },
+      {
+        "source": "which official date",
+        "inr": 250.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      },
+      {
+        "source": "which price within the day",
+        "inr": 5506.05,
+        "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule choosing between them."
+      },
+      {
+        "source": "the proxy",
+        "inr": 565.57,
+        "explanation": "The retrieved pair is USDT/INR. The receipt was USDC. The figure is USDT/INR x USDC/USDT, and treating the peg as exactly 1.0000 is a further choice."
+      }
+    ],
+    "no_rate_published": true
+  },
+  "regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1. The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded. Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "This supply does not meet the conditions for an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "no",
+          "why": "The recipient is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it depends on the recipient's location, which is in India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment was received in Indian rupees via NEFT bank transfer, which is permitted by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "Recipient of service located outside India"
+      ],
+      "consequence_if_failed": "If the supply is not an export of services, it will be subject to GST at the applicable rate. The supplier will need to pay the tax and any applicable interest under Section 50 of the CGST Act 2017. If there is a short payment or non-payment of tax, the supplier may also face penalties under Section 74A of the CGST Act 2017."
+    }
+  ],
+  "limits": [
+    "The specific valuation method for virtual digital assets is not explicitly provided in the rules, leading to reliance on the open market value method as a general fallback.",
+    "The place of supply and the relationship between the supplier and recipient are unknown, which affects the determination of the export status."
+  ],
+  "_meta": {
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "node1_extract": {
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "calls": 1,
+          "in_tokens": 1414,
+          "out_tokens": 601,
+          "retries": 0
+        },
+        "node2_gaps": {
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "calls": 1,
+          "in_tokens": 3023,
+          "out_tokens": 80,
+          "retries": 0
+        },
+        "node3_income_tax": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 6624,
+          "out_tokens": 475,
+          "retries": 0
+        },
+        "node4_gst": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 2341,
+          "out_tokens": 525,
+          "retries": 0
+        }
+      },
+      "total_calls": 4,
+      "total_in_tokens": 13402,
+      "total_out_tokens": 1681,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

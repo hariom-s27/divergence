@@ -118,23 +118,30 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--report", action="store_true",
                      help="after converting, run score.py against every normalized file")
+    ap.add_argument("--dir", default=RUNS,
+                     help="source dir of run json files (default: runs/). "
+                          "D49/Block B: pass runs/21aug for the re-run against "
+                          "input.md instead of the 20-Aug case.md run")
     a = ap.parse_args()
 
-    os.makedirs(OUT_DIR, exist_ok=True)
+    src_dir = os.path.abspath(a.dir)
+    out_dir = OUT_DIR if src_dir == RUNS else os.path.join(src_dir, "normalized")
+
+    os.makedirs(out_dir, exist_ok=True)
     converted = []
     skipped = []
-    for path in sorted(glob.glob(os.path.join(RUNS, "*.json"))):
+    for path in sorted(glob.glob(os.path.join(src_dir, "*.json"))):
         norm = convert_one(path)
         if norm is None:
             skipped.append(os.path.basename(path))
             continue
         out_name = os.path.basename(path)
-        out_path = os.path.join(OUT_DIR, out_name)
+        out_path = os.path.join(out_dir, out_name)
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(norm, f, indent=2, ensure_ascii=False)
         converted.append(out_path)
 
-    print(f"  converted {len(converted)} run file(s) -> {os.path.relpath(OUT_DIR, ROOT)}/")
+    print(f"  converted {len(converted)} run file(s) -> {os.path.relpath(out_dir, ROOT)}/")
     if skipped:
         print(f"  skipped {len(skipped)} (not a recognised run shape): {skipped}")
 

@@ -1,0 +1,454 @@
+{
+  "record_id": "C2",
+  "generated_at": "2026-08-20T13:47:40.586783+00:00",
+  "corpus_frozen_at": "2026-08-19T00:00:00Z",
+  "tax_year": "FY 2026-27",
+  "facts": {
+    "invoice_no": {
+      "value": "2026-104",
+      "confidence": "certain",
+      "source_span": "Invoice No: 2026-104"
+    },
+    "invoice_date": {
+      "value": "2026-06-17",
+      "confidence": "certain",
+      "source_span": "Invoice Date: 2026-06-17"
+    },
+    "supplier_location": {
+      "value": "India",
+      "confidence": "certain",
+      "source_span": "Resident individual, freelance service provider, India."
+    },
+    "recipient_location": {
+      "value": "outside India",
+      "confidence": "certain",
+      "source_span": "Cascade Data Inc, outside India."
+    },
+    "amount": {
+      "value": 4000,
+      "confidence": "certain",
+      "source_span": "Payment of USD 4,000 received by SWIFT wire transfer"
+    },
+    "asset": {
+      "value": "USD",
+      "confidence": "certain",
+      "source_span": "Payment of USD 4,000 received by SWIFT wire transfer"
+    },
+    "settlement_datetime_ist": {
+      "value": "2026-06-17T14:05:00+05:30",
+      "confidence": "certain",
+      "source_span": "credited to the supplier's account on 17 June 2026 at 14:05 IST"
+    },
+    "settlement_datetime_utc": {
+      "value": "2026-06-17T08:35:00Z",
+      "confidence": "certain",
+      "source_span": "credited to the supplier's account on 17 June 2026 at 14:05 IST"
+    },
+    "purpose_code": {
+      "value": "P0802",
+      "confidence": "certain",
+      "source_span": "Purpose code declared on the wire: P0802"
+    },
+    "firc_present": {
+      "value": true,
+      "confidence": "certain",
+      "source_span": "Bank has issued a Foreign Inward Remittance Certificate (FIRC) for this credit"
+    },
+    "counterparty_declared": {
+      "value": "Cascade Data Inc",
+      "confidence": "certain",
+      "source_span": "Payment of USD 4,000 received by SWIFT wire transfer, credited to the supplier's account on 17 June 2026 at 14:05 IST"
+    },
+    "counterparty_verified": {
+      "value": true,
+      "confidence": "certain",
+      "source_span": "Cascade Data Inc's business identity has been independently confirmed (registration / bank KYC check completed at the time of payment)"
+    },
+    "bank_involved": {
+      "value": true,
+      "confidence": "certain",
+      "source_span": "Payment of USD 4,000 received by SWIFT wire transfer, credited to the supplier's account on 17 June 2026 at 14:05 IST"
+    }
+  },
+  "missing": [
+    {
+      "item": "GST Inward Supply Certificate (GISC)",
+      "why_absent": "No mention of any supply of goods or services within India, and the transaction is an export of services.",
+      "blocks": [],
+      "obtainable": "no"
+    },
+    {
+      "item": "Export Declaration",
+      "why_absent": "No explicit mention of an export declaration as required by FEMA-3-7-8.md.",
+      "blocks": [
+        "valuation"
+      ],
+      "obtainable": "not_for_this_route"
+    },
+    {
+      "item": "Income Tax Deduction Certificate",
+      "why_absent": "No information provided about the value of the virtual digital asset or the payer's eligibility for the 1% tax deduction rate.",
+      "blocks": [
+        "income_tax"
+      ],
+      "obtainable": "no"
+    },
+    {
+      "item": "Fair Market Value Certificate",
+      "why_absent": "No information provided about the valuation date or the need for a registered valuer's certificate.",
+      "blocks": [
+        "valuation"
+      ],
+      "obtainable": "not_for_this_route"
+    }
+  ],
+  "valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 470000.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062614_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 469750.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "domestic market, open x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, open x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "opening print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x retrieved peg",
+        "rate": 103.523751,
+        "inr_value": 517618.76,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x assumed par",
+        "rate": 103.41,
+        "inr_value": 517050.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "highest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x retrieved peg",
+        "rate": 102.422541,
+        "inr_value": 512112.71,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "lowest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x assumed par",
+        "rate": 102.31,
+        "inr_value": 511550.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "lowest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "closing print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "closing print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x retrieved peg",
+        "rate": 102.963135,
+        "inr_value": 514815.68,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x assumed par",
+        "rate": 102.85,
+        "inr_value": 514250.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      }
+    ],
+    "spread": {
+      "inr": 47868.76,
+      "percent": 10.1903,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "domestic market, high x retrieved peg"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "domestic premium",
+        "inr": 44715.57,
+        "explanation": "The Indian market price of the token against the official rupee rate for a dollar. This is the bulk of the gap and it is the part everyone argues about."
+      },
+      {
+        "source": "which official date",
+        "inr": 250.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      },
+      {
+        "source": "which price within the day",
+        "inr": 5506.05,
+        "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule choosing between them."
+      },
+      {
+        "source": "the proxy",
+        "inr": 565.57,
+        "explanation": "The retrieved pair is USDT/INR. The receipt was USDC. The figure is USDT/INR x USDC/USDT, and treating the peg as exactly 1.0000 is a further choice."
+      }
+    ],
+    "no_rate_published": true
+  },
+  "regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 206, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt is not from the transfer of a virtual digital asset (s.115BBH) but is instead income from other sources, as it is a payment for services rendered. \n\nb) **Recognition Date**: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).\n\nc) **Valuation Method**: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.\n\nd) **TDS**: The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).\n\ne) **Penalty Position**: The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "place of supply"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST at the applicable rate. The supplier would be required to pay GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "limits": [
+    "The classification of the receipt as income from other sources is based on the facts provided, but the specific nature of the service and the context of the transaction could affect this classification. The TDS applicability depends on the residency status of the payer, which is not explicitly stated in the facts.",
+    "The place of supply is not explicitly stated, which affects the certainty of the outcome."
+  ],
+  "_meta": {
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "node1_extract": {
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "calls": 1,
+          "in_tokens": 1431,
+          "out_tokens": 731,
+          "retries": 0
+        },
+        "node2_gaps": {
+          "model": "Qwen/Qwen2.5-7B-Instruct",
+          "calls": 1,
+          "in_tokens": 3153,
+          "out_tokens": 248,
+          "retries": 0
+        },
+        "node3_income_tax": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 6927,
+          "out_tokens": 548,
+          "retries": 0
+        },
+        "node4_gst": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 2644,
+          "out_tokens": 470,
+          "retries": 0
+        }
+      },
+      "total_calls": 4,
+      "total_in_tokens": 14155,
+      "total_out_tokens": 1997,
+      "temperature": "0 (dev default)",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}
