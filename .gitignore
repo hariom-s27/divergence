@@ -1,0 +1,8 @@
+# reverie (repo name on GitHub: divergence)
+
+# Source law PDFs, not code — one of them is 171MB, over GitHub's 100MB hard
+# limit, so this folder cannot be pushed as-is regardless of intent.
+New folder/
+
+# See divergence/.gitignore for the keys/secrets rules that matter most —
+# git honours nested .gitignore files, so those still apply under divergence/.
