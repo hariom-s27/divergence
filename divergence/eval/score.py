@@ -151,8 +151,17 @@ def m4_enumeration(run, gt):
 # ── M5 ────────────────────────────────────────────────────────────────
 def m5_false_abstention(run, gt):
     """Per ELEMENT, not per case. The check on the other four metrics:
-    a system that flags everything aces M2 and M4 and fails here."""
-    exp, got = gt["elements"], run.get("elements", {})
+    a system that flags everything aces M2 and M4 and fails here.
+
+    D48: a run that never produces an "elements" key at all must NOT
+    score the same as a run that produced elements{} and got every
+    settled one right -- omission is not evidence of zero false
+    abstention, it's the absence of the measurement. Only a run that
+    actually reports elements{} can be scored here.
+    """
+    if not run.get("elements"):
+        return None, []
+    exp, got = gt["elements"], run["elements"]
     settled = [k for k, v in exp.items() if v == "settled"]
     if not settled:
         return None, []
