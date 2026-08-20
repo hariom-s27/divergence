@@ -100,7 +100,7 @@ Mean across the six cases moved from **11.8% to 94.6%**. That is the real effect
 
 \* C1 and C5's M4 columns were updated after Block E1 (below) gave each its own real valuation instead of D1's borrowed one — see that section for why the count dropped and what it now means.
 
-Citation recall, mean by arm, 21-Aug documents: arm A 0.100, arm B 0.100, arm C **0.307** (n=5, same sample size as before). Arm C improved; arms A/B moved slightly the other way, which reads as ordinary run-to-run variance now that temperature is not pinned to 0, not a regression worth chasing tonight.
+Citation recall, mean by arm, 21-Aug documents: arm A 0.100, arm B 0.100, arm C **0.307** (n=5, same sample size as before). Arm C improved; arms A/B moved slightly the other way. **Correction, D52: this is not temperature variance** — every run through Block E1 was actually still at temperature 0 (see D52), so the honest explanation is the changed input document (`input.md` replacing `case.md`), not sampling. Not a regression worth chasing tonight either way.
 
 ### C3's own prediction, checked honestly, and it did not hold
 
