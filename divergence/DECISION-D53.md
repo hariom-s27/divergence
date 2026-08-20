@@ -7,8 +7,8 @@
 `output-interface.html` — the page a judge looks at first, before any code
 — was a hand-built mockup. Every number in it was typed by a person into an
 early draft, marked with explicit `stale-ok` HTML comments once the real
-pipeline overtook it (₹43,633 / 9.27% instead of the real ₹47,868.76 /
-10.19%; 2 methods shown instead of the real 12). `architecture.md` names
+pipeline overtook it (₹43,633 / 9.27% <!-- stale-ok --> instead of the real
+₹47,868.76 / 10.19%; 2 methods shown instead of the real 12). `architecture.md` names
 this exact failure mode as the one D38 exists to prevent — *"the headline
 number must never be a token prediction"* — and a number a person typed by
 hand is not better than a token prediction; it is the same failure with a

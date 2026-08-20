@@ -90,8 +90,9 @@ unchanged code — this is exactly why the composer was worth building the
 way it was: the page updates by re-running it against a corrected record,
 not by hand-editing HTML). Section 03 now shows a chip reading **"No rule
 found"** on the valuation-method line, next to the 12-method, ₹47,868.76
-range in section 02. Checked directly for the `�` corruption named as a
-risk: not present anywhere in the file, confirmed at the byte level (the
+range in section 02. Checked directly for U+FFFD (the replacement
+character) named as a risk: not present anywhere in the file, confirmed at
+the byte level (the
 citation's em-dash is a valid UTF-8 `\xe2\x80\x94`, not a replacement
 character) — the same false alarm chased down twice earlier tonight, laid
 to rest a third time, specifically on this record.

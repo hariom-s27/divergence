@@ -74,7 +74,7 @@ Apply the test to anything not on these lists. It resolves most cases in ten sec
 
 A volatile token would make the valuation gap larger and our argument easier. **We are using the hardest case for our own claim on purpose.**
 
-> *"Even a coin designed to be worth exactly one dollar produces a ₹41,150 disagreement on a single invoice. If it happens with the stable one, it happens with all of them."*
+> *"Even a coin designed to be worth exactly one dollar produces a ₹47,869 disagreement on a single invoice. If it happens with the stable one, it happens with all of them."*
 
 Say this out loud. Choosing the hardest case for yourself is a maturity signal, and it costs nothing.
 
@@ -179,7 +179,7 @@ Thirty seconds in the video, and a slide in the deck.
 
 > **What we didn't build, and why.**
 >
-> One payment, one country, one question. Stablecoins only — and we chose the *hardest* case for our own argument, because if a coin designed to be worth exactly one dollar produces a ₹41,150 disagreement, the volatile ones are worse.
+> One payment, one country, one question. Stablecoins only — and we chose the *hardest* case for our own argument, because if a coin designed to be worth exactly one dollar produces a ₹47,869 disagreement, the volatile ones are worse.
 >
 > We don't tell you what to pay. We don't claim anything is compliant. We don't store your documents. And we never fill the gap when the law leaves one — because filling it is the exact failure we built this to catch.
 >

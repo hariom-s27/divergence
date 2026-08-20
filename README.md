@@ -186,6 +186,13 @@ Each resolver only sees the law text for its own regime, so a model
 resolving income tax structurally cannot cite a GST section — the text was
 never given to it (decision C22).
 
+**Seven corpus files still carry an open `known_limitation` note as of this
+writing** — things like an unconfirmed 2025-Act section number pending
+dual-citation, or one provision's text sourced from an unofficial full-text
+mirror rather than the gazette directly. Each note is written into the file
+itself, not hidden in a separate audit doc; `python gate0_check.py` lists
+all seven by file and reason on every run.
+
 ## What we found reading the official gazette
 
 We read the actual notified Income-tax Rules, 2026 (Gazette, Part II,

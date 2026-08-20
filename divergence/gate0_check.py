@@ -319,9 +319,14 @@ CHECK = [
     ("scope.md",              "Step 14 · scope contract"),
     ("qa-prep.md",            "Step 37 · Q&A bank"),
 ]
+# Several of these moved into step21drop/ or step22drop/ as the project's
+# own folder structure evolved -- checking only HERE and its parent used to
+# report them "NOT BUILT" even though they exist, just one level deeper.
+# Found running this checker for the pre-submission audit, 21 Aug.
+_search_dirs = (HERE, os.path.dirname(HERE),
+                os.path.join(HERE, "step21drop"), os.path.join(HERE, "step22drop"))
 for fn, why in CHECK:
-    found = any(os.path.exists(os.path.join(r, fn))
-                for r in (HERE, os.path.dirname(HERE)))
+    found = any(os.path.exists(os.path.join(r, fn)) for r in _search_dirs)
     print((OK if found else INFO) + f"{fn:<24} {'present' if found else 'NOT BUILT'}   {why}")
 
 for d in ("prompts", "eval", "cases", "runs"):
@@ -329,8 +334,12 @@ for d in ("prompts", "eval", "cases", "runs"):
     print((OK if os.path.isdir(p) else INFO) +
           f"{d + '/':<24} {'present' if os.path.isdir(p) else 'NOT BUILT'}")
 
-print((OK if os.path.isdir(os.path.join(HERE, ".git")) else INFO) +
-      f"{'.git/':<24} {'present' if os.path.isdir(os.path.join(HERE, '.git')) else 'NOT INITIALISED — pre-registration has no timestamp'}")
+# .git/ lives at the repo root (one level above divergence/), not inside it --
+# checking only HERE reported "NOT INITIALISED" on a repo that has been
+# initialised and pushed to GitHub the whole time. Same fix as above.
+_git_found = any(os.path.isdir(os.path.join(r, ".git")) for r in (HERE, os.path.dirname(HERE)))
+print((OK if _git_found else INFO) +
+      f"{'.git/':<24} {'present' if _git_found else 'NOT INITIALISED — pre-registration has no timestamp'}")
 
 
 # ─────────────────────────────────────────────────────────────
