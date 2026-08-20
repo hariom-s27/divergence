@@ -105,6 +105,44 @@ c) VALUATION METHOD — which provision prescribes how to determine the
    If you conclude no row reaches it, say which rows you checked and why
    each fails. A bare "no rule exists" is not acceptable.
 
+   SCOPE GATE — THE GENERAL RULE, NOT JUST FOR RULE 206/207. Before citing
+   ANY provision as the one that governs valuation method, find that
+   provision's own scope statement — its opening words, its column B, or
+   the person or entity it addresses — and confirm in `reasoning` that
+   this scope actually reaches this taxpayer and these facts. A provision
+   that is real, current, and correctly quoted can still not apply. Two
+   confirmed instances so far, same failure both times: Rule 57 row 7's
+   own column B serves s.26(2)(j), not s.92; Rule 206's own opening words
+   scope it to "foreign currency," which a VDA is defined not to be
+   (RULE 206/207 GATE, above). A rule with an inviting title is not
+   evidence that it applies — its own scope sentence is.
+
+   RULE 243 IS NOT A VALUATION METHOD FOR A TAXPAYER. If it is in the text
+   you were given, read its own opening words first: it is scoped to "the
+   aggregate-reporting obligations of a reporting crypto-asset service
+   provider" — an entity registered to report on crypto transactions, not
+   an individual who received one. It does not reach Priya. You may cite
+   Rule 243(8)(e)(iii)(D) as evidence, in `reasoning` only, that even
+   India's one prescribed crypto valuation waterfall ends in "a reasonable
+   estimate may be applied as a measure of last resort" — the closest
+   thing to an official method concedes indeterminacy. Never cite Rule 243
+   in `citation.provision` for a taxpayer's own valuation method, and
+   never let it produce `settled` or `inference` certainty on this
+   question. Found live, 21 Aug: the run right after the Rule 206 fix
+   reached for Rule 243 instead and called it `settled` — trading one
+   scope-reach error for another. Node 5 caught it; see DECISION-D50.md's
+   addendum.
+
+   WHEN NO PROVISION REACHES: say `lacuna`, not `insufficient_evidence`
+   and not the nearest rule that happens to mention the asset class.
+   `lacuna` means a provision demands a method and none in the text you
+   were given supplies one — that is exactly Rule 56 (fixes the date)
+   plus Rule 57 (no row reaches a s.92 VDA receipt) plus Rule 243 (reaches
+   RCASPs, not taxpayers). If, after checking every provision's own scope
+   against these facts, none reaches, the answer is `lacuna` — reaching
+   for the nearest available rule instead is the one failure this whole
+   node exists to prevent.
+
 d) TDS — does any deduction obligation arise? Read the table headings.
 
 e) PENALTY POSITION — what does s.439(8) require of a disclosed position?
@@ -118,15 +156,26 @@ OUTPUT — JSON only. No prose before or after.
 It answers "which legal regime does this conclusion belong to" — it is NOT
 a label for which of (a)-(e) above you are answering. Do not invent values
 like "recognition_date", "tds", or "penalty_position" — those are questions
-you resolve, not regimes you report. Points (b), (c), (d) and (e) are all
-part of the income-tax-on-receipt position for a single event: fold your
-answer to all four into ONE object's "outcome" and "reasoning" fields,
-covering recognition date, valuation method, TDS and penalty position in
-that one piece of prose. Only emit a second object if a genuinely separate
-legal event is being described — for instance income_tax_on_transfer, if
-and when this asset is later disposed of, which is a different taxable
-event from the receipt you were actually asked about (this is exactly what
-F7 — "single-event tax" — gets wrong when it is not kept separate).
+you resolve, not regimes you report.
+
+Points (b) recognition date, (d) TDS and (e) penalty position are part of
+the income-tax-on-receipt position: fold those three into ONE object's
+"outcome" and "reasoning" fields.
+
+Point (c) VALUATION METHOD is different and gets its OWN object, with
+"regime": "valuation_method" — because its certainty is frequently NOT the
+same as the classification's certainty (classification can be `settled`
+under s.115BBH while valuation method is `lacuna`, and folding both into
+one object forces one certainty value to misrepresent the other). For a
+VDA receipt, always emit `valuation_method` as its own object — this is
+exactly where the SCOPE GATE and the lacuna question live, and it must
+carry its own certainty, not borrow the classification's.
+
+Only emit a further, separate object if a genuinely separate legal event
+is being described — for instance income_tax_on_transfer, if and when this
+asset is later disposed of, which is a different taxable event from the
+receipt you were actually asked about (this is exactly what F7 —
+"single-event tax" — gets wrong when it is not kept separate).
 
 "citation.provision" IS ONE CITATION, NOT A LIST. Name the single provision
 your "outcome" sentence most directly rests on — usually s.115BBH for the
@@ -143,7 +192,7 @@ see DECISION-D46.md.
   "regimes": [
     {
       "regime": "income_tax_on_receipt",
-      "outcome": "<one sentence, plain English, covering classification AND recognition date AND valuation method AND TDS AND penalty position>",
+      "outcome": "<one sentence, plain English, covering classification AND recognition date AND TDS AND penalty position -- NOT valuation method, that is the next object>",
       "certainty": "settled|inference|open_texture|lacuna|contested|insufficient_evidence",
       "citation": {
         "provision": "<exactly as it appears in the text above>",
@@ -151,7 +200,23 @@ see DECISION-D46.md.
         "tax_year": "FY 2026-27",
         "verified": false
       },
-      "reasoning": "<walk through (a)-(e) here — why each provision reaches these facts, or why it does not>",
+      "reasoning": "<walk through (a),(b),(d),(e) here -- why each provision reaches these facts, or why it does not>",
+      "depends_on_missing": [],
+      "qualifying_condition": "<or null>",
+      "condition_met": "yes|no|unknown",
+      "consequence_if_failed": "<or null>"
+    },
+    {
+      "regime": "valuation_method",
+      "outcome": "<one sentence: does a provision in the text prescribe how to value this asset in rupees, or not -- if not, say so plainly, do not reach for the nearest rule>",
+      "certainty": "lacuna if no provision's own scope reaches these facts; settled ONLY if one genuinely does",
+      "citation": {
+        "provision": "<the provision closest to reaching, cited so a reader can check it -- NOT Rule 243 unless its own reporting-obligations scope genuinely covers this taxpayer, which it does not for an individual receiving a payment>",
+        "former_citation": "<or null>",
+        "tax_year": "FY 2026-27",
+        "verified": false
+      },
+      "reasoning": "<walk through (c) here -- every provision you checked for a valuation method, its own scope statement, and why it does or does not reach. If Rule 243 appeared in the text you were given, say here that its own scope is reporting-obligations for a service provider, not a taxpayer, and that its last-resort clause ('a reasonable estimate may be applied as a measure of last resort') is evidence the drafter did not solve this either -- never cite it as this taxpayer's method.>",
       "depends_on_missing": [],
       "qualifying_condition": "<or null>",
       "condition_met": "yes|no|unknown",

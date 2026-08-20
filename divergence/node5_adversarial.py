@@ -28,7 +28,7 @@ Reads   the SYSTEM block of step22drop/prompts/05-adversarial.md
 Writes  attack.json: {"attacked": [...], "checked_and_survived": [...], "limits": [...]}
 """
 
-import os, sys, json, glob, argparse
+import os, sys, json, glob, re, argparse
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -110,6 +110,81 @@ def _validate_attack_shape(parsed, raw):
         raise LLMError(f"{NODE_NAME}: attacked[] contains {len(bad)} malformed entr(y/ies): {bad}\nRaw:\n{raw}")
 
 
+# Most to least certain. D50's addendum: node 5 downgraded one attack TO
+# "settled" -- an upgrade wearing a downgrade's name, and nothing stopped
+# it, because the schema only checks downgraded_to is a valid enum value,
+# not that it is actually a downgrade.
+_CERTAINTY_ORDER = ["settled", "inference", "open_texture", "contested", "lacuna", "insufficient_evidence"]
+
+
+_STOPWORDS = {"the", "a", "an", "and", "or", "of", "to", "is", "in", "on", "for",
+              "at", "as", "by", "this", "that", "under", "with", "no", "not"}
+
+
+def _words(text):
+    return {w for w in re.findall(r"[a-z0-9.()]+", text.lower()) if w not in _STOPWORDS}
+
+
+def _match_target_certainty(target, regimes):
+    """Best-effort, conservative match of an attack's free-text `target`
+    back to the regime it quotes, to read that regime's certainty BEFORE
+    the attack. node 5 paraphrases rather than quoting verbatim (found
+    live testing this guard: target was "must offer a bona fide
+    explanation... to avoid penalties", the regime's own outcome said
+    "must disclose... to substantiate the explanation offered" -- same
+    clause, no shared substring), so this matches on word overlap, not
+    substring containment. Only trusted when exactly one regime is a
+    clear best match (highest overlap, and by a real margin over the
+    second-best) -- anything ambiguous returns None and the guard below
+    simply skips that attack, the same "don't guess" choice
+    run_pipeline.py already made for applying downgrades to regimes[]
+    itself."""
+    if not target:
+        return None
+    t_words = _words(target)
+    if not t_words:
+        return None
+    scores = []
+    for r in regimes:
+        o_words = _words(r.get("outcome") or "")
+        if not o_words:
+            continue
+        overlap = len(t_words & o_words) / len(t_words)
+        scores.append((overlap, r.get("certainty")))
+    scores.sort(key=lambda x: -x[0])
+    if not scores or scores[0][0] < 0.5:
+        return None
+    if len(scores) > 1 and scores[1][0] >= scores[0][0] - 0.15:
+        return None  # too close to call -- ambiguous, don't guess
+    return scores[0][1]
+
+
+def _reject_upward_revisions(attacked, regimes):
+    """Deterministic, in code -- the same discipline gap_enforcer.py
+    applies to certainty. A landed attack (survived: false) whose
+    downgraded_to is NOT strictly less certain than the target's
+    certainty already was is not a downgrade -- either a real upgrade, or
+    a same-level relabel that is equally nonsensical for something the
+    model itself is claiming to have successfully attacked. Drop the
+    field and say so, rather than let a malformed "downgrade" pass
+    through the schema check untouched. Found live testing this guard:
+    D50's addendum example is exactly the tie case (target already
+    `settled`, proposed downgraded_to also `settled`) -- a strict
+    more-certain-than check misses it; the fix is <=, not <."""
+    rejected = []
+    for a in attacked:
+        dg = a.get("downgraded_to")
+        if not dg or a.get("survived") is not False:
+            continue
+        before = _match_target_certainty(a.get("target"), regimes)
+        if before is None or before not in _CERTAINTY_ORDER or dg not in _CERTAINTY_ORDER:
+            continue
+        if _CERTAINTY_ORDER.index(dg) <= _CERTAINTY_ORDER.index(before):
+            rejected.append({"target": a.get("target"), "was": before, "proposed": dg})
+            a["downgraded_to"] = None
+    return rejected
+
+
 def check(regimes, missing, valuation, tax_year, model="adversarial"):
     """The reusable entry point -- run_pipeline.py calls this when --node5
     is passed. Returns (attacked, checked_and_survived, limits, meta)."""
@@ -129,8 +204,16 @@ def check(regimes, missing, valuation, tax_year, model="adversarial"):
     )
     parsed = llm_call.call_json(system, user, model, node_name=NODE_NAME)
     _validate_attack_shape(parsed, parsed)
+    rejected = _reject_upward_revisions(parsed["attacked"], regimes)
+    limits = list(parsed.get("limits", []))
+    for rj in rejected:
+        limits.append(
+            f"node 5 proposed an upward revision on an attack (was {rj['was']!r}, "
+            f"proposed downgraded_to={rj['proposed']!r}); rejected in code, "
+            f"attack text kept, downgraded_to dropped. target: {rj['target']!r}"
+        )
     meta = llm_call.provenance()["by_node"].get(NODE_NAME, {})
-    return parsed["attacked"], parsed["checked_and_survived"], parsed.get("limits", []), meta
+    return parsed["attacked"], parsed["checked_and_survived"], limits, meta
 
 
 def main():

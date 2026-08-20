@@ -149,6 +149,16 @@ Re-ran D1 with the fixed prompt. **`runs/21aug/D1_fixed_pipeline.json` is new; `
 
 **`checked_and_survived` was non-empty for the first time all night** on this run — one conclusion (the GST export finding) survived node 5's attack unbroken. Read together with D50's calibration concern: still not proof node 5 discriminates reliably, but the first single data point where it didn't attack literally everything it saw.
 
+### The third scope-reach error, and this one really mattered
+
+Rule 243(8)(e) — the provision the fix above reached for instead of Rule 206 — has its own scope gate too, checked directly against `corpus/verbatim/ITR2026-RCASP-VALUATION.md`: it governs *"the aggregate-reporting obligations of a reporting crypto-asset service provider,"* not a taxpayer. D1's record was, for a few hours tonight, asserting `certainty: settled` on a valuation method that this project's entire thesis says does not exist — the opposite of the headline finding, on the page a reader opens first. Full account, the fix, and why it's one generalized SCOPE GATE rather than a third special-cased patch: [`DECISION-D54.md`](DECISION-D54.md).
+
+`runs/21aug/D1_v3_pipeline.json`: `valuation_method` is now its own regime object (the enum already allowed this; nothing used it before), `certainty: lacuna`, citing Rule 243 only as the closest-but-rejected provision. **Ran node 5 against it and the `valuation_method` conclusion survived unattacked** — an independent second model confirming the answer holds, not just that nobody attacked it yet. `output-interface.html` regenerated from this record; section 03 now shows a "No rule found" chip on the valuation line next to the 12-method range in section 02.
+
+**This is node 5's second real catch on unplanted data** (D50 was the first) — found this defect itself, the same night it first ran, before any human flagged it. A cheap, deterministic guard was also added (`node5_adversarial.py`'s `_reject_upward_revisions`) after D50 caught node 5 proposing a `settled → settled` "downgrade" on a landed attack — tested against that exact known example (correctly rejected) and then against a second, independent case the same guard caught live on this v3 run (`insufficient_evidence → insufficient_evidence`), not a single replay.
+
+**Three instances of the identical failure now confirmed**, same project, same night: Rule 57 row 7 → a s.92 receipt; Rule 206 row 3 → a s.115BBH VDA receipt; Rule 243(8)(e) → a taxpayer who is not a reporting service provider. Real citations, correctly quoted, applied outside their own scope every time. That pattern is the finding, not an embarrassment to bury — a model given verbatim statute and a genuinely underdetermined question reliably reaches for the nearest rule that mentions the right words. Measured on this project, by this project, three times.
+
 ## Block E1, 21 August: C5 gets its own real valuation, C1 gets the false-abstention proof
 
 D47 disclosed that every non-D1 record's `valuation` block was silently D1's own. `node3_valuation.py` now takes `--case`/`--out` instead of being hardcoded to D1; full account in [`DECISION-D51.md`](DECISION-D51.md).
@@ -202,7 +212,7 @@ You can trust that this table reflects real variance, specifically because D52 i
 
 - **M2's real instability under temperature** (Block E2) — arm C's three seeds on D1 alone: 50%, 75%, 0% gap recall. Worth understanding before results.md is called final, and worth five more seeds before quoting any single M2 number as representative — not yet done.
 - **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
-- **Rule 243(8)(e) misapplied as D1's valuation method** — the second defect the Rule 206 fix surfaced in the same spot (Block D). Ground truth expects Rule 57's lacuna instead. Not fixed tonight.
+- **D1's arm-C results table row still cites the pre-D54 record** (`D1_pipeline.json`, Rule 206 defect) — a final re-score against `D1_v3_pipeline.json` (both fixes) has not been folded into the headline table yet. Three D1 records now exist (original defect, Rule 206 fix, Rule 206 + Rule 243 fix); the table should show what changed at each step, not silently swap to the latest.
 - **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.
 - `node3_valuation.py` generalized for C3, C4 (D47/D51 — C1, C2, C5 are done) — needs CoinDCX-style crypto market data (candle + USDC/USDT peg) for 23 June and 18 June respectively, not SBI data (corrected above)
 - M5's contract gap — see `README.md`'s Honest Limitations

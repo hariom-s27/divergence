@@ -1,0 +1,36 @@
+{
+  "attacked": [
+    {
+      "target": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date the virtual digital asset is received. No deduction obligation arises under s.393(1) as the recipient is outside India. Under s.439(8), the taxpayer must disclose all material facts to substantiate the explanation offered.",
+      "checklist_item": 2,
+      "attack": "Section 115BBH specifically deals with the taxation of income from the transfer of virtual digital assets, but it does not address the recognition date of such income. Additionally, s.393(1) applies to payments made to residents, not non-residents. Therefore, the conclusion that no deduction obligation arises under s.393(1) because the recipient is outside India is incorrect, as s.393(1) does not apply to non-residents in the first place.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025; Section 393(1), Table Sl. No. 8(vi), Income-tax Act, 2025"
+    },
+    {
+      "target": "The supply of services meets some conditions for export but fails the condition regarding the receipt of payment in convertible foreign exchange or Indian rupees.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the missing compliance with FEMA regulations regarding the export of services and declaration of material particulars for payment for services. Without these documents, the conclusion about the failure to meet the payment condition is not supported.",
+      "survived": false,
+      "downgraded_to": null,
+      "evidence": "Sections 3 and 7, Foreign Exchange Management Act, 1999"
+    }
+  ],
+  "checked_and_survived": [
+    "No provision in the text provided prescribes a specific method for determining the rupee value of a virtual digital asset on the valuation date. The closest relevant provision, Rule 243(8)(e), applies to reporting crypto-asset service providers, not individual taxpayers."
+  ],
+  "limits": [
+    "Could not check the operative status of Rule 206 and Rule 207(1) for the tax year FY 2026-27 due to lack of information on their current applicability.",
+    "node 5 proposed an upward revision on an attack (was 'insufficient_evidence', proposed downgraded_to='insufficient_evidence'); rejected in code, attack text kept, downgraded_to dropped. target: 'The supply of services meets some conditions for export but fails the condition regarding the receipt of payment in convertible foreign exchange or Indian rupees.'"
+  ],
+  "_meta": {
+    "node": "node5_adversarial",
+    "generated_at": "2026-08-20T18:55:53.234641+00:00",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "calls": 1,
+    "in_tokens": 13809,
+    "out_tokens": 615,
+    "retries": 0
+  }
+}
