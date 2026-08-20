@@ -1,0 +1,245 @@
+{
+  "arm": "A",
+  "case": "D1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "2026-114",
+    "generated_at": "2026-09-01T12:00:00Z",
+    "corpus_frozen_at": "2026-09-01T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-114",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-114"
+      },
+      "invoice_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-28"
+      },
+      "supplier": {
+        "value": "Resident individual, freelance service provider, India.",
+        "confidence": "certain",
+        "source_span": "Supplier: Resident individual, freelance service provider, India."
+      },
+      "recipient": {
+        "value": "Northbay Systems LLC, outside India.",
+        "confidence": "certain",
+        "source_span": "Recipient: Northbay Systems LLC, outside India."
+      },
+      "line_item_description": {
+        "value": "Professional / consulting services rendered.",
+        "confidence": "certain",
+        "source_span": "Line item: Professional / consulting services rendered."
+      },
+      "invoice_value_usdc": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "Invoice value: 5,000 USDC."
+      },
+      "invoice_value_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Invoice raised in USD equivalent terms: USD 4,000."
+      },
+      "payment_received_usdc": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST."
+      },
+      "payment_received_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST."
+      },
+      "payment_received_time": {
+        "value": "03:14 IST",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST."
+      },
+      "counterparty_verification_status": {
+        "value": "Not verified",
+        "confidence": "certain",
+        "source_span": "Northbay Systems LLC's business identity has NOT been independently verified. No registration or KYC check has been performed against this name."
+      }
+    },
+    "missing": [
+      {
+        "item": "Counterparty verification documentation",
+        "why_absent": "Not provided by the taxpayer",
+        "blocks": [
+          "fema",
+          "income_tax"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Proof of USDC valuation at the time of receipt",
+        "why_absent": "Not provided by the taxpayer",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR)",
+          "rate": 94.0,
+          "inr_value": 470000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-09-01",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Third-party aggregator",
+          "rate": 94.1,
+          "inr_value": 470500,
+          "observability": "L2",
+          "source": {
+            "name": "CoinGecko",
+            "retrieved": "2026-09-01",
+            "tier": "reported"
+          },
+          "mandated_by": "ITR2026-RCASP-VALUATION(ii)(B)",
+          "date_used": "2026-06-28"
+        }
+      ],
+      "spread": {
+        "inr": 500,
+        "percent": 0.1064,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR)",
+          "Third-party aggregator"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Variation in TTBR and third-party aggregator rates",
+          "inr": 500,
+          "explanation": "The difference between the TTBR and the third-party aggregator rates is minimal but exists."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income of INR 470,500 (using the third-party aggregator rate) is taxable under the head 'Profits and gains of business or profession'.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Counterparty verification documentation"
+        ]
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services is exempt from GST as it qualifies as an export of services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of USDC in a self-custody wallet without an authorized person's involvement violates FEMA regulations.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3(a)(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Counterparty verification documentation"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of USDC to INR is based on the TTBR and third-party aggregator rates, with the third-party aggregator rate being slightly higher.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RCASP-VALUATION(ii)(B)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Proof of USDC valuation at the time of receipt"
+        ]
+      }
+    ],
+    "limits": [
+      "The valuation of USDC to INR is based on the best available data, but the actual rate at the time of receipt may differ slightly.",
+      "The counterparty verification status is unknown, which may affect compliance with FEMA and income tax regulations."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T16:51:05.224756+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_D1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7609,
+          "out_tokens": 1579,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7609,
+      "total_out_tokens": 1579,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

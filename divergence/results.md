@@ -155,9 +155,30 @@ D47 disclosed that every non-D1 record's `valuation` block was silently D1's own
 
 ---
 
+## Block E2, 21 August: three seeds on D1, the first runs at real temperature
+
+D52 (above) found that every run through Block E1 was actually still at temperature 0, despite the fix existing in code since earlier tonight. `$env:DIVERGENCE_TEMPERATURE = "default"` set explicitly and verified against the first run's own `_meta.llm.temperature` field before trusting the rest. Three seeds (`DIVERGENCE_SEED` 1/2/3, an explicit, reproducible seed each time, not an unlabelled random draw), all three arms, D1 only, saved separately in `runs/21aug/` (arm C) and `runs/21aug/seed{1,2,3}/` (arms A/B).
+
+| Metric | Arm A spread | Arm B spread | Arm C spread |
+|---|---|---|---|
+| M1 extraction | 0.0%–0.0% | 0.0%–0.0% | **100.0%–100.0%** |
+| M2 gap recall | 0.0%–50.0% | 25.0%–75.0% | 0.0%–75.0% |
+| M2 gap precision | 0.0%–100.0% | 33.3%–100.0% | 0.0%–100.0% |
+| M3 citation valid | 20.0%–50.0% | 20.0%–50.0% | **100.0%–100.0%** |
+
+**Arm C's M1 and M3 are stable across all three seeds — 100.0% every time, no spread at all.** That is a real result now, not an artifact of measuring the same deterministic draw three times: this is the first point in the project where "stable" and "measured at temperature 0" are no longer the same claim. Arms A and B's M1 stayed at 0.0% on every seed too, for the reason already established (the field-name contract lives in `01-extract.md` only) — consistent across seeds, not a coincidence of one draw.
+
+**M2 (gap recall) swings hard on every arm, including C — 0% to 75% on arm C alone across three seeds of the same case.** This is the most honest number in this section: the gap detector's output is genuinely unstable under real sampling variance, on the headline case, even with everything else about the pipeline held fixed. Not investigated further tonight; flagged here rather than averaged away.
+
+**Arm A produced one schema-invalid record out of three seeds** (seed 2) — a real baseline failure rate, 1/3, consistent with `run_arms.py`'s own standing framing that a baseline unable to hold the output contract is itself a finding, not noise to discard.
+
+You can trust that this table reflects real variance, specifically because D52 is written down first — a temperature bug found, disclosed, and only then relied on, in that order.
+
+---
+
 ## Still open before this table is the final one
 
-- Three seeds on D1, all arms (Step 4) — only possible now that temperature is `default`, not `0`
+- **M2's real instability under temperature** (Block E2) — 0%–75% recall spread on arm C across three seeds of D1 alone. Worth understanding before results.md is called final; not yet investigated.
 - **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
 - **The real defect node 5 found in D1's own record (D50)** — Rule 206's "last day of the tax year" row misapplied to a receipt-date valuation. Not yet fixed in `node_resolver.py`'s prompt; D1's published record still carries it, disclosed rather than quietly patched.
 - **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.

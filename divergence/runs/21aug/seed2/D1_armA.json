@@ -1,0 +1,264 @@
+{
+  "arm": "A",
+  "case": "D1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": false,
+  "schema_error": "'valuation_method' is not one of ['income_tax', 'gst', 'fema', 'valuation']",
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "case_2026-114",
+    "generated_at": "2023-10-06T12:00:00Z",
+    "corpus_frozen_at": "2023-10-06T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-114",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-114"
+      },
+      "invoice_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-28"
+      },
+      "supplier_name": {
+        "value": "Resident individual, freelance service provider, India",
+        "confidence": "certain",
+        "source_span": "Supplier: Resident individual, freelance service provider, India"
+      },
+      "recipient_name": {
+        "value": "Northbay Systems LLC, outside India",
+        "confidence": "certain",
+        "source_span": "Recipient: Northbay Systems LLC, outside India"
+      },
+      "line_item_description": {
+        "value": "Professional / consulting services rendered",
+        "confidence": "certain",
+        "source_span": "Line item: Professional / consulting services rendered"
+      },
+      "invoice_value_usdc": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "Invoice value: 5,000 USDC"
+      },
+      "invoice_value_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Invoice raised in USD equivalent terms: USD 4,000"
+      },
+      "payment_received_usdc": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received"
+      },
+      "payment_received_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Payment received on 28 June 2026"
+      },
+      "payment_received_time": {
+        "value": "03:14 IST",
+        "confidence": "certain",
+        "source_span": "at 03:14 IST"
+      },
+      "payment_received_utc": {
+        "value": "2026-06-27T21:44:00Z",
+        "confidence": "certain",
+        "source_span": "(2026-06-27T21:44:00Z UTC)"
+      },
+      "payment_received_wallet_type": {
+        "value": "self-custody wallet",
+        "confidence": "certain",
+        "source_span": "to the supplier's self-custody wallet"
+      },
+      "counterparty_verification_status": {
+        "value": "NOT verified",
+        "confidence": "certain",
+        "source_span": "Northbay Systems LLC's business identity has NOT been independently verified"
+      }
+    },
+    "missing": [
+      {
+        "item": "KYC documentation for Northbay Systems LLC",
+        "why_absent": "Counterparty verification not performed",
+        "blocks": [
+          "fema",
+          "income_tax"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Form 167 (if applicable)",
+        "why_absent": "Not provided in the case details",
+        "blocks": [
+          "valuation_method"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 470000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2023-10-06",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(2)(b)(i)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 469750,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2023-10-06",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(2)(b)(i)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 250,
+        "percent": 0.053,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TTBR) on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "No TTBR published on 2026-06-28",
+          "inr": 250,
+          "explanation": "The TTBR for the actual payment date (2026-06-28) is not available, so the nearest published rates are used."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income from the receipt of 5,000 USDC is taxable as professional services income.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-2-47A(d)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "income_tax_on_transfer",
+        "outcome": "The payment of 5,000 USDC does not constitute a transfer of a virtual digital asset, hence not subject to the special 30% tax rate under Section 115BBH.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-115BBH(1)(a)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of professional services to a foreign recipient is exempt from GST as it qualifies as an export of services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "Receiving payment in USDC from a foreign entity without an authorized person's involvement may violate FEMA regulations.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "FEMA-3(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "KYC documentation for Northbay Systems LLC"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of the USDC payment is based on the TTBR on the last published date before the payment date, which is 2026-06-25.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(2)(b)(i)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Form 167 (if applicable)"
+        ]
+      }
+    ],
+    "limits": [
+      "The valuation method used is based on the nearest published TTBR, as no rate exists for the exact payment date. This introduces a small uncertainty in the INR value of the receipt."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T16:49:07.279963+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_D1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7609,
+          "out_tokens": 1776,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7609,
+      "total_out_tokens": 1776,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}
