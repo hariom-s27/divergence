@@ -77,3 +77,15 @@ Not a log. The raw one is `step22drop/iteration-log.md` — read that for detail
 ---
 
 We built a system to detect confident statements resting on ground that has moved. It caught us seven times. Then we read the gazette, and it caught the drafter.
+
+---
+
+**Postscript, 21 August, later the same day — kept as an addition, not a
+rewrite, same convention as `step22drop/risks.md`'s own update note.** Item
+7's count of three grew to five before the night was over: a fourth
+instance (s.393(1), payer/recipient inverted) and a fifth (s.393(1) again,
+a different wrong escape hatch, found by node 5 on the record meant to
+freeze) — both in `DECISION-D55.md` and `results.md`'s Block F. The pattern
+item 7 names held up under two more tests than it had when this was
+written, which is a stronger claim than the original, not a correction of
+it.
