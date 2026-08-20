@@ -222,6 +222,25 @@ You can trust that this table reflects real variance, specifically because D52 i
 
 ---
 
+## Where we lose
+
+Every finding below is already documented elsewhere in this file or in a decision doc. Collected here, in one place, because a reader should not have to hunt through the night's chronology to find out where the pipeline is actually worse than the alternative, or wrong outright. Nothing here is softened and nothing carries a mitigating clause.
+
+- **Arm A beat arm C on gap recall on D1, in the 20-Aug table.** 75.0% versus 25.0%. The naive baseline, with no scaffolding at all, found more of the real gaps than the full pipeline did on the headline case.
+- **Arm C scores 0.0% gap recall on C3, C4, and C5 in the 21-Aug table** — three of six cases where the structured pipeline found none of the gaps ground truth expects. This is the same node (🤖 2) credited elsewhere with genuine successes; on these three cases it found nothing.
+- **Gap detection is measurably unstable, not just imprecise.** Three seeds of the identical D1 case, same code, same input, same everything except sampling: 50%, 75%, 0% recall. No single number from that spread is quotable as "the" result — see Block E2.
+- **The adversarial node missed a planted defect outright.** D1-b's planted misapplication of Rule 57 row 7 was sitting verbatim in the text node 5 was given, and none of its five attacks on that variant mentioned it.
+- **The adversarial node attacks almost everything it sees.** `checked_and_survived` was non-empty in 2 of 7 runs tonight — every other run attacked every conclusion it was given. That is very likely the same reason D1-b's specific defect was missed: several generic attacks were available and easier to reissue than reading for the one planted sentence.
+- **The adversarial node has also emitted incoherent output and mislabeled an upgrade as a downgrade**, twice, on real runs — not a hypothetical edge case exercised only in testing. The downgrade bug is now fixed and guarded in code (D54); the incoherent-attack-text failure mode is not.
+- **Two of six cases (C3, C4) still carry a valuation block belonging to a different case (D1's), not their own.** We refused to fabricate the missing rate/market data rather than paper over it, which is the right call and also means the gap is still open, not resolved.
+- **M5 (false abstention) has never been scoreable, on any run, and the scorer was silently returning a false "0.0%, perfect" for it until that bug was caught and fixed (D48).** No arm has ever been asked to produce the data this metric needs.
+- **We amended our own pre-registered schema nine-plus times after our own freeze commit.** Every one is disclosed, none touches ground truth, and that is exactly the sentence a hostile judge is entitled to ask us to say without prompting.
+- **The same class of legal-reasoning error — a real, current, correctly-quoted provision applied outside its own scope — happened three separate times in this project's own resolver output**, caught by a human once and by our own adversarial node twice, invisible to every accuracy metric all three times.
+
+None of this is offered as a caveat on the numbers above — it is the other half of them. A results table with only wins in it would be the least trustworthy thing in this repository, on a project whose entire argument is that a confident number resting on ground that quietly moved is worse than an honest range.
+
+---
+
 ## Still open before this table is the final one
 
 - **M2's real instability under temperature** (Block E2) — arm C's three seeds on D1 alone: 50%, 75%, 0% gap recall. Worth understanding before results.md is called final, and worth five more seeds before quoting any single M2 number as representative — not yet done.
