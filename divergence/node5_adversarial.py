@@ -93,6 +93,17 @@ def _validate_attack_shape(parsed, raw):
         raise LLMError(f"{NODE_NAME}: model output has no top-level 'attacked' array\n{raw}")
     if "checked_and_survived" not in parsed or not isinstance(parsed["checked_and_survived"], list):
         raise LLMError(f"{NODE_NAME}: model output has no top-level 'checked_and_survived' array\n{raw}")
+    # Format normalization, not a content decision: the model sometimes emits
+    # "" where the schema wants the field left out entirely (no downgrade
+    # proposed -- schema.json's downgraded_to $refs the certainty enum,
+    # which has no null member, so "no downgrade" must be an ABSENT key, not
+    # a null value) or an empty placeholder string in checked_and_survived.
+    # Both carry zero information either way -- treat them as absent rather
+    # than hard-failing the whole run on whitespace. Found live, seed 1 of
+    # the final D1 cycle, 21 Aug -- first as a raw '' from the model, then
+    # again as a schema-invalid null once _reject_upward_revisions started
+    # setting the field to None instead of deleting it.
+    parsed["checked_and_survived"] = [s for s in parsed["checked_and_survived"] if isinstance(s, str) and s.strip()]
     bad = []
     for i, a in enumerate(parsed["attacked"]):
         if not isinstance(a, dict):
@@ -104,8 +115,11 @@ def _validate_attack_shape(parsed, raw):
         if not isinstance(a.get("survived"), bool):
             bad.append((i, f"survived={a.get('survived')!r} is not a boolean")); continue
         dg = a.get("downgraded_to")
+        if dg is not None and (not isinstance(dg, str) or not dg.strip()):
+            a.pop("downgraded_to", None)
+            dg = None
         if dg is not None and dg not in VALID_CERTAINTY:
-            bad.append((i, f"downgraded_to={dg!r} not in {sorted(VALID_CERTAINTY)} or null")); continue
+            bad.append((i, f"downgraded_to={dg!r} not in {sorted(VALID_CERTAINTY)} or absent")); continue
     if bad:
         raise LLMError(f"{NODE_NAME}: attacked[] contains {len(bad)} malformed entr(y/ies): {bad}\nRaw:\n{raw}")
 
@@ -182,7 +196,7 @@ def _reject_upward_revisions(attacked, regimes):
         if _CERTAINTY_ORDER.index(dg) <= _CERTAINTY_ORDER.index(before):
             kind = "upward" if _CERTAINTY_ORDER.index(dg) < _CERTAINTY_ORDER.index(before) else "tie"
             rejected.append({"target": a.get("target"), "was": before, "proposed": dg, "kind": kind})
-            a["downgraded_to"] = None
+            a.pop("downgraded_to", None)  # schema: absent, not null -- see _validate_attack_shape
     return rejected
 
 

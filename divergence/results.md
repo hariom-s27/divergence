@@ -260,7 +260,105 @@ All three seeds' M1/M2/M3/M4 are reported below regardless of which one is
 selected — the selection rule picks the demo record, it does not hide the
 other two.
 
-<!-- FILLED IN AFTER THE RUNS, NOT BEFORE -->
+**Two more real bugs found and fixed while running the first seed, both in
+`node5_adversarial.py`, neither a legal-reasoning defect:** the model
+sometimes emits `downgraded_to: ""` instead of omitting the field, which
+`_validate_attack_shape` was rejecting outright — fixed to treat an empty
+string the same as absent, for both `attacked[].downgraded_to` and
+`checked_and_survived[]`. Separately, `_reject_upward_revisions` was setting
+a rejected `downgraded_to` to `None` — but `schema.json`'s own definition
+`$ref`s the certainty enum with no null member, so a rejection was producing
+a *schema-invalid* record purely from our own guard's side effect. Fixed to
+delete the key instead of nulling it. Both found live, both fixed before any
+seed was scored.
+
+**Seed 1 is schema-invalid** — `regimes[1].condition_met: null`, not one of
+`yes|no|unknown` (a node 3/4 output-shape slip, not a node 5 issue). Per the
+pre-registered rule, **seed 2 is the selected demo record** — schema-valid,
+`regimes[]` carries all three expected objects, `valuation_method` now cites
+**Rule 57** (not Rule 243), `certainty: lacuna`.
+
+| Seed | Schema | M1 | M2 recall | M3 valid | M4 methods |
+|---|---|---|---|---|---|
+| 1 | **INVALID** (`condition_met: null`) | 100.0% | 50.0% | 100.0% | 12/12 |
+| **2 (selected)** | VALID | 100.0% | 50.0% | 100.0% | 12/12 |
+| 3 | VALID | 100.0% | 25.0% | 100.0% | 12/12 |
+
+All three M1=100%/M3=100%/M4=12/12 — the 45.5%/0.0% figures the pre-`Block F`
+`D1_v3_pipeline.json` record scored are not reproduced here. We do not have a
+root cause for that single low draw beyond ordinary sampling variance already
+documented in Block E2 (M1 was never that unstable across those three seeds
+either) — flagged, not chased, per the hard-stop below.
+
+**Node 5 ran against the selected record** (`D1_final_seed2_attack.json`):
+4 attacks, 2 landed, 2 survived, no rejections needed from the downgrade
+guard. One of the two landed attacks is a **fourth independent catch of the
+identical scope-reach failure**, on a claim this same fix cycle introduced
+minutes earlier: seed 2's `income_tax_on_receipt` reasoning says *"no
+deduction obligation arises under s.393(1)... because the recipient is a
+resident and the payer is outside India"* — an exemption for a foreign payer
+that is not stated anywhere in the s.393(1) text the model was given. Node
+5's attack: *"the condition that no deduction obligation arises because the
+payer is outside India is not supported by the text of s.393(1)... the
+conclusion... is incorrect."* Found independently, matches a read of
+`corpus/verbatim/IT-393-1-T8vi.md` done before this attack ran. **Per the
+hard-stop rule below, this is disclosed here and in `limits[]`'s equivalent
+narrative, not fixed with a sixth prompt edit** — the S.393(1) SCOPE GATE
+already added this cycle correctly stopped the *first* version of this error
+(inverting who "outside India" refers to); the model found a second escape
+hatch not addressed by that same edit. One generalized gate closed one
+failure mode, not the whole space of ways to reach the same wrong outcome.
+
+The other landed attack repeats Rule 57 row 7's own "catch-all" objection
+(risks.md's ⭐ strongest-attack-on-the-project row) — expected, already
+answered there. A third attack, on the `place_of_supply` GST condition,
+is the incoherent-attack-text failure mode already disclosed in "Where we
+lose," not a new instance of anything.
+
+**Correction to the plan this Block executes:** the instruction that started
+this cycle asserted D1's frozen `citations_expected[]` "lists Rule 56 and
+Rule 57" and separately "does not list Rule 243," and that ground truth
+"expects s.393(1) Table Sl. No. 8(vi) cited." Checked directly against
+`step21drop/cases/D1/ground_truth.json` before writing any claim about it
+into this file: **`citations_expected` is `[]` — empty, never filled in**,
+with its own note reading *"Fill from architecture.md scoping."* No citation
+match-to-ground-truth claim is made anywhere in this Block for that reason;
+M3 (citation validity) measures only that a citation is real, current and
+correctly quoted, not that it matches a pre-registered expected set, for D1
+specifically. Said here rather than silently repeating the plan's claim.
+
+### The hard-stop, applied
+
+Four confirmed instances of the identical failure now exist, not three: Rule
+57 row 7, Rule 206 row 3, Rule 243(8)(e), and s.393(1)'s payer/recipient
+inversion (the fourth, fixed this Block) — and a **fifth**, the "foreign
+payer exemption" version of the s.393(1) error just above, found by node 5
+in the same run that was meant to freeze the record, after the fix that was
+supposed to close this class of error. That fifth instance is the one this
+Block does **not** chase. The instruction that opened this cycle said
+plainly that each previous fix had produced a new error and that this
+would keep happening "because it is a property of the problem, not of your
+code," and set the rule in advance: after this cycle, whatever remains is
+disclosed, not fixed. `D1_final_seed2.json` and its attack file are frozen
+as the demo record on that basis — not because the fifth finding is minor,
+but because the alternative is an unbounded sixth, seventh, eighth cycle,
+each one likely to surface its own next finding, three days before
+submission.
+
+**`output-interface.html` regenerated from `D1_final_seed2.json`** — three
+regime rows, a "No rule found" chip on the `valuation_method` row next to
+the twelve-method / Rs 47,868.76 range in section 02, citation on that row
+reads Rule 57, no `Rule 243` anywhere on the rendered page (checked by
+substring), no replacement character anywhere in the file (checked at the
+byte level, not by eye). `demo-C1.html` regenerated from the existing
+`C1_pipeline.json` alongside it, unchanged content, for the video's
+one-figure/twelve-figure contrast.
+
+**Frozen.** Any finding raised against `D1_final_seed2.json` from this point
+is disclosed in `limits[]` and here, not repaired. We stop three days before
+submission, deliberately, because every fix cycle this project has run has
+surfaced a new error, and we would rather publish a known, honestly-labelled
+state than an unexamined one.
 
 ## Where we lose
 
@@ -270,12 +368,13 @@ Every finding below is already documented elsewhere in this file or in a decisio
 - **Arm C scores 0.0% gap recall on C3, C4, and C5 in the 21-Aug table** — three of six cases where the structured pipeline found none of the gaps ground truth expects. This is the same node (🤖 2) credited elsewhere with genuine successes; on these three cases it found nothing.
 - **Gap detection is measurably unstable, not just imprecise.** Three seeds of the identical D1 case, same code, same input, same everything except sampling: 50%, 75%, 0% recall. No single number from that spread is quotable as "the" result — see Block E2.
 - **The adversarial node missed a planted defect outright.** D1-b's planted misapplication of Rule 57 row 7 was sitting verbatim in the text node 5 was given, and none of its five attacks on that variant mentioned it.
-- **The adversarial node attacks almost everything it sees.** `checked_and_survived` was non-empty in 2 of 7 runs tonight — every other run attacked every conclusion it was given. That is very likely the same reason D1-b's specific defect was missed: several generic attacks were available and easier to reissue than reading for the one planted sentence.
+- **The adversarial node attacks almost everything it sees.** `checked_and_survived` was non-empty in 3 of 8 runs across the night (Block F's seed 2 run added a third, 2 of 4 conclusions surviving) — every other run attacked every conclusion it was given. That is very likely the same reason D1-b's specific defect was missed: several generic attacks were available and easier to reissue than reading for the one planted sentence.
 - **The adversarial node has also emitted incoherent output and mislabeled an upgrade as a downgrade**, twice, on real runs — not a hypothetical edge case exercised only in testing. The downgrade bug is now fixed and guarded in code (D54); the incoherent-attack-text failure mode is not.
 - **Two of six cases (C3, C4) still carry a valuation block belonging to a different case (D1's), not their own.** We refused to fabricate the missing rate/market data rather than paper over it, which is the right call and also means the gap is still open, not resolved.
 - **M5 (false abstention) has never been scoreable, on any run, and the scorer was silently returning a false "0.0%, perfect" for it until that bug was caught and fixed (D48).** No arm has ever been asked to produce the data this metric needs.
 - **We amended our own pre-registered schema nine-plus times after our own freeze commit.** Every one is disclosed, none touches ground truth, and that is exactly the sentence a hostile judge is entitled to ask us to say without prompting.
-- **The same class of legal-reasoning error — a real, current, correctly-quoted provision applied outside its own scope — happened three separate times in this project's own resolver output**, caught by a human once and by our own adversarial node twice, invisible to every accuracy metric all three times.
+- **The same class of legal-reasoning error — a real, current, correctly-quoted provision applied outside its own scope — happened five separate times in this project's own resolver output**, caught by a human twice and by our own adversarial node three times, invisible to every accuracy metric every time: Rule 57 row 7 (s.92), Rule 206 row 3 (VDA), Rule 243(8)(e) (RCASP, not taxpayer), s.393(1) (recipient/payer inverted), and — found in the same run meant to freeze the record, after the fix for the fourth — a second, different s.393(1) error asserting a foreign-payer exemption the statute's text does not state. The fifth is disclosed, not fixed; see Block F's hard-stop.
+- **`D1_final_seed2.json`, the frozen demo record, still asserts an unsupported s.393(1) exemption** ("no deduction obligation... as... the payer is outside India") that our own adversarial node attacked and that a direct read of `corpus/verbatim/IT-393-1-T8vi.md` does not support. Frozen anyway, per the pre-registered selection rule and the hard-stop — see Block F.
 
 None of this is offered as a caveat on the numbers above — it is the other half of them. A results table with only wins in it would be the least trustworthy thing in this repository, on a project whose entire argument is that a confident number resting on ground that quietly moved is worse than an honest range.
 
@@ -285,8 +384,9 @@ None of this is offered as a caveat on the numbers above — it is the other hal
 
 - **M2's real instability under temperature** (Block E2) — arm C's three seeds on D1 alone: 50%, 75%, 0% gap recall. Worth understanding before results.md is called final, and worth five more seeds before quoting any single M2 number as representative — not yet done.
 - **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
-- **D1's arm-C results table row still cites the pre-D54 record** (`D1_pipeline.json`, Rule 206 defect) — a final re-score against `D1_v3_pipeline.json` (both fixes) has not been folded into the headline table yet. Three D1 records now exist (original defect, Rule 206 fix, Rule 206 + Rule 243 fix); the table should show what changed at each step, not silently swap to the latest.
-- **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.
+- **RESOLVED — D1's demo record is frozen at `D1_final_seed2.json`** (Block F). Four D1 records now exist in sequence (original Rule 206 defect, Rule 206 fix / Rule 243 defect, both fixed / s.393(1) defect, and the frozen record); the unsupported foreign-payer reading of s.393(1) in the frozen record is disclosed above, in "Where we lose," and in `limits[]`, not fixed further.
+- **Node 5's calibration** (D50) — attacks nearly every conclusion it sees; `checked_and_survived` non-empty in 3 of 8 runs, not never (corrected — see "Where we lose"). Worth investigating before the node's output is used for anything beyond disclosure.
 - `node3_valuation.py` generalized for C3, C4 (D47/D51 — C1, C2, C5 are done) — needs CoinDCX-style crypto market data (candle + USDC/USDT peg) for 23 June and 18 June respectively, not SBI data (corrected above)
+- **The frozen D1 record's s.393(1) foreign-payer claim** (Block F) — caught by node 5, not fixed, per the hard-stop. If there is a further fix cycle before submission, this is the first item on it.
 - M5's contract gap — see `README.md`'s Honest Limitations
 - Prior-art check (Block C) — both done: OBJ-1 (does software already solve this), see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND (do real people hit this), see [`prior-art/DEMAND.md`](prior-art/DEMAND.md) — a real person hitting D1's exact fact pattern (SBI TT rate not published for the settlement date) found independently on a public forum

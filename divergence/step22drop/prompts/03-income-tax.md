@@ -159,6 +159,21 @@ d) TDS — does any deduction obligation arise? Read the table headings.
    obligation the section actually creates before writing the outcome
    sentence.
 
+   TABLE Sl. No. 8(vi) HAS ITS OWN SCOPE, TOO — do not stop at "a virtual
+   digital asset is involved somewhere in these facts." Its own wording is
+   "any sum by way of consideration for TRANSFER OF a virtual digital
+   asset" — a payment made TO ACQUIRE a VDA from someone. A payment made
+   FOR SERVICES, where a VDA merely happens to be the settlement currency,
+   is a different transaction: nobody is transferring the VDA TO the payer
+   in exchange for that sum. State explicitly, in `reasoning`, which of the
+   two this receipt actually is before citing 8(vi) either way — do not
+   apply it just because a VDA appears in the facts, and do not rule it out
+   just because the facts also describe a services engagement. If the text
+   you were given does not itself settle which reading governs a
+   VDA-as-payment-for-services receipt, say that plainly rather than
+   picking one silently; this is a second, independent scope question from
+   the payer/recipient one above, and both must be checked, not just one.
+
 e) PENALTY POSITION — what does s.439(8) require of a disclosed position?
 
 ────────────────────────────────────────────────────────────────────────

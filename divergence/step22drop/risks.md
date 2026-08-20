@@ -34,6 +34,8 @@
 | **`citation_matcher.py` resolves a bare "Section 2(111)" (no Act name) against the wrong file, FEMA-2n.md** | Logged, unfixed (found live, D46). Ground truth uses the fully-qualified form everywhere to avoid it — the matcher's own gap is not what any scored record depends on | ⚠️ **unfixed, worked around** |
 | **Node 5 attacks nearly every conclusion instead of discriminating** | `checked_and_survived` non-empty exactly once across seven runs. Reported in D50 and results.md's losses section. Node 5's output used for disclosure only — never to auto-revise a certainty | 🔴 **known, disclosed** |
 | **Node 5 proposes an upward revision labelled as a downgrade** | `node5_adversarial.py`'s `_reject_upward_revisions` rejects it deterministically — dropped, recorded in `limits[]`. Tested on two independent real examples (D54) | ✅ fixed and tested |
+| **Node 5 emits `downgraded_to: ""` instead of omitting it; our own rejection guard was nulling instead of deleting the field** | Both normalized/fixed in code — `schema.json`'s `downgraded_to` has no null member, so either bug alone produced schema-invalid output (D55) | ✅ fixed |
+| **Same scope-reach failure recurs a fourth and fifth time (s.393(1), two different readings)** | Fourth fixed with an S.393(1) SCOPE GATE (D55). Fifth (a foreign-payer exemption not in the text) caught by node 5 on the record meant to freeze — disclosed in `results.md`, not fixed, per the hard-stop | 🟡 **known, disclosed, frozen anyway** |
 
 ---
 
