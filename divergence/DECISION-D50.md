@@ -123,3 +123,33 @@ works" headline.
 > of those findings at the same weight, because the node's whole premise is
 > publishing the attack instead of hiding it, and that has to apply to
 > attacks on the node itself."
+
+---
+
+## Addendum — the Rule 206 defect fixed and re-run, same night
+
+Fixed in `03-income-tax.md` (a "RULE 206/207 GATE" instruction: check
+either rule's own "foreign currency" scope gate before citing it, since a
+VDA is defined elsewhere as not foreign currency and neither rule reaches
+it — confirmed against `cases/D1/ground_truth.json`'s frozen
+`citations_expected[]`, which never lists Rule 206/207 for D1 at all).
+
+Re-ran D1. `runs/21aug/D1_fixed_pipeline.json` is new; `runs/21aug/D1_pipeline.json`
+(the original, defect intact) was kept, not overwritten — both on record.
+Rule 206 is gone from the new run's reasoning entirely.
+
+**Ran node 5 against the fixed record and it immediately found a second,
+different, genuine defect in the same spot**: the new run cites
+`Rule 243(8)(e)` (crypto-asset *service provider* reporting requirements)
+as the receipt's valuation method. Node 5's attack — *"Rule 243 is part of
+the reporting requirements rule set meant for crypto asset providers. Fair
+Market Valuation clearly falls under Rule 57"* — is correct and matches
+ground truth's own expected answer (Rule 57 reaches no method here; the
+lacuna, `GAZETTE-FINDINGS.md` #1) more precisely than tonight's prompt fix
+does. Not fixed further tonight — one targeted fix per finding, reported
+honestly rather than iterated silently until the output looks clean.
+
+`checked_and_survived` was non-empty for the first time all night on this
+run (the GST conclusion survived unbroken) — one data point, not proof the
+calibration concern above is resolved, but the first time node 5 didn't
+attack literally everything it was given.

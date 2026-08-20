@@ -139,7 +139,15 @@ Four of six arm-B calls failed on the first attempt tonight with `Concurrency li
 
 `checked_and_survived` was empty in every one of the five node-5 runs tonight (the real D1 record plus all four variants) — every conclusion it was given, it attacked, every attack landed. `05-adversarial.md` names this exact pattern as a warning sign in its own text, written before any run existed: *"a checker that breaks everything is as useless as one that breaks nothing."* Read plainly: node 5 cannot yet tell a conclusion with a real defect apart from one that is merely, correctly, hedged (every D1-family conclusion here was already `insufficient_evidence` before node 5 ever saw it, forced there by `gap_enforcer.py`). This is the most likely explanation for D1-b's miss too — several generic attacks were available and easy to reissue instead. Not re-tuned tonight; doing so after seeing the miss would be adjusting the test to fit the result. Full reasoning in D50.
 
----
+### The Rule 206 defect, fixed and re-run — both records kept
+
+The defect above wasn't left as a disclosed footnote. `03-income-tax.md` gained an explicit instruction (the "RULE 206/207 GATE"): before citing Rule 206 or 207 at all, check their own opening words — both are scoped to income "in foreign currency," and a VDA is defined elsewhere as NOT foreign currency, so neither reaches a virtual-digital-asset receipt regardless of which row looks inviting. Cross-checked against `cases/D1/ground_truth.json`'s own frozen `citations_expected[]`: Rule 206/207 were never in that list at all — the correct answer never cites them, which this fix now matches.
+
+Re-ran D1 with the fixed prompt. **`runs/21aug/D1_fixed_pipeline.json` is new; `runs/21aug/D1_pipeline.json` (the original, defect and all) is kept, not overwritten** — both before and after are on record. Result: Rule 206 no longer appears anywhere in the new record's `income_tax_on_receipt` reasoning or outcome. The specific defect node 5 found is gone.
+
+**It surfaced a second, different, genuine defect in the same spot.** The fixed run now cites `Rule 243(8)(e)` (the RCASP reporting waterfall) as the valuation method instead. Ran node 5 against the new record: it landed on this too — *"Rule 243(8)(e) is incorrectly referenced because Rule 243 is part of the reporting requirements rule set meant for crypto asset providers. Fair Market Valuation clearly falls under Rule 57."* That is correct, and matches ground truth's own expected answer (Rule 57's seven rows reach no method for this receipt — the lacuna, `GAZETTE-FINDINGS.md` #1) more precisely than the prompt fix does yet. **Not fixed further tonight** — one targeted fix per finding, reported honestly rather than iterated until the record looks clean.
+
+**`checked_and_survived` was non-empty for the first time all night** on this run — one conclusion (the GST export finding) survived node 5's attack unbroken. Read together with D50's calibration concern: still not proof node 5 discriminates reliably, but the first single data point where it didn't attack literally everything it saw.
 
 ## Block E1, 21 August: C5 gets its own real valuation, C1 gets the false-abstention proof
 
@@ -182,7 +190,7 @@ You can trust that this table reflects real variance, specifically because D52 i
 
 - **M2's real instability under temperature** (Block E2) — arm C's three seeds on D1 alone: 50%, 75%, 0% gap recall. Worth understanding before results.md is called final, and worth five more seeds before quoting any single M2 number as representative — not yet done.
 - **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
-- **The real defect node 5 found in D1's own record (D50)** — Rule 206's "last day of the tax year" row misapplied to a receipt-date valuation. Not yet fixed in `node_resolver.py`'s prompt; D1's published record still carries it, disclosed rather than quietly patched.
+- **Rule 243(8)(e) misapplied as D1's valuation method** — the second defect the Rule 206 fix surfaced in the same spot (Block D). Ground truth expects Rule 57's lacuna instead. Not fixed tonight.
 - **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.
 - `node3_valuation.py` generalized for C2, C3, C4 (D47/D51 — C1 and C5 are done) — needs SBI/FBIL sheet data for their specific dates that was never collected
 - M5's contract gap — see `README.md`'s Honest Limitations

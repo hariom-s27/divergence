@@ -1,0 +1,41 @@
+{
+  "attacked": [
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxable at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28), and the value is determined using the fair market value method as specified in Rule 243(8)(e). No TDS obligation arises under s.393(1) as the amount does not exceed the threshold. Under s.439(8), the taxpayer must disclose all material facts to substantiate the explanation offered.",
+      "checklist_item": 1,
+      "attack": "Rule 243(8)(e) is incorrectly referenced because Rule 243 is part of the reporting requirements rule set meant for crypto asset providers. Fair Market Valuation clearly falls under Rule 57 especially Sl. no.7",
+      "survived": false,
+      "downgraded_to": "open_texture",
+      "evidence": "Similarity of the rules being used (specifically, ambiguity propped up \u2013 which seems to be nothing but expansive interpretation of the passed laws referencing s.115BBH & its Section defining FMV). Further analysis implies minor differences and they hold importance since specific sl.)numbering:"
+    },
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxable at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28), and the value is determined using the fair market value method as specified in Rule 243(8)(e). No TDS obligation arises under s.393(1) as the amount does not exceed the threshold. Under s.439(8), the taxpayer must disclose all material facts to substantiate the explanation offered.",
+      "checklist_item": 3,
+      "attack": "Claim depends on unknown items like attaining declaration considerations from the Supplier entity blatantly missing from `missing` analysis itself \u2014 it involves key rate source related document configuration issues or lackthereoff quasi base requirements peripherally mentioned details.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "These basic fact inputs drive some considerations backside on the Crypto Regulations in India!"
+    },
+    {
+      "target": "Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to avoid penalties.",
+      "checklist_item": 2,
+      "attack": "This response touches cryptocurrency considerations overlapping many other fields defined under ITA, 1961 while much of implementory rulesets didn\u2019t touch these purviews just like above findings overlap simplification structures under priority ruling exemptions list wherein clear conclusions easily elucidated.",
+      "survived": false,
+      "downgraded_to": "settled",
+      "evidence": "demarcations within these documents convey adequate spotlight on important aspects showing how details are specific while noting different repeal ranges from auxiliary supplementary rulings asset management integrative patches exclude side placed sufficient partial deductions TBA solely involve core tax claim areas problems encapsulated."
+    }
+  ],
+  "checked_and_survived": [
+    "The supply meets all conditions for being an export of services"
+  ],
+  "limits": [],
+  "_meta": {
+    "node": "node5_adversarial",
+    "generated_at": "2026-08-20T17:50:15.880053+00:00",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "calls": 1,
+    "in_tokens": 13781,
+    "out_tokens": 829,
+    "retries": 0
+  }
+}

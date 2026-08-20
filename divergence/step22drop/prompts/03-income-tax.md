@@ -80,6 +80,23 @@ a) CLASSIFICATION — under what head is the receipt taxed, and when?
 b) RECOGNITION DATE — on what date is value determined?
    Rule 56 has a table. Find the row that applies.
 
+   RULE 206/207 GATE — CHECK THIS BEFORE CITING EITHER ONE. Rule 206's own
+   opening words scope it to income "in foreign currency" — read that
+   phrase before touching its table of specified dates. If s.2(47A) (or
+   whichever classification provision applies) has already established
+   that the asset in this receipt is a virtual digital asset, and a VDA
+   is defined elsewhere as NOT foreign currency, then Rule 206 (and Rule
+   207, which it borrows its rate definition from) does not reach this
+   receipt at all — not row 3, not any row. A rule with an inviting title
+   ("rate of exchange for conversion into rupees") sitting in the text you
+   were given is not itself evidence that it applies; its own opening
+   sentence is. Found live, 21 Aug: a real resolver output cited Rule 206
+   row 3's "last day of the tax year" (correctly transcribed FROM the
+   table) onto a VDA receipt Rule 206 was never scoped to reach in the
+   first place — the row was never the question; the gate was skipped.
+   Node 5 (adversarial) caught it; see DECISION-D50.md. Only cite Rule 206
+   for a receipt that is actually, verifiably, foreign currency.
+
 c) VALUATION METHOD — which provision prescribes how to determine the
    rupee value of this asset on that date?
    Work through Rule 57's table row by row, INCLUDING column B. Column B
@@ -173,6 +190,7 @@ in advance — see DECISION-D46.md.
 | **F3** stale / year-less citation | ~95% | rule 2, enforced by the matcher |
 | **F5** fabricated citation | ~20% | rule 1, enforced by the matcher |
 | **F1** silent rate selection | ~100% | rule 4 — the figure is not his to choose |
+| **scope-reach, real (not predicted)** — Rule 206 applied to a VDA it never scopes to | found live, 21 Aug, by node 5 | the Rule 206/207 gate under (b) |
 
 **Note what rule 1 does that an instruction cannot.** Telling a model "only cite
 what I gave you" is a request. String-matching every citation against the
