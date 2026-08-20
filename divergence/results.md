@@ -253,4 +253,4 @@ None of this is offered as a caveat on the numbers above — it is the other hal
 - **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.
 - `node3_valuation.py` generalized for C3, C4 (D47/D51 — C1, C2, C5 are done) — needs CoinDCX-style crypto market data (candle + USDC/USDT peg) for 23 June and 18 June respectively, not SBI data (corrected above)
 - M5's contract gap — see `README.md`'s Honest Limitations
-- Prior-art check (Block C) — OBJ-1 (does software already solve this) done, see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND evidence (do real people hit this) not yet done
+- Prior-art check (Block C) — both done: OBJ-1 (does software already solve this), see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND (do real people hit this), see [`prior-art/DEMAND.md`](prior-art/DEMAND.md) — a real person hitting D1's exact fact pattern (SBI TT rate not published for the settlement date) found independently on a public forum

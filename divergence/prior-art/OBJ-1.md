@@ -41,9 +41,16 @@ Checked: search results and the (apparently wrong / redirected) binocs.co
 domain, which resolved to an unrelated due-diligence company, not the crypto
 tax product. Could not reach Binocs' own help documentation directly in this
 pass. Reported here as **not verified**, not as "not disclosed" — those are
-different findings and should not be conflated. Worth a follow-up pass with
-direct access to their actual product docs before this is cited as a third
-confirmed case.
+different findings and should not be conflated.
+
+**Follow-up, 21 Aug, with Firecrawl's real API (not available for the first
+pass):** searched again specifically for Binocs' own methodology pages. The
+TechCrunch coverage of Binocs sits behind a Cloudflare challenge page
+Firecrawl's scrape could not pass; every other result was a general crypto-tax
+guide from an unrelated product, not Binocs' own documentation. Still
+**not verified either way** after two independent attempts with two different
+tools — reported as a genuine dead end for this method, not left open by
+omission.
 
 ### Koinly — DISCLOSED, the one exception
 Checked: `support.koinly.io`'s own article on how it sets market price
