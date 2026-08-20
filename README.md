@@ -181,7 +181,7 @@ python eval\m3b_citation_coverage.py --all runs\
 ```
 
 Full instructions: **[`HOW-TO-RUN.md`](divergence/HOW-TO-RUN.md)** ·
-key handling: **[`API-KEY-SETUP.md`](divergence/APIKEYSETUP.md)**
+key handling: **[`API-KEY-SETUP.md`](divergence/API-KEY-SETUP.md)**
 
 **Featherless only.** There is no automatic fallback to Anthropic, on purpose
 — see D44 below.
