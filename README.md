@@ -1,6 +1,6 @@
 # DIVERGENCE
 
-[![Python Package using Conda](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml)
+[![CI](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml)
 
 An AI can say "I don't know." It cannot say "the law does not decide one answer."
 
@@ -215,7 +215,9 @@ Everything that broke during this project, and what it actually cost us, is writ
 
 ## How this repository is laid out
 
-Everything inside `divergence/` is the actual hackathon submission. The files sitting at the root of the repository, from `step1.md` through `step-13-selection.md`, along with `COMPLETE-ROADMAP.md` and `STATE-OF-PLAY.md` and similar files, are the design process trail from before `divergence/` existed as its own folder. We kept them for the record, but they are not part of the actual submission.
+The repository is named `divergence`, and the actual hackathon submission lives inside a folder that is also named `divergence/`. Everything inside that folder, the code, the corpus of law, the prompts, the decisions, the results, is the real submission. Start there.
+
+`design-process/` holds the early design and research trail from before `divergence/` existed as its own folder. This includes the step by step planning documents (`step1.md` through `step-13-selection.md`), the roadmap and status files (`COMPLETE-ROADMAP.md`, `STATE-OF-PLAY.md`, `STEP-LOG.md`), and three early prototype scripts (`canonical_case.py`, `citation_matcher.py`, `killgate.py`) that were later rewritten and now live properly inside `divergence/`. We kept all of this for the record, since it shows the actual thinking behind the project, but none of it is part of the submission itself.
 
 `_archive/` is excluded from git tracking. It holds retired or duplicate files that `cleanup_repo.py` moved out of the way. Nothing was deleted, the files were just moved so they do not confuse anyone reading the live corpus.
 

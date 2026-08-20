@@ -1,6 +1,0 @@
-name: divergence
-dependencies:
-  - python=3.10
-  - pip
-  - pip:
-      - -r divergence/requirements.txt

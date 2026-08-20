@@ -182,6 +182,19 @@ a:focus-visible,summary:focus-visible,input:focus-visible,label:focus-visible{
     </ul>
   </section>
 
+  <!--
+    This whole mockup was built early, to show the SHAPE of the interface,
+    before node3_valuation.py existed. It shows 2 illustrative methods, not
+    the 12 the real valuation lattice now computes (see valuation.json and
+    architecture.md, node B). The rupee figures below are from that earlier
+    draft of the case and do not match the current, correct range
+    (Rs 4,69,750.00 to Rs 5,17,618.76, spread Rs 47,868.76, 10.19%). Kept as
+    a UI shape reference, not as live data -- this page is not wired to a
+    real record yet (see the Status table in README.md). Every stale figure
+    below carries an explicit stale-ok marker so gate0_check.py's staleness
+    scan reports it as known and accounted for, not silently missed.
+  -->
+
   <!-- 2. THE RANGE — signature element -->
   <section aria-labelledby="s2">
     <div class="sec-head"><span class="sec-n">02</span><h2 id="s2">What it was worth in rupees</h2></div>
@@ -196,16 +209,16 @@ a:focus-visible,summary:focus-visible,input:focus-visible,label:focus-visible{
         </div>
         <div class="method b">
           <span class="label">Method B · SBI rate — nothing mandates it</span>
-          <span class="amt">₹4,70,517</span>
+          <span class="amt">₹4,70,517</span> <!-- stale-ok: early mockup draft, see comment above -->
           <small>Dollar value × the SBI telegraphic transfer buying rate. Rule&nbsp;115 prescribes that rate for income in foreign currency — but the Act defines a digital asset as not being foreign currency, so nothing actually requires it.<br>Derived — SBI last published on Thursday 25 June and did not publish again until Monday 29 June.</small>
         </div>
       </div>
 
-      <div class="dim" role="img" aria-label="The two methods differ by 43,633 rupees, which is 8.7 percent.">
+      <div class="dim" role="img" aria-label="The two methods differ by 43,633 rupees, which is 8.7 percent."> <!-- stale-ok -->
         <div class="dim-line"></div>
-        <span class="dim-val">₹43,633 &nbsp;·&nbsp; 9.27%</span>
+        <span class="dim-val">₹43,633 &nbsp;·&nbsp; 9.27%</span> <!-- stale-ok -->
       </div>
-      <p class="gap-mobile">Difference: ₹43,633 · 9.27%</p>
+      <p class="gap-mobile">Difference: ₹43,633 · 9.27%</p> <!-- stale-ok -->
 
       <p class="gap-note">Of that difference, about ₹43,100 comes from the premium on dollars in the Indian market and ₹1,050 from the coin not sitting exactly at one dollar. A further ₹250 depends on whether you take SBI's last published rate before the payment (25 June, ₹94.00) or its next one after (29 June, ₹93.95). A further ₹5,500 depends on which price within 28 June you use — it opened at ₹102.83, ranged to ₹103.41 and down to ₹102.31. And the payment landed at 03:14 IST on Sunday, which is 21:44 UTC on Saturday — a different day, and a different day's rate. Nothing prescribes any of these three.</p>
     </div>
@@ -220,7 +233,7 @@ a:focus-visible,summary:focus-visible,input:focus-visible,label:focus-visible{
       </div>
       <div class="opt">
         <input type="radio" name="election" id="eb">
-        <label for="eb"><span class="t">₹4,70,517 — official rate</span>
+        <label for="eb"><span class="t">₹4,70,517 — official rate</span> <!-- stale-ok -->
         <span class="d">Closer to the published benchmark, but the benchmark does not cover this date.</span></label>
       </div>
       <p class="stamp"><b>This record is complete whether or not you tick anything.</b> What matters if the figure is ever questioned is that both were shown and both were recorded — not which one you chose, and not that we chose for you.</p>
