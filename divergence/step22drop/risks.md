@@ -31,6 +31,9 @@
 | **Two corpus files claim one provision** | `gate0_check.py` fails the build. Was silently shadowing three provisions until 19 Aug | ✅ **fixed and now detected** |
 | **A corpus file that can never be cited** | Same check. Two files were in this state — any conclusion resting on the SBI rate was being dropped by our own matcher | ✅ **fixed and now detected** |
 | **Windows console crash on non-ASCII** | `sys.stdout.reconfigure(encoding="utf-8")`. **It was crashing on every Windows run and we had only tested on one machine** | ✅ fixed in both scripts |
+| **`citation_matcher.py` resolves a bare "Section 2(111)" (no Act name) against the wrong file, FEMA-2n.md** | Logged, unfixed (found live, D46). Ground truth uses the fully-qualified form everywhere to avoid it — the matcher's own gap is not what any scored record depends on | ⚠️ **unfixed, worked around** |
+| **Node 5 attacks nearly every conclusion instead of discriminating** | `checked_and_survived` non-empty exactly once across seven runs. Reported in D50 and results.md's losses section. Node 5's output used for disclosure only — never to auto-revise a certainty | 🔴 **known, disclosed** |
+| **Node 5 proposes an upward revision labelled as a downgrade** | `node5_adversarial.py`'s `_reject_upward_revisions` rejects it deterministically — dropped, recorded in `limits[]`. Tested on two independent real examples (D54) | ✅ fixed and tested |
 
 ---
 
@@ -46,7 +49,10 @@
 | **The adversarial node is theatre** | 🔴 **We have no evidence it works.** The Step 29b ablation decides. If it catches 0 of 4 planted defects we cut the novelty claim resting on it and say so | 🔴 **live, unresolved** |
 | **Arm B closes the gap** | Then it is a chain-of-thought result, not an architecture result, **and we say that in the video.** Written into `evaluation-design.md` §7 before any data exists | ✅ pre-committed |
 | **A provision changes mid-build** | Corpus frozen at a stated datetime. `corpus_frozen_at` in every output. Changes go in the manifest changelog, never a silent update | ✅ |
-| **Custom has already filled the gap** | 🔴 If every CA says *"we use the exchange statement, the department accepts it"*, a de facto standard makes the de jure gap practically irrelevant. **The project pivots to "here is the convention, here is that nothing requires it."** Only practitioners can answer this | 🔴 **zero interviews sent** |
+| **Custom has already filled the gap** | 🔴 If every CA says *"we use the exchange statement, the department accepts it"*, a de facto standard makes the de jure gap practically irrelevant. **The project pivots to "here is the convention, here is that nothing requires it."** Only practitioners can answer this | ✅ interviews substituted with sourced evidence — `prior-art/OBJ-1.md` |
+| **A judge diffs the freeze commit and finds nine-plus schema amendments** | Raise it ourselves first. All nine-plus in D46/D51, output contract only, `cases/*/ground_truth.json` untouched — the freeze commit's load-bearing content never changed | ✅ pre-disclosed |
+| **The same scope-reach failure recurs on a fourth rule** | One generalized SCOPE GATE in prompt 03 (D54), not a fourth special-cased patch — named in the documentation as a pattern, not treated as three unrelated bugs | ✅ generalized |
+| **C2/C3/C4's valuation blocks belong to a different case** | Disclosed D47/D51/results.md. C2 fixed (real SBI data, no fabrication). C3/C4 still carry D1's borrowed lattice — **do not show C2/C3/C4's generated page as if it were case-specific until fixed** | 🟡 **2 of 3 open** |
 
 ---
 
@@ -76,6 +82,16 @@ what stops it being decided by whatever the run happens to show.**
 ### 🟡 3 — The 29 June candle
 `low 93.50` against `open 102.84` — a 10.52% intraday collapse that fully
 recovered. Almost certainly a thin-book wick.
+
+---
+
+**UPDATE, 21 August — this section is kept as written, not rewritten, per this file's own "no silent update" rule (PROJECT RISKS, above). Current status:**
+
+Row 1 (zero interviews) is no longer zero — sixteen days out, no response arrived, and interviews were substituted with sourced public evidence instead (`prior-art/OBJ-1.md`), disclosed as a substitution, not silently treated as equivalent.
+
+Row 2 (adversarial checker never run) is resolved and then some — it has now run seven times, found two real, previously-undisclosed defects in D1's own record unplanted (D50, D54), and the planted-defect ablation scored 3 of 4 (D50). It also, separately, misbehaved twice (attacking almost everything it's shown; proposing an upward revision labelled as a downgrade) — both disclosed, the second one fixed and tested (D54).
+
+Row 3 (the 29 June candle) has not been revisited tonight.
 
 **It is not in the lattice** (the lattice uses the 28 June candle), so nothing
 currently depends on it. **But it must not be cited anywhere until it is

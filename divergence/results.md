@@ -159,6 +159,20 @@ Rule 243(8)(e) — the provision the fix above reached for instead of Rule 206 �
 
 **Three instances of the identical failure now confirmed**, same project, same night: Rule 57 row 7 → a s.92 receipt; Rule 206 row 3 → a s.115BBH VDA receipt; Rule 243(8)(e) → a taxpayer who is not a reporting service provider. Real citations, correctly quoted, applied outside their own scope every time. That pattern is the finding, not an embarrassment to bury — a model given verbatim statute and a genuinely underdetermined question reliably reaches for the nearest rule that mentions the right words. Measured on this project, by this project, three times.
 
+### D1, three labelled rows — what actually moved, and why
+
+Three real records now exist for D1's arm C. Shown separately, not collapsed to the latest:
+
+| Record | What it has | M1 | M2 recall | M3 valid | M4 methods |
+|---|---|---|---|---|---|
+| `D1_pipeline.json` | Rule 206 defect (D50) | 100.0% | 25.0% | 100.0% | 12/12 |
+| `D1_fixed_pipeline.json` | Rule 206 fixed, Rule 243 defect introduced (D50 addendum) | 81.8% | 75.0% | 100.0% | 12/12 |
+| `D1_v3_pipeline.json` | Both fixed — the current record, what `output-interface.html` renders (D54) | 45.5% | 0.0% | 100.0% | 12/12 |
+
+**M3 and M4 are identical across all three, and that is the real finding, not a null result.** Neither metric is capable of seeing any of the three scope-reach defects — M3 only checks a citation is real and current (it was, every time, including both defective versions), M4 only counts the deterministic valuation lattice's own method count, untouched by which regime cites what. **Three substantive, confirmed-wrong legal conclusions, invisible to every metric that would normally stand in for "is this record correct," caught only by adversarial reading.** That is a stronger argument for node 5's place in this pipeline than the ablation score is on its own.
+
+**M1 and M2 moving between these three rows is not about the fix — it's ordinary temperature variance.** Each record is an independent run at the model's own (non-zero, D52) temperature; node 1 and node 2 are re-executed fresh each time regardless of what changed in the resolver prompt, so their output varies the same way Block E2's three seeds already documented. Reading M1/M2's movement here as evidence about the Rule 206/243 fixes would be a mistake — they aren't measuring it.
+
 ## Block E1, 21 August: C5 gets its own real valuation, C1 gets the false-abstention proof
 
 D47 disclosed that every non-D1 record's `valuation` block was silently D1's own. `node3_valuation.py` now takes `--case`/`--out` instead of being hardcoded to D1; full account in [`DECISION-D51.md`](DECISION-D51.md).
