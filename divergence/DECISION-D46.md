@@ -65,3 +65,26 @@ That is a stronger answer than a schema that happened to be right the first
 time, because nobody can tell the difference between "correct by design" and
 "never actually tested" from the outside — except by asking whether the team
 would have told you if it were the second one.
+
+---
+
+## Addendum — four more amendments, same day, wiring nodes 3/4 (Step 1)
+
+Automating the income-tax and GST resolvers (Step 1 of the plan this
+decision responds to) found four more of the same shape, in a later commit
+the same day:
+
+| # | Change | Why |
+|---|---|---|
+| 4 | `regimes[].qualifying_condition`: `"string"` → `["string", "null"]` | Prompts 03/04 have always documented this field as `"<or null>"` in their own output examples; the schema only ever allowed a string. Same story as #1/#2 above — never exercised until nodes 3/4 actually ran |
+| 5 | `regimes[].consequence_if_failed`: same fix, same reason | |
+| 6 | `regimes[].reasoning`: added, `type: string` | Prompts 03/04 have always asked for this field; `additionalProperties: false` silently forbade it. `node_resolver.py`'s live D1 run caught it — the field was in the model's output, just not in the schema |
+| 7 | `regimes[].conditions`: added, array of `{condition, met, why}` | Same story, specific to prompt 04's cumulative-conditions test |
+
+**Running total: seven schema amendments across two commits, all after the
+freeze, all disclosed here.** The same reasoning as the original three
+applies to all seven — every one is to the output contract, none touch
+`cases/*/ground_truth.json`, and all seven were found by running real
+records through a schema that had been sitting untested since 6 August, not
+by looking for a rule that would produce a better-looking result.
+

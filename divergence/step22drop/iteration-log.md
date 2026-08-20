@@ -722,6 +722,135 @@ still empty, so it is not the full comparison D40 asks for either.
 
 ---
 
+## Step 1 (D46 plan): nodes 3/4 automated, regimes[] finally non-empty — 20 Aug
+
+### The problem this closes
+Every arm-C citation number in every table so far read `0.000` or `—`, not
+because the pipeline lost the comparison but because `regimes[]` was
+structurally empty on every real record — nodes 3/4 (income tax, GST) had
+only ever existed as hand-run prompt specs. `node_resolver.py` automates
+both (one script, not two — prompts 03/04 are the same shape end to end)
+and `run_pipeline.py` now calls them by default. Five real bugs found
+getting from "it runs" to "it produces a correct record" — all found by
+running D1 for real, none visible from reading the code beforehand.
+
+### 1 — the regime enum is not a label for which sub-question you answered
+First live call: the 72B resolver split classification, recognition date,
+valuation method, TDS and penalty position into **five separate regime
+objects**, using values like `"recognition_date"` and `"tds"` — a
+reasonable reading of "resolve five things" that the schema's 5-value
+`regime` enum does not permit. `node_resolver.py`'s own validation caught
+it immediately, hard-failed with the exact offending values named, before
+it ever reached a schema error three steps downstream. **Fix:** rewrote
+prompt 03's OUTPUT section in caps-lock plain terms — `regime` is fixed,
+fold (b)-(e) into one object's `outcome`/`reasoning`.
+
+### 2 — schema.json didn't allow fields the prompts have always asked for
+Fixing #1 surfaced two more: prompts 03/04 have always asked for a
+`reasoning` field and (04 only) a `conditions` array; `schema.json`'s
+`regimes[]` items have `additionalProperties: false` and never listed
+either. Not a new gap — it predates tonight, just never exercised past the
+gap-enforcer step until nodes 3/4 actually ran. **Fix:** added both,
+disclosed (D46 addendum) rather than silently patched.
+
+### 3 — the corpus injection taught the model to cite filenames
+D1's first schema-valid-shaped attempt still failed at the citation
+matcher: `"provision": "IT-2-47A.md, IT-115BBH.md, ITR2026-RULE-56.md, ..."`
+— literal filenames, not legal citations. `node_resolver.py`'s own corpus
+loader headed each injected block with the bare filename
+(`--- IT-115BBH.md ---`), and the model read that heading as if it were the
+citable identifier. **Fix:** head each block with the file's actual
+`current_citation` (read from `corpus/tier-a/`'s front matter via
+`citation_matcher.parse_front_matter` — the same string the matcher itself
+accepts), so the model learns the real citation form, not a filename.
+
+### 4 — two more nullable fields the schema never allowed
+Same shape as `date_choice.chosen` and `extracted_field.value` (Step
+27/29/31, D45): `qualifying_condition` and `consequence_if_failed` are both
+documented `"<or null>"` in the prompts' own examples, and `schema.json`
+only ever allowed `{"type": "string"}` — no null. D1's real output tripped
+it immediately. **Fix:** both widened to `["string", "null"]`.
+
+### 5 — one citation field, five citations, and only the first one got checked
+The single most important find of the five. Fixing #1 (fold five
+sub-answers into one regime object) meant the model's ONE `outcome` now
+rested on FIVE provisions — and it expressed that by joining all five into
+`citation.provision` as a semicolon list. `citation_matcher.py` extracts
+every reference it can find in the cited text and returns `VERIFIED` the
+moment ANY of them matches ANY corpus entry — so the five-citation blob
+came back `verified: true`, matched against `IT-115BBH.md` alone. **The
+other four citations (Rule 56, Rule 57, s.393(1), s.439(8)) were never
+individually checked, and the record said "verified" regardless.**
+
+> **This is the exact failure class the project exists to catch, produced
+> by the project's own fix for a different bug.** Solving #1 (don't split
+> one conclusion into five fake regimes) created the conditions for #5 (one
+> real conclusion, five real citations, one verification slot) — and the
+> citation matcher's design, built for the one-conclusion-one-citation case,
+> quietly accepted a five-citation blob as fully verified.
+
+**Fix, deliberately the smaller of two options.** A schema change letting
+`citation` hold an array was the more "correct" fix and was not made
+tonight — redesigning the citation contract under time pressure, three days
+from submission, is how `eval/score.py`'s v1.5 over-correction happened.
+Instead: the prompt now states plainly that `citation.provision` is one
+citation, names the single most load-bearing provision, and puts any other
+provisions the reasoning relies on into the reasoning text, unverified but
+visible, rather than falsely verified.
+
+### Result, D1, after all five fixes
+```
+[3/5] INCOME TAX + GST RESOLVERS
+      income_tax  1 conclusion(s)      gst  1 conclusion(s)
+[4/5] CITATION MATCHER   2 kept, 0 dropped
+[5/5] GAP ENFORCER       certainty forced where missing[] actually blocks it
+schema.json: VALID
+```
+Two single, real, individually-verified citations. `regimes[]` is no
+longer structurally empty. Arm C's citation numbers can now be a real
+measurement instead of an incomplete run — the actual scores are in
+`results.md` once `eval/normalize_runs.py --report` runs against this and
+C2's equivalent record.
+
+**A concurrency finding, in passing.** Running this D1 rebuild while the
+user independently ran C1 hit Featherless's `feather_pro_plus` plan limit —
+4 concurrent request units, shared across every process using the same
+key. Not a bug, a real account constraint worth knowing before running
+arms A/B across all 6 cases again: don't run two pipelines against the
+same key at once.
+
+**The `extraction_notes`-nested-in-`facts{}` bug (Step 27/29/31, D45 #3)
+recurred on C2 — three times in a row**, identical shape, identical
+message, each attempt a real API call. Not a one-off this time: 3/3 on C2
+against 0/2 on D1 is a genuinely reproducible, case-linked pattern, not
+noise. Burning a fourth live call betting on a different roll was the
+wrong response to that ratio.
+
+**Added a narrow, disclosed self-repair to `node1_extract.py` instead of
+retrying blind.** `_validate_facts_shape()` now recognises this one
+specific, unambiguous shape — a bare list of strings under a known
+metadata-like key (`extraction_notes`, `notes`, `limitations`) sitting
+where a real extracted fact should be — and moves it out rather than
+hard-failing, but the repair is recorded in `extraction_notes` itself
+(`"[node1 self-repair] model nested 'extraction_notes' inside facts{} ...
+moved automatically, not a data change"`), so the model's real
+contract-adherence rate stays visible and countable. **Anything that isn't
+this exact narrow shape still hard-fails**, verified with a synthetic
+malformed field before touching a live call again — this is not a general
+loosening of the validation, and run_arms.py's own philosophy
+("repairing failures deletes the finding") was weighed against it
+deliberately: unlike arm A/B, this repair never touches extracted DATA,
+only where a metadata note landed, so nothing about extraction *quality*
+is being hidden, only a placement mistake.
+
+**Fourth attempt on C2 succeeded on its own** — no repair note in the
+output, the model got the shape right unprompted. So the 3/3 streak was a
+real run of bad luck, not a deterministic failure specific to this case;
+the repair is now in place as insurance for the next time it happens,
+which the 3/3 makes likely to be soon.
+
+---
+
 ## Design decisions that changed the build
 
 | Date | Change | Why |

@@ -1,6 +1,6 @@
 {
   "record_id": "C2",
-  "generated_at": "2026-08-20T11:00:11.688938+00:00",
+  "generated_at": "2026-08-20T12:54:37.178240+00:00",
   "corpus_frozen_at": "2026-08-19T00:00:00Z",
   "tax_year": "FY 2026-27",
   "facts": {
@@ -15,7 +15,7 @@
       "source_span": "invoice amount, second sentence"
     },
     "settlement_datetime": {
-      "value": "2026-06-17T00:00:00Z",
+      "value": "2026-06-17T00:00:00+00:00",
       "confidence": "certain",
       "source_span": "credited Wednesday 17 June 2026"
     },
@@ -45,19 +45,22 @@
       "source_span": "invoice amount, second sentence"
     },
     "settlement_timezone": {
-      "value": "Z",
+      "value": "UTC",
       "confidence": "certain",
       "source_span": "credited Wednesday 17 June 2026"
     }
   },
   "missing": [
     {
-      "item": "declaration of payment for services by the exporter",
-      "why_absent": "No declaration of payment for services by the exporter is provided.",
+      "item": "counterparty_name",
+      "why_absent": "The counterparty name was only declared and not independently verified.",
       "blocks": [
+        "income_tax",
+        "gst",
+        "fema",
         "valuation"
       ],
-      "obtainable": "no"
+      "obtainable": "not_for_this_route"
     }
   ],
   "valuation": {
@@ -301,10 +304,69 @@
     ],
     "no_rate_published": true
   },
-  "regimes": [],
+  "regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The recognition date is the settlement date, 17 June 2026. The valuation method is the telegraphic transfer buying rate of USD on the last day of the tax year, 31 March 2027. No TDS obligation arises as the amount is below the threshold. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The recognition date is the settlement date, 17 June 2026, as per Rule 56, Table Sl. No. 1. The valuation method is the telegraphic transfer buying rate of USD on the last day of the tax year, 31 March 2027, as per Rule 206, Table Sl. No. 3. No TDS obligation arises because the amount is below the threshold of \u20b950,000 for individuals or HUFs, as per s.393(1), Table Sl. No. 8(vi). The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply does not meet all conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "unknown",
+          "why": "The location of the supplier is not provided in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The counterparty is identified as a 'US company', indicating it is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment was received via SWIFT wire in USD, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "counterparty_name"
+      ],
+      "consequence_if_failed": "If the supply is not zero-rated as an export, the supplier will be liable to pay GST on the supply. The applicable interest and penalties will be governed by sections 50 and 74A of the CGST Act, 2017. Specifically, interest at a rate not exceeding 18% will be levied on the unpaid tax, and a penalty of 10% of the tax due or Rs. 10,000, whichever is higher, will be imposed unless the tax and interest are paid within 60 days of the show cause notice."
+    }
+  ],
   "limits": [
-    "No invoice number provided in the text.",
-    "no --regimes supplied \u2014 nodes 3/4/5 were not run for this record; regimes[] is empty"
+    "Invoice number is not provided in the given text.",
+    "The valuation method for virtual digital assets is not explicitly covered in Rule 57, and the specific rules for virtual digital assets in Rule 243(8)(e) do not apply to this scenario.",
+    "The outcome is contingent on the verification of the supplier's location, the place of supply, and the relationship between the supplier and recipient."
   ],
   "_meta": {
     "llm": {
@@ -319,20 +381,34 @@
           "model": "Qwen/Qwen2.5-7B-Instruct",
           "calls": 1,
           "in_tokens": 1062,
-          "out_tokens": 382,
+          "out_tokens": 389,
           "retries": 0
         },
         "node2_gaps": {
           "model": "Qwen/Qwen2.5-7B-Instruct",
           "calls": 1,
-          "in_tokens": 2792,
-          "out_tokens": 62,
+          "in_tokens": 2797,
+          "out_tokens": 71,
+          "retries": 0
+        },
+        "node3_income_tax": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 6389,
+          "out_tokens": 509,
+          "retries": 0
+        },
+        "node4_gst": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 2106,
+          "out_tokens": 547,
           "retries": 0
         }
       },
-      "total_calls": 2,
-      "total_in_tokens": 3854,
-      "total_out_tokens": 444,
+      "total_calls": 4,
+      "total_in_tokens": 12354,
+      "total_out_tokens": 1516,
       "temperature": "0 (dev default)",
       "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
     }

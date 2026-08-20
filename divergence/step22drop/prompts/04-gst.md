@@ -60,6 +60,12 @@ OUTPUT — JSON only.
 answering. All five conditions from (a) go inside the one "conditions"
 array below, not as separate regime objects.
 
+"citation.provision" is ONE citation, not a list — usually IGST s.2(6)
+itself, since that is the operative test. If s.74A or s.50 also matter to
+your outcome, name them in the reasoning, not by joining them into the
+citation field — citation_matcher.py only checks the first reference it
+finds in a joined string (found live testing prompt 03, see DECISION-D46.md).
+
 {
   "regimes": [
     {

@@ -33,6 +33,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import llm_call  # noqa: E402
 from llm_call import LLMError  # noqa: E402
+import citation_matcher  # noqa: E402
 
 PROMPT_FILES = {
     "income_tax": os.path.join(HERE, "step22drop", "prompts", "03-income-tax.md"),
@@ -80,7 +81,15 @@ def load_system_prompt(regime):
 
 
 def load_scoped_corpus(regime):
+    """Found live, 20 Aug: heading each block with the bare filename
+    ("--- IT-115BBH.md ---") let the model cite the FILENAME as if it were
+    the legal citation -- D1's real run produced
+    'provision': 'IT-2-47A.md, IT-115BBH.md, ...'. Heading each block with
+    its actual current_citation instead (same string citation_matcher.py
+    itself would accept) teaches the model the right citation form to use,
+    not just the right text to read."""
     corpus_dir = os.path.join(HERE, "corpus", "verbatim")
+    tier_a_dir = os.path.join(HERE, "corpus", "tier-a")
     parts = []
     for fn in CORPUS_FILES[regime]:
         p = os.path.join(corpus_dir, fn)
@@ -88,7 +97,10 @@ def load_scoped_corpus(regime):
             die(f"scoped corpus file missing for regime={regime}: {p}\n"
                 f"  {os.path.basename(PROMPT_FILES[regime])}'s scope table names it -- either "
                 f"restore the file or update both the prompt and CORPUS_FILES together.")
-        parts.append(f"--- {fn} ---\n" + open(p, encoding="utf-8").read())
+        tier_a_p = os.path.join(tier_a_dir, fn)
+        meta = citation_matcher.parse_front_matter(tier_a_p) if os.path.exists(tier_a_p) else {}
+        heading = meta.get("current_citation") or fn
+        parts.append(f"--- {heading} ---\n" + open(p, encoding="utf-8").read())
     return "\n\n".join(parts)
 
 

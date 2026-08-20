@@ -62,8 +62,8 @@ This table is the honest version. We update it after every real step.
 | 2. Gap detector | Yes, `node2_gaps.py` | Yes, full runs on case D1 and case C2, 20 Aug |
 | 3. Gap enforcer | Yes, `gap_enforcer.py` | Yes, self test 2 out of 2 |
 | 4. Valuation lattice | Yes, `node3_valuation.py` | Yes, produces `valuation.json` |
-| 5. Income tax resolver | No, this is a prompt run by hand | Not yet |
-| 6. GST resolver | No, this is a prompt run by hand | Not yet |
+| 5. Income tax resolver | Yes, `node_resolver.py --regime income_tax` | Yes, complete real runs on D1 and C2, 20 Aug |
+| 6. GST resolver | Yes, `node_resolver.py --regime gst` | Yes, complete real runs on D1 and C2, 20 Aug |
 | 7. Citation matcher | Yes, `citation_matcher.py` | Yes, 15 out of 15 self test |
 | 8. Adversarial check | No, this is a prompt run by hand | Never run. Every finding credited to it so far was actually found by a person |
 | 9. Disclosure composer | No, it is a static HTML page right now | Not connected to a live result yet |
@@ -71,36 +71,15 @@ This table is the honest version. We update it after every real step.
 | Scoring | Yes, `eval/score.py`, `eval/m3b_citation_coverage.py`, `eval/normalize_runs.py` | Yes, run against all 14 real result files, 20 Aug |
 | CI | Yes, GitHub Actions with pytest | Yes, passing. See the badge above |
 
-Steps 5, 6 and 8 join back into the automated flow through `run_pipeline.py --regimes <file>`. Their hand written conclusions are then checked by the citation matcher and the gap enforcer, the same way an automated step's output would be checked.
+Steps 5 and 6 (income tax and GST) run automatically now by default. Step 8 (the adversarial check) is still hand-run — its conclusions can be fed back in through `run_pipeline.py --regimes <file>`, checked by the citation matcher and the gap enforcer the same way an automated step's output would be, alongside whatever the automated resolvers produced.
 
 ## First real numbers, from Steps 27, 29 and 31, 20 Aug
 
-This was the first time steps 1 and 2, `run_arms.py`, and the scoring scripts were run together, as one real chain, against a real model. Before this, each piece had only been tested on its own. We found five real bugs in about two hours. None of them were visible just by reading the code. Every one of them became visible within seconds of actually running it.
+This was the first time steps 1 and 2, `run_arms.py`, and the scoring scripts were run together, as one real chain, against a real model. Before this, each piece had only been tested on its own. Five real bugs found in about two hours, none visible just by reading the code, every one visible within seconds of actually running it. Full account: [`DECISION-D45.md`](divergence/DECISION-D45.md) and [`iteration-log.md`](divergence/step22drop/iteration-log.md).
 
-The full account, with every bug and every before and after result, is here: [`DECISION-D45.md`](divergence/DECISION-D45.md) and [`iteration-log.md`](divergence/step22drop/iteration-log.md)
+**Update, same night: Step 1 is done.** Nodes 3 and 4 (income tax and GST resolvers) are automated now too, wired into `run_pipeline.py` by default, so `regimes[]` is no longer structurally empty. Five more real bugs found and fixed getting there, including one where the pipeline's own fix for an earlier bug created the conditions for the next one. Full account: [`DECISION-D46.md`](divergence/DECISION-D46.md)'s addendum.
 
-Here is what we fixed, in short. We had a silent protocol problem, the temperature setting was 0 everywhere, which goes against our own written rule of "default temperature, not zero." We found two gaps in `schema.json` that had existed since 6 August and had simply never been tested against real data: one rejected a `null` value that our own code was supposed to produce on purpose, and one did not allow a true or false value even though every case's ground truth already uses one. We found that a small model's output broke a rule in a way that only showed up as a confusing schema error several steps later. We found that Arm A's first run just copied back the raw JSON schema definition instead of producing real data. And we found that Arm B's token budget math was wrong, it was cutting off a single answer by limiting it to the combined size of two much smaller separate answers.
-
-After fixing all five, here are the real numbers across all 6 cases. M1 is extraction accuracy. M2 is gap recall and precision. M3 is citation validity. M4 is method count found out of methods expected. M5 is false abstention.
-
-| Case | Arm | M1 extract | M2 recall | M2 precision | M3 valid | M4 methods | M5 |
-|---|---|---|---|---|---|---|---|
-| C1 | A and B | 0.0% | not available | 0.0% | 25.0% | 2 of 1 | not available |
-| C2 | A, B and C | 9.1% | not available | 0.0% | 50.0% / not available | 2 of 1 / 12 of 1 | not available |
-| C3 | A and B | 0.0% | 0.0% | 0.0% | 25.0% / 20.0% | 2 of 5 | not available |
-| C4 | A and B | 0.0% | 0.0% | 0.0% | 50.0% / 100.0% | 2 of 10 | not available |
-| C5 | A and B | 0.0% | 100.0% | 100.0% / 33.3% | 50.0% | 2 of 2 | not available |
-| D1 | A, B and C | 0.0% / 9.1% | 75.0% / 25.0% / 0.0% | 100.0% / 33.3% / 0.0% | 60.0% / 50.0% / not available | 2 of 12 / 2 of 12 / 12 of 12 | not available |
-
-Please read the notes below before quoting a single number from this table anywhere. M1 and M5 do not mean "the system did badly." They mean these two metrics currently cannot be scored correctly at all, for any arm, given what we have right now.
-
-M1 checks facts by matching field names exactly. No extraction step, not the pipeline, not Arm A, not Arm B, has ever been told to use the exact same field names as `ground_truth.json`. For example the ground truth says "asset" but a real run might say "asset_currency." A correct extraction under a slightly different but equally valid field name gets marked as "not extracted."
-
-M5 is called "the metric that earns trust" in our own evaluation design. It needs a set of fields called `elements`, and right now no prompt anywhere asks any arm to actually produce that in a way we can score.
-
-Arm C's M3 and M4 numbers look unusually strong on case D1 and case C2 (12 out of 12, and 12 out of 1). This is real, but it is because the valuation lattice enumerates methods with plain code, no model involved. It is not the full comparison our evaluation design asks for, because `regimes` is still empty, since steps 5, 6 and 8 have not been run yet. So Arm C's citation numbers show as "not available," not as a real zero score.
-
-The numbers that are genuinely comparable right now are M2 and M3. On case D1, the hardest case, Arm A's gap recall of 75 percent is currently higher than Arm B's 25 percent. This is worth looking into properly, not smoothing over, before it goes into `results.md`.
+**D1 and C2 now have complete, schema-valid, full-pipeline records with real, individually-verified citations** — the first that exist. Citation recall, mean by arm: naive baseline 0.150, token-matched CoT baseline 0.150, the pipeline 0.250 (on the 2 cases that have a complete record so far — small sample, real result). The full 14-row table, every metric, and exactly what each number does and does not mean is in [`results.md`](divergence/results.md) — read it before quoting a single cell, since M1 and M5 still cannot be fairly scored for any arm, and only 2 of 6 cases have a complete arm-C record yet.
 
 ## Running it
 
@@ -194,7 +173,7 @@ The ground truth is committed to this repository before any model is run on it, 
 
 Six test cases is a small number. This is a hackathon project, built with limited time.
 
-Steps 5, 6 and 8 are prompts run by hand right now, not automated code.
+Step 8, the adversarial check, is still a prompt run by hand, not automated code. Steps 5 and 6 were the same until 20 August; see the update above.
 
 The adversarial check has never actually been run. Every finding credited to it in this repository so far was actually found by a person reading carefully, not by the model.
 

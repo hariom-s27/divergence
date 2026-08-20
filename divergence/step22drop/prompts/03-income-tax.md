@@ -111,6 +111,17 @@ and when this asset is later disposed of, which is a different taxable
 event from the receipt you were actually asked about (this is exactly what
 F7 — "single-event tax" — gets wrong when it is not kept separate).
 
+"citation.provision" IS ONE CITATION, NOT A LIST. Name the single provision
+your "outcome" sentence most directly rests on — usually s.115BBH for the
+classification, since that is the operative charging section. If your
+reasoning also relies on Rule 56, Rule 57, s.393(1) or s.439(8), name them
+IN THE REASONING TEXT, not by stringing them into the citation field. A
+citation field holding five provisions joined by semicolons only gets the
+FIRST one actually checked — citation_matcher.py matches on the first
+reference it finds and stops, so the other four would be silently
+unverified while the record reads "verified: true". Found live, 20 Aug —
+see DECISION-D46.md.
+
 {
   "regimes": [
     {

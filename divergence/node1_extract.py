@@ -127,6 +127,17 @@ def build_content(text_paths, file_paths, model="small"):
 
 _VALID_CONFIDENCE = {"certain", "probable", "declared_only", "unresolved"}
 
+# Reproduced 3/3 attempts on C2, 20 Aug (0/2 on D1) -- not a rare fluke for
+# this case, a highly consistent one. Burning another live call betting on
+# a different roll is worse than a narrow, disclosed repair: this key, this
+# exact shape (a bare list of strings, not something that could plausibly
+# be mistaken for a real extracted fact) is unambiguous enough to move
+# rather than block on. The repair is recorded, never silent -- the
+# model's real contract-adherence rate stays visible and countable, it's
+# just not a hard stop for a placement mistake that never touches the
+# actual extracted data.
+_KNOWN_MISPLACED_METADATA_KEYS = {"extraction_notes", "notes", "limitations"}
+
 
 def _validate_facts_shape(facts, raw):
     """schema.json: every facts{} value must be {value, confidence, ...} --
@@ -137,37 +148,63 @@ def _validate_facts_shape(facts, raw):
     otherwise have surfaced as an opaque schema failure at the very end of
     run_pipeline.py, three steps and several minutes later. Catching it here,
     at the node that produced it, is what 'hard fail with a logged error'
-    (architecture.md ERROR HANDLING) actually means in practice."""
+    (architecture.md ERROR HANDLING) actually means in practice.
+
+    Returns (facts, repairs) -- repairs is a list of what was moved, empty
+    if nothing needed fixing. Still raises for anything that isn't this one
+    specific, well-understood, unambiguous shape."""
     bad = {
         k: v for k, v in facts.items()
         if not (isinstance(v, dict) and "value" in v and "confidence" in v
                  and v["confidence"] in _VALID_CONFIDENCE)
     }
-    if bad:
+    if not bad:
+        return facts, []
+
+    repairs = []
+    still_bad = {}
+    for k, v in bad.items():
+        if k in _KNOWN_MISPLACED_METADATA_KEYS and isinstance(v, list) and all(isinstance(x, str) for x in v):
+            repairs.append({"field": k, "value": v, "action": "moved out of facts{} into extraction_notes"})
+        else:
+            still_bad[k] = v
+
+    if still_bad:
         raise LLMError(
             f"{NODE_NAME}: facts{{}} contains field(s) that are not a valid "
-            f"extracted_field {{value, confidence, ...}}: {list(bad)}\n"
+            f"extracted_field {{value, confidence, ...}}: {list(still_bad)}\n"
             f"  This is syntactically valid JSON (so the retry-on-bad-JSON "
             f"path never fires) but violates schema.json's own contract for "
             f"facts{{}}. Most likely cause: the model nested something like "
             f"'extraction_notes' inside facts{{}} instead of as a sibling key.\n"
-            f"  Offending value(s): {bad}\n"
+            f"  Offending value(s): {still_bad}\n"
             f"  Raw model output:\n{raw}"
         )
+
+    for r in repairs:
+        del facts[r["field"]]
+    return facts, repairs
 
 
 def extract(text_paths, file_paths, model="small"):
     """The reusable entry point — run_pipeline.py calls this directly rather
     than shelling out and re-parsing stdout. Returns (facts, extraction_notes,
-    meta) — meta is this node's row from llm_call.provenance() after the call."""
+    meta) — meta is this node's row from llm_call.provenance() after the call.
+    extraction_notes includes any auto-repairs made, prefixed so they read as
+    what they are — a model contract violation, fixed, not hidden."""
     system = load_system_prompt()
     content = build_content(text_paths, file_paths, model)
     parsed = llm_call.call_json(system, content, model, node_name=NODE_NAME)
     if "facts" not in parsed or not isinstance(parsed["facts"], dict):
         raise LLMError(f"{NODE_NAME}: model output has no top-level 'facts' object\n{parsed}")
-    _validate_facts_shape(parsed["facts"], parsed)
+    facts, repairs = _validate_facts_shape(parsed["facts"], parsed)
+    notes = list(parsed.get("extraction_notes", []))
+    for r in repairs:
+        notes.extend(r["value"] if r["field"] == "extraction_notes" else [str(r["value"])])
+        notes.append(f"[node1 self-repair] model nested '{r['field']}' inside facts{{}} "
+                     f"instead of as a sibling key — moved automatically, not a data change")
     meta = llm_call.provenance()["by_node"].get(NODE_NAME, {})
-    return parsed["facts"], parsed.get("extraction_notes", []), meta
+    return facts, notes, meta
 
 
 def main():

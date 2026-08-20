@@ -162,9 +162,9 @@
               }
             }
           },
-          "qualifying_condition": { "type": "string" },
+          "qualifying_condition": { "type": ["string", "null"] },
           "condition_met": { "enum": ["yes", "no", "unknown"] },
-          "consequence_if_failed": { "type": "string" },
+          "consequence_if_failed": { "type": ["string", "null"] },
           "depends_on_missing": {
             "type": "array", "items": { "type": "string" },
             "description": "If non-empty, certainty is FORCED to insufficient_evidence by the gap constraint enforcer. Deterministic code, not a prompt instruction."

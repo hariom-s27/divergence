@@ -1,6 +1,6 @@
 {
   "record_id": "D1",
-  "generated_at": "2026-08-20T10:58:21.742737+00:00",
+  "generated_at": "2026-08-20T12:48:18.910629+00:00",
   "corpus_frozen_at": "2026-08-19T00:00:00Z",
   "tax_year": "FY 2026-27",
   "facts": {
@@ -9,7 +9,7 @@
       "confidence": "certain",
       "source_span": "invoice header, top"
     },
-    "asset_currency": {
+    "asset": {
       "value": "USDC",
       "confidence": "certain",
       "source_span": "invoice header, top"
@@ -67,8 +67,8 @@
   },
   "missing": [
     {
-      "item": "declaration of payment for services from the supplier",
-      "why_absent": "No declaration of payment for services from the supplier is provided, and the counterparty name is only declared and not independently verified.",
+      "item": "counterparty_name",
+      "why_absent": "The counterparty name was only declared and not independently verified.",
       "blocks": [
         "income_tax",
         "gst",
@@ -319,10 +319,70 @@
     ],
     "no_rate_published": true
   },
-  "regimes": [],
+  "regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt of USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The recognition date is the settlement date, June 28, 2026. The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57. There is a TDS obligation at 1% under s.393(1) [Table: Sl. No. 8(vi)], but it is exempt due to the threshold limit of \u20b950,000. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The classification of the receipt as income from the transfer of a virtual digital asset is settled by s.115BBH, which taxes such transfers at 30%. The recognition date is the settlement date, June 28, 2026, as per the facts provided. The valuation method is determined by Rule 57, which applies the open market value on the valuation date. The TDS obligation is governed by s.393(1) [Table: Sl. No. 8(vi)], but the threshold limit of \u20b950,000 exempts the payer from this obligation. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply does not meet all conditions to be classified as an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier location is Pune, India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient location is UAE."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the provided facts."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "no",
+          "why": "The payment was received in USDC, a cryptocurrency, which is not considered convertible foreign exchange or Indian rupees as defined by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "The relationship between the supplier and recipient is not explicitly stated in the provided facts."
+        }
+      ],
+      "depends_on_missing": [
+        "place_of_supply",
+        "relationship_between_supplier_and_recipient"
+      ],
+      "consequence_if_failed": "If the supply is not zero-rated as an export, the supplier will be liable to pay GST on the supply. The applicable interest and penalties will be governed by Section 50 and Section 74A of the CGST Act 2017."
+    }
+  ],
   "limits": [
     "The document is typed input, not an actual invoice or payment record.",
-    "no --regimes supplied \u2014 nodes 3/4/5 were not run for this record; regimes[] is empty"
+    "The valuation method for virtual digital assets is not explicitly specified in Rule 57, but the open market value is inferred from the general rule for 'any other property'. The TDS exemption is based on the threshold limit, which may change in future regulations.",
+    "The place of supply and the relationship between the supplier and recipient are unknown, which affects the determination of the export status."
   ],
   "_meta": {
     "llm": {
@@ -337,20 +397,34 @@
           "model": "Qwen/Qwen2.5-7B-Instruct",
           "calls": 1,
           "in_tokens": 1127,
-          "out_tokens": 488,
+          "out_tokens": 487,
           "retries": 0
         },
         "node2_gaps": {
           "model": "Qwen/Qwen2.5-7B-Instruct",
           "calls": 1,
-          "in_tokens": 2892,
-          "out_tokens": 89,
+          "in_tokens": 2891,
+          "out_tokens": 71,
+          "retries": 0
+        },
+        "node3_income_tax": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 6483,
+          "out_tokens": 522,
+          "retries": 0
+        },
+        "node4_gst": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 2200,
+          "out_tokens": 487,
           "retries": 0
         }
       },
-      "total_calls": 2,
-      "total_in_tokens": 4019,
-      "total_out_tokens": 577,
+      "total_calls": 4,
+      "total_in_tokens": 12701,
+      "total_out_tokens": 1567,
       "temperature": "0 (dev default)",
       "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
     }
