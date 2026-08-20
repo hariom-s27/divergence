@@ -81,7 +81,7 @@ Mean across the six cases moved from **11.8% to 94.6%**. That is the real effect
 |---|---|---|---|---|---|---|---|---|---|
 | C1 | A | Qwen2.5-72B | 0.0% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
 | C1 | B | Qwen2.5-72B | 0.0% | — | 0.0% | 25.0% | 0.0% | 2/1 | — |
-| **C1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **12/1** | **—** |
+| **C1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **1/1**\* | **—** |
 | C2 | A | Qwen2.5-72B | 9.1% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
 | C2 | B | Qwen2.5-72B | 9.1% | — | 0.0% | 50.0% | 0.0% | 2/1 | — |
 | **C2** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **—** | **0.0%** | **100.0%** | **0.0%** | **12/1** | **—** |
@@ -93,10 +93,12 @@ Mean across the six cases moved from **11.8% to 94.6%**. That is the real effect
 | **C4** | **C** | **Qwen2.5-7B+72B** | **77.8%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **12/10** | **—** |
 | C5 | A | Qwen2.5-72B | 0.0% | 0.0% | 0.0% | 50.0% | 0.0% | 2/2 | — |
 | C5 | B | Qwen2.5-72B | 0.0% | 100.0% | 33.3% | 50.0% | 0.0% | 2/2 | — |
-| **C5** | **C** | **Qwen2.5-7B+72B** | **90.0%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **12/2** | **—** |
+| **C5** | **C** | **Qwen2.5-7B+72B** | **90.0%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **2/2**\* | **—** |
 | D1 | A | Qwen2.5-72B | 0.0% | 25.0% | 66.7% | 50.0% | 0.0% | 2/12 | — |
 | D1 | B | Qwen2.5-72B | 0.0% | 75.0% | 50.0% | 40.0% | 0.0% | 2/12 | — |
 | **D1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **25.0%** | **50.0%** | **100.0%** | **0.0%** | **12/12** | **—** |
+
+\* C1 and C5's M4 columns were updated after Block E1 (below) gave each its own real valuation instead of D1's borrowed one — see that section for why the count dropped and what it now means.
 
 Citation recall, mean by arm, 21-Aug documents: arm A 0.100, arm B 0.100, arm C **0.307** (n=5, same sample size as before). Arm C improved; arms A/B moved slightly the other way, which reads as ordinary run-to-run variance now that temperature is not pinned to 0, not a regression worth chasing tonight.
 
@@ -139,12 +141,26 @@ Four of six arm-B calls failed on the first attempt tonight with `Concurrency li
 
 ---
 
+## Block E1, 21 August: C5 gets its own real valuation, C1 gets the false-abstention proof
+
+D47 disclosed that every non-D1 record's `valuation` block was silently D1's own. `node3_valuation.py` now takes `--case`/`--out` instead of being hardcoded to D1; full account in [`DECISION-D51.md`](DECISION-D51.md).
+
+**C5** shares D1's exact settlement weekend (28 June 2026), so the SBI sheets already on disk (25 June, 29 June) answer it directly — no new data collected. Its record now carries its own **2-method, Rs 150 / 0.0532% spread** lattice (the genuine date-choice-only dispute it actually has), not D1's borrowed 12-method, Rs 47,868 / 10.19% one.
+
+**C1** has no currency conversion at all (a domestic INR invoice paid in INR) — no lattice to build, one determinate figure. Representing that honestly needed a real schema change: `valuation.methods`'s `minItems: 2` (*"a single method is a failure state"*) assumed every case has a dispute. Amended to `minItems: 1`, distinguishing a real failure (nonzero spread, one method found where more should exist) from the true state (`spread.inr == 0`, nothing to enumerate) — the ninth-plus post-freeze schema amendment, same family as D46's seven, output contract only, `ground_truth.json` untouched. C1's record now shows exactly one method, zero spread — the record saying "here there is one answer," which is what makes D1's twelve believable.
+
+**Both now match ground truth's own `methods_expected` exactly** (C1: 1/1, C5: 2/2) — the pre-registered ground truth had already anticipated this shape; the pipeline's output simply hadn't matched it until tonight.
+
+**C2, C3, C4 are not fixed.** C2 is genuinely determinate too (a Wednesday wire, a day SBI did publish a rate) but building its real single-value proof needs the actual 17 June 2026 SBI rate, which isn't in the corpus — typing a plausible number in rather than collecting it would be the exact fabrication this project's valuation lattice exists to refuse. Left disclosed, not faked.
+
+---
+
 ## Still open before this table is the final one
 
 - Three seeds on D1, all arms (Step 4) — only possible now that temperature is `default`, not `0`
 - **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
 - **The real defect node 5 found in D1's own record (D50)** — Rule 206's "last day of the tax year" row misapplied to a receipt-date valuation. Not yet fixed in `node_resolver.py`'s prompt; D1's published record still carries it, disclosed rather than quietly patched.
 - **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.
-- `node3_valuation.py` generalized beyond the single canonical case (D47) — needs per-case SBI/FBIL sheet data that was never collected
+- `node3_valuation.py` generalized for C2, C3, C4 (D47/D51 — C1 and C5 are done) — needs SBI/FBIL sheet data for their specific dates that was never collected
 - M5's contract gap — see `README.md`'s Honest Limitations
 - Prior-art check (Block C) — OBJ-1 (does software already solve this) done, see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND evidence (do real people hit this) not yet done

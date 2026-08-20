@@ -62,8 +62,8 @@
 
         "methods": {
           "type": "array",
-          "minItems": 2,
-          "description": "Minimum two. A single method is a failure state, not a valid output.",
+          "minItems": 1,
+          "description": "D51: was minItems 2 (\"a single method is a failure state\") until C1/C5 needed to represent a case with NO genuine valuation dispute -- a determinate INR figure, not an incomplete lattice. A single method is a failure state ONLY when spread.inr is nonzero and only one was found; a single method with spread.inr == 0 is the false-abstention proof this project's own thesis needs: 'here there is exactly one defensible answer' has to be a representable output, not a schema violation.",
           "items": {
             "type": "object",
             "required": ["label", "rate", "inr_value", "observability", "source"],

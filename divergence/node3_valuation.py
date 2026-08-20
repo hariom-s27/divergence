@@ -3,27 +3,48 @@
 NODE 3 — VALUATION LATTICE  ·  DIVERGENCE
 DETERMINISTIC. No model. No API. No network.
 
-Enumerates every defensible INR figure for the receipt by crossing the three
-undetermined choices, computes the range, and decomposes the spread by source.
+Enumerates every defensible INR figure for the receipt by crossing the
+undetermined choices, computes the range, and decomposes the spread by
+source.
 
-    python node3_valuation.py                  # uses invoice_units from the JSON
+    python node3_valuation.py                        # canonical_case.json (D1)
+    python node3_valuation.py --case c5_case.json --out runs/valuation_C5.json
     python node3_valuation.py --units 5000
-    python node3_valuation.py --json           # machine output only
+    python node3_valuation.py --json                  # machine output only
 
-Reads   canonical_case.json
-Writes  valuation.json   (conforms to schema.json -> properties.valuation)
+Block E (D51): was hardcoded to canonical_case.json (D1) only -- D47 named
+this as a real gap, every non-D1 record's valuation block silently being
+D1's. --case fixes it for cases whose facts are actually reachable from
+data already on disk. C5 (USD, same 28-June-2026 weekend as D1) needed no
+new rate data -- see c5_case.json. C1/C2 have no valuation dispute at all
+(a determinate case, not a gap -- see D51) and are not run through this
+node.
+
+Reads   the file named by --case (default canonical_case.json)
+Writes  the file named by --out (default valuation.json), conforms to
+        schema.json -> properties.valuation
 
 WHY THIS IS NOT A MODEL CALL
   The headline number must never be a token prediction. Everything below is
   arithmetic over retrieved inputs, and every input carries its source.
+
+CANDLE/PEG ARE OPTIONAL, ON PURPOSE
+  A case with a crypto leg (D1, C3, C4) carries "candle" (a CoinDCX daily
+  candle) and "peg" (USDC/USDT at settlement) -- the market leg crosses
+  five market readings by two proxy choices. A plain fiat wire with an
+  undetermined settlement date but no crypto leg (C5) has neither: only
+  the official SBI-TTBR-by-date axis applies. Forcing every case through
+  the market leg would either crash (no candle to read) or fabricate a
+  proxy question fiat was never asked. Missing candle/peg means "this case
+  has no market leg", not "this case is broken."
 """
 
 import json, os, sys, argparse
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC  = os.path.join(HERE, "canonical_case.json")
-OUT  = os.path.join(HERE, "valuation.json")
+DEFAULT_SRC = os.path.join(HERE, "canonical_case.json")
+DEFAULT_OUT = os.path.join(HERE, "valuation.json")
 
 # ── the block the script needs, if canonical_case.json does not carry it yet ──
 NEEDED = """
@@ -58,29 +79,36 @@ def die(msg, extra=""):
     sys.exit(1)
 
 
-def load():
-    if not os.path.exists(SRC):
-        die("canonical_case.json not found. Run canonical_case.py first.")
-    with open(SRC, encoding="utf-8") as f:
+def load(src):
+    if not os.path.exists(src):
+        die(f"{src} not found. Run canonical_case.py first.")
+    with open(src, encoding="utf-8") as f:
         d = json.load(f)
 
     if "official_candidates" not in d:
         die(
-            "canonical_case.json has no 'official_candidates'.\n"
+            f"{os.path.basename(src)} has no 'official_candidates'.\n"
             "  It currently carries a single 'official_leg_sbi_ttbr', which cannot\n"
-            "  express the date choice — and the date choice is one of the three\n"
-            "  undetermined elements this node exists to enumerate.",
-            "\n  Paste this into canonical_case.json (values read from the SBI sheets\n"
-            "  on disk — no number typed from memory):\n" + NEEDED,
+            "  express the date choice — and the date choice is one of the "
+            "undetermined elements this node exists to enumerate.",
+            f"\n  Paste this into {os.path.basename(src)} (values read from the SBI "
+            "sheets on disk — no number typed from memory):\n" + NEEDED,
         )
 
-    c = d.get("candle") or {}
-    for k in ("open", "high", "low", "close"):
-        if k not in c:
-            die(f"canonical_case.json candle is missing '{k}'")
-    if "peg" not in d:
-        die("canonical_case.json has no 'peg' (USDC/USDT). Read it from cache/binance_usdc_usdt_target.json")
-    return d
+    # candle/peg are the market (crypto) leg -- OPTIONAL, see module
+    # docstring. Present together or absent together; a case carrying one
+    # but not the other is a real authoring error, not a legitimate shape.
+    has_candle = "candle" in d
+    has_peg = "peg" in d
+    if has_candle != has_peg:
+        die(f"{os.path.basename(src)} has 'candle' xor 'peg' -- a case with a "
+            "market leg needs both, a case without one needs neither.")
+    if has_candle:
+        c = d["candle"]
+        for k in ("open", "high", "low", "close"):
+            if k not in c:
+                die(f"{os.path.basename(src)} candle is missing '{k}'")
+    return d, has_candle
 
 
 def market_prices(c):
@@ -111,12 +139,11 @@ def proxies(d):
     ]
 
 
-def build(d, units):
-    c        = d["candle"]
-    officials= d["official_candidates"]
-    mkts     = market_prices(c)
-    pxs      = proxies(d)
-    pair     = d.get("coindcx_pair", "?")
+def build(d, units, has_candle):
+    officials = d["official_candidates"]
+    mkts = market_prices(d["candle"]) if has_candle else []
+    pxs = proxies(d) if has_candle else []
+    pair = d.get("coindcx_pair", "?")
 
     methods = []
 
@@ -170,22 +197,27 @@ def build(d, units):
     return methods, officials, mkts, pxs
 
 
-def budget(d, officials, mkts, pxs, units):
+def budget(d, officials, mkts, pxs, units, has_candle):
     """Decompose the spread by contributing source. Metrology, not hand-waving."""
-    c = d["candle"]; peg = float(d["peg"])
     lo_off = min(o["ttbr"] for o in officials)
     hi_off = max(o["ttbr"] for o in officials)
-    mid_mkt = c["close"]
 
-    return [
-        {"source": "domestic premium",
-         "inr": round((mid_mkt * peg - hi_off) * units, 2),
-         "explanation": "The Indian market price of the token against the official rupee rate for a dollar. "
-                        "This is the bulk of the gap and it is the part everyone argues about."},
+    lines = [
         {"source": "which official date",
          "inr": round((hi_off - lo_off) * units, 2),
          "explanation": f"No rate was published on the settlement date. Stepping back to {officials[0]['date']} "
                         f"or forward to {officials[-1]['date']} is undetermined — Rule 206 does not say which."},
+    ]
+    if not has_candle:
+        return lines
+
+    c = d["candle"]; peg = float(d["peg"])
+    mid_mkt = c["close"]
+    lines.extend([
+        {"source": "domestic premium",
+         "inr": round((mid_mkt * peg - hi_off) * units, 2),
+         "explanation": "The Indian market price of the token against the official rupee rate for a dollar. "
+                        "This is the bulk of the gap and it is the part everyone argues about."},
         {"source": "which price within the day",
          "inr": round((c["high"] - c["low"]) * peg * units, 2),
          "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule "
@@ -194,21 +226,32 @@ def budget(d, officials, mkts, pxs, units):
          "inr": round(abs(peg - 1.0) * mid_mkt * units, 2),
          "explanation": "The retrieved pair is USDT/INR. The receipt was USDC. The figure is "
                         "USDT/INR x USDC/USDT, and treating the peg as exactly 1.0000 is a further choice."},
-    ]
+    ])
+    return lines
 
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--case", default=DEFAULT_SRC,
+                     help="case JSON to read (default: canonical_case.json, D1)")
+    ap.add_argument("--out", default=None,
+                     help="where to write the valuation (default: valuation.json "
+                          "if --case was not given, else <case-stem>_valuation.json)")
     ap.add_argument("--units", type=float, default=None)
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
 
-    d = load()
+    out_path = a.out
+    if out_path is None:
+        out_path = DEFAULT_OUT if a.case == DEFAULT_SRC else (
+            os.path.splitext(os.path.basename(a.case))[0] + "_valuation.json")
+
+    d, has_candle = load(a.case)
     units = a.units if a.units else float(d.get("invoice_units") or 0)
     if not units:
-        die("no invoice_units in canonical_case.json and no --units given")
+        die(f"no invoice_units in {a.case} and no --units given")
 
-    methods, officials, mkts, pxs = build(d, units)
+    methods, officials, mkts, pxs = build(d, units, has_candle)
     vals = [m["inr_value"] for m in methods]
     lo_m = min(methods, key=lambda m: m["inr_value"])
     hi_m = max(methods, key=lambda m: m["inr_value"])
@@ -221,11 +264,12 @@ def main():
             "percent": round(spread / lo_m["inr_value"] * 100, 4),
             "between": [lo_m["label"], hi_m["label"]],
         },
-        "uncertainty_budget": budget(d, officials, mkts, pxs, units),
+        "uncertainty_budget": budget(d, officials, mkts, pxs, units, has_candle),
         "no_rate_published": True,
     }
 
-    with open(OUT, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump({
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "invoice_units": units,
@@ -263,7 +307,7 @@ def main():
     print()
     print("  What would settle this: a prescribed valuation source and timestamp")
     print("  convention for virtual digital assets received by a resident.\n")
-    print(f"  written -> {os.path.relpath(OUT, HERE)}")
+    print(f"  written -> {os.path.relpath(out_path, HERE)}")
     print("  Every figure above is arithmetic over retrieved inputs. No model was called.\n")
 
 

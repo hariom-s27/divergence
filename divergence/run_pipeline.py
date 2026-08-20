@@ -118,8 +118,8 @@ def validate_schema(record):
     print("  schema.json: 'jsonschema' not installed — ran a structural check only")
     print(f"    required fields present: {'OK' if not missing_req else 'MISSING ' + str(missing_req)}")
     methods = (record.get("valuation") or {}).get("methods")
-    if methods is not None and len(methods) < 2:
-        print("    valuation.methods has < 2 entries — schema violation (minItems: 2)")
+    if methods is not None and len(methods) < 1:
+        print("    valuation.methods is empty — schema violation (minItems: 1, D51)")
     if not record.get("limits"):
         print("    limits[] is empty — schema violation (minItems: 1)")
 

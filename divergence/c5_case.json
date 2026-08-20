@@ -1,0 +1,27 @@
+{
+  "_source_note": "D51/Block E: C5's facts (USD 3,000, value-dated Sunday 28 June 2026 -- same weekend as D1) reuse the SAME SBI Forex Card Rates sheets already captured for canonical_case.json's official_candidates, verbatim, no new data collected. No crypto leg -- C5 is a plain USD wire, so no 'candle'/'peg' block: node3_valuation.py treats their absence as 'this case has no market leg', not an error.",
+  "invoice_units": 3000.0,
+  "receipt_date": "2026-06-28",
+  "weekday": "Sunday",
+  "official_candidates": [
+    {
+      "date": "2026-06-25",
+      "label": "last published BEFORE the receipt",
+      "ttbr": 94.0,
+      "sheet_datetime": "2026-06-25 11:42",
+      "source": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+      "file": "2026062614_15.pdf",
+      "retrieved": "2026-08-12",
+      "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+    },
+    {
+      "date": "2026-06-29",
+      "label": "next published AFTER the receipt",
+      "ttbr": 93.95,
+      "sheet_datetime": "2026-06-29 09:09",
+      "source": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+      "file": "2026062919_15.pdf",
+      "retrieved": "2026-08-12"
+    }
+  ]
+}

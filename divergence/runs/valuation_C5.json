@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-08-20T16:28:40.759234+00:00",
+  "invoice_units": 3000.0,
+  "receipt_date": "2026-06-28",
+  "weekday": "Sunday",
+  "valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 282000.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062614_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 150.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 281850.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 150.0
+        }
+      }
+    ],
+    "spread": {
+      "inr": 150.0,
+      "percent": 0.0532,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "SBI TTBR 2026-06-25 (last published BEFORE the receipt)"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "which official date",
+        "inr": 150.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      }
+    ],
+    "no_rate_published": true
+  }
+}
