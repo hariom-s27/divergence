@@ -1,0 +1,246 @@
+{
+  "arm": "B",
+  "case": "D1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "D1-2026-114",
+    "generated_at": "2023-10-05T12:00:00Z",
+    "corpus_frozen_at": "2023-10-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_amount_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "CASE D1 — 5,000 USDC · 03:14 IST Sunday 28 June 2026 · UAE client"
+      },
+      "payment_amount_usdc": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "CASE D1 — 5,000 USDC · 03:14 IST Sunday 28 June 2026 · UAE client"
+      },
+      "payment_date": {
+        "value": "2026-06-28T03:14:00+05:30",
+        "confidence": "certain",
+        "source_span": "CASE D1 — 5,000 USDC · 03:14 IST Sunday 28 June 2026 · UAE client"
+      },
+      "payer_location": {
+        "value": "UAE",
+        "confidence": "certain",
+        "source_span": "CASE D1 — 5,000 USDC · 03:14 IST Sunday 28 June 2026 · UAE client"
+      },
+      "payee_location": {
+        "value": "India",
+        "confidence": "certain",
+        "source_span": "Priya, a resident individual, backend developer in Pune"
+      },
+      "payee_occupation": {
+        "value": "backend developer",
+        "confidence": "certain",
+        "source_span": "Priya, a resident individual, backend developer in Pune"
+      },
+      "service_type": {
+        "value": "design work",
+        "confidence": "certain",
+        "source_span": "invoices a UAE client 4,000 USD-equivalent for design work"
+      },
+      "counterparty_name": {
+        "value": "Northbay Systems LLC",
+        "confidence": "declared_only",
+        "source_span": "Counterparty declared on the invoice as Northbay Systems LLC, Delaware — not independently verified"
+      },
+      "counterparty_location": {
+        "value": "Delaware, USA",
+        "confidence": "declared_only",
+        "source_span": "Counterparty declared on the invoice as Northbay Systems LLC, Delaware — not independently verified"
+      }
+    },
+    "missing": [
+      {
+        "item": "Invoice document (invoice.pdf)",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Payment proof (payment.png or payment.txt)",
+        "why_absent": "Not provided",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Exchange rate for USDC on 2026-06-28",
+        "why_absent": "Not published",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "no"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 470000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI-TTBR-DATA.md",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 469750,
+          "observability": "L1",
+          "source": {
+            "name": "SBI-TTBR-DATA.md",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 250,
+        "percent": 0.053,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TT BR) on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Missing exchange rate for 2026-06-28",
+          "inr": 250,
+          "explanation": "The exact exchange rate for the payment date is not available, leading to a potential discrepancy in the INR value."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The receipt of 5,000 USDC is taxable as income in Indian rupees.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate for USDC on 2026-06-28"
+        ]
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services to a non-resident is exempt from GST if the payment is received in convertible foreign exchange.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of payment from a non-resident in a non-bank channel is permissible under FEMA if the payment is in convertible foreign exchange.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "FEMA-3-7-8(3)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The fair market value of the received USDC is determined using the telegraphic transfer buying rate as per the rules.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate for USDC on 2026-06-28"
+        ]
+      }
+    ],
+    "limits": [
+      "The exact exchange rate for the payment date (2026-06-28) is not available, leading to a potential discrepancy in the INR value of the received USDC.",
+      "The counterparty's location and identity have not been independently verified, which may affect the compliance with FEMA and other regulations."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:42:21.007256+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": "D1_pipeline.json",
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_D1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7833,
+          "out_tokens": 1708,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7833,
+      "total_out_tokens": 1708,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

@@ -95,7 +95,7 @@
                 "properties": {
                   "reason":          { "type": "string" },
                   "candidates":      { "type": "array", "items": { "type": "object" } },
-                  "chosen":          { "type": "string", "format": "date" },
+                  "chosen":          { "type": ["string", "null"], "format": "date" },
                   "prescribed_by":   { "type": ["string", "null"] },
                   "difference_inr":  { "type": "number" }
                 }
@@ -200,6 +200,17 @@
       "minItems": 1,
       "description": "Never empty. If this array is empty, the record is wrong.",
       "items": { "type": "string" }
+    },
+
+    "_meta": {
+      "type": "object",
+      "description": "D42/D44. Added 20 Aug — not part of the original 6 Aug lock. Which provider and models actually produced this record, so results.md can quote the file instead of the author's memory. Optional: absent on records written before this field existed.",
+      "properties": {
+        "llm": {
+          "type": "object",
+          "description": "llm_call.provenance() at the moment this record was written — provider, the three resolved model ids, per-node token/retry counts, and the temperature actually used."
+        }
+      }
     }
   },
 
@@ -209,7 +220,7 @@
       "type": "object",
       "required": ["value", "confidence"],
       "properties": {
-        "value":       { "type": ["string", "number", "null"] },
+        "value":       { "type": ["string", "number", "boolean", "null"] },
         "confidence":  { "enum": ["certain", "probable", "declared_only", "unresolved"] },
         "source_span": { "type": "string", "description": "Where in the document this came from. Makes the extraction checkable." },
         "models_agree":{ "type": ["boolean", "null"], "description": "C49. Cross-model disagreement is a free Class 2 flag. It catches Class 3 badly — two models can agree and both be silently wrong." }

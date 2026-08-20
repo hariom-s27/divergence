@@ -1,0 +1,243 @@
+{
+  "arm": "A",
+  "case": "D1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "D1-2026-114",
+    "generated_at": "2026-06-28T03:14:00+05:30",
+    "corpus_frozen_at": "2026-06-28T00:00:00+05:30",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_number": {
+        "value": "2026-114",
+        "confidence": "certain",
+        "source_span": "Invoice 2026-114"
+      },
+      "client_name": {
+        "value": "Northbay Systems LLC",
+        "confidence": "declared_only",
+        "source_span": "Northbay Systems LLC, Delaware — not independently verified"
+      },
+      "amount_in_usdc": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "5,000 USDC"
+      },
+      "date_received": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "03:14 IST Sunday 28 June 2026"
+      },
+      "service_provided": {
+        "value": "design work",
+        "confidence": "certain",
+        "source_span": "design work"
+      },
+      "freelancer_location": {
+        "value": "Pune, India",
+        "confidence": "certain",
+        "source_span": "backend developer in Pune"
+      },
+      "client_location": {
+        "value": "UAE",
+        "confidence": "certain",
+        "source_span": "UAE client"
+      }
+    },
+    "missing": [
+      {
+        "item": "Bank statement or proof of receipt",
+        "why_absent": "No bank involved",
+        "blocks": [
+          "income_tax",
+          "fema"
+        ],
+        "obtainable": "no"
+      },
+      {
+        "item": "Exchange rate on the date of receipt",
+        "why_absent": "No published rate for 2026-06-28",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Independent verification of client's identity",
+        "why_absent": "Not provided",
+        "blocks": [
+          "fema"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) - 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 470000.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-28",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "Rule 206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) - 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 469750.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-28",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "Rule 206(1)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 250.0,
+        "percent": 0.0532,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) - 2026-06-25",
+          "Telegraphic Transfer Buying Rate (TTBR) - 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "No published rate on the date of receipt",
+          "inr": 250.0,
+          "explanation": "Using the closest available rates from 2026-06-25 and 2026-06-29"
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The receipt of 5,000 USDC is taxable as income from professional services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "Section 2(24)(viia) of the Income Tax Act, 1961",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "income_tax_on_transfer",
+        "outcome": "The receipt of 5,000 USDC is not considered a transfer of a virtual digital asset and is not subject to the 1% TDS under Section 393(1)(vi).",
+        "certainty": "settled",
+        "citation": {
+          "provision": "Section 2(47A) of the Income Tax Act, 1961",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services to a UAE client qualifies as an export of services and is zero-rated for GST.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "Section 5(4) of the IGST Act, 2017",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "Receiving payment in USDC from a foreign client without involving an authorized person is a violation of FEMA, specifically Section 3(a) and (c).",
+        "certainty": "settled",
+        "citation": {
+          "provision": "Section 3 of the Foreign Exchange Management Act, 1999",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Independent verification of client's identity"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The INR value of the receipt is determined using the telegraphic transfer buying rate (TTBR) from the closest available dates, 2026-06-25 and 2026-06-29.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "Rule 206(1) of the Income Tax Rules, 1962",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate on the date of receipt"
+        ]
+      }
+    ],
+    "limits": [
+      "The exact exchange rate on the date of receipt (2026-06-28) is not available, leading to a small uncertainty in the INR value.",
+      "The client's identity has not been independently verified, which could impact compliance with FEMA."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:21:47.314245+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_D1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7697,
+          "out_tokens": 1611,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7697,
+      "total_out_tokens": 1611,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

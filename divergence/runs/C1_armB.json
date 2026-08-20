@@ -1,0 +1,228 @@
+{
+  "arm": "B",
+  "case": "C1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C1_85000",
+    "generated_at": "2023-10-05T12:00:00Z",
+    "corpus_frozen_at": "2023-10-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "client_type": {
+        "value": "resident_individual",
+        "confidence": "certain",
+        "source_span": "Resident individual invoices a Bengaluru company ₹85,000 for consulting."
+      },
+      "payment_amount": {
+        "value": 85000,
+        "confidence": "certain",
+        "source_span": "Resident individual invoices a Bengaluru company ₹85,000 for consulting."
+      },
+      "payment_method": {
+        "value": "NEFT",
+        "confidence": "certain",
+        "source_span": "Paid by NEFT on Tuesday 16 June 2026."
+      },
+      "payment_date": {
+        "value": "2026-06-16",
+        "confidence": "certain",
+        "source_span": "Paid by NEFT on Tuesday 16 June 2026."
+      },
+      "service_type": {
+        "value": "consulting",
+        "confidence": "certain",
+        "source_span": "Resident individual invoices a Bengaluru company ₹85,000 for consulting."
+      },
+      "payer_location": {
+        "value": "Bengaluru",
+        "confidence": "certain",
+        "source_span": "Resident individual invoices a Bengaluru company ₹85,000 for consulting."
+      },
+      "domestic_supply": {
+        "value": true,
+        "confidence": "certain",
+        "source_span": "Domestic supply."
+      }
+    },
+    "missing": [
+      {
+        "item": "invoice.pdf",
+        "why_absent": "Not provided in the document.",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "payment.png",
+        "why_absent": "Not provided in the document.",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "payment.txt",
+        "why_absent": "Not provided in the document.",
+        "blocks": [
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR)",
+          "rate": 94.3,
+          "inr_value": 85000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR Data",
+            "retrieved": "2026-06-25",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Last Published Rate",
+          "rate": 94.3,
+          "inr_value": 85000,
+          "observability": "L2",
+          "source": {
+            "name": "SBI TT BR Data",
+            "retrieved": "2026-06-25",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-207(1)",
+          "date_used": "2026-06-25"
+        }
+      ],
+      "spread": {
+        "inr": 0.0,
+        "percent": 0.0,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TT BR)",
+          "Last Published Rate"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Missing payment and invoice documents",
+          "inr": 0.0,
+          "explanation": "The exact details of the payment and the invoice are not provided, which could affect the valuation."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The resident individual is required to report the ₹85,000 as income.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-56-2-x(c)(B)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "This is a domestic supply, not an export, hence GST is applicable.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "No FEMA provisions are applicable as this is a domestic transaction.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3-7-8(3)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation methods are consistent and yield the same result.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1), ITR2026-RULE-207(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The exact details of the payment and the invoice are not provided, which could affect the valuation and compliance with tax and regulatory requirements."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:32:45.952269+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_C1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7739,
+          "out_tokens": 1306,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7739,
+      "total_out_tokens": 1306,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

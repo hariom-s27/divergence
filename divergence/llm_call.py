@@ -77,6 +77,19 @@ PROVIDERS = {
 
 DEFAULT_PROVIDER = "featherless"
 
+
+def temperature():
+    """evaluation-design.md: 'Temperature | default, not zero — that is how a
+    real user runs it.' Five runs at temperature 0 measure one point five
+    times. Dev/self-test work wants 0 (reproducible); the scored eval must
+    not have it. Explicit, per-run, and recorded in provenance()."""
+    t = os.environ.get("DIVERGENCE_TEMPERATURE", "").strip()
+    if t == "":
+        return 0.0          # dev default: reproducible
+    if t.lower() in ("default", "none", "model"):
+        return None          # send no temperature -- the model's own default
+    return float(t)
+
 # Model ids known to accept image_url blocks. Used by node1_extract.py to
 # refuse a photographed invoice rather than send an image to a text-only
 # model, which either errors or — worse — ignores it and invents the facts.
@@ -211,6 +224,7 @@ def provenance():
         "total_calls": len(_CALLS),
         "total_in_tokens": sum(c["in_tokens"] for c in _CALLS),
         "total_out_tokens": sum(c["out_tokens"] for c in _CALLS),
+        "temperature": os.environ.get("DIVERGENCE_TEMPERATURE", "0 (dev default)"),
         "note": ("Figures above are the MEASURED run on this provider. Any "
                  "Claude rupee-per-record figure quoted elsewhere is a metered "
                  "deployment estimate, not this run."),
@@ -323,8 +337,10 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
             model=model,
             messages=[{"role": "system", "content": system}] + messages,
             max_tokens=max_tokens,
-            temperature=0,
         )
+        _t = temperature()
+        if _t is not None:
+            kwargs["temperature"] = _t
         seed = os.environ.get("DIVERGENCE_SEED")
         if seed:
             kwargs["seed"] = int(seed)
@@ -342,8 +358,11 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
         u = getattr(r, "usage", None)
         return text, getattr(u, "prompt_tokens", 0) or 0, getattr(u, "completion_tokens", 0) or 0
 
-    r = c.messages.create(model=model, system=system, messages=messages,
-                          max_tokens=max_tokens, temperature=0)
+    anthropic_kwargs = dict(model=model, system=system, messages=messages, max_tokens=max_tokens)
+    _t = temperature()
+    if _t is not None:
+        anthropic_kwargs["temperature"] = _t
+    r = c.messages.create(**anthropic_kwargs)
     text = "".join(b.text for b in r.content if getattr(b, "type", "") == "text")
     return text, r.usage.input_tokens, r.usage.output_tokens
 

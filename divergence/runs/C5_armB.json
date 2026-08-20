@@ -1,0 +1,233 @@
+{
+  "arm": "B",
+  "case": "C5",
+  "tax_year": "FY 2026-27",
+  "schema_valid": false,
+  "schema_error": "'valuation_method' is not one of ['income_tax', 'gst', 'fema', 'valuation']",
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C5-3000-USD",
+    "generated_at": "2023-10-10T12:00:00Z",
+    "corpus_frozen_at": "2023-10-10T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "amount_usd": {
+        "value": 3000,
+        "confidence": "certain",
+        "source_span": "USD 3,000 wired by a US client"
+      },
+      "value_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "value-dated Sunday 28 June 2026"
+      },
+      "settlement_day": {
+        "value": "Sunday",
+        "confidence": "certain",
+        "source_span": "value-dated Sunday 28 June 2026"
+      },
+      "firc_issued": {
+        "value": true,
+        "confidence": "certain",
+        "source_span": "FIRC issued"
+      },
+      "crypto_presence": {
+        "value": false,
+        "confidence": "certain",
+        "source_span": "NO CRYPTO ANYWHERE"
+      },
+      "sbi_rate_published": {
+        "value": false,
+        "confidence": "certain",
+        "source_span": "SBI published no rate on the 28th and neither did FBIL"
+      },
+      "fbil_rate_published": {
+        "value": false,
+        "confidence": "certain",
+        "source_span": "SBI published no rate on the 28th and neither did FBIL"
+      }
+    },
+    "missing": [
+      {
+        "item": "Invoice or contract document",
+        "why_absent": "Not provided in the case",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Payment receipt or proof of payment",
+        "why_absent": "Not provided in the case",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Official exchange rate for 2026-06-28",
+        "why_absent": "SBI and FBIL did not publish rates on this date",
+        "blocks": [
+          "valuation_method"
+        ],
+        "obtainable": "no"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Last published rate before value date",
+          "rate": 94.0,
+          "inr_value": 282000,
+          "observability": "L2",
+          "source": {
+            "name": "SBI TT BUY",
+            "retrieved": "2023-10-10",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(2)(b)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "First published rate after value date",
+          "rate": 93.95,
+          "inr_value": 281850,
+          "observability": "L2",
+          "source": {
+            "name": "SBI TT BUY",
+            "retrieved": "2023-10-10",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(2)(b)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 150,
+        "percent": 0.0532,
+        "between": [
+          "Last published rate before value date",
+          "First published rate after value date"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Missing official exchange rate for value date",
+          "inr": 150,
+          "explanation": "SBI and FBIL did not publish rates on 2026-06-28"
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income from the USD 3,000 receipt is taxable in Indian rupees at the rate determined by the valuation methods.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Official exchange rate for 2026-06-28"
+        ]
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The payment received is not subject to GST as it pertains to an export of services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of foreign exchange is compliant with FEMA regulations as it is through an authorized person and for a permissible transaction.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3-7-8(3)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation of the foreign exchange is based on the telegraphic transfer buying rate, with the last published rate before the value date and the first published rate after the value date being considered.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(2)(b)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Official exchange rate for 2026-06-28"
+        ]
+      }
+    ],
+    "limits": [
+      "The official exchange rate for 2026-06-28 is missing, leading to uncertainty in the exact valuation of the USD 3,000 receipt."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:38:28.351323+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_C5": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7807,
+          "out_tokens": 1362,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7807,
+      "total_out_tokens": 1362,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

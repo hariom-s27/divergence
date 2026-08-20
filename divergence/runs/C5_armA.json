@@ -1,0 +1,214 @@
+{
+  "arm": "A",
+  "case": "C5",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C5-INV001",
+    "generated_at": "2026-07-05T12:00:00Z",
+    "corpus_frozen_at": "2026-07-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_amount_usd": {
+        "value": 3000,
+        "confidence": "certain",
+        "source_span": "USD 3,000 wired by a US client"
+      },
+      "payment_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "value-dated Sunday 28 June 2026"
+      },
+      "payment_method": {
+        "value": "bank wire",
+        "confidence": "certain",
+        "source_span": "USD 3,000 wired by a US client"
+      },
+      "client_country": {
+        "value": "US",
+        "confidence": "certain",
+        "source_span": "US client"
+      },
+      "freelancer_residence": {
+        "value": "India",
+        "confidence": "certain",
+        "source_span": "Indian freelancer"
+      },
+      "fir_c_issued": {
+        "value": "yes",
+        "confidence": "certain",
+        "source_span": "FIRC issued"
+      },
+      "crypto_involved": {
+        "value": "no",
+        "confidence": "certain",
+        "source_span": "NO CRYPTO ANYWHERE"
+      }
+    },
+    "missing": [
+      {
+        "item": "Exchange rate for 2026-06-28",
+        "why_absent": "SBI did not publish a rate on 2026-06-28",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "no"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "TT Buying Rate on 2026-06-25",
+          "rate": 94.0,
+          "inr_value": 282000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT Buying Rate",
+            "retrieved": "2026-07-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(3)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "TT Buying Rate on 2026-06-29",
+          "rate": 93.95,
+          "inr_value": 281850,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT Buying Rate",
+            "retrieved": "2026-07-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(3)",
+          "date_used": "2026-06-29"
+        }
+      ],
+      "spread": {
+        "inr": 150,
+        "percent": 0.0532,
+        "between": [
+          "TT Buying Rate on 2026-06-25",
+          "TT Buying Rate on 2026-06-29"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "No published rate on 2026-06-28",
+          "inr": 150,
+          "explanation": "Using the closest published rates before and after the payment date to approximate the INR value."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The INR value of the receipt is either ₹282,000 or ₹281,850, depending on the chosen method.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(3)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate for 2026-06-28"
+        ]
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services is considered an export of services, and GST is not applicable.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of payment from a foreign client is compliant with FEMA, provided the FIRC is issued.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3(a), FEMA-7(3), FEMA-8",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The INR value is determined using the closest published TT Buying Rates before and after the payment date.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "ITR2026-RULE-206(3)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate for 2026-06-28"
+        ]
+      }
+    ],
+    "limits": [
+      "The exact INR value of the receipt cannot be determined due to the lack of a published exchange rate on 2026-06-28.",
+      "The choice between the TT Buying Rates of 2026-06-25 and 2026-06-29 introduces a small uncertainty in the valuation."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:28:00.832944+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C5": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7671,
+          "out_tokens": 1342,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7671,
+      "total_out_tokens": 1342,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

@@ -14,3 +14,4 @@ __pycache__/
 
 # See divergence/.gitignore for the keys/secrets rules that matter most —
 # git honours nested .gitignore files, so those still apply under divergence/.
+.claude/

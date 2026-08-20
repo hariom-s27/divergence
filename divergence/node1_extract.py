@@ -125,6 +125,37 @@ def build_content(text_paths, file_paths, model="small"):
     return blocks
 
 
+_VALID_CONFIDENCE = {"certain", "probable", "declared_only", "unresolved"}
+
+
+def _validate_facts_shape(facts, raw):
+    """schema.json: every facts{} value must be {value, confidence, ...} --
+    never a bare value. Found live on C2 (Qwen2.5-7B/Featherless, 20 Aug):
+    the model nested 'extraction_notes' — a bare list — INSIDE facts{}
+    instead of as the sibling key the prompt asks for. That is syntactically
+    valid JSON, so call_json()'s retry-on-bad-JSON never triggers; it would
+    otherwise have surfaced as an opaque schema failure at the very end of
+    run_pipeline.py, three steps and several minutes later. Catching it here,
+    at the node that produced it, is what 'hard fail with a logged error'
+    (architecture.md ERROR HANDLING) actually means in practice."""
+    bad = {
+        k: v for k, v in facts.items()
+        if not (isinstance(v, dict) and "value" in v and "confidence" in v
+                 and v["confidence"] in _VALID_CONFIDENCE)
+    }
+    if bad:
+        raise LLMError(
+            f"{NODE_NAME}: facts{{}} contains field(s) that are not a valid "
+            f"extracted_field {{value, confidence, ...}}: {list(bad)}\n"
+            f"  This is syntactically valid JSON (so the retry-on-bad-JSON "
+            f"path never fires) but violates schema.json's own contract for "
+            f"facts{{}}. Most likely cause: the model nested something like "
+            f"'extraction_notes' inside facts{{}} instead of as a sibling key.\n"
+            f"  Offending value(s): {bad}\n"
+            f"  Raw model output:\n{raw}"
+        )
+
+
 def extract(text_paths, file_paths, model="small"):
     """The reusable entry point — run_pipeline.py calls this directly rather
     than shelling out and re-parsing stdout. Returns (facts, extraction_notes,
@@ -134,6 +165,7 @@ def extract(text_paths, file_paths, model="small"):
     parsed = llm_call.call_json(system, content, model, node_name=NODE_NAME)
     if "facts" not in parsed or not isinstance(parsed["facts"], dict):
         raise LLMError(f"{NODE_NAME}: model output has no top-level 'facts' object\n{parsed}")
+    _validate_facts_shape(parsed["facts"], parsed)
     meta = llm_call.provenance()["by_node"].get(NODE_NAME, {})
     return parsed["facts"], parsed.get("extraction_notes", []), meta
 

@@ -1,0 +1,259 @@
+{
+  "arm": "B",
+  "case": "C3",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C3-2000USDC-20260623",
+    "generated_at": "2023-10-05T12:00:00Z",
+    "corpus_frozen_at": "2023-10-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "transaction_amount_usdc": {
+        "value": 2000,
+        "confidence": "certain",
+        "source_span": "2,000 USDC"
+      },
+      "transaction_date": {
+        "value": "2026-06-23",
+        "confidence": "certain",
+        "source_span": "Tuesday 23 June 2026"
+      },
+      "settlement_time": {
+        "value": "14:30 IST",
+        "confidence": "certain",
+        "source_span": "settled 14:30 IST on Tuesday 23 June 2026"
+      },
+      "sbi_rate_published": {
+        "value": true,
+        "confidence": "certain",
+        "source_span": "SBI published that day"
+      }
+    },
+    "missing": [
+      {
+        "item": "Invoice document",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Payment proof document",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the recipient (resident or non-resident)",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the service provided (if applicable)",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the virtual digital asset (if applicable)",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "income_tax",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "SBI TT Buying Rate on Transaction Date",
+          "rate": 94.3,
+          "inr_value": 188600.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR DATA",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-23"
+        },
+        {
+          "label": "SBI TT Buying Rate on Last Day of Tax Year",
+          "rate": 94.3,
+          "inr_value": 188600.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR DATA",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(2)(b)(iii)",
+          "date_used": "2026-06-23"
+        }
+      ],
+      "spread": {
+        "inr": 0.0,
+        "percent": 0.0,
+        "between": [
+          "SBI TT Buying Rate on Transaction Date",
+          "SBI TT Buying Rate on Last Day of Tax Year"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Missing details of the recipient and service provided",
+          "inr": 0.0,
+          "explanation": "Without these details, the applicability of specific tax and valuation rules cannot be fully determined"
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income from the receipt of 2000 USDC is taxable at the rate of 30% if it is from the transfer of a virtual digital asset.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "IT-115BBH(1)(a)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Details of the recipient (resident or non-resident)",
+          "Details of the virtual digital asset (if applicable)"
+        ]
+      },
+      {
+        "regime": "income_tax_on_transfer",
+        "outcome": "The transfer of a virtual digital asset is subject to a 30% tax rate, with no deductions or set-off of losses allowed.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-115BBH(1)(a), IT-115BBH(2)(a)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Details of the virtual digital asset (if applicable)"
+        ]
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "If the transaction involves the export of services, it must be declared to the Reserve Bank and the payment must be received in convertible foreign exchange.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Details of the service provided (if applicable)"
+        ]
+      },
+      {
+        "regime": "fema",
+        "outcome": "The transaction must comply with FEMA regulations, including the requirement to deal with authorized persons and ensure payments are made through authorized channels.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3(a), FEMA-3(b), FEMA-3(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Details of the recipient (resident or non-resident)"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The fair market value of the transaction is determined using the SBI TT Buying Rate on the transaction date or the last day of the tax year, as mandated by the IT Rules.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1), ITR2026-RULE-206(2)(b)(iii)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The recipient's residency status and the nature of the service provided are unknown, which affects the applicability of specific tax and FEMA rules.",
+      "The details of the virtual digital asset, if applicable, are not provided, which impacts the determination of the tax treatment under the Income Tax Act."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:35:26.113584+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_C3": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7798,
+          "out_tokens": 1627,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7798,
+      "total_out_tokens": 1627,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

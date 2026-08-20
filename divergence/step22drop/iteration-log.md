@@ -407,6 +407,250 @@ this noted in the entry's own reasoning field.
 
 ---
 
+## Step 27 — the first real end-to-end run, 20 Aug · broke, exactly as predicted
+
+### The run
+```
+python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" \
+    --text step21drop\cases\D1\case.md --out runs\D1_pipeline.json
+```
+Nodes 1 and 2 had each run alone before. The whole chain — extract → gap
+detector → citation matcher → gap enforcer → schema validation — had never
+run once. `STEP-27-AND-29.md`'s own instructions said "expect it to break."
+
+### What actually broke
+Not one of the three predicted symptoms (missing `--regimes`, missing
+`valuation.json`, an empty `missing[]`). A fourth one, at schema validation:
+
+```
+schema.json: INVALID — None is not of type 'string'
+  ...valuation.methods[1].date_choice.chosen: None
+```
+
+`node3_valuation.py` sets `date_choice.chosen = None` **on purpose** — its
+own docstring: *"R99 — THE GAP HAS A GAP... never resolve it silently."*
+`schema.json`'s `date_choice.chosen` required `{"type": "string", "format":
+"date"}` — no null allowed — while the field right next to it,
+`prescribed_by`, was correctly typed `["string", "null"]`. The schema simply
+missed one field when documenting its own null case.
+
+**Nobody had validated a real record against the schema before this run.**
+`node3_valuation.py`'s self-test writes `valuation.json` directly and never
+runs it through `jsonschema.validate()`; `run_pipeline.py`'s own
+`validate_schema()` was written and self-tested against a hand-built
+synthetic record (Step 22) that happened not to exercise this branch.
+
+**Fix:** `schema.json` — `"chosen": {"type": ["string", "null"], "format":
+"date"}`. One line.
+
+### Before → after
+```
+schema.json: INVALID — None is not of type 'string'
+```
+→
+```
+schema.json: VALID
+```
+2 model calls (extract + gap detector), 3986 in / 607 out tokens, 0 retries
+either node. `_meta.llm.provider` = `featherless`, models = Qwen/Qwen/Mistral
+as expected, `temperature` recorded per the fix above.
+
+---
+
+## Step 31 — C2 through the pipeline · not quite "unchanged," and the honest version is more interesting
+
+The plan called this the best ratio on the board: run C2 (USD bank receipt,
+no crypto) unchanged, and if nothing needs to change, that sentence alone is
+the scalability argument.
+
+**Something did need to change — but not in C2, and not in the pipeline's
+scope logic.** First run: `schema.json: INVALID`. `node1_extract.py`
+(Qwen2.5-7B) had nested `"extraction_notes": ["Typed input provided; no
+actual documents available."]` **inside** `facts{}` — a bare list where the
+schema requires every `facts{}` value to be `{value, confidence, ...}`. This
+is syntactically valid JSON, so `call_json()`'s retry-on-bad-JSON path never
+fires; it only surfaced as an opaque schema failure at the very end of
+`run_pipeline.py`, after both model calls had already run.
+
+**Fix:** `node1_extract.py` now validates every `facts{}` value's shape
+immediately after the model call, before returning — `_validate_facts_shape()`.
+A malformed field now hard-fails at node 1, with the offending field named,
+instead of failing three steps later with a schema-validator stack trace
+that doesn't say which node caused it.
+
+**Re-ran C2 after the fix: schema VALID, on the model's own output, no
+retry needed.** The malformed shape did not reproduce — same case, same
+model, same temperature (dev default, 0) two calls apart, one nested the
+notes wrong and one didn't. **That inconsistency is itself the finding**:
+even at temperature 0, this 7B model's adherence to an exact multi-key JSON
+contract is not fully stable run to run. The scope logic (facts extracted,
+one gap found, no VDA-specific citations reached) was identical both times —
+the pipeline's *structure* generalised to a non-crypto case exactly as
+predicted. Its *small-model reliability* did not, on the first try.
+
+**What to say about it:** not "C2 ran unchanged" — "C2's pipeline structure
+required no change; C2's first run caught a real small-model contract
+violation that D1 hadn't, and fixing it made node 1 fail loud instead of
+failing three steps downstream." That is a better sentence than the clean
+one would have been.
+
+---
+
+## `run_arms.py` — D45 · 20 Aug · arm A's first run: 6/6 JSON, 0/6 schema-valid, and it wasn't a reasoning failure
+
+### The run
+```
+python run_arms.py --arm A --all-cases
+```
+First real execution of a baseline arm, ever. 6/6 produced parseable JSON.
+0/6 validated against `schema.json`.
+
+### What actually happened — checked before writing it down as a finding
+Every one of the 6 records had this shape at the top level:
+`["$schema", "$id", "title", "description", "type", "required",
+"additionalProperties", "properties"]` — **the model returned the schema
+document itself**, not a record shaped like it. Looking closer: it filled
+real answer values into the schema's own `"properties"` key —
+`"properties": {"record_id": "CASE_D1_2026-114", "generated_at": "2023-...",
+...}` — conflating the schema *definition* with a data *instance*.
+Identical failure mode, 6/6, on Qwen2.5-72B.
+
+**This is not the finding it looks like.** `run_arms.py` was appending the
+raw `schema.json` — full Draft-2020-12 syntax, `$schema`/`$defs`/`required`
+keywords — as "the output shape." Every prompt this project has actually
+gotten working (01 through 05) instead shows a filled *example* JSON object
+with `<placeholder>` markers, never the formal schema. Handing arm A the raw
+schema and calling that "the same contract" is exactly the "fail on
+formatting rather than on reasoning" trap `run_arms.py`'s own docstring says
+it wants to avoid — it just failed at it in a way that looked like a
+finding about the model instead of a bug in the harness.
+
+**Fix:** `SCHEMA_EXAMPLE` — a filled example instance, same style as the
+node prompts, generated from `schema.json`'s own structure. Replaces the raw
+schema dump for every arm.
+
+> **Why this matters beyond one bug.** Publishing "arm A: 0/6 schema-valid"
+> without catching this would have been exactly the straw-man baseline
+> `evaluation-design.md` §2 exists to prevent — not because the prompt was
+> weakened, but because the *harness* handed arm A a more confusing output
+> contract than arm C's own nodes ever see. Caught before the number went in
+> `results.md`, not after.
+
+**Re-run with `SCHEMA_EXAMPLE`: 6/6 JSON, 4/6 schema-valid.** Output tokens
+dropped from 2290–2709 to 1097–1611 per case — the model stopped padding
+its answer with a copy of the schema, which is itself confirmation the
+first run's failure was about the prompt, not the reasoning.
+
+### Second failure, checked the same way before accepting it
+C2 and C4 both failed with `True`/`False is not of type 'string', 'number',
+'null'` — a boolean `value` in a `facts{}` field.
+**Also not an arm A defect.** `extracted_field.value`'s type union never
+included `boolean` — and every single case's `ground_truth.json` already
+uses boolean values (`"bank_involved": {"value": false, ...}`). The
+pipeline's own node 1 simply hadn't happened to extract a boolean-valued
+fact in either of the two real runs so far (D1, C2) to trip over it.
+**Fix:** `schema.json` — `extracted_field.value` type now `["string",
+"number", "boolean", "null"]`. Re-validated the two stored records against
+the fixed schema without re-calling the model (the output didn't change,
+only the schema did) — both now valid, noted honestly in each file's
+`_meta.revalidated_note` rather than silently rewritten.
+
+### The corrected number
+**Arm A: 6/6 produced parseable JSON, 6/6 schema-valid**, once the harness
+gave it a fair, correctly-typed contract. Two harness bugs found chasing
+this number down, neither one a finding about naive prompting — and both
+would eventually have hit the real pipeline too (the raw-schema confound
+never would have, since nodes 1-5 never see raw schema.json; the boolean
+gap absolutely would have, on the first D1/C2-style case that extracts a
+boolean fact).
+
+> **Say this, not "arm A held the schema 6/6."** The honest sentence is:
+> "arm A holds the output contract when given it fairly — and getting the
+> contract fair took two rounds of catching our own bugs first." That is a
+> better line for Q&A than a clean number with an unexamined asterisk.
+
+---
+
+## `run_arms.py` — arm B, 20 Aug · a third bug, in the token-match arithmetic itself
+
+First run of arm B (`--token-match runs\`): D1 and C2 — the only two cases
+with an arm-C pipeline record to match against — both got `max_tokens` set
+to arm C's *measured* `total_out_tokens` (577 for D1, 444 for C2) and both
+**produced zero output tokens**, unparseable. C1/C3/C4/C5 (no arm-C record
+yet, fell back to the 4096 default) mostly succeeded.
+
+**Checked before writing it down as a finding about arm B:** the raw output
+for D1 was mid-sentence inside `facts{}` — genuine truncation, not an empty
+response. `total_out_tokens` from `llm_call.provenance()` is the **sum**
+across every node call in that run — node 1 wrote *only* `facts{}` (488
+tokens), node 2 wrote *only* `missing[]` (89 tokens). Arm B has to write
+`facts` + `missing` + `valuation` + `regimes` + `limits` in **one**
+completion. Capping that single completion at the sum of two much smaller
+partial-output calls starves it structurally — nothing about reasoning
+quality, pure budget arithmetic.
+
+**Fix:** `token_budget()` now floors the match at `DEFAULT_MAX_TOKENS`
+rather than at 256 — token-match **up** when arm C's measured total
+genuinely exceeds the default (informative), never down below a budget a
+single-shot completion has already been shown to need. Re-ran D1 and C2
+only: both now `json+schema OK`.
+
+**Also worth saying plainly:** there is no genuine token-match possible yet.
+Every arm-C record so far is a partial run — `regimes[]` is empty on all of
+them, since nodes 3/4/5 are still hand-run and no `--regimes` file has been
+passed to any run. Until a full 5-node record exists, "token-matched"
+reduces to "given the same 4096-token default everything else gets" — true,
+but not what D39 means by the phrase. Say so in `results.md` rather than
+letting the field name imply more than it currently delivers.
+
+### Final numbers, all 6 cases, both bugs fixed
+| Arm | JSON produced | Schema-valid | Genuine failures (not a harness bug) |
+|---|---|---|---|
+| A | 6/6 | 6/6 | none |
+| B | 6/6 | 4/6 | C4: a `null` rate on a correctly-enumerated second method · C5: `"valuation_method"` (a `regime` value) used where `blocks[]` wanted `"income_tax"/"gst"/"fema"/"valuation"` — a genuine mix-up between two similarly-shaped schema enums |
+
+C4 and C5's failures were checked the same way as everything above and are
+real — the model attempted the right structure and got two different
+specific things wrong. Worth keeping exactly as they are.
+
+---
+
+## Scoring — two more gaps found running the actual scorers, 20 Aug
+
+### `m3b_citation_coverage.py --all runs/` ran clean, and surfaced something
+that must not go in `results.md` unqualified: **arm C's citation recall is
+0.000 on both D1 and C2.** Not because the pipeline underperforms the
+baseline — `D1_pipeline.json`/`C2_pipeline.json` only ever ran nodes 1+2
+(extract, gap detector). No `--regimes` file has been passed to
+`run_pipeline.py` for any case yet, so `regimes[]` — the only place a
+citation can come from — is empty on every arm-C record that exists.
+**Arm C has not been given the chance to cite anything.** Reporting
+"arm C: 0.000 recall" without this sentence attached would be exactly the
+misleading-baseline-comparison failure `evaluation-design.md` §2 exists to
+prevent, aimed at ourselves instead of at arm A. Nodes 3/4/5 (hand-run, fed
+in via `--regimes`) have to actually happen before arm C's citation
+numbers mean anything.
+
+### `eval/score.py --all` does not run against any real output yet
+```
+KeyError: 'case_id'
+```
+`score.py` expects a normalised run file: `{"case_id", "arm", "model",
+"seed", "facts", "missing", "methods", "elements", "citations", "raw"}` —
+written (per its own docstring) for arms A/B to be **hand-coded** into that
+shape from raw prose output. Neither `run_pipeline.py`'s schema-conforming
+records (`record_id`, citations nested inside `regimes[]`) nor
+`run_arms.py`'s wrapped output (`case`, everything nested under `record`)
+match it. **There is currently no adapter between what the automated
+scripts produce and what `score.py` reads.** Not fixed here — this needs a
+normalisation script (`record → run-file shape`) as its own piece of work,
+not a rushed patch at the end of an already-large session. `m3b_citation_coverage.py`
+works today because it was written against the real record shapes directly;
+`score.py`'s other four metrics (extraction accuracy, gap recall, method
+enumeration, false abstention) are still unscored against any live run.
+
+---
+
 ## Design decisions that changed the build
 
 | Date | Change | Why |

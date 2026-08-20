@@ -1,0 +1,221 @@
+{
+  "arm": "A",
+  "case": "C4",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C4-001",
+    "generated_at": "2023-10-04T12:00:00Z",
+    "corpus_frozen_at": "2023-10-04T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "usdc_received": {
+        "value": 400,
+        "confidence": "certain",
+        "source_span": "400 USDC received Thursday 18 June 2026 for a small piece of work."
+      },
+      "date_received": {
+        "value": "2026-06-18",
+        "confidence": "certain",
+        "source_span": "400 USDC received Thursday 18 June 2026 for a small piece of work."
+      },
+      "threshold_exceeded": {
+        "value": false,
+        "confidence": "certain",
+        "source_span": "Well under the â‚¹50,000 threshold in s.393(4) Table Sl. No. 12."
+      },
+      "service_type": {
+        "value": "professional services",
+        "confidence": "certain",
+        "source_span": "400 USDC received Thursday 18 June 2026 for a small piece of work."
+      }
+    },
+    "missing": [
+      {
+        "item": "invoice.pdf",
+        "why_absent": "not provided",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "payment.png",
+        "why_absent": "not provided",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "payment.txt",
+        "why_absent": "not provided",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) - State Bank of India",
+          "rate": 94.0,
+          "inr_value": 37600.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI-TTBR-DATA.md",
+            "retrieved": "2026-06-25",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Internal Accounting Book Value",
+          "rate": 94.0,
+          "inr_value": 37600.0,
+          "observability": "L2",
+          "source": {
+            "name": "ITR2026-RCASP-VALUATION.md",
+            "retrieved": "2026-06-18",
+            "tier": "reported"
+          },
+          "mandated_by": "ITR2026-RCASP-VALUATION.md (iii)(A)",
+          "date_used": "2026-06-18"
+        }
+      ],
+      "spread": {
+        "inr": 0.0,
+        "percent": 0.0,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) - State Bank of India",
+          "Internal Accounting Book Value"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "No published TTBR on the exact date of receipt",
+          "inr": 0.0,
+          "explanation": "The TTBR for 2026-06-26 and 2026-06-27 was not published, so the nearest available rate (2026-06-25) was used."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The receipt of 400 USDC is taxable as income from other sources.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of professional services to a foreign client is exempt from GST as it is an export of services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of USDC is compliant with FEMA as it is received through an authorized person (crypto exchange).",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3-7-8(3)(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The INR value of the receipt is determined using the TTBR from the State Bank of India on the nearest available date.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The exact TTBR for the date of receipt (2026-06-18) is not available, so the nearest published rate (2026-06-25) was used.",
+      "The invoice and payment documentation are missing, which could affect the accuracy of the valuation and compliance checks."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:26:51.760899+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C4": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7641,
+          "out_tokens": 1367,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7641,
+      "total_out_tokens": 1367,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    },
+    "revalidated_note": "Originally failed schema validation: value was boolean, and schema.json extracted_field.value did not allow boolean. Fixed in schema.json (D45 addendum) -- boolean is a legitimate fact type, already used in every case ground_truth.json. Re-validated against the fixed schema without re-calling the model; the model output itself is unchanged."
+  }
+}

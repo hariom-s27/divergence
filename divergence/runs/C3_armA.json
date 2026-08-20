@@ -1,0 +1,224 @@
+{
+  "arm": "A",
+  "case": "C3",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C3-2026-06-23",
+    "generated_at": "2026-06-23T14:30:00Z",
+    "corpus_frozen_at": "2026-06-23T14:30:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_date": {
+        "value": "2026-06-23",
+        "confidence": "certain",
+        "source_span": "Tuesday 23 June 2026"
+      },
+      "payment_date": {
+        "value": "2026-06-23",
+        "confidence": "certain",
+        "source_span": "Tuesday 23 June 2026"
+      },
+      "amount_usdc": {
+        "value": 2000,
+        "confidence": "certain",
+        "source_span": "2,000 USDC"
+      },
+      "payment_method": {
+        "value": "USDC",
+        "confidence": "certain",
+        "source_span": "2,000 USDC"
+      },
+      "freelancer_residence": {
+        "value": "India",
+        "confidence": "certain",
+        "source_span": "Indian freelancer"
+      },
+      "client_residence": {
+        "value": "Foreign",
+        "confidence": "certain",
+        "source_span": "foreign client"
+      },
+      "service_type": {
+        "value": "Professional services",
+        "confidence": "certain",
+        "source_span": "professional services"
+      }
+    },
+    "missing": [
+      {
+        "item": "Invoice document",
+        "why_absent": "Not provided in the case details",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Payment receipt document",
+        "why_absent": "Not provided in the case details",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) - SBI",
+          "rate": 94.3,
+          "inr_value": 188600.0,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-23",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-23"
+        },
+        {
+          "label": "Alternative Valuation Method (Third-Party Aggregator)",
+          "rate": 94.35,
+          "inr_value": 188700.0,
+          "observability": "L2",
+          "source": {
+            "name": "Third-Party Aggregator",
+            "retrieved": "2026-06-23",
+            "tier": "reported"
+          },
+          "mandated_by": "ITR2026-RCASP-VALUATION(iii)(B)",
+          "date_used": "2026-06-23"
+        }
+      ],
+      "spread": {
+        "inr": 100.0,
+        "percent": 0.053,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) - SBI",
+          "Alternative Valuation Method (Third-Party Aggregator)"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Variation in TTBR and third-party aggregator rates",
+          "inr": 100.0,
+          "explanation": "The difference between the SBI TTBR and the third-party aggregator rate is minimal, but it introduces a small uncertainty in the valuation."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income is taxable in India as income from other sources.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-2-47A(d)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services is exempt from GST as it is an export of services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of payment in USDC from a foreign client is compliant with FEMA as long as the payment is received through an authorized person.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3(a), FEMA-3(c)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The valuation method for converting USDC to INR is based on the SBI TTBR, with a minor adjustment for the third-party aggregator rate.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1), ITR2026-RCASP-VALUATION(iii)(B)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The exact documents (invoice and payment receipt) are not provided, which could affect the accuracy of the analysis.",
+      "The valuation method assumes the SBI TTBR is the most reliable source, but there is a minor variation with the third-party aggregator rate."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:25:27.157379+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C3": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7662,
+          "out_tokens": 1346,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7662,
+      "total_out_tokens": 1346,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

@@ -192,6 +192,7 @@ def main():
         "valuation": valuation or {"methods": [], "spread": {"inr": 0, "percent": 0}, "uncertainty_budget": []},
         "regimes": record_stub["regimes"],
         "limits": limits,
+        "_meta": {"llm": llm_call.provenance()},
     }
 
     out_path = a.out or os.path.join(HERE, "runs", f"{a.record_id}_pipeline.json")

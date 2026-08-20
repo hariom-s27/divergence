@@ -1,0 +1,216 @@
+{
+  "arm": "A",
+  "case": "C2",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C2-001",
+    "generated_at": "2026-06-25T12:00:00Z",
+    "corpus_frozen_at": "2026-06-25T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_amount_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Resident individual invoices a US company USD 4,000."
+      },
+      "payment_date": {
+        "value": "2026-06-17",
+        "confidence": "certain",
+        "source_span": "Paid by SWIFT wire, credited Wednesday 17 June 2026."
+      },
+      "payment_method": {
+        "value": "SWIFT wire",
+        "confidence": "certain",
+        "source_span": "Paid by SWIFT wire, credited Wednesday 17 June 2026."
+      },
+      "e-fira_issued": {
+        "value": true,
+        "confidence": "certain",
+        "source_span": "Bank has issued an e-FIRA."
+      },
+      "purpose_code": {
+        "value": "P0802",
+        "confidence": "certain",
+        "source_span": "Purpose code P0802."
+      }
+    },
+    "missing": [
+      {
+        "item": "Invoice PDF",
+        "why_absent": "Typed input provided instead",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Payment screenshot or receipt",
+        "why_absent": "Typed input provided instead",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on the specified date",
+          "rate": 94.5,
+          "inr_value": 378000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-25",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-24"
+        },
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR) on the last published date before the specified date",
+          "rate": 94.0,
+          "inr_value": 376000,
+          "observability": "L2",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2026-06-25",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-207(1)",
+          "date_used": "2026-06-25"
+        }
+      ],
+      "spread": {
+        "inr": 2000,
+        "percent": 0.53,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR) on the specified date",
+          "Telegraphic Transfer Buying Rate (TTBR) on the last published date before the specified date"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Variation in TTBR between the specified date and the last published date",
+          "inr": 2000,
+          "explanation": "The TTBR on the specified date (2026-06-24) is 94.50, while the last published rate before the specified date (2026-06-25) is 94.00, leading to a difference of 2000 INR."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income of INR 378,000 is taxable as professional income under the head 'Profits and Gains of Business or Profession'.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The supply of services to a foreign client is exempt from GST as it is an export of services.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "The receipt of payment from a foreign client is compliant with FEMA as it is received through an authorized person (bank) and the e-FIRA has been issued.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3(a), FEMA-3(c), FEMA-7(3)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The INR value of the receipt is determined using the telegraphic transfer buying rate (TTBR) on the specified date, which is 94.50, resulting in an INR value of 378,000.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The exact TTBR on the payment date (2026-06-17) is not provided, and the closest published rate is used.",
+      "The e-FIRA details are not provided, but it is assumed to be valid and issued by the bank.",
+      "The typed input is used in place of actual documents, which could affect the accuracy of the analysis."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:24:11.985886+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C2": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7632,
+          "out_tokens": 1394,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7632,
+      "total_out_tokens": 1394,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    },
+    "revalidated_note": "Originally failed schema validation: value was boolean, and schema.json extracted_field.value did not allow boolean. Fixed in schema.json (D45 addendum) -- boolean is a legitimate fact type, already used in every case ground_truth.json. Re-validated against the fixed schema without re-calling the model; the model output itself is unchanged."
+  }
+}

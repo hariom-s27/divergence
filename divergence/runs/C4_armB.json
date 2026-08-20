@@ -1,0 +1,233 @@
+{
+  "arm": "B",
+  "case": "C4",
+  "tax_year": "FY 2026-27",
+  "schema_valid": false,
+  "schema_error": "None is not of type 'number'",
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C4-400USDC-20260618",
+    "generated_at": "2023-10-05T12:00:00Z",
+    "corpus_frozen_at": "2023-10-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "amount_received": {
+        "value": 400,
+        "confidence": "certain",
+        "source_span": "400 USDC received Thursday 18 June 2026 for a small piece of work."
+      },
+      "currency_received": {
+        "value": "USDC",
+        "confidence": "certain",
+        "source_span": "400 USDC received Thursday 18 June 2026 for a small piece of work."
+      },
+      "date_received": {
+        "value": "2026-06-18",
+        "confidence": "certain",
+        "source_span": "400 USDC received Thursday 18 June 2026 for a small piece of work."
+      },
+      "purpose_of_payment": {
+        "value": "small piece of work",
+        "confidence": "certain",
+        "source_span": "400 USDC received Thursday 18 June 2026 for a small piece of work."
+      },
+      "below_tds_threshold": {
+        "value": true,
+        "confidence": "certain",
+        "source_span": "Well under the ₹50,000 threshold in s.393(4) Table Sl. No. 12."
+      }
+    },
+    "missing": [
+      {
+        "item": "Invoice or payment documentation",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema",
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Exchange rate for USDC on 2026-06-18",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "yes"
+      },
+      {
+        "item": "Details of the payer and recipient",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "fema",
+          "income_tax"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TTBR)",
+          "rate": 94.0,
+          "inr_value": 37600,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TTBR Data",
+            "retrieved": "2023-10-05",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "Rule 206(1), FY 2026-27",
+          "date_used": "2026-06-25"
+        },
+        {
+          "label": "Internal Accounting Book Value",
+          "rate": null,
+          "inr_value": null,
+          "observability": "L3",
+          "source": {
+            "name": "ITR2026-RCASP-VALUATION.md",
+            "retrieved": "2023-10-05",
+            "tier": "primary_live"
+          },
+          "mandated_by": "ITR2026-RCASP-VALUATION.md (i)(iii)(A), FY 2026-27",
+          "date_used": "2026-06-18"
+        }
+      ],
+      "spread": {
+        "inr": 37600,
+        "percent": 0,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TTBR)",
+          "Internal Accounting Book Value"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "Missing exchange rate for USDC on 2026-06-18",
+          "inr": 0,
+          "explanation": "The exact exchange rate for USDC on the date of receipt is not provided, leading to potential valuation uncertainty."
+        },
+        {
+          "source": "Lack of internal accounting book value",
+          "inr": 0,
+          "explanation": "The internal accounting book value is not provided, making it impossible to use this method for valuation."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "No TDS required as the amount is below the ₹50,000 threshold.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "Section 393(1) Table Sl. No. 8(vi), FY 2026-27",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "The transaction does not appear to be an export of services as the recipient is not specified as being outside India.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "Section 2(6), FY 2026-27",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Details of the payer and recipient"
+        ]
+      },
+      {
+        "regime": "fema",
+        "outcome": "The transaction does not violate FEMA provisions as the recipient is not specified as being outside India.",
+        "certainty": "inference",
+        "citation": {
+          "provision": "Section 3(a), FY 2026-27",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Details of the payer and recipient"
+        ]
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "Multiple valuation methods are applicable, but the exact method depends on additional information.",
+        "certainty": "lacuna",
+        "citation": {
+          "provision": "Rule 206(1), FY 2026-27",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": [
+          "Exchange rate for USDC on 2026-06-18",
+          "Internal Accounting Book Value"
+        ]
+      }
+    ],
+    "limits": [
+      "The exact exchange rate for USDC on 2026-06-18 is missing, leading to potential valuation uncertainty.",
+      "The internal accounting book value is not provided, making it impossible to use this method for valuation.",
+      "Details of the payer and recipient are missing, affecting the applicability of GST and FEMA provisions."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:37:03.724283+00:00",
+    "prompt_file": "prompts\\arm-b-cot.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armB_C4": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7777,
+          "out_tokens": 1459,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7777,
+      "total_out_tokens": 1459,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}

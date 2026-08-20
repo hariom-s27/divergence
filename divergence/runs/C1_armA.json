@@ -1,0 +1,201 @@
+{
+  "arm": "A",
+  "case": "C1",
+  "tax_year": "FY 2026-27",
+  "schema_valid": true,
+  "schema_error": null,
+  "produced_json": true,
+  "error": null,
+  "record": {
+    "record_id": "C1-001",
+    "generated_at": "2023-10-05T12:00:00Z",
+    "corpus_frozen_at": "2023-10-05T12:00:00Z",
+    "tax_year": "FY 2026-27",
+    "facts": {
+      "invoice_amount": {
+        "value": 85000,
+        "confidence": "certain",
+        "source_span": "Resident individual invoices a Bengaluru company ₹85,000 for consulting."
+      },
+      "payment_method": {
+        "value": "NEFT",
+        "confidence": "certain",
+        "source_span": "Paid by NEFT on Tuesday 16 June 2026."
+      },
+      "payment_date": {
+        "value": "2026-06-16",
+        "confidence": "certain",
+        "source_span": "Paid by NEFT on Tuesday 16 June 2026."
+      },
+      "client_type": {
+        "value": "domestic",
+        "confidence": "certain",
+        "source_span": "Domestic supply."
+      },
+      "freelancer_residence": {
+        "value": "India",
+        "confidence": "certain",
+        "source_span": "Resident individual invoices a Bengaluru company ₹85,000 for consulting."
+      }
+    },
+    "missing": [
+      {
+        "item": "Bank statement",
+        "why_absent": "Not provided in the input",
+        "blocks": [
+          "valuation",
+          "income_tax",
+          "gst"
+        ],
+        "obtainable": "yes"
+      }
+    ],
+    "valuation": {
+      "methods": [
+        {
+          "label": "Telegraphic Transfer Buying Rate (TT BR)",
+          "rate": 94.3,
+          "inr_value": 85000,
+          "observability": "L1",
+          "source": {
+            "name": "SBI TT BR Data",
+            "retrieved": "2026-06-23",
+            "tier": "primary_archived"
+          },
+          "mandated_by": "ITR2026-RULE-206(1)",
+          "date_used": "2026-06-23"
+        },
+        {
+          "label": "Internal Accounting Book Value",
+          "rate": 94.3,
+          "inr_value": 85000,
+          "observability": "L2",
+          "source": {
+            "name": "Internal Accounting Records",
+            "retrieved": "2026-06-23",
+            "tier": "reported"
+          },
+          "mandated_by": "ITR2026-RCASP-VALUATION(iii)(A)",
+          "date_used": "2026-06-23"
+        }
+      ],
+      "spread": {
+        "inr": 0.0,
+        "percent": 0.0,
+        "between": [
+          "Telegraphic Transfer Buying Rate (TT BR)",
+          "Internal Accounting Book Value"
+        ]
+      },
+      "uncertainty_budget": [
+        {
+          "source": "No discrepancy between methods",
+          "inr": 0.0,
+          "explanation": "Both methods yield the same INR value."
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "income_tax_on_receipt",
+        "outcome": "The income of ₹85,000 is fully taxable as professional income.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "IT-393-1-T8vi",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "gst_export",
+        "outcome": "No GST is applicable as the supply is domestic.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "GST-IGST-2-6",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "fema",
+        "outcome": "No FEMA implications as the payment is received from a domestic client.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "FEMA-3-7-8",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      },
+      {
+        "regime": "valuation_method",
+        "outcome": "The INR value of the receipt is ₹85,000 based on the TT BR method.",
+        "certainty": "settled",
+        "citation": {
+          "provision": "ITR2026-RULE-206(1)",
+          "former_citation": null,
+          "tax_year": "FY 2026-27",
+          "verified": false
+        },
+        "depends_on_missing": []
+      }
+    ],
+    "limits": [
+      "The bank statement is missing, which is essential for verifying the payment details and ensuring accuracy in the valuation and tax treatment."
+    ]
+  },
+  "_meta": {
+    "generated_at": "2026-08-20T11:22:54.943159+00:00",
+    "prompt_file": "baseline-prompt.md",
+    "corpus_files": [
+      "FEMA-2n.md",
+      "FEMA-3-7-8.md",
+      "GST-CGST-50.md",
+      "GST-CGST-74A.md",
+      "GST-IGST-2-6.md",
+      "IT-115BBH.md",
+      "IT-2-47A.md",
+      "IT-393-1-T8vi.md",
+      "IT-439-8.md",
+      "IT-56-2-x.md",
+      "ITR2026-RCASP-VALUATION.md",
+      "ITR2026-RULE-206.md",
+      "ITR2026-RULE-207.md",
+      "ITR2026-RULE-247.md",
+      "ITR2026-RULE-56.md",
+      "ITR2026-RULE-57.md",
+      "SBI-TTBR-DATA.md"
+    ],
+    "max_tokens": 4096,
+    "token_matched_to": null,
+    "scaffolding": "none -- no gap enforcer, no citation matcher, no scoping",
+    "schema_given_to_arm": true,
+    "llm": {
+      "provider": "featherless",
+      "models": {
+        "small": "Qwen/Qwen2.5-7B-Instruct",
+        "large": "Qwen/Qwen2.5-72B-Instruct",
+        "adversarial": "mistralai/Mistral-Large-Instruct-2411"
+      },
+      "by_node": {
+        "armA_C1": {
+          "model": "Qwen/Qwen2.5-72B-Instruct",
+          "calls": 1,
+          "in_tokens": 7603,
+          "out_tokens": 1097,
+          "retries": 0
+        }
+      },
+      "total_calls": 1,
+      "total_in_tokens": 7603,
+      "total_out_tokens": 1097,
+      "temperature": "default",
+      "note": "Figures above are the MEASURED run on this provider. Any Claude rupee-per-record figure quoted elsewhere is a metered deployment estimate, not this run."
+    }
+  }
+}
