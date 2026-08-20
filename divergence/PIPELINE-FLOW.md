@@ -24,7 +24,7 @@ downgrades the answer instead of letting the model talk past it.
                                                         gap_enforcer.py
                                                      (no model — plain code)
                                                                   │
-      canonical_case.json                                        │
+      canonical_case.json / --case                                │
              │                                                    │
              ▼                                                    │
     ⚙ B VALUATION LATTICE                                         │
@@ -33,9 +33,8 @@ downgrades the answer instead of letting the model talk past it.
              │                                                    │
              └──────────────────────┬─────────────────────────────┘
                                      ▼
-                      run_pipeline.py assembles ONE record
-                      (facts + missing + valuation + regimes + limits)
-                                     │
+                     🤖 3/4 INCOME TAX + GST RESOLVERS  ("large" model)
+                                     │  regimes[]
                                      ▼
                           ⚙ C CITATION MATCHER
                           citation_matcher.py  (no model)
@@ -45,16 +44,24 @@ downgrades the answer instead of letting the model talk past it.
                                      ▼
                     schema.json validation, then written
                           to runs/<record-id>_pipeline.json
+                                     │
+                            (--node5, optional)
+                                     ▼
+                     🤖 5 ADVERSARIAL CHECKER  (a different model)
+                          node5_adversarial.py  ──▶  attacked[]
+                                     │
+                                     ▼
+                       ⚙ D DISCLOSURE COMPOSER  (no model)
+                          node7_disclosure.py  ──▶  output-interface.html
 ```
 
-**Nodes 3, 4 and 5** — the actual income-tax resolver, GST resolver, and
-adversarial checker — are prompts today (`step22drop/prompts/03/04/05.md`),
-not code. They're run by hand in a fresh chat session per
-`step21drop/evaluation-design.md`'s protocol, and their output is hand-coded
-into a JSON file with a `"regimes"` array. `run_pipeline.py --regimes
-<that file>` is where they rejoin the automated part — it runs their
-conclusions through the citation matcher and the gap enforcer exactly like
-an automated node's output would go through them.
+**Nodes 3, 4 and 5 are automated as of D46/D50** — the income-tax resolver,
+GST resolver, and adversarial checker all run as real API calls via
+`node_resolver.py` and `node5_adversarial.py`, wired into `run_pipeline.py`
+(the `--node5` flag turns on the fifth). None of this project's nodes are
+hand-run in a chat session any more; the automation table at the bottom of
+this file has been accurate for longer than this paragraph above it was —
+fixed 21 August, see `results.md`'s Block F.
 
 ---
 
@@ -123,17 +130,20 @@ $env:FEATHERLESS_API_KEY = "rc_..."
 # ten seconds, a few hundred tokens — do this first, every time
 python check_llm.py
 
-# the automated front half: extract -> find gaps -> enforce
+# the whole pipeline, nodes 1-4 automatically, node 5 optional
 python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" `
-    --text step21drop\cases\D1\case.md `
+    --text step21drop\cases\D1\input.md `
+    --node5 `
     --out runs\D1_pipeline.json
 
-# to also fold in a hand-run resolver's output (arm C, from prompts 03/04/05):
-python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" `
-    --text step21drop\cases\D1\case.md `
-    --regimes step21drop\cases\D1\regimes_armC.json `
-    --out runs\D1_armC_pipeline.json
+# then render the disclosure page from that record
+python node7_disclosure.py --record runs\D1_pipeline.json --out output-interface.html
 ```
+
+`--regimes <file.json>` still exists as a flag for merging in ADDITIONAL
+hand-coded conclusions alongside nodes 3/4's own output — a planted-defect
+ablation variant, for instance — not as the normal way to supply resolver
+output any more.
 
 Whatever happens — success or a hard failure — goes in
 `step22drop/iteration-log.md`. That's not optional; it's how this project
