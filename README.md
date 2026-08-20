@@ -1,5 +1,7 @@
 # DIVERGENCE
 
+[![Python Package using Conda](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml)
+
 **An AI can say "I don't know." It cannot say "the law does not determine one answer."**
 
 DIVERGENCE is a pipeline that reads a real tax question, works out what the
@@ -79,8 +81,8 @@ This table is the honest version. Update it after every step.
 
 | Stage | Automated? | Has it ever run for real? |
 |---|---|---|
-| 🤖 1 Extract | ✅ `node1_extract.py` | ✅ live on Featherless, 20 Aug |
-| 🤖 2 Gap detector | ✅ `node2_gaps.py` | ✅ live on Featherless, 20 Aug |
+| 🤖 1 Extract | ✅ `node1_extract.py` | ✅ full end-to-end runs on D1 and C2, 20 Aug |
+| 🤖 2 Gap detector | ✅ `node2_gaps.py` | ✅ full end-to-end runs on D1 and C2, 20 Aug |
 | ⚙ A Gap enforcer | ✅ `gap_enforcer.py` | ✅ self-test 2/2 |
 | ⚙ B Valuation lattice | ✅ `node3_valuation.py` | ✅ produces `valuation.json` |
 | 🤖 3 Income-tax resolver | ❌ hand-run prompt | ❌ not yet |
@@ -88,11 +90,67 @@ This table is the honest version. Update it after every step.
 | ⚙ C Citation matcher | ✅ `citation_matcher.py` | ✅ 15/15 self-test |
 | 🤖 5 Adversarial check | ❌ hand-run prompt | ❌ **never run — every finding credited to it was found by a human** |
 | ⚙ D Disclosure composer | ❌ static HTML template | ❌ not wired to a live record |
+| Arms A/B (baseline, CoT) | ✅ `run_arms.py` | ✅ all 6 cases, 20 Aug — see **First real numbers** below |
+| Scoring | ✅ `eval/score.py` + `eval/m3b_citation_coverage.py` + `eval/normalize_runs.py` | ✅ run against all 14 real records, 20 Aug |
+| CI | ✅ GitHub Actions, pytest | ✅ green — badge above |
 
 Nodes 3/4/5 rejoin the automated path through
 `run_pipeline.py --regimes <file>`, which runs their hand-coded conclusions
 through the citation matcher and gap enforcer exactly as an automated node's
 output would be.
+
+---
+
+## First real numbers — Steps 27/29/31, 20 Aug
+
+The first time any of nodes 1–2, `run_arms.py`, or the scorers ran as a
+whole chain against a real model, instead of in isolation. Five real bugs
+found in two hours — none visible from reading the code, all visible in
+seconds of watching it run. Full account, every bug, every before/after:
+**[`DECISION-D45.md`](divergence/DECISION-D45.md)** ·
+**[`iteration-log.md`](divergence/step22drop/iteration-log.md)**.
+
+**Fixed along the way, not before shipping:** a silent protocol violation
+(`temperature=0` contradicting the pre-registered "default, not zero"), two
+`schema.json` gaps that had existed since 6 August and simply never been
+exercised (`date_choice.chosen` rejecting its own documented `null`;
+`extracted_field.value` never allowing boolean, though every case's ground
+truth already uses one), a 7B model's contract violation reaching a schema
+error three steps downstream of its real cause, arm A's first run echoing
+the raw JSON-Schema definition back instead of producing data, and arm B's
+token-match arithmetic starving a single completion by capping it at the
+sum of two much smaller separate calls.
+
+**After all five fixes, real numbers, all 6 cases:**
+
+| Case | Arm | M1 extract | M2 recall | M2 prec | M3 valid | M4 methods | M5 |
+|---|---|---|---|---|---|---|---|
+| C1 | A / B | 0.0% | — | 0.0% | 25.0% | 2/1 | — |
+| C2 | A / B / C | 9.1% | — | 0.0% | 50.0% / — | 2/1 / 12/1 | — |
+| C3 | A / B | 0.0% | 0.0% | 0.0% | 25.0% / 20.0% | 2/5 | — |
+| C4 | A / B | 0.0% | 0.0% | 0.0% | 50.0% / 100.0% | 2/10 | — |
+| C5 | A / B | 0.0% | 100.0% | 100.0% / 33.3% | 50.0% | 2/2 | — |
+| D1 | A / B / C | 0.0% / 9.1% | 75.0% / 25.0% / 0.0% | 100.0% / 33.3% / 0.0% | 60.0% / 50.0% / — | 2/12 / 2/12 / 12/12 | — |
+
+**Read this before quoting a single cell.** M1 and M5 are not "the system
+scored badly" — they currently **cannot be computed correctly from any
+output that exists**, for any arm:
+
+- **M1** compares `facts{}` by field name, and no extractor (pipeline,
+  arm A, or arm B) has ever been told to use `ground_truth.json`'s exact
+  vocabulary — `asset` vs `asset_currency`, `settlement_datetime_ist` vs
+  `settlement_datetime`, and so on. A real extraction scores as "not
+  extracted" if it used a different, equally correct field name.
+- **M5** ("the metric that earns trust," `evaluation-design.md`) needs
+  `elements{}` — no prompt anywhere currently asks any arm to report it.
+- **Arm C's M3/M4 look strong on D1/C2** (12/12, 12/1) because ⚙ B's
+  valuation lattice enumerates methods deterministically, no model
+  involved — real, but not the full comparison D40 asks for, since
+  `regimes[]` is still empty (nodes 3/4/5 haven't run) so arm C's citation
+  numbers read `—`, not zero-and-losing.
+- **M2/M3 are the genuinely comparable numbers here**, and on D1 — the
+  deep case — arm A's gap recall (75%) currently *beats* arm B's (25%).
+  Worth investigating, not smoothing over, before it goes in `results.md`.
 
 ---
 
@@ -111,6 +169,15 @@ python check_llm.py
 python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" `
     --text step21drop\cases\D1\case.md `
     --out runs\D1_pipeline.json
+
+# arms A (naive) and B (token-matched CoT), all 6 cases
+$env:DIVERGENCE_TEMPERATURE = "default"    # the scored protocol -- default, not zero
+python run_arms.py --arm A --all-cases
+python run_arms.py --arm B --all-cases --token-match runs\
+
+# score everything real that exists in runs/
+python eval\normalize_runs.py --report
+python eval\m3b_citation_coverage.py --all runs\
 ```
 
 Full instructions: **[`HOW-TO-RUN.md`](divergence/HOW-TO-RUN.md)** ·
@@ -182,6 +249,7 @@ Read from the notified Income-tax Rules, 2026 (Gazette, Part II Sec 3(i),
 | **[D42](divergence/DECISION-D42.md)** | provider chosen at runtime and **recorded** in every record's `_meta.llm` |
 | **[D43](divergence/DECISION-D43.md)** | which Featherless model fills each slot — and the finding that every `meta-llama/*` id is licence-gated on this account |
 | **[D44](divergence/DECISION-D44.md)** | Featherless only, no silent fallback; repo hygiene; pre-registration re-freeze |
+| **[D45](divergence/DECISION-D45.md)** | Steps 27/29/31: the first real end-to-end runs — five real bugs found only by running the thing, none visible from reading the code |
 
 ---
 
@@ -208,6 +276,17 @@ commit hash. That is the pre-registration; see D44 for why the hash matters.
 - Two case inputs are typed transcripts rather than photographed documents.
 - Seven corpus files carry open `known_limitation` fields. They are in the
   frontmatter, not hidden.
+- **M1 (extraction accuracy) cannot be scored correctly yet, for any arm.**
+  No extraction prompt is pinned to `ground_truth.json`'s exact field
+  vocabulary, so a correct extraction under a different field name scores
+  as a miss. See D45.
+- **M5 (false abstention) is undefined on every run so far** — no prompt
+  asks any arm to report the `elements{}` shape the scorer needs.
+- **Arm C's citation numbers aren't real yet either** — `regimes[]` is
+  empty until nodes 3/4/5 actually run for a case via `--regimes`.
+- `citation_matcher.py` mis-resolves a bare, unqualified citation (e.g.
+  `"Section 2(111)"` with no Act name) against the wrong corpus file. Not
+  fixed — worked around in ground truth by citing the qualified form.
 
 Everything that broke, and what it cost, is in
 **[`iteration-log.md`](divergence/step22drop/iteration-log.md)** — including the
@@ -226,3 +305,7 @@ Everything under `divergence/` is the submission. Root-level files
 the submission itself. `_archive/` (gitignored) holds retired/duplicate
 files moved there by `cleanup_repo.py` — nothing was deleted, just gotten
 out of the way of anyone reading the live corpus.
+
+`tests/` and the root `conftest.py` exist only to make `tests/test_gap_enforcer.py`
+importable in CI (`divergence/__init__.py` too) — they're plumbing for the
+GitHub Actions badge above, not part of the evaluation itself.
