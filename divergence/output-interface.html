@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Disclosure record — Invoice 2026-114</title>
+<title>Disclosure record — 2026-114</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,8 +15,8 @@
   --ink-soft:#4A5551;
   --ink-faint:#78837E;
   --margin-red:#9E2F26;   /* the red margin rule of a bahi khata */
-  --figure:#22405A;       /* stamp indigo — used only for money */
-  --elected:#4F6140;      /* olive — confirmation only */
+  --figure:#22405A;       /* stamp indigo -- used only for money */
+  --elected:#4F6140;      /* olive -- confirmation only */
   --measure:2px;
 }
 *{box-sizing:border-box}
@@ -32,13 +32,11 @@ body{
   border-left:var(--measure) solid var(--margin-red);
   padding:0 0 0 clamp(18px,5vw,44px);
 }
-/* ---------- utility label vernacular ---------- */
 .label{
   font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
   letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint);
 }
 .rule{border:0;border-top:1px solid var(--paper-rule);margin:40px 0 0}
-/* ---------- masthead ---------- */
 header{padding:44px 0 0}
 .formno{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 h1{
@@ -46,13 +44,11 @@ h1{
   margin:20px 0 6px; letter-spacing:-.015em;
 }
 .sub{color:var(--ink-soft);font-size:16px;margin:0 0 4px}
-/* ---------- section scaffolding ---------- */
 section{padding-top:34px}
 .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
 .sec-head h2{font-size:19px;font-weight:600;margin:0;letter-spacing:-.01em}
 .sec-n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--margin-red);font-weight:600}
 .lede{color:var(--ink-soft);margin:0 0 18px;font-size:16px}
-/* ---------- 1. what is missing ---------- */
 .missing{list-style:none;margin:0;padding:0;border-top:1px solid var(--paper-rule)}
 .missing li{
   display:grid;grid-template-columns:auto 1fr;gap:14px;
@@ -65,7 +61,6 @@ section{padding-top:34px}
 }
 .missing b{font-weight:600}
 .missing .blocks{display:block;font-size:14px;color:var(--ink-soft);margin-top:2px}
-/* ---------- 2. the dimension line — signature ---------- */
 .gap{margin:26px 0 8px}
 .gap-ends{display:flex;justify-content:space-between;gap:20px}
 .method{flex:1}
@@ -89,7 +84,11 @@ section{padding-top:34px}
   color:var(--margin-red);white-space:nowrap;
 }
 .gap-note{font-size:15px;color:var(--ink-soft);margin:12px 0 0}
-/* ---------- election ---------- */
+.one-answer{
+  margin:26px 0 8px;padding:18px 20px;border:1px solid var(--elected);
+}
+.one-answer .amt{color:var(--elected)}
+.one-answer .label{color:var(--elected)}
 fieldset{border:1px solid var(--paper-rule);padding:18px;margin:26px 0 0}
 legend{padding:0 8px}
 .opt{display:flex;gap:12px;align-items:flex-start;padding:9px 0}
@@ -97,17 +96,11 @@ legend{padding:0 8px}
 .opt label{cursor:pointer}
 .opt .t{font-weight:600}
 .opt .d{display:block;font-size:14px;color:var(--ink-soft)}
-.recommended{
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--elected);border:1px solid var(--elected);
-  padding:1px 6px;margin-left:8px;white-space:nowrap;
-}
 .stamp{
   margin-top:16px;padding:11px 14px;border:1px dashed var(--paper-rule);
   font-size:14px;color:var(--ink-soft);
 }
 .stamp b{color:var(--ink);font-weight:600}
-/* ---------- regimes ---------- */
 .regime{border-top:1px solid var(--paper-rule);padding:16px 0}
 .regime:last-of-type{border-bottom:1px solid var(--paper-rule)}
 .r-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
@@ -117,23 +110,20 @@ legend{padding:0 8px}
   text-transform:uppercase;padding:2px 7px;border:1px solid currentColor;white-space:nowrap;
 }
 .cert.settled{color:var(--elected)}
-.cert.inference{color:var(--margin-red)}
-.cert.none{color:var(--ink-faint)}
+.cert.inference,.cert.open_texture,.cert.contested{color:var(--margin-red)}
+.cert.lacuna,.cert.insufficient_evidence,.cert.none{color:var(--ink-faint)}
 .r-body{font-size:15px;color:var(--ink-soft);margin:7px 0 0}
 .cite{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);}
-/* ---------- manifest ---------- */
 details{border-top:1px solid var(--paper-rule);padding-top:16px}
 summary{cursor:pointer;font-weight:600;list-style:none}
 summary::-webkit-details-marker{display:none}
 summary::before{content:"+ ";font-family:'IBM Plex Mono',monospace;color:var(--margin-red)}
-details[open] summary::before{content:"− "}
+details[open] summary::before{content:"\2212 "}
 .man{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.9;color:var(--ink-soft);margin:14px 0 0;padding:0;list-style:none}
 .man li{border-bottom:1px dotted var(--paper-rule);padding:3px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-/* ---------- limits ---------- */
 .limits{margin-top:40px;padding:20px;border:1px solid var(--paper-rule);background:rgba(255,255,255,.45)}
 .limits p{margin:9px 0 0;font-size:14.5px;color:var(--ink-soft)}
 .limits p:first-of-type{margin-top:12px}
-/* ---------- a11y floor ---------- */
 a:focus-visible,summary:focus-visible,input:focus-visible,label:focus-visible{
   outline:2px solid var(--figure);outline-offset:3px;
 }
@@ -149,153 +139,55 @@ a:focus-visible,summary:focus-visible,input:focus-visible,label:focus-visible{
 </style>
 </head>
 <body>
-<main class="sheet">
 
+<main class="sheet">
   <header>
     <div class="formno">
-      <span class="label">Disclosure record · DR-2026-114</span>
-      <span class="label">Corpus frozen 2026-08-06 09:00 IST</span>
+      <span class="label">Disclosure record · D1</span>
+      <span class="label">Corpus frozen 2026-08-19 · Tax year FY 2026-27</span>
     </div>
-    <h1>Payment received 29 June 2026, 03:14 IST</h1>
-    <p class="sub">5,000 USDC · Invoice 2026-114 · Counterparty declared as Northbay Systems LLC, Delaware</p>
+    <h1>Payment received 28 June 2026, 03:14 IST</h1>
+    <p class="sub">5,000 USDC · Invoice 2026-114 · Counterparty declared as Northbay Systems LLC</p>
   </header>
-
   <hr class="rule">
 
-  <!-- 1. ABSENCE FIRST -->
   <section aria-labelledby="s1">
     <div class="sec-head"><span class="sec-n">01</span><h2 id="s1">What is missing</h2></div>
     <p class="lede">Checked before anything else was worked out. Nothing below can be assumed.</p>
-    <ul class="missing">
-      <li><span class="mark" aria-hidden="true">!</span>
-        <span><b>No bank certificate of foreign inward remittance</b>
-        <span class="blocks">Not obtainable — this payment did not pass through a bank. Blocks the GST export claim.</span></span></li>
-      <li><span class="mark" aria-hidden="true">!</span>
-        <span><b>No purpose code</b>
-        <span class="blocks">Assigned by the bank at receipt. Not created for this route.</span></span></li>
-      <li><span class="mark" aria-hidden="true">!</span>
-        <span><b>Counterparty identity is declared, not verified</b>
-        <span class="blocks">Taken from the invoice. Nothing independent confirms who sent the payment.</span></span></li>
-      <li><span class="mark" aria-hidden="true">!</span>
-        <span><b>No official exchange rate exists for this moment</b>
-        <span class="blocks">The reference rate is published once a day on working days. This payment settled at 03:14 on a Sunday.</span></span></li>
-    </ul>
+    <ul class="missing"><li><span class="mark" aria-hidden="true">!</span><span><b>declaration of payment for services from the supplier</b><span class="blocks">The facts do not include any declaration or documentation of the payment for services from the supplier to the recipient. Not obtainable through this payment route. Blocks: income_tax, gst, valuation.</span></span></li>
+<li><span class="mark" aria-hidden="true">!</span><span><b>independent verification of the counterparty identity</b><span class="blocks">The counterparty verification status indicates that Northbay Systems LLC&#x27;s business identity has not been independently verified. Not obtainable. Blocks: income_tax, valuation.</span></span></li>
+<li><span class="mark" aria-hidden="true">!</span><span><b>exporter declaration for services</b><span class="blocks">The facts do not include any exporter declaration for services as required by FEMA-3-7-8.md. Not obtainable through this payment route. Blocks: valuation.</span></span></li>
+<li><span class="mark" aria-hidden="true">!</span><span><b>realisation and repatriation of foreign exchange</b><span class="blocks">The facts do not mention any steps taken to realise and repatriate the foreign exchange to India as required by FEMA-8.md. Not obtainable through this payment route. Blocks: valuation.</span></span></li></ul>
   </section>
 
-  <!--
-    This whole mockup was built early, to show the SHAPE of the interface,
-    before node3_valuation.py existed. It shows 2 illustrative methods, not
-    the 12 the real valuation lattice now computes (see valuation.json and
-    architecture.md, node B). The rupee figures below are from that earlier
-    draft of the case and do not match the current, correct range
-    (Rs 4,69,750.00 to Rs 5,17,618.76, spread Rs 47,868.76, 10.19%). Kept as
-    a UI shape reference, not as live data -- this page is not wired to a
-    real record yet (see the Status table in README.md). Every stale figure
-    below carries an explicit stale-ok marker so gate0_check.py's staleness
-    scan reports it as known and accounted for, not silently missed.
-  -->
-
-  <!-- 2. THE RANGE — signature element -->
   <section aria-labelledby="s2">
     <div class="sec-head"><span class="sec-n">02</span><h2 id="s2">What it was worth in rupees</h2></div>
-    <p class="lede">Two methods are defensible. No rule chooses between them. Both are shown.</p>
-
-    <div class="gap">
-      <div class="gap-ends">
-        <div class="method">
-          <span class="label">Method A · domestic market</span>
-          <span class="amt">₹5,14,150</span>
-          <small>Indian exchange price at settlement.<br>Directly observable — this is what it was actually worth here.</small>
-        </div>
-        <div class="method b">
-          <span class="label">Method B · SBI rate — nothing mandates it</span>
-          <span class="amt">₹4,70,517</span> <!-- stale-ok: early mockup draft, see comment above -->
-          <small>Dollar value × the SBI telegraphic transfer buying rate. Rule&nbsp;115 prescribes that rate for income in foreign currency — but the Act defines a digital asset as not being foreign currency, so nothing actually requires it.<br>Derived — SBI last published on Thursday 25 June and did not publish again until Monday 29 June.</small>
-        </div>
-      </div>
-
-      <div class="dim" role="img" aria-label="The two methods differ by 43,633 rupees, which is 8.7 percent."> <!-- stale-ok -->
-        <div class="dim-line"></div>
-        <span class="dim-val">₹43,633 &nbsp;·&nbsp; 9.27%</span> <!-- stale-ok -->
-      </div>
-      <p class="gap-mobile">Difference: ₹43,633 · 9.27%</p> <!-- stale-ok -->
-
-      <p class="gap-note">Of that difference, about ₹43,100 comes from the premium on dollars in the Indian market and ₹1,050 from the coin not sitting exactly at one dollar. A further ₹250 depends on whether you take SBI's last published rate before the payment (25 June, ₹94.00) or its next one after (29 June, ₹93.95). A further ₹5,500 depends on which price within 28 June you use — it opened at ₹102.83, ranged to ₹103.41 and down to ₹102.31. And the payment landed at 03:14 IST on Sunday, which is 21:44 UTC on Saturday — a different day, and a different day's rate. Nothing prescribes any of these three.</p>
-    </div>
-
-    <!-- ELECTION: one tap, default pre-selected -->
-    <fieldset>
-      <legend class="label">If you have already decided, record it here</legend>
-      <div class="opt">
-        <input type="radio" name="election" id="ea">
-        <label for="ea"><span class="t">₹5,14,150 — domestic market</span>
-        <span class="d">Directly observable. The higher figure raises the cost base for the later conversion.</span></label>
-      </div>
-      <div class="opt">
-        <input type="radio" name="election" id="eb">
-        <label for="eb"><span class="t">₹4,70,517 — official rate</span> <!-- stale-ok -->
-        <span class="d">Closer to the published benchmark, but the benchmark does not cover this date.</span></label>
-      </div>
-      <p class="stamp"><b>This record is complete whether or not you tick anything.</b> What matters if the figure is ever questioned is that both were shown and both were recorded — not which one you chose, and not that we chose for you.</p>
-    </fieldset>
+    <p class="lede">12 methods are defensible. No rule chooses between them. Lowest and highest shown.</p><div class="gap"><div class="gap-ends"><div class="method"><span class="label">SBI TTBR 2026-06-29 (next published AFTER the receipt)</span><span class="amt">₹469,750</span><small>SBI Forex Card Rates sheet, USD/INR TT BUY</small></div><div class="method b"><span class="label">domestic market, high x retrieved peg</span><span class="amt">₹517,619</span><small>CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg</small></div></div><div class="dim" role="img" aria-label="The two methods differ by 47,868.76 rupees, which is 10.19 percent."><div class="dim-line"></div><span class="dim-val">₹47,869 · 10.19%</span></div><p class="gap-mobile">Difference: ₹47,869 · 10.19%</p><p class="gap-note">12 defensible methods were computed in total; lowest and highest are shown here. Full lattice in the record itself.</p></div><fieldset><legend class="label">If you have already decided, record it here</legend><div class="opt"><input type="radio" name="election" id="ea"><label for="ea"><span class="t">₹469,750 — SBI TTBR 2026-06-29 (next published AFTER the receipt)</span><span class="d"></span></label></div><div class="opt"><input type="radio" name="election" id="eb"><label for="eb"><span class="t">₹517,619 — domestic market, high x retrieved peg</span><span class="d">highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28</span></label></div><p class="stamp"><b>This record is complete whether or not you tick anything.</b> What matters if the figure is ever questioned is that both were shown and both were recorded — not which one you chose, and not that we chose for you.</p></fieldset>
   </section>
 
-  <!-- 3. REGIMES -->
   <section aria-labelledby="s3">
     <div class="sec-head"><span class="sec-n">03</span><h2 id="s3">What this triggers</h2></div>
     <p class="lede">Each conclusion carries the provision it rests on, and how settled that provision is.</p>
-
-    <div class="regime">
-      <div class="r-top"><span class="r-name">Income tax — on receipt</span><span class="cert settled">Settled</span></div>
-      <p class="r-body">Taxed as professional income at your slab rate, on the rupee value above. That same figure becomes your cost base for the later conversion. <span class="cite">Income-tax Act, 2025</span></p>
-    </div>
-
-    <div class="regime">
-      <div class="r-top"><span class="r-name">Which rupee figure is correct</span><span class="cert none">No rule found</span></div>
-      <p class="r-body">Within the provisions we checked, no method is prescribed for valuing this asset in rupees at a point in time. The rule covering property, jewellery and shares was not extended to cover it. <span class="cite">Rule 57 (formerly Rule 11UA)</span></p>
-    </div>
-
-    <div class="regime">
-      <div class="r-top"><span class="r-name">GST — export zero-rating</span><span class="cert inference">At risk</span></div>
-      <p class="r-body">Export of services is zero-rated only if payment is received in convertible foreign exchange. There is no bank certificate here. If challenged, this could be reclassified as a domestic supply. <span class="cite">IGST Act s.2(6)(iv)</span></p>
-    </div>
-
-    <div class="regime">
-      <div class="r-top"><span class="r-name">Foreign exchange rules — s.3(c)</span><span class="cert inference">Express prohibition · s.3(c)</span></div>
-      <p class="r-body">Section 3(c) says no person shall receive any payment, in any manner, on behalf of someone resident outside India except through an authorised person — and treats receipt with no matching inward remittance as exactly that. No bank was involved. This is a prohibition in the Act, not an inference from it. <span class="cite">FEMA s.2(n), ss.7–8</span></p>
-    </div>
+    <div class="regime"><div class="r-top"><span class="r-name">income tax on receipt</span><span class="cert settled">Settled</span></div><p class="r-body">The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxable at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28), and the value is determined using the fair market value method as specified in Rule 243(8)(e). No TDS obligation arises under s.393(1) as the amount does not exceed the threshold. Under s.439(8), the taxpayer must disclose all material facts to substantiate the explanation offered. <span class="cite">Section 115BBH, Income-tax Act, 1961 — carried into the Income-tax Act, 2025</span></p></div>
+<div class="regime"><div class="r-top"><span class="r-name">gst export</span><span class="cert insufficient_evidence">Insufficient evidence</span></div><p class="r-body">The supply meets all conditions for being an export of services. <span class="cite">IGST Act, 2017 s.2(6)</span></p></div>
   </section>
 
-  <!-- 4. MANIFEST -->
   <section aria-labelledby="s4">
     <div class="sec-head"><span class="sec-n">04</span><h2 id="s4">What we checked</h2></div>
-    <details>
-      <summary>Eleven provisions, with the date each was last verified</summary>
-      <ul class="man">
-        <li><span>Rule 57 · Income-tax Rules 2026 (was 11UA)</span><span>2026-08-06</span></li>
-        <li><span>Rule 115 · rate of exchange</span><span>2026-08-06</span></li>
-        <li><span>s.115BBH · 30% on transfer</span><span>2026-08-05</span></li>
-        <li><span>s.393(1) Table 8(vi) · deduction at source (was 194S)</span><span>2026-08-05</span></li>
-        <li><span>s.439(8)(a) · penalty exclusion</span><span>2026-08-06</span></li>
-        <li><span>IGST s.2(6) · export of services</span><span>2026-08-04</span></li>
-        <li><span>CGST s.50 · interest</span><span>2026-08-04</span></li>
-        <li><span>FEMA s.2(n) · what counts as foreign exchange</span><span>2026-08-04</span></li>
-        <li><span>FEMA ss.7–8 · declaration and realisation</span><span>2026-08-04</span></li>
-        <li><span>Benchmark publication methodology</span><span>2026-08-06</span></li>
-        <li><span>Domestic exchange price, 29 June 2026</span><span>2026-08-06</span></li>
-      </ul>
-      <p class="gap-note"><b>Not checked:</b> state levies, treaty relief, anything outside Indian law. Where we say no rule was found, we mean within this list.</p>
-    </details>
+    <details><summary>2 provision(s) actually cited in this record, corpus frozen 2026-08-19</summary><ul class="man"><li><span>Section 115BBH, Income-tax Act, 1961 — carried into the Income-tax Act, 2025</span><span>2026-08-19</span></li>
+<li><span>IGST Act, 2017 s.2(6)</span><span>2026-08-19</span></li></ul><p class="gap-note"><b>Not checked:</b> state levies, treaty relief, anything outside Indian law. Where we say no rule was found, we mean within this scope.</p></details>
   </section>
 
-  <!-- 5. LIMITS -->
   <div class="limits">
     <span class="label">What this is not</span>
     <p>This is not tax advice, and it does not make anything compliant. It records what was known at the time and what was not.</p>
-    <p>Two provisions above are cited from a source we have not yet checked against the official text. Both are marked in the manifest.</p>
+    <p>The document provides clear information about the supplier and recipient locations, but no explicit address or city names are provided.</p>
+<p>The valuation method for USDC is based on the rules for crypto-assets, but the specific details of the trading pairs or third-party aggregators used are not provided. This could affect the exact valuation.</p>
+<p>The counterparty&#x27;s identity has not been independently verified, which could impact the reliability of the transaction for tax purposes.</p>
+<p>The place of supply of service and the relationship between the supplier and recipient are not provided, leading to uncertainty in determining if the supply meets all conditions for being an export of services.</p>
     <p>Where the law prescribes no method, we do not invent one. That is the whole point.</p>
   </div>
-
 </main>
+
 </body>
 </html>

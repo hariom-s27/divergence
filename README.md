@@ -58,17 +58,17 @@ This table is the honest version. We update it after every real step.
 
 | Stage | Is it automated | Has it actually been run |
 |---|---|---|
-| 1. Extract | Yes, `node1_extract.py` | Yes, full runs on case D1 and case C2, 20 Aug |
-| 2. Gap detector | Yes, `node2_gaps.py` | Yes, full runs on case D1 and case C2, 20 Aug |
+| 1. Extract | Yes, `node1_extract.py` | Yes, all 6 cases, 20-21 Aug |
+| 2. Gap detector | Yes, `node2_gaps.py` | Yes, all 6 cases, 20-21 Aug |
 | 3. Gap enforcer | Yes, `gap_enforcer.py` | Yes, self test 2 out of 2 |
-| 4. Valuation lattice | Yes, `node3_valuation.py` | Yes, produces `valuation.json` |
-| 5. Income tax resolver | Yes, `node_resolver.py --regime income_tax` | Yes, complete real runs on D1 and C2, 20 Aug |
-| 6. GST resolver | Yes, `node_resolver.py --regime gst` | Yes, complete real runs on D1 and C2, 20 Aug |
+| 4. Valuation lattice | Yes, `node3_valuation.py`, now per-case (`--case`) | Yes, D1, C5, C1 have their own real valuations; C2/C3/C4 still borrow D1's, disclosed |
+| 5. Income tax resolver | Yes, `node_resolver.py --regime income_tax` | Yes, all 6 cases, 20-21 Aug |
+| 6. GST resolver | Yes, `node_resolver.py --regime gst` | Yes, all 6 cases, 20-21 Aug |
 | 7. Citation matcher | Yes, `citation_matcher.py` | Yes, 15 out of 15 self test |
-| 8. Adversarial check | No, this is a prompt run by hand | Never run. Every finding credited to it so far was actually found by a person |
-| 9. Disclosure composer | No, it is a static HTML page right now | Not connected to a live result yet |
-| Baseline arms A and B | Yes, `run_arms.py` | Yes, all 6 cases, 20 Aug. See "First real numbers" below |
-| Scoring | Yes, `eval/score.py`, `eval/m3b_citation_coverage.py`, `eval/normalize_runs.py` | Yes, run against all 14 real result files, 20 Aug |
+| 8. Adversarial check | Yes, `node5_adversarial.py` | Yes, D1's real record plus a 4-variant planted-defect ablation (3 of 4 caught), 21 Aug |
+| 9. Disclosure composer | Yes, `node7_disclosure.py` | Yes, `output-interface.html` is generated from a real record, no hand-typed numbers |
+| Baseline arms A and B | Yes, `run_arms.py` | Yes, all 6 cases, 20-21 Aug. See "First real numbers" below |
+| Scoring | Yes, `eval/score.py`, `eval/m3b_citation_coverage.py`, `eval/normalize_runs.py` | Yes, run against every real result file, 20-21 Aug |
 | CI | Yes, GitHub Actions with pytest | Yes, passing. See the badge above |
 
 Steps 5 and 6 (income tax and GST) run automatically now by default. Step 8 (the adversarial check) is still hand-run — its conclusions can be fed back in through `run_pipeline.py --regimes <file>`, checked by the citation matcher and the gap enforcer the same way an automated step's output would be, alongside whatever the automated resolvers produced.

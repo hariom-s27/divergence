@@ -148,11 +148,11 @@ tells the difference between "we built it" and "we watched it work."
 | 🤖 1 Extract | **Yes** — `node1_extract.py`, real API call |
 | 🤖 2 Gap detector | **Yes** — `node2_gaps.py`, real API call |
 | ⚙ A Gap enforcer | **Yes** — plain code, always was |
-| ⚙ B Valuation lattice | **Yes** — plain code, always was |
-| 🤖 3/4 Income-tax & GST resolvers | **No** — hand-run prompt, fed in via `--regimes` |
+| ⚙ B Valuation lattice | **Yes** — `node3_valuation.py`, now per-case (`--case`, D51) |
+| 🤖 3/4 Income-tax & GST resolvers | **Yes** — `node_resolver.py`, real API call (D46 Step 1) |
 | ⚙ C Citation matcher | **Yes** — plain code, always was |
-| 🤖 5 Adversarial checker | **No** — hand-run prompt, never run yet at all |
-| ⚙ D Disclosure composer | **No** — `output-interface.html` is a static template, not wired to a live record yet |
+| 🤖 5 Adversarial checker | **Yes** — `node5_adversarial.py`, real API call (D50) |
+| ⚙ D Disclosure composer | **Yes** — `node7_disclosure.py`, `output-interface.html` generated from a real record, not hand-typed |
 
 See `step22drop/iteration-log.md`'s "Still open" section for the up-to-date
 version of this list — this file describes the shape of the pipeline, that
