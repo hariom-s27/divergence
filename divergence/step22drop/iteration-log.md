@@ -631,7 +631,7 @@ prevent, aimed at ourselves instead of at arm A. Nodes 3/4/5 (hand-run, fed
 in via `--regimes`) have to actually happen before arm C's citation
 numbers mean anything.
 
-### `eval/score.py --all` does not run against any real output yet
+### `eval/score.py --all` did not run against any real output — now it can
 ```
 KeyError: 'case_id'
 ```
@@ -641,13 +641,84 @@ written (per its own docstring) for arms A/B to be **hand-coded** into that
 shape from raw prose output. Neither `run_pipeline.py`'s schema-conforming
 records (`record_id`, citations nested inside `regimes[]`) nor
 `run_arms.py`'s wrapped output (`case`, everything nested under `record`)
-match it. **There is currently no adapter between what the automated
-scripts produce and what `score.py` reads.** Not fixed here — this needs a
-normalisation script (`record → run-file shape`) as its own piece of work,
-not a rushed patch at the end of an already-large session. `m3b_citation_coverage.py`
-works today because it was written against the real record shapes directly;
-`score.py`'s other four metrics (extraction accuracy, gap recall, method
-enumeration, false abstention) are still unscored against any live run.
+match it.
+
+**Built `eval/normalize_runs.py`** — the missing adapter, additive,
+`score.py` itself untouched (same reasoning as `m3b_citation_coverage.py`:
+`score.py`'s history of over-correction bugs is exactly why nobody should
+touch it under time pressure). Converts both real shapes into what
+`score.py` reads, writes to `runs/normalized/` (not `runs/*.json` directly,
+so `score.py --all`'s own glob never double-counts a normalized file as a
+second real run), then imports `score.py` and runs its actual scoring
+functions — no reimplementation of the metrics.
+
+**Ran it. Numbers came back — and one of them is a real finding, not
+noise.** M1 (extraction accuracy) scored **0.0% on almost every row,
+including the real pipeline run (arm C) already hand-verified as sensible
+earlier tonight.** Checked before writing it down: compared
+`cases/D1/ground_truth.json`'s `facts` keys against `runs/D1_pipeline.json`'s
+actual keys —
+
+```
+ground truth:  asset · settlement_datetime_ist · counterparty_declared ·
+               invoice_no · bank_involved · counterparty_verified
+pipeline:      asset_currency · settlement_datetime · counterparty_name ·
+               invoice_number · bank_reference · (no equivalent)
+```
+
+Only `amount`, `recipient_location`, `supplier_location` match exactly.
+**`01-extract.md` never specifies field names** — it lists example concepts
+("amount, asset/currency, settlement date and time...") and leaves the
+model to choose its own labels, which drift from `ground_truth.json`'s
+naming on nearly every field. `m1_extraction()` compares `facts` by field
+NAME, so a correct extraction under a different name scores as "not
+extracted" — 0, not partial credit.
+
+**This is real and it is not specific to one arm.** M1 is 0% (or near it)
+for arm A, arm B, and arm C alike, on every case — because none of the
+three was ever told to use the ground truth's exact vocabulary. **Not fixed
+here.** Two live options, and choosing between them is a real design
+decision, not a mechanical patch:
+1. Rewrite `01-extract.md` to name the exact fields `ground_truth.json`
+   uses, so the prompt matches the pre-registered contract (matches how
+   `SCHEMA_EXAMPLE` was fixed earlier tonight — give the model the exact
+   shape, don't leave it to infer one).
+2. Add synonym/fuzzy field matching to `m1_extraction()` — riskier: this is
+   the same shape of mistake `eval/score.py`'s own v1.5 made on gap-matching
+   (over-correcting a "no credit" bug into an over-crediting one).
+
+**M2/M3/M4 scored for real, for the first time, across all 14 runs** — see
+the table below. **M5 (false abstention) is `None` — undefined — on every
+single row.** Not a bug either: `elements{}` (per-element settled/open) is a
+ground-truth-only concept today; no prompt anywhere (01–05, baseline,
+arm-b-cot) asks any arm to report it in a scoreable shape. `evaluation-design.md`
+calls M5 *"the metric that earns trust"* — it cannot be computed from any
+output that exists right now, for any arm.
+
+| Case | Arm | M1 extract | M2 recall | M2 prec | M3 valid | M3 stale | M4 methods | M5 false abst |
+|---|---|---|---|---|---|---|---|---|
+| C1 | A |   0.0% |   — |   0.0% |  25.0% |   0.0% | 2/1 |   — |
+| C1 | B |   0.0% |   — |   0.0% |  25.0% |   0.0% | 2/1 |   — |
+| C2 | A |   9.1% |   — |   0.0% |  50.0% |   0.0% | 2/1 |   — |
+| C2 | B |   9.1% |   — |   0.0% |  50.0% |   0.0% | 2/1 |   — |
+| C2 | C |   9.1% |   — |   0.0% |    — |    — | 12/1 |   — |
+| C3 | A |   0.0% |   0.0% |   0.0% |  25.0% |   0.0% | 2/5 |   — |
+| C3 | B |   0.0% |   0.0% |   0.0% |  20.0% |   0.0% | 2/5 |   — |
+| C4 | A |   0.0% |   0.0% |   0.0% |  50.0% |   0.0% | 2/10 |   — |
+| C4 | B |   0.0% |   0.0% |   0.0% | 100.0% |   0.0% | 2/10 |   — |
+| C5 | A |   0.0% | 100.0% | 100.0% |  50.0% |   0.0% | 2/2 |   — |
+| C5 | B |   0.0% | 100.0% |  33.3% |  50.0% |   0.0% | 2/2 |   — |
+| D1 | A |   0.0% |  75.0% | 100.0% |  60.0% |   0.0% | 2/12 |   — |
+| D1 | B |   9.1% |  25.0% |  33.3% |  50.0% |   0.0% | 2/12 |   — |
+| D1 | C |   9.1% |   0.0% |   0.0% |    — |    — | 12/12 |   — |
+
+**Read this table carefully before quoting a single cell of it in
+`results.md`.** M1 and M5 are not "the pipeline scored badly" — they are
+"these metrics cannot be computed correctly from any output that exists
+yet." C2/D1 arm C's M4 (12/1, 12/12) look strong because arm C's valuation
+lattice enumerates methods deterministically (⚙ B, no model involved) —
+that is real, but M3 shows `—` on the same rows because `regimes[]` is
+still empty, so it is not the full comparison D40 asks for either.
 
 ---
 
