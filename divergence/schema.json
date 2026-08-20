@@ -146,6 +146,22 @@
           "outcome": { "type": "string" },
           "certainty": { "$ref": "#/$defs/certainty" },
           "citation": { "$ref": "#/$defs/citation" },
+          "reasoning": {
+            "type": "string",
+            "description": "D46 addendum, 20 Aug. Prompts 03/04 have always asked for this; the schema simply never allowed it (additionalProperties: false silently dropped it downstream, node_resolver.py's live D1 run caught it). Why this provision reaches these facts, or why it does not."
+          },
+          "conditions": {
+            "type": "array",
+            "description": "D46 addendum, 20 Aug. Prompt 04's cumulative-conditions test (IGST s.2(6)'s five conditions, taken one at a time) — same gap as reasoning above.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "condition": { "type": "string" },
+                "met": { "enum": ["yes", "no", "unknown"] },
+                "why": { "type": "string" }
+              }
+            }
+          },
           "qualifying_condition": { "type": "string" },
           "condition_met": { "enum": ["yes", "no", "unknown"] },
           "consequence_if_failed": { "type": "string" },

@@ -96,11 +96,26 @@ e) PENALTY POSITION — what does s.439(8) require of a disclosed position?
 OUTPUT — JSON only. No prose before or after.
 ────────────────────────────────────────────────────────────────────────
 
+"regime" IS A FIXED FIELD WITH EXACTLY FIVE ALLOWED VALUES:
+    income_tax_on_receipt | income_tax_on_transfer | gst_export | fema | valuation_method
+It answers "which legal regime does this conclusion belong to" — it is NOT
+a label for which of (a)-(e) above you are answering. Do not invent values
+like "recognition_date", "tds", or "penalty_position" — those are questions
+you resolve, not regimes you report. Points (b), (c), (d) and (e) are all
+part of the income-tax-on-receipt position for a single event: fold your
+answer to all four into ONE object's "outcome" and "reasoning" fields,
+covering recognition date, valuation method, TDS and penalty position in
+that one piece of prose. Only emit a second object if a genuinely separate
+legal event is being described — for instance income_tax_on_transfer, if
+and when this asset is later disposed of, which is a different taxable
+event from the receipt you were actually asked about (this is exactly what
+F7 — "single-event tax" — gets wrong when it is not kept separate).
+
 {
   "regimes": [
     {
       "regime": "income_tax_on_receipt",
-      "outcome": "<one sentence, plain English>",
+      "outcome": "<one sentence, plain English, covering classification AND recognition date AND valuation method AND TDS AND penalty position>",
       "certainty": "settled|inference|open_texture|lacuna|contested|insufficient_evidence",
       "citation": {
         "provision": "<exactly as it appears in the text above>",
@@ -108,7 +123,7 @@ OUTPUT — JSON only. No prose before or after.
         "tax_year": "FY 2026-27",
         "verified": false
       },
-      "reasoning": "<why this provision reaches these facts, or why it does not>",
+      "reasoning": "<walk through (a)-(e) here — why each provision reaches these facts, or why it does not>",
       "depends_on_missing": [],
       "qualifying_condition": "<or null>",
       "condition_met": "yes|no|unknown",
@@ -120,6 +135,19 @@ OUTPUT — JSON only. No prose before or after.
 
 `limits` must never be empty. If it is, you have not looked hard enough at
 your own answer.
+
+────────────────────────────────────────────────────────────────────────
+FOUND LIVE, 20 AUG — WHY THIS SECTION SAYS "FIXED FIELD" IN CAPS
+────────────────────────────────────────────────────────────────────────
+
+The first real run of this prompt (Qwen2.5-72B, via node_resolver.py) split
+(a)-(e) into five separate regime objects, using "recognition_date", "tds"
+and "penalty_position" as regime values — a reasonable reading of "resolve
+five things" that the schema's regime enum does not actually permit.
+node_resolver.py's own validation caught it immediately and hard-failed
+with a clear message, rather than letting it reach a confusing schema error
+three steps later. This section was rewritten in response, not guessed at
+in advance — see DECISION-D46.md.
 ```
 
 ---

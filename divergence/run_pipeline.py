@@ -1,22 +1,28 @@
 #!/usr/bin/env python3
 """
 RUN PIPELINE — DIVERGENCE
-Wires the automated front half together: 🤖 1 EXTRACT -> 🤖 2 GAP DETECTOR ->
+Wires the full automated chain: 🤖 1 EXTRACT -> 🤖 2 GAP DETECTOR ->
+🤖 3/4 INCOME TAX + GST RESOLVERS -> ⚙ C CITATION MATCHER ->
 ⚙ A GAP CONSTRAINT ENFORCER. Folds in ⚙ B's existing output (valuation.json,
-from node3_valuation.py — unchanged, still no model, no API) and runs ⚙ C
-the citation matcher against any resolver conclusions supplied.
+from node3_valuation.py — unchanged, still no model, no API).
 
-Nodes 3/4/5 (income tax, GST, adversarial) are NOT called here. Per the
-STEP21 protocol (step21drop/eval/score.py) they are run by hand, fresh
-session, and hand-coded into a run file. Pass that file's "regimes" through
---regimes to have THIS script enforce and validate them against the facts{}
-and missing[] this run produced automatically — that is the seam between
-the manual arms protocol and the automated part of the pipeline.
+D46 Step 1: nodes 3/4 used to be hand-run only, so regimes[] was empty on
+every real record and every arm-C citation number in the results table was
+an incomplete run, not a measurement. They are automated now, via
+node_resolver.py, and run by default. Node 5 (adversarial) is still not
+called here — it needs a full assembled record as input and is its own
+step (Step 5), not this one.
+
+--regimes still exists, ADDITIVELY: pass a hand-run or hand-planted file
+(e.g. the D1-a/b/c/d ablation variants, or a node 5 adversarial pass once
+that exists) and its conclusions are merged in alongside the two automated
+resolvers', then both go through the same citation matcher and gap
+enforcer. --skip-resolvers turns the automated pair off entirely, for
+testing just nodes 1/2 the way earlier runs did.
 
     python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" \\
         --text cases/D1/case.txt \\
-        --regimes cases/D1/regimes_armC.json \\
-        --out runs/D1_armC_pipeline.json
+        --out runs/D1_pipeline.json
 
 Writes a schema.json-shaped disclosure record: validated against schema.json
 if the 'jsonschema' package is installed, structurally checked either way.
@@ -36,6 +42,7 @@ import llm_call                             # noqa: E402
 from llm_call import LLMError               # noqa: E402
 import node1_extract                        # noqa: E402
 import node2_gaps                           # noqa: E402
+import node_resolver                        # noqa: E402
 import gap_enforcer                         # noqa: E402
 from citation_matcher import verify as cite_verify  # noqa: E402
 
@@ -117,15 +124,20 @@ def validate_schema(record):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Wire nodes 1, 2 and A (and ⚙ B/⚙ C where available) into one run.")
+    ap = argparse.ArgumentParser(description="Wire nodes 1, 2, 3, 4, ⚙ C and ⚙ A into one run.")
     ap.add_argument("--record-id", required=True)
     ap.add_argument("--tax-year", required=True)
     ap.add_argument("--text", action="append", default=[])
     ap.add_argument("--file", action="append", default=[])
-    ap.add_argument("--regimes", help="hand-coded output from prompts 03/04/05 (run-file 'regimes' shape)")
+    ap.add_argument("--regimes", help="ADDITIONAL hand-coded conclusions (e.g. a planted-defect "
+                     "variant, or a node 5 pass), merged in alongside nodes 3/4's own output")
+    ap.add_argument("--skip-resolvers", action="store_true",
+                     help="don't call nodes 3/4 — test just nodes 1/2, regimes[] stays empty "
+                          "unless --regimes supplies something")
     ap.add_argument("--valuation", default=os.path.join(HERE, "valuation.json"),
                      help="output of node3_valuation.py (default: ./valuation.json)")
     ap.add_argument("--model", default="small")
+    ap.add_argument("--resolver-model", default="large")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -134,10 +146,11 @@ def main():
 
     print("=" * 74)
     print(f"  RUN PIPELINE — {a.record_id}  ({a.tax_year})")
-    print(f"  provider={llm_call.provider_name()}  small={llm_call.model_id('small')}")
+    print(f"  provider={llm_call.provider_name()}  small={llm_call.model_id('small')}"
+          f"  large={llm_call.model_id('large')}")
     print("=" * 74)
 
-    print("\n  [1/4] 🤖 1 EXTRACT")
+    print("\n  [1/5] 🤖 1 EXTRACT")
     try:
         facts, extraction_notes, m1 = node1_extract.extract(a.text, a.file, model=a.model)
     except LLMError as e:
@@ -146,7 +159,7 @@ def main():
           f"({m1.get('in_tokens', '?')} in / {m1.get('out_tokens', '?')} out tokens, "
           f"{m1.get('retries', 0)} retr(y/ies))")
 
-    print("\n  [2/4] 🤖 2 GAP DETECTOR")
+    print("\n  [2/5] 🤖 2 GAP DETECTOR")
     try:
         missing, m2 = node2_gaps.detect_gaps(facts, model=a.model)
     except LLMError as e:
@@ -155,14 +168,31 @@ def main():
           f"({m2.get('in_tokens', '?')} in / {m2.get('out_tokens', '?')} out tokens, "
           f"{m2.get('retries', 0)} retr(y/ies))")
 
-    regimes_in = load_regimes(a.regimes)
-    print(f"\n  [3/4] ⚙ C CITATION MATCHER  ({len(regimes_in)} conclusion(s) supplied via --regimes)")
+    resolver_limits = []
+    regimes_in = list(load_regimes(a.regimes))
+    if not a.skip_resolvers:
+        print("\n  [3/5] 🤖 3/4 INCOME TAX + GST RESOLVERS")
+        for regime in ("income_tax", "gst"):
+            try:
+                r_regimes, r_limits, m34 = node_resolver.resolve(regime, facts, missing, a.tax_year,
+                                                                  model=a.resolver_model)
+            except LLMError as e:
+                die(str(e))
+            print(f"        {regime:<11} {len(r_regimes)} conclusion(s), {len(r_limits)} limit(s) "
+                  f"({m34.get('in_tokens', '?')} in / {m34.get('out_tokens', '?')} out tokens, "
+                  f"{m34.get('retries', 0)} retr(y/ies))")
+            regimes_in.extend(r_regimes)
+            resolver_limits.extend(r_limits)
+    else:
+        print("\n  [3/5] 🤖 3/4 INCOME TAX + GST RESOLVERS  (skipped, --skip-resolvers)")
+
+    print(f"\n  [4/5] ⚙ C CITATION MATCHER  ({len(regimes_in)} conclusion(s) total)")
     regimes, dropped = apply_citation_matcher(regimes_in, a.tax_year)
     for d in dropped:
         print(f"        DROPPED  {d['regime']:<24} {d['citation']!r:<32} {d['status']} — {d['reason']}")
     print(f"        {len(regimes)} kept, {len(dropped)} dropped")
 
-    print("\n  [4/4] ⚙ A GAP CONSTRAINT ENFORCER")
+    print("\n  [5/5] ⚙ A GAP CONSTRAINT ENFORCER")
     for r in regimes:
         r.setdefault("depends_on_missing", [])
     record_stub, forced = gap_enforcer.enforce({"regimes": regimes})
@@ -172,15 +202,15 @@ def main():
 
     valuation = load_valuation(a.valuation)
 
-    limits = list(extraction_notes)
+    limits = list(extraction_notes) + resolver_limits
     for d in dropped:
         limits.append(f"citation dropped: {d['citation']} ({d['status']}) for regime {d['regime']}")
     if regimes_in and not valuation:
         limits.append("valuation.json not found — run node3_valuation.py first; this record has no valuation block")
-    if not a.regimes:
-        limits.append("no --regimes supplied — nodes 3/4/5 were not run for this record; regimes[] is empty")
+    if a.skip_resolvers and not a.regimes:
+        limits.append("--skip-resolvers was set and no --regimes supplied — regimes[] is empty")
     if not limits:
-        limits.append("no limitations recorded by nodes 1/2 — review before trusting this record (limits[] must never be silently empty)")
+        limits.append("no limitations recorded by nodes 1/2/3/4 — review before trusting this record (limits[] must never be silently empty)")
 
     record = {
         "record_id": a.record_id,

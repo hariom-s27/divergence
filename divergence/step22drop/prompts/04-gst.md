@@ -55,6 +55,11 @@ c) WHAT TURNS ON DISCLOSURE?
 OUTPUT — JSON only.
 ────────────────────────────────────────────────────────────────────────
 
+"regime" is a fixed field: for this prompt it is always exactly
+"gst_export" — not a label for which condition or sub-question you are
+answering. All five conditions from (a) go inside the one "conditions"
+array below, not as separate regime objects.
+
 {
   "regimes": [
     {
