@@ -69,6 +69,16 @@
   "_elements_note": "settled | open | n/a. Metric 5 counts 'open' reported where truth says 'settled'.",
   "methods_expected": 5,
   "_methods_note": "Pre-registered count of defensible valuation methods. Metric 4 scores against this.",
-  "citations_expected": [],
-  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping."
+  "citations_expected": [
+    {"provision": "Section 2(47A), Income-tax Act, 1961", "tax_year": "FY 2026-27"},
+    {"provision": "Section 115BBH, Income-tax Act, 2025", "tax_year": "FY 2026-27"},
+    {"provision": "Rule 56, Income-tax Rules, 2026", "tax_year": "FY 2026-27"},
+    {"provision": "Rule 57, Income-tax Rules, 2026", "tax_year": "FY 2026-27"},
+    {"provision": "Section 439(8), Income-tax Act, 2025", "tax_year": "FY 2026-27"},
+    {"provision": "Section 2(6) IGST Act", "tax_year": "FY 2026-27"},
+    {"provision": "FEMA section 3", "tax_year": "FY 2026-27"}
+  ],
+  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping.",
+  "_citations_status": "DRAFT filled 20 Aug 2026 by Claude from architecture.md's corpus scoping + this case's facts. Needs human sanity-check before the freeze commit. NOT currently consumed by eval/score.py's m3_citations() -- that function validates whatever the run cited, it does not compare against this list yet.",
+  "_citations_reasoning": "Same VDA valuation lacuna as D1 (s.2(111)/s.115BBH classify and correctly rule out 'transfer' taxation on a mere receipt; Rule 56 fixes the valuation date to date of receipt; Rule 57 has no method that reaches it). This case isolates the weekend variable -- SBI published on 23 June itself, so the OFFICIAL-DATE choice closes (elements.official_date = settled), but the valuation-METHOD lacuna does not, since Rule 57 still does not reach a VDA regardless of what day it is. GST blocked on the same missing-FIRC/unverified-counterparty grounds as D1 -- cite s.2(6) IGST but conclude insufficient_evidence. FEMA cited because counterparty_verified is false and missing[] blocks fema."
 }

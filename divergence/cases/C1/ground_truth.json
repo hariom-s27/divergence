@@ -54,5 +54,7 @@
   "methods_expected": 1,
   "_methods_note": "Pre-registered count of defensible valuation methods. Metric 4 scores against this.",
   "citations_expected": [],
-  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping."
+  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping.",
+  "_citations_status": "DRAFT filled 20 Aug 2026 by Claude from architecture.md's corpus scoping + this case's facts. Needs human sanity-check before the freeze commit. NOT currently consumed by eval/score.py's m3_citations() -- that function validates whatever the run cited, it does not compare against this list yet.",
+  "_citations_reasoning": "Asset is INR, domestic client, domestic supply -- no virtual digital asset, no foreign currency, no export. Nothing in this corpus (which is scoped to valuing a stablecoin receipt from a foreign client) governs a plain domestic INR invoice. A correct answer recognising that NO special provision applies -- not inventing one -- is the right response for the false-abstention test this case exists to run."
 }

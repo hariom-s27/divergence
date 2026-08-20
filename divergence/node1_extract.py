@@ -83,7 +83,7 @@ def _pdf_to_text(path):
     return text
 
 
-def build_content(text_paths, file_paths):
+def build_content(text_paths, file_paths, model="small"):
     blocks = []
     for p in text_paths:
         if not os.path.exists(p):
@@ -102,6 +102,16 @@ def build_content(text_paths, file_paths):
                 "text": f"--- {os.path.basename(p)} (PDF, text-extracted) ---\n" + _pdf_to_text(p),
             })
         elif mime and mime.startswith("image/"):
+            if not llm_call.is_vision_model(model):
+                die(
+                    f"--file {os.path.basename(p)} is an image, but the '{model}' slot "
+                    f"resolves to {llm_call.model_id(model)}, which cannot read images.\n"
+                    "  A text-only model would silently return confident facts from a "
+                    "document it never saw — that is the exact failure this project exists "
+                    "to catch, happening inside node 1 itself.\n"
+                    "  Either use --text, or point the slot at a vision model for this run:\n"
+                    '    $env:DIVERGENCE_MODEL_SMALL = "Qwen/Qwen2.5-VL-72B-Instruct"'
+                )
             data = base64.standard_b64encode(open(p, "rb").read()).decode()
             blocks.append({
                 "type": "image_url",
@@ -120,7 +130,7 @@ def extract(text_paths, file_paths, model="small"):
     than shelling out and re-parsing stdout. Returns (facts, extraction_notes,
     meta) — meta is this node's row from llm_call.provenance() after the call."""
     system = load_system_prompt()
-    content = build_content(text_paths, file_paths)
+    content = build_content(text_paths, file_paths, model)
     parsed = llm_call.call_json(system, content, model, node_name=NODE_NAME)
     if "facts" not in parsed or not isinstance(parsed["facts"], dict):
         raise LLMError(f"{NODE_NAME}: model output has no top-level 'facts' object\n{parsed}")

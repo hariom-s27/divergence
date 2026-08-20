@@ -277,6 +277,136 @@ recorded (`Qwen/Qwen2.5-7B-Instruct`, 2639 in / 81 out tokens, 0 retries).
 
 ---
 
+## `llm_call.py` — D44 · 20 Aug · removed the Anthropic fallback and the retry-a-403 waste
+
+### The fallback was a live Class 3 hole in the harness itself
+D42/D43's `provider_name()` returned whichever key it found — Featherless
+first, Anthropic second. That means a shell with `ANTHROPIC_API_KEY` set from
+something else, and `FEATHERLESS_API_KEY` simply not set yet, would run the
+whole pipeline on Claude, produce a schema-valid record, and nothing would
+say so except a field inside `_meta.llm` that nobody is forced to open.
+**A confident, correct-looking output resting on ground that quietly
+moved — the exact failure this project exists to detect, reproduced inside
+the harness that measures it.**
+
+**Fix:** no fallback. `FEATHERLESS_API_KEY` unset is now a hard error.
+Running on Claude requires typing `DIVERGENCE_PROVIDER=anthropic` on purpose.
+Verified live: with only `ANTHROPIC_API_KEY` set, `check_llm.py` now fails
+immediately with the fix in the message, rather than silently proceeding.
+
+**Also fixed:** D43's gated-model hunt cost 9 wasted API calls, because the
+retry loop treated `403 model_gated_needs_oauth` as transient and retried it
+3× per model. Retries are now limited to actually-transient statuses
+(`408/409/425/429/500/502/503/504`); a licence gate raises `GatedModelError`
+immediately, with the fix already in the error message.
+
+**Before → after (live, `check_llm.py`):** all three slots still OK, D41
+still OK (`resolvers=qwen adversary=mistralai`) — the fix changed failure
+behaviour, not the working path.
+
+---
+
+## `node1_extract.py` — 20 Aug · a text-only model can't read an image, so stop letting it try
+
+### The bug
+`--file invoice.png` sent an OpenAI `image_url` block to whatever model the
+`small` slot resolved to. On Featherless that's `Qwen/Qwen2.5-7B-Instruct` —
+**text-only.** The model can't see the block, sees only the trailing
+`[the image above is invoice.png]` caption, and returns a plausible
+`facts{}` object with `confidence: "certain"` on every field regardless.
+
+> **This is the whole project's thesis happening inside the project.** A
+> confident, well-formed, schema-valid extraction, from a document nobody
+> read. Nothing in the output says anything went wrong — Class 3, inside
+> node 1 itself.
+
+**Fix:** `build_content()` now takes the resolved model and checks
+`llm_call.is_vision_model()` before building an image block; a text-only
+model hard-fails with the fix in the message rather than silently
+extracting from nothing.
+
+### A related, worth-keeping finding from testing the fix
+Verified live which Featherless vision models actually work:
+`Qwen/Qwen2.5-VL-72B-Instruct` answered a solid-colour test image correctly.
+`Qwen/Qwen2.5-VL-32B-Instruct` — reachable, no error — **answered a pure-red
+2×2 pixel image "Gray."** Not a crash, not a refusal: a confident wrong
+answer on ground truth with zero ambiguity. That is a free data point for
+`results.md` if the vision path is demoed: bigger is not always the safe
+default even within one model family, and "it responded" is not the same
+claim as "it looked."
+
+---
+
+## `citation_matcher.py` — 20 Aug · found while filling ground truth: a bare short citation matches the wrong file
+
+### The bug
+Filling `citations_expected[]` for D1/C3/C4 (draft, see below), the natural
+citation for the VDA definition is `s.2(111)` — that's the label
+`architecture.md`'s own node 3 corpus table uses (*"s.2(111) [was s.2(47A)]"*).
+`verify("Section 2(111)", "FY 2026-27")` returns **`VERIFIED`** — but
+`v.provision_id` is `FEMA-2n`, not `IT-2-47A`. It matched the wrong file and
+said so with full confidence.
+
+### Why
+`IT-2-47A.md`'s own `current_citation` field still reads *"Section 2(47A),
+Income-tax Act, 1961 — carried into the Income-tax Act, 2025"* — its
+`known_limitation` has said *"2025 Act section number unconfirmed"* since 6
+August, and nobody had actually tried to cite it as `2(111)` until now. A
+bare citation with no Act name (`"Section 2(111)"`, no *"Income-tax Act"*
+suffix) doesn't trigger `instrument_of()`'s Act-name detection, so
+`_refs_match()` runs against every corpus entry regardless of instrument —
+and something in `FEMA-2n.md`'s reference set matched the bracket chain
+first.
+
+> **A recorded `known_limitation` and a citation_matcher gap combined to
+> silently verify the wrong provision.** Neither alone would have done it —
+> the limitation flag didn't stop anyone citing the number it warned about,
+> and the matcher's weak disambiguation on an unqualified citation only
+> bites when someone actually tries a bare one.
+
+**Workaround applied to the three ground-truth files:** cite
+`"Section 2(47A), Income-tax Act, 1961"` — the form the corpus actually
+holds — until `IT-2-47A.md` is updated with the confirmed 2025 Act number.
+**Not fixed in `citation_matcher.py` itself** — `instrument_of()` needs to
+either require an instrument match before ref-matching, or refuse to
+`VERIFIED` a bare citation with no detected instrument at all. Logged here
+rather than silently patched, since a resolver prompt could hit the exact
+same bare-citation shape live.
+
+---
+
+## Ground truth — `citations_expected[]` filled (draft) for all 6 cases, 20 Aug
+
+`citations_expected[]` had been empty in every case since the fields were
+scaffolded (Step 21) — the commit `a267f19` ("ground truth frozen pre-run")
+claimed a freeze that wasn't actually complete. Filled from
+`architecture.md`'s corpus scoping crossed against each case's own facts;
+every citation string verified live against `citation_matcher.py` before
+being written (catching the `Section 2(111)` bug above in the process).
+Marked `_citations_status: DRAFT` in each file — this is legal-judgment
+work `STEP21-README.md` assigns to a human (P1), and a first pass by Claude
+is not a substitute for that review, only a faster starting point for it.
+
+**Also found:** `eval/score.py`'s `m3_citations()` does not currently read
+`citations_expected[]` at all — it validates whatever a run cites against
+`citation_matcher.py`, with no recall/precision comparison to a
+pre-registered expected set. Filling the field is still the right thing to
+do (the ground truth file's own `_citations_note` commits to it, and future
+scoring work may consume it), but it does not change what today's metric 3
+actually measures — worth knowing before stating how citations are scored.
+
+**Checked, not just flagged:** C4's case.md cites `s.393(4) Table Sl. No. 12`
+as the ₹50,000 TDS threshold — the text for it **is** held verbatim in
+`corpus/tier-a/IT-393-1-T8vi.md` (`extract_scope` says so explicitly), but
+that file's citable `provision_id`/`current_citation` is keyed only to
+`Section 393(1), Table Sl. No. 8(vi)`. `citation_matcher.py`
+`REJECTED_NOT_FOUND` every `393(4) Table Sl. No. 12` string tried live —
+the sub-rule text is present in the file but not independently citable as
+its own provision. C4's `citations_expected[]` cites 393(1)/T8(vi) only, with
+this noted in the entry's own reasoning field.
+
+---
+
 ## Design decisions that changed the build
 
 | Date | Change | Why |

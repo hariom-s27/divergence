@@ -65,6 +65,13 @@
   "_elements_note": "settled | open | n/a. Metric 5 counts 'open' reported where truth says 'settled'.",
   "methods_expected": 2,
   "_methods_note": "Pre-registered count of defensible valuation methods. Metric 4 scores against this.",
-  "citations_expected": [],
-  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping."
+  "citations_expected": [
+    {"provision": "Rule 206, Income-tax Rules, 2026", "tax_year": "FY 2026-27"},
+    {"provision": "Rule 207, Income-tax Rules, 2026", "tax_year": "FY 2026-27"},
+    {"provision": "Section 2(6) IGST Act", "tax_year": "FY 2026-27"},
+    {"provision": "Section 439(8), Income-tax Act, 2025", "tax_year": "FY 2026-27"}
+  ],
+  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping.",
+  "_citations_status": "DRAFT filled 20 Aug 2026 by Claude from architecture.md's corpus scoping + this case's facts. Needs human sanity-check before the freeze commit. NOT currently consumed by eval/score.py's m3_citations() -- that function validates whatever the run cited, it does not compare against this list yet.",
+  "_citations_reasoning": "This is the fiat-Sunday-gap fallback demo -- same shape as C2 (USD, FIRC present, clean export) except the settlement date is a Sunday SBI did not publish on. This is exactly Rule 206/207's own asymmetry (GAZETTE-FINDINGS.md #3): Rule 206 borrows Rule 207's telegraphic-transfer-buying-rate definition but not Rule 207's 'last published rate may be taken' fallback for an unpublished date. That gap is why elements.official_date = open even though valuation_method is settled -- there is a rate to apply, just no rule saying which date's rate. No VDA provisions -- no crypto in this case."
 }

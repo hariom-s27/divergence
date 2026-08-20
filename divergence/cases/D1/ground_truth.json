@@ -91,6 +91,17 @@
   "_elements_note": "settled | open | n/a. Metric 5 counts 'open' reported where truth says 'settled'.",
   "methods_expected": 12,
   "_methods_note": "Pre-registered count of defensible valuation methods. Metric 4 scores against this.",
-  "citations_expected": [],
-  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping."
+  "citations_expected": [
+    {"provision": "Section 2(47A), Income-tax Act, 1961", "tax_year": "FY 2026-27"},
+    {"provision": "Section 115BBH, Income-tax Act, 2025", "tax_year": "FY 2026-27"},
+    {"provision": "Rule 56, Income-tax Rules, 2026", "tax_year": "FY 2026-27"},
+    {"provision": "Rule 57, Income-tax Rules, 2026", "tax_year": "FY 2026-27"},
+    {"provision": "Section 393(1), Table Sl. No. 8(vi), Income-tax Act, 2025", "tax_year": "FY 2026-27"},
+    {"provision": "Section 439(8), Income-tax Act, 2025", "tax_year": "FY 2026-27"},
+    {"provision": "Section 2(6) IGST Act", "tax_year": "FY 2026-27"},
+    {"provision": "FEMA section 3", "tax_year": "FY 2026-27"}
+  ],
+  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping.",
+  "_citations_status": "DRAFT filled 20 Aug 2026 by Claude from architecture.md's corpus scoping + this case's facts. Needs human sanity-check before the freeze commit -- this is the deep/headline case, check it most carefully of the six. NOT currently consumed by eval/score.py's m3_citations() -- that function validates whatever the run cited, it does not compare against this list yet.",
+  "_citations_reasoning": "The headline case, three stacked undetermined elements. s.2(47A) classifies USDC as a VDA (not foreign currency, so Rule 206 is correctly ruled OUT -- see GAZETTE-FINDINGS.md #2). Cited as 2(47A), not the 2025 Act's '2(111)': the corpus's own current_citation for this provision still carries the 1961-Act number (known_limitation: 2025 Act section number unconfirmed). A bare 'Section 2(111)' with no Act name VERIFIES too, but against the WRONG file (FEMA-2n.md) -- a real citation_matcher.py disambiguation gap, found while filling this field, logged in iteration-log.md. s.115BBH taxes TRANSFER, not receipt (F7 -- a correct answer cites it to rule it out, not to apply it). Rule 56 fixes valuation date to date of receipt regardless of the weekend. Rule 57's seven rows, read including column B, reach no method for a s.92 receipt -- the lacuna (GAZETTE-FINDINGS.md #1). s.393(1) T8(vi) for the TDS question. s.439(8) for penalty position, always resolved per prompt 03. GST blocked -- no bank involved, no FIRC obtainable, unverified counterparty -- cite s.2(6) IGST but the conclusion is insufficient_evidence, forced by gap_enforcer.py. FEMA cited because counterparty_verified is false."
 }

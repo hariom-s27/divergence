@@ -1,23 +1,28 @@
 """
 llm_call.py  --  the single place DIVERGENCE talks to a model.
 
-Two providers. One interface. The key is NEVER in this file.
+FEATHERLESS ONLY.  Anthropic is reachable but never by accident (D44).
 
-    Featherless (open models)  ->  set  FEATHERLESS_API_KEY
-    Anthropic   (Claude)       ->  set  ANTHROPIC_API_KEY
+    set FEATHERLESS_API_KEY in your shell.  Never in a file in this repo.
 
-Which one is used is decided at runtime, and RECORDED, so results.md can
-state honestly which models produced which arm.
+Why "only": D35 says the eval runs on open weights and the Claude rupee
+figure is a metered deployment estimate. An automatic fallback to Anthropic
+would mean a shell missing one env var silently produces a Claude-generated
+row in a results table labelled "open models". Nothing would crash. Nothing
+would look wrong. That is a Class 3 failure inside our own harness, in the
+exact shape the project exists to catch — so the fallback is gone. Running on
+Claude now requires typing DIVERGENCE_PROVIDER=anthropic on purpose.
 
-Design note (D35): the eval runs on Featherless open models. The Claude
-cost figure stays in the write-up as the *metered deployment estimate*,
-not as the measured run. Do not blur those two.
+Design note (D41): node 5 (adversarial) must run on a DIFFERENT model family
+from the resolvers, or "an independent check" is a model agreeing with
+itself. Resolvers are Qwen; the adversary is Mistral. If you override the
+model ids, KEEP THEM IN DIFFERENT FAMILIES — check_llm.py warns if you don't.
 
-Design note (D41): node 5 (adversarial) must run on a DIFFERENT model
-family from the resolvers, or "an independent check" is just the same
-model agreeing with itself. Under Featherless that is Qwen for the
-resolvers and Llama for the adversary. If you override the model names,
-KEEP THEM IN DIFFERENT FAMILIES or you have silently deleted the control.
+Design note (D43): every meta-llama/* id 403s on this account
+(model_gated_needs_oauth — a HuggingFace licence gate Featherless passes
+through). available_on_current_plan is TRUE for those models; the gate is one
+layer further out and the catalogue does not signal it. Only a real call
+finds it. Hence Mistral in the adversarial slot.
 """
 
 import json
@@ -36,12 +41,15 @@ class LLMError(RuntimeError):
     pass
 
 
+class GatedModelError(LLMError):
+    """The model exists and is on your plan, but a licence gate blocks it."""
+
+
 # ----------------------------------------------------------------------
 # Providers
 # ----------------------------------------------------------------------
-# Model ids can be overridden WITHOUT editing this file, via env vars:
+# Override any slot WITHOUT editing this file:
 #     DIVERGENCE_MODEL_SMALL / _LARGE / _ADVERSARIAL
-# Useful when a Featherless plan tier does not serve a given size.
 
 PROVIDERS = {
     "featherless": {
@@ -50,10 +58,7 @@ PROVIDERS = {
         "models": {
             "small":       "Qwen/Qwen2.5-7B-Instruct",
             "large":       "Qwen/Qwen2.5-72B-Instruct",
-            # every meta-llama/* model on this account 403s: "model_gated_needs_oauth"
-            # (needs a HuggingFace account connected to Featherless, out-of-band, per
-            # model family). Mistral is still a different family from Qwen (D41) and
-            # is NOT gated on this account -- verified live, see DECISION-D42.md addendum.
+            # D43: NOT meta-llama/* — every one of them 403s on this account.
             "adversarial": "mistralai/Mistral-Large-Instruct-2411",
         },
         "kind": "openai",
@@ -70,6 +75,20 @@ PROVIDERS = {
     },
 }
 
+DEFAULT_PROVIDER = "featherless"
+
+# Model ids known to accept image_url blocks. Used by node1_extract.py to
+# refuse a photographed invoice rather than send an image to a text-only
+# model, which either errors or — worse — ignores it and invents the facts.
+VISION_MODELS = {
+    "Qwen/Qwen2.5-VL-3B-Instruct",
+    "Qwen/Qwen2.5-VL-7B-Instruct",
+    "Qwen/Qwen2.5-VL-32B-Instruct",
+    "Qwen/Qwen2.5-VL-72B-Instruct",
+    "Qwen/Qwen3-VL-30B-A3B-Instruct",
+    "Qwen/Qwen3-VL-235B-A22B-Thinking",
+}
+
 _ENV_OVERRIDE = {
     "small":       "DIVERGENCE_MODEL_SMALL",
     "large":       "DIVERGENCE_MODEL_LARGE",
@@ -78,32 +97,37 @@ _ENV_OVERRIDE = {
 
 
 def provider_name():
-    """Which provider this run uses. Explicit wins; otherwise whichever key is set."""
+    """Featherless, unless you deliberately asked for something else.
+
+    There is no fallback. A missing FEATHERLESS_API_KEY is an error, not a
+    reason to quietly use Claude."""
     forced = os.environ.get("DIVERGENCE_PROVIDER", "").strip().lower()
-    if forced:
-        if forced not in PROVIDERS:
-            raise LLMError(
-                "DIVERGENCE_PROVIDER=%r is not a provider. Use one of: %s"
-                % (forced, ", ".join(sorted(PROVIDERS)))
-            )
-        if not os.environ.get(PROVIDERS[forced]["env"]):
-            raise LLMError(
-                "DIVERGENCE_PROVIDER=%s but %s is not set in this shell."
-                % (forced, PROVIDERS[forced]["env"])
-            )
-        return forced
+    prov = forced or DEFAULT_PROVIDER
 
-    for name in ("featherless", "anthropic"):     # Featherless first: D35
-        if os.environ.get(PROVIDERS[name]["env"]):
-            return name
+    if prov not in PROVIDERS:
+        raise LLMError(
+            "DIVERGENCE_PROVIDER=%r is not a provider. Use one of: %s"
+            % (forced, ", ".join(sorted(PROVIDERS)))
+        )
 
-    raise LLMError(
-        "No model API key found in this shell.\n"
-        "  Featherless (what the eval runs on):  set FEATHERLESS_API_KEY\n"
-        "  Anthropic   (cost estimate only)   :  set ANTHROPIC_API_KEY\n"
-        "Set it as an environment variable. Do not put a key in any file "
-        "in this repo."
-    )
+    if not os.environ.get(PROVIDERS[prov]["env"]):
+        if prov == DEFAULT_PROVIDER:
+            raise LLMError(
+                "FEATHERLESS_API_KEY is not set in this shell.\n"
+                "  PowerShell : $env:FEATHERLESS_API_KEY = \"rc_...\"\n"
+                "  bash/zsh   : export FEATHERLESS_API_KEY=\"rc_...\"\n"
+                "The key belongs in the shell, never in a file in this repo.\n"
+                "\n"
+                "This does NOT fall back to Anthropic on purpose (D44): a run\n"
+                "that silently switched provider would put a Claude-generated\n"
+                "row in a results table labelled 'open models'."
+            )
+        raise LLMError(
+            "DIVERGENCE_PROVIDER=%s but %s is not set in this shell."
+            % (prov, PROVIDERS[prov]["env"])
+        )
+
+    return prov
 
 
 def model_id(model_key, prov=None):
@@ -120,8 +144,18 @@ def model_id(model_key, prov=None):
         )
 
 
+def is_vision_model(model_key_or_id):
+    """True if this slot resolves to a model that can read an image."""
+    mid = model_key_or_id
+    if mid in _ENV_OVERRIDE:
+        mid = model_id(mid)
+    if mid in VISION_MODELS:
+        return True
+    return bool(re.search(r"(?i)(-VL-|vision)", mid))
+
+
 # ----------------------------------------------------------------------
-# Clients (built once, lazily)
+# Clients
 # ----------------------------------------------------------------------
 
 _CLIENT = {}
@@ -140,19 +174,13 @@ def client(prov=None):
         try:
             from openai import OpenAI
         except ImportError:
-            raise LLMError(
-                "The 'openai' package is required for provider %s.\n"
-                "  pip install openai" % prov
-            )
+            raise LLMError("pip install openai")
         c = OpenAI(api_key=key, base_url=PROVIDERS[prov]["base_url"])
     else:
         try:
             import anthropic
         except ImportError:
-            raise LLMError(
-                "The 'anthropic' package is required for provider %s.\n"
-                "  pip install anthropic" % prov
-            )
+            raise LLMError("pip install anthropic")
         c = anthropic.Anthropic(api_key=key)
 
     _CLIENT[prov] = c
@@ -160,14 +188,13 @@ def client(prov=None):
 
 
 # ----------------------------------------------------------------------
-# Provenance  --  every call is recorded, so results.md cannot guess
+# Provenance  --  what actually ran, folded into every record's _meta.llm
 # ----------------------------------------------------------------------
 
 _CALLS = []
 
 
 def provenance():
-    """What actually ran. Fold this into every node's _meta block."""
     by_node = {}
     for c in _CALLS:
         row = by_node.setdefault(c["node"], {"model": c["model"], "calls": 0,
@@ -184,9 +211,9 @@ def provenance():
         "total_calls": len(_CALLS),
         "total_in_tokens": sum(c["in_tokens"] for c in _CALLS),
         "total_out_tokens": sum(c["out_tokens"] for c in _CALLS),
-        "note": ("Figures above are the MEASURED run on this provider. "
-                 "Any Claude rupee-per-record figure quoted elsewhere is a "
-                 "metered deployment estimate, not this run."),
+        "note": ("Figures above are the MEASURED run on this provider. Any "
+                 "Claude rupee-per-record figure quoted elsewhere is a metered "
+                 "deployment estimate, not this run."),
     }
 
 
@@ -202,7 +229,6 @@ _FENCE = re.compile(r"```(?:json)?\s*(.*?)```", re.S)
 
 
 def _extract_json(text):
-    """Return a parsed object, or raise ValueError. Tolerant of fences and chatter."""
     if text is None:
         raise ValueError("empty response")
     t = text.strip()
@@ -219,7 +245,6 @@ def _extract_json(text):
         except Exception:
             t = m.group(1).strip()
 
-    # first balanced { ... } or [ ... ], respecting strings
     for opener, closer in (("{", "}"), ("[", "]")):
         start = t.find(opener)
         if start == -1:
@@ -250,15 +275,47 @@ def _extract_json(text):
 
 
 # ----------------------------------------------------------------------
-# The one call
+# Retry policy  --  retry what can succeed, fail fast on what cannot
 # ----------------------------------------------------------------------
+# Retrying a 403 three times is three wasted calls and a slower, more
+# confusing error. Only transient statuses get another attempt.
 
+RETRYABLE = {408, 409, 425, 429, 500, 502, 503, 504}
 MAX_ATTEMPTS = 3
 BACKOFF = 2.0
 
 
+def _status_of(e):
+    s = getattr(e, "status_code", None)
+    if s is None:
+        s = getattr(getattr(e, "response", None), "status_code", None)
+    if s is None:
+        m = re.search(r"\b(4\d\d|5\d\d)\b", str(e))
+        s = int(m.group(1)) if m else None
+    return s
+
+
+def _classify(e, model):
+    """Return (retryable: bool, wrapped_error_or_None)."""
+    text = str(e)
+    if "model_gated_needs_oauth" in text or "This model is gated" in text:
+        return False, GatedModelError(
+            "%s is licence-gated on this Featherless account (403).\n"
+            "  Every meta-llama/* id behaves this way — see DECISION-D43.md.\n"
+            "  Fix it on featherless.ai (connect a HuggingFace account that has\n"
+            "  accepted the licence), or point the slot at an ungated model:\n"
+            "    $env:DIVERGENCE_MODEL_ADVERSARIAL = \"mistralai/Mistral-Large-Instruct-2411\""
+            % model
+        )
+    status = _status_of(e)
+    if status in RETRYABLE:
+        return True, None
+    if status is not None:
+        return False, None
+    return True, None          # unknown/transport -> worth one more go
+
+
 def _raw_call(prov, model, system, messages, max_tokens, json_mode):
-    """Returns (text, in_tokens, out_tokens)."""
     c = client(prov)
 
     if PROVIDERS[prov]["kind"] == "openai":
@@ -276,7 +333,6 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
         try:
             r = c.chat.completions.create(**kwargs)
         except Exception as e:
-            # not every open model serves JSON mode; degrade rather than die
             if json_mode and ("response_format" in str(e) or "json" in str(e).lower()):
                 kwargs.pop("response_format", None)
                 r = c.chat.completions.create(**kwargs)
@@ -286,24 +342,16 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
         u = getattr(r, "usage", None)
         return text, getattr(u, "prompt_tokens", 0) or 0, getattr(u, "completion_tokens", 0) or 0
 
-    r = c.messages.create(
-        model=model,
-        system=system,
-        messages=messages,
-        max_tokens=max_tokens,
-        temperature=0,
-    )
+    r = c.messages.create(model=model, system=system, messages=messages,
+                          max_tokens=max_tokens, temperature=0)
     text = "".join(b.text for b in r.content if getattr(b, "type", "") == "text")
     return text, r.usage.input_tokens, r.usage.output_tokens
 
 
 def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"):
-    """
-    Ask for JSON. Get JSON, or raise LLMError.
+    """Ask for JSON. Get JSON, or raise LLMError.
 
-    Same signature the nodes already use -- node1_extract.py and
-    node2_gaps.py do not change.
-    """
+    Signature unchanged — node1_extract.py and node2_gaps.py do not change."""
     prov = provider_name()
     model = model_id(model_key, prov)
     messages = [{"role": "user", "content": user_content}]
@@ -316,7 +364,12 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
             text, tin, tout = _raw_call(prov, model, system, messages,
                                         max_tokens, json_mode=True)
         except Exception as e:
+            retryable, wrapped = _classify(e, model)
+            if wrapped is not None:
+                raise wrapped
             last_err = e
+            if not retryable:
+                raise LLMError("[%s] %s/%s: %s" % (node_name, prov, model, e))
             if attempt == MAX_ATTEMPTS:
                 raise LLMError("[%s] %s/%s transport failure after %d attempts: %s"
                                % (node_name, prov, model, attempt, e))
@@ -332,7 +385,6 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
             if attempt == MAX_ATTEMPTS:
                 break
             retries += 1
-            # show the model its own bad output; open models fix this reliably
             messages = [
                 {"role": "user", "content": user_content},
                 {"role": "assistant", "content": (text or "")[:2000]},
@@ -348,7 +400,7 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
 
     raise LLMError(
         "[%s] %s/%s returned unparseable JSON after %d attempts (%s).\n"
-        "--- last 500 chars of response ---\n%s"
+        "--- last 500 chars ---\n%s"
         % (node_name, prov, model, MAX_ATTEMPTS, last_err, (last_text or "")[-500:])
     )
 
@@ -356,4 +408,5 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
 if __name__ == "__main__":
     print("provider :", provider_name())
     for k in ("small", "large", "adversarial"):
-        print("  %-12s %s" % (k, model_id(k)))
+        mid = model_id(k)
+        print("  %-12s %-42s %s" % (k, mid, "[vision]" if is_vision_model(mid) else ""))
