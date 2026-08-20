@@ -199,6 +199,8 @@ Checked `corpus/tier-a/SBI-TTBR-DATA.md`'s own front matter before reaching for 
 
 **Correction to what's said about C3 and C4 above: they do not need SBI rate data at all.** Both are VDA (USDC) receipts, and Block D's own fix this same night (the Rule 206/207 gate) established that Rule 206 — the provision that names the SBI rate — never reaches a VDA in the first place, foreign currency only. C3 and C4's real valuation lattices need CoinDCX-style crypto market data (a daily candle, a USDC/USDT peg reading) for 23 June and 18 June respectively, not an SBI sheet. That data was not collected tonight. Said plainly here rather than left as the same "needs SBI data" framing repeated from before this was actually checked.
 
+**What this means for the scalability claim (Step 31).** C2's own case file states its purpose plainly: *"THIS IS THE SCALABILITY PROOF — no crypto anywhere, same pipeline, unchanged."* Until tonight, that claim held for facts, gaps, regimes and citations, but not for valuation — C2's record carried D1's crypto lattice, which would have shown a USDC valuation dispute on a plain USD bank wire if its page had ever been generated and shown. It is fixed now: C2's record, end to end including valuation, belongs to C2. The scalability proof is what it was always meant to be — the same pipeline, no code change, no prompt change, no new corpus file, run against a receipt with no crypto in it at all, producing a correct, case-specific, schema-valid record throughout. C3 and C4 do not yet make the same claim; their pages should not be shown as if their valuation sections were case-specific until the crypto market data above is collected.
+
 ---
 
 ## Block E2, 21 August: three seeds on D1, the first runs at real temperature

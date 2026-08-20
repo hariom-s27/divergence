@@ -52,7 +52,7 @@
 | **Custom has already filled the gap** | 🔴 If every CA says *"we use the exchange statement, the department accepts it"*, a de facto standard makes the de jure gap practically irrelevant. **The project pivots to "here is the convention, here is that nothing requires it."** Only practitioners can answer this | ✅ interviews substituted with sourced evidence — `prior-art/OBJ-1.md` |
 | **A judge diffs the freeze commit and finds nine-plus schema amendments** | Raise it ourselves first. All nine-plus in D46/D51, output contract only, `cases/*/ground_truth.json` untouched — the freeze commit's load-bearing content never changed | ✅ pre-disclosed |
 | **The same scope-reach failure recurs on a fourth rule** | One generalized SCOPE GATE in prompt 03 (D54), not a fourth special-cased patch — named in the documentation as a pattern, not treated as three unrelated bugs | ✅ generalized |
-| **C2/C3/C4's valuation blocks belong to a different case** | Disclosed D47/D51/results.md. C2 fixed (real SBI data, no fabrication). C3/C4 still carry D1's borrowed lattice — **do not show C2/C3/C4's generated page as if it were case-specific until fixed** | 🟡 **2 of 3 open** |
+| **C3/C4's valuation blocks belong to a different case** | Disclosed D47/D51/results.md. C1, C2, C5 all now have their own real valuations (D51 addendum). C3/C4 still carry D1's borrowed 12-method lattice — **do not show C3 or C4's generated page as if the valuation section were case-specific until fixed** | 🟡 **2 of 6 cases open** |
 
 ---
 
