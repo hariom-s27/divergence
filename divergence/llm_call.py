@@ -81,13 +81,25 @@ DEFAULT_PROVIDER = "featherless"
 def temperature():
     """evaluation-design.md: 'Temperature | default, not zero — that is how a
     real user runs it.' Five runs at temperature 0 measure one point five
-    times. Dev/self-test work wants 0 (reproducible); the scored eval must
-    not have it. Explicit, per-run, and recorded in provenance()."""
+    times. The scored eval must never run at temperature 0.
+
+    D52: this used to default to 0.0 unless DIVERGENCE_TEMPERATURE was set
+    explicitly -- a setting that must be actively remembered every session
+    is a setting that gets forgotten, and it was: every run across Blocks
+    A through E1 the same night this was already fixed once (D45) ran at
+    temperature 0 again, silently, because nobody typed the env var that
+    session. The default is now inverted: the model's own default
+    temperature is what you get for free. DEV/self-test work that
+    actually wants reproducibility must opt IN with DIVERGENCE_DEV=1,
+    not opt out of a bug that recurs by default. Explicit, per-run, and
+    recorded in provenance()."""
+    if os.environ.get("DIVERGENCE_DEV", "").strip() == "1":
+        return 0.0          # explicit opt-in only: reproducible dev/self-test runs
     t = os.environ.get("DIVERGENCE_TEMPERATURE", "").strip()
     if t == "":
-        return 0.0          # dev default: reproducible
-    if t.lower() in ("default", "none", "model"):
         return None          # send no temperature -- the model's own default
+    if t.lower() in ("default", "none", "model"):
+        return None
     return float(t)
 
 # Model ids known to accept image_url blocks. Used by node1_extract.py to
@@ -224,7 +236,8 @@ def provenance():
         "total_calls": len(_CALLS),
         "total_in_tokens": sum(c["in_tokens"] for c in _CALLS),
         "total_out_tokens": sum(c["out_tokens"] for c in _CALLS),
-        "temperature": os.environ.get("DIVERGENCE_TEMPERATURE", "0 (dev default)"),
+        "temperature": ("0 (DIVERGENCE_DEV=1)" if os.environ.get("DIVERGENCE_DEV", "").strip() == "1"
+                         else (os.environ.get("DIVERGENCE_TEMPERATURE", "").strip() or "default (model's own)")),
         "note": ("Figures above are the MEASURED run on this provider. Any "
                  "Claude rupee-per-record figure quoted elsewhere is a metered "
                  "deployment estimate, not this run."),
