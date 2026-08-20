@@ -1,7 +1,6 @@
 # DIVERGENCE
 
 [![Python Package using Conda](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **An AI can say "I don't know." It cannot say "the law does not determine one answer."**
 
