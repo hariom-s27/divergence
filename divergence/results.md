@@ -2,6 +2,8 @@
 
 ### Step 30 deliverable. In progress — being filled in as the evaluation actually runs, not written after the fact.
 
+**For the narrative version of how the numbers below got here — seven real bugs, what broke, what changed, what moved — see [`ITERATION-STORY.md`](ITERATION-STORY.md) (Step 28).**
+
 ---
 
 ## Pre-registration
