@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "divergence/disclosure-record/v1",
+  "title": "DIVERGENCE disclosure record",
+  "description": "LOCKED 6 August 2026. Every field traces to a decision in the step log. Do not add fields without recording why.",
+
+  "type": "object",
+  "required": ["record_id", "corpus_frozen_at", "missing", "valuation", "regimes", "limits"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "record_id":        { "type": "string" },
+    "generated_at":     { "type": "string", "format": "date-time" },
+
+    "corpus_frozen_at": {
+      "type": "string", "format": "date-time",
+      "description": "C34. The corpus is frozen at a stated moment. Changes go in the manifest changelog, never a silent update."
+    },
+
+    "tax_year": {
+      "type": "string",
+      "pattern": "^(FY )?20[0-9]{2}-[0-9]{2}$",
+      "description": "C69. LOAD-BEARING. Both numbering systems are live: FY 2025-26 is governed by the 1961 Act, FY 2026-27 onwards by the 2025 Act. No provision may be cited without this."
+    },
+
+    "facts": {
+      "type": "object",
+      "description": "Node 1. Every field carries value, confidence and where it came from — never a bare value.",
+      "additionalProperties": { "$ref": "#/$defs/extracted_field" }
+    },
+
+    "missing": {
+      "type": "array",
+      "description": "Node 2, and it runs BEFORE any reasoning. Absence is established first and passed forward as a hard constraint.",
+      "items": {
+        "type": "object",
+        "required": ["item", "why_absent", "blocks"],
+        "additionalProperties": false,
+        "properties": {
+          "item":       { "type": "string" },
+          "why_absent": { "type": "string" },
+          "blocks": {
+            "type": "array",
+            "items": { "enum": ["income_tax", "gst", "fema", "valuation"] },
+            "description": "Any conclusion in these regimes that depends on this item CANNOT be asserted. Enforced in code, not by prompt."
+          },
+          "obtainable": {
+            "enum": ["yes", "no", "not_for_this_route"],
+            "description": "An FIRC is 'not_for_this_route' — it is not that the user forgot it, it cannot exist here."
+          }
+        }
+      }
+    },
+
+    "valuation": {
+      "type": "object",
+      "description": "Node 3. Never one figure. The output is the range and its decomposition.",
+      "required": ["methods", "spread", "uncertainty_budget"],
+      "additionalProperties": false,
+      "properties": {
+
+        "methods": {
+          "type": "array",
+          "minItems": 2,
+          "description": "Minimum two. A single method is a failure state, not a valid output.",
+          "items": {
+            "type": "object",
+            "required": ["label", "rate", "inr_value", "observability", "source"],
+            "additionalProperties": false,
+            "properties": {
+              "label":     { "type": "string" },
+              "rate":      { "type": "number" },
+              "inr_value": { "type": "number" },
+              "observability": { "$ref": "#/$defs/observability" },
+              "source": {
+                "type": "object",
+                "required": ["name", "retrieved", "tier"],
+                "properties": {
+                  "name":      { "type": "string" },
+                  "url":       { "type": "string" },
+                  "retrieved": { "type": "string", "format": "date" },
+                  "tier":      { "enum": ["primary_archived", "primary_live", "reported", "derived"] },
+                  "note":      { "type": "string" }
+                }
+              },
+              "mandated_by": {
+                "type": ["string", "null"],
+                "description": "The provision requiring this method, if any. Rule 115 mandates the SBI TT buying rate. The domestic market price is mandated by nothing — say so."
+              },
+              "date_used": { "type": "string", "format": "date" },
+              "date_choice": {
+                "type": ["object", "null"],
+                "description": "R99 — THE GAP HAS A GAP. Where the mandated source did not publish on the settlement date, a second undetermined choice arises. Record it; never resolve it silently.",
+                "properties": {
+                  "reason":          { "type": "string" },
+                  "candidates":      { "type": "array", "items": { "type": "object" } },
+                  "chosen":          { "type": "string", "format": "date" },
+                  "prescribed_by":   { "type": ["string", "null"] },
+                  "difference_inr":  { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+
+        "spread": {
+          "type": "object",
+          "required": ["inr", "percent"],
+          "properties": {
+            "inr":     { "type": "number" },
+            "percent": { "type": "number" },
+            "between": { "type": "array", "items": { "type": "string" }, "maxItems": 2 }
+          }
+        },
+
+        "uncertainty_budget": {
+          "type": "array",
+          "description": "C18, borrowed from metrology. Decompose the spread by contributing source. A bare total is hand-waving; a decomposition is engineering.",
+          "items": {
+            "type": "object",
+            "required": ["source", "inr", "explanation"],
+            "properties": {
+              "source":      { "type": "string" },
+              "inr":         { "type": "number" },
+              "explanation": { "type": "string" }
+            }
+          }
+        },
+
+        "no_rate_published": {
+          "type": "boolean",
+          "description": "TRUE where the mandated source published nothing for the settlement date. This is a feature of the output, not an error."
+        }
+      }
+    },
+
+    "regimes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["regime", "outcome", "certainty", "citation"],
+        "additionalProperties": false,
+        "properties": {
+          "regime":  { "enum": ["income_tax_on_receipt", "income_tax_on_transfer", "gst_export", "fema", "valuation_method"] },
+          "outcome": { "type": "string" },
+          "certainty": { "$ref": "#/$defs/certainty" },
+          "citation": { "$ref": "#/$defs/citation" },
+          "qualifying_condition": { "type": "string" },
+          "condition_met": { "enum": ["yes", "no", "unknown"] },
+          "consequence_if_failed": { "type": "string" },
+          "depends_on_missing": {
+            "type": "array", "items": { "type": "string" },
+            "description": "If non-empty, certainty is FORCED to insufficient_evidence by the gap constraint enforcer. Deterministic code, not a prompt instruction."
+          }
+        }
+      }
+    },
+
+    "attacked": {
+      "type": "array",
+      "description": "Node 5. R35 — everyone else uses critique to improve the answer before you see it. We publish the attack and downgrade the conclusion.",
+      "items": {
+        "type": "object",
+        "required": ["target", "attack", "survived"],
+        "properties": {
+          "target":   { "type": "string" },
+          "attack":   { "type": "string" },
+          "survived": { "type": "boolean" },
+          "downgraded_to": { "$ref": "#/$defs/certainty" }
+        }
+      }
+    },
+
+    "election": {
+      "type": ["object", "null"],
+      "description": "C65 — OPTIONAL BY DESIGN. A default is a recommendation, and we do not advise. The record is complete and valid with election = null.",
+      "additionalProperties": false,
+      "properties": {
+        "both_shown":  { "const": true, "description": "The material fact under s.439(8)(a). Always true — it is what the record exists to prove." },
+        "chosen":      { "type": ["string", "null"] },
+        "chosen_at":   { "type": ["string", "null"], "format": "date-time" },
+        "reason":      { "type": ["string", "null"] }
+      }
+    },
+
+    "manifest": {
+      "type": "object",
+      "description": "C20/C26. R37 — you earn the right to make a negative claim by declaring what you looked at. Shown to the user, not buried.",
+      "required": ["provisions_checked", "scope_statement", "not_checked"],
+      "properties": {
+        "provisions_checked": { "type": "array", "items": { "$ref": "#/$defs/citation" } },
+        "scope_statement":    { "type": "string" },
+        "not_checked":        { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "limits": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Never empty. If this array is empty, the record is wrong.",
+      "items": { "type": "string" }
+    }
+  },
+
+  "$defs": {
+
+    "extracted_field": {
+      "type": "object",
+      "required": ["value", "confidence"],
+      "properties": {
+        "value":       { "type": ["string", "number", "null"] },
+        "confidence":  { "enum": ["certain", "probable", "declared_only", "unresolved"] },
+        "source_span": { "type": "string", "description": "Where in the document this came from. Makes the extraction checkable." },
+        "models_agree":{ "type": ["boolean", "null"], "description": "C49. Cross-model disagreement is a free Class 2 flag. It catches Class 3 badly — two models can agree and both be silently wrong." }
+      }
+    },
+
+    "certainty": {
+      "enum": ["settled", "inference", "open_texture", "lacuna", "contested", "insufficient_evidence"],
+      "description": "C22. lacuna = no rule exists (Rule 57 and digital assets). open_texture = a rule exists but is vague (Hart, 1961). Different problems, different responses. inference = built from provisions read together, not stated explicitly — FEMA is ALWAYS inference, never settled."
+    },
+
+    "observability": {
+      "enum": ["L1", "L2", "L3"],
+      "description": "C17, borrowed from IFRS 13 / ASC 820. L1 = directly observed price. L2 = observable but indirect. L3 = unobservable, requiring disclosure of technique. Vocabulary any finance-literate reader already knows."
+    },
+
+    "citation": {
+      "type": "object",
+      "required": ["provision", "tax_year", "verified"],
+      "properties": {
+        "provision":        { "type": "string" },
+        "former_citation":  { "type": ["string", "null"], "description": "Rule 57 was Rule 11UA. s.439 was s.270A. Dual form always." },
+        "tax_year":         { "type": "string" },
+        "verified": {
+          "type": "boolean",
+          "description": "Set by the citation matcher — a deterministic string match against corpus text. FALSE means the conclusion is REJECTED, not flagged. Code, not a prompt instruction."
+        },
+        "source_type":      { "enum": ["official", "official_superseded", "unofficial_full_text", "mapping_table"] },
+        "corpus_retrieved": { "type": "string", "format": "date" },
+        "known_limitation": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

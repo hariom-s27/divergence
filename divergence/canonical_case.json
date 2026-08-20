@@ -1,0 +1,40 @@
+{
+  "receipt_date": "2026-06-28",
+  "weekday": "Sunday",
+  "coindcx_pair": "I-USDT_INR",
+  "is_proxy": true,
+  "proxy_note": "Binance USDC/USDT close 1.0011 on 2026-06-28",
+  "candle": {
+    "open": 102.83,
+    "high": 103.41,
+    "low": 102.31,
+    "close": 102.83,
+    "volume": 472463.700358,
+    "time": 1782604800000
+  },
+  "peg": 1.0011,
+  "official_leg_source": "VERIFIED: SBI Forex Card Rates, USD/INR TT BUY. 25-06-2026 11:42 = 94.00 (file 2026062614_15.pdf, captured 26 Jun 14:15, sheet still dated 25-06). 29-06-2026 09:09 = 93.95 (file 2026062919_15.pdf).",
+  "official_candidates": [
+    {
+      "date": "2026-06-25",
+      "label": "last published BEFORE the receipt",
+      "ttbr": 94.0,
+      "sheet_datetime": "2026-06-25 11:42",
+      "source": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+      "file": "2026062614_15.pdf",
+      "retrieved": "2026-08-12",
+      "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+    },
+    {
+      "date": "2026-06-29",
+      "label": "next published AFTER the receipt",
+      "ttbr": 93.95,
+      "sheet_datetime": "2026-06-29 09:09",
+      "source": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+      "file": "2026062919_15.pdf",
+      "retrieved": "2026-08-12"
+    }
+  ],
+  "invoice_units": 5000.0,
+  "computed_at": "2026-08-19T11:26:33.989382+00:00"
+}

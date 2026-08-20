@@ -1,0 +1,58 @@
+{
+  "corpus_dir": "D:\\sem_iitk\\sem9\\reverie\\divergence\\corpus",
+  "n_files": 1,
+  "files": [
+    {
+      "file": "MANIFEST.md",
+      "chars": 3173,
+      "words": 533,
+      "tok_legacy": 793,
+      "tok_current": 1031
+    }
+  ],
+  "total_chars": 3173,
+  "corpus_tok_legacy": 793,
+  "corpus_tok_current": 1031,
+  "node_scopes": {
+    "intake_extract": {
+      "tok_legacy": 0,
+      "tok_current": 0,
+      "files": 0
+    },
+    "gap_detector": {
+      "tok_legacy": 0,
+      "tok_current": 0,
+      "files": 0
+    },
+    "dual_valuation": {
+      "tok_legacy": 0,
+      "tok_current": 0,
+      "files": 0
+    },
+    "regime_incometax": {
+      "tok_legacy": 0,
+      "tok_current": 0,
+      "files": 0
+    },
+    "regime_gst": {
+      "tok_legacy": 0,
+      "tok_current": 0,
+      "files": 0
+    },
+    "regime_fema": {
+      "tok_legacy": 0,
+      "tok_current": 0,
+      "files": 0
+    },
+    "adversarial": {
+      "tok_legacy": 793,
+      "tok_current": 1031,
+      "files": 1
+    }
+  },
+  "assumptions": {
+    "chars_per_token_legacy": 4.0,
+    "new_tokenizer_factor": 1.3,
+    "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+  }
+}

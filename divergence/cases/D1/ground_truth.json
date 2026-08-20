@@ -1,0 +1,96 @@
+{
+  "case_id": "D1",
+  "input_type": "selected",
+  "determinate_overall": false,
+  "_instructions": "Fill before any model runs. Commit. Quote the hash in results.md.",
+  "facts": {
+    "amount": {
+      "value": 5000,
+      "confidence": "certain"
+    },
+    "asset": {
+      "value": "USDC",
+      "confidence": "certain"
+    },
+    "settlement_datetime_ist": {
+      "value": "2026-06-28T03:14:00+05:30",
+      "confidence": "certain"
+    },
+    "settlement_datetime_utc": {
+      "value": "2026-06-27T21:44:00Z",
+      "confidence": "certain"
+    },
+    "counterparty_declared": {
+      "value": "Northbay Systems LLC",
+      "confidence": "certain"
+    },
+    "counterparty_verified": {
+      "value": false,
+      "confidence": "certain"
+    },
+    "invoice_no": {
+      "value": "2026-114",
+      "confidence": "certain"
+    },
+    "invoice_amount_usd": {
+      "value": 4000,
+      "confidence": "certain"
+    },
+    "supplier_location": {
+      "value": "India",
+      "confidence": "certain"
+    },
+    "recipient_location": {
+      "value": "outside India",
+      "confidence": "certain"
+    },
+    "bank_involved": {
+      "value": false,
+      "confidence": "certain"
+    }
+  },
+  "missing": [
+    {
+      "item": "bank certificate of foreign inward remittance (FIRC)",
+      "obtainable": "not_for_this_route",
+      "blocks": [
+        "gst"
+      ]
+    },
+    {
+      "item": "purpose code",
+      "obtainable": "not_for_this_route",
+      "blocks": [
+        "gst"
+      ]
+    },
+    {
+      "item": "independent verification of counterparty identity",
+      "obtainable": "no",
+      "blocks": [
+        "gst",
+        "fema"
+      ]
+    },
+    {
+      "item": "official exchange rate for the settlement date",
+      "obtainable": "not_for_this_route",
+      "blocks": [
+        "valuation"
+      ]
+    }
+  ],
+  "elements": {
+    "classification": "settled",
+    "recognition_date": "settled",
+    "official_date": "open",
+    "valuation_method": "open",
+    "proxy": "open",
+    "gst_export": "open"
+  },
+  "_elements_note": "settled | open | n/a. Metric 5 counts 'open' reported where truth says 'settled'.",
+  "methods_expected": 12,
+  "_methods_note": "Pre-registered count of defensible valuation methods. Metric 4 scores against this.",
+  "citations_expected": [],
+  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping."
+}

@@ -1,0 +1,9 @@
+# DIVERGENCE
+#
+# The eval runs on Featherless open models (D35) -> needs `openai`.
+# `anthropic` is kept so the Claude cost estimate can be re-metered if asked.
+# Install both; the provider is chosen at runtime by which API key is set.
+
+openai>=1.40.0
+anthropic>=0.97.0
+jsonschema>=4.0.0

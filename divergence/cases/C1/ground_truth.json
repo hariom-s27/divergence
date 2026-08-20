@@ -1,0 +1,58 @@
+{
+  "case_id": "C1",
+  "input_type": "natural",
+  "determinate_overall": true,
+  "_instructions": "Fill before any model runs. Commit. Quote the hash in results.md.",
+  "facts": {
+    "amount": {
+      "value": 85000,
+      "confidence": "certain"
+    },
+    "asset": {
+      "value": "INR",
+      "confidence": "certain"
+    },
+    "settlement_datetime_ist": {
+      "value": "2026-06-16T11:20:00+05:30",
+      "confidence": "certain"
+    },
+    "counterparty_declared": {
+      "value": "Meridian Analytics Pvt Ltd",
+      "confidence": "certain"
+    },
+    "counterparty_verified": {
+      "value": true,
+      "confidence": "certain"
+    },
+    "invoice_no": {
+      "value": "2026-101",
+      "confidence": "certain"
+    },
+    "supplier_location": {
+      "value": "India",
+      "confidence": "certain"
+    },
+    "recipient_location": {
+      "value": "India",
+      "confidence": "certain"
+    },
+    "bank_involved": {
+      "value": true,
+      "confidence": "certain"
+    }
+  },
+  "missing": [],
+  "elements": {
+    "classification": "settled",
+    "recognition_date": "settled",
+    "official_date": "settled",
+    "valuation_method": "settled",
+    "proxy": "n/a",
+    "gst_export": "settled"
+  },
+  "_elements_note": "settled | open | n/a. Metric 5 counts 'open' reported where truth says 'settled'.",
+  "methods_expected": 1,
+  "_methods_note": "Pre-registered count of defensible valuation methods. Metric 4 scores against this.",
+  "citations_expected": [],
+  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping."
+}

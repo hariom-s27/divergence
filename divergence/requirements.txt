@@ -1,0 +1,10 @@
+# DIVERGENCE
+#
+# The eval runs on Featherless open models (D35/D42) -> needs `openai`.
+# `anthropic` is kept so the Claude cost estimate can be re-metered if asked.
+# The provider is chosen at runtime by which API key is set (llm_call.py).
+
+openai>=1.40.0
+anthropic>=0.97.0
+pypdf>=4.0.0          # node1_extract.py: text-extracts a --file PDF (no native PDF block over OpenAI-compat)
+jsonschema>=4.0.0     # optional: run_pipeline.py falls back to a structural check without it

@@ -1,0 +1,21 @@
+# ---- keys: nothing here, ever ----
+.env
+.env.*
+*.key
+*.pem
+secrets.*
+**/api_key*
+**/*apikey*
+
+# ---- run output ----
+runs/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# ---- editor ----
+.DS_Store
+.vscode/
+.idea/

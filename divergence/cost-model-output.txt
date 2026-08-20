@@ -1,0 +1,144 @@
+==============================================================================
+DIVERGENCE · STEP 18 · COST, LATENCY AND THROUGHPUT MODEL
+Prices: Anthropic published rates, 9 August 2026
+==============================================================================
+
+------------------------------------------------------------------------------
+1. TOKEN BUDGET PER RECORD  (legacy tokens, chars/4)
+------------------------------------------------------------------------------
+node                        corpus    sys  payload      IN    OUT  cacheable
+1 Intake + extraction            0    800    3,000   3,800  1,200        800
+2 Gap detector                   0    700    1,200   1,900    600        700
+3 Dual valuation             9,480    900    1,800  12,180  1,500     10,380
+4a Regime · Income tax      13,057    900    3,300  17,257  1,800     13,957
+4b Regime · GST              2,185    900    3,300   6,385  1,400      3,085
+4c Regime · FEMA             2,762    900    3,300   6,962  1,200      3,662
+5 Adversarial checker       19,461  1,000    7,700  28,161  2,000     20,461
+------------------------------------------------------------------------------
+PIPELINE TOTAL              46,945  6,100   23,600  76,645  9,700     53,045
+BASELINE (same corpus)      19,461  1,000    3,000  23,461  2,500     20,461
+
+  Pipeline input is 3.3x the baseline, output 3.9x.
+  Cacheable share of pipeline input: 69% (corpus + system prompts are identical on every record).
+  API requests per record: 7 (the architecture has 5 stages; stage 4 fans out to 3 calls).
+
+------------------------------------------------------------------------------
+2. WHAT CORPUS SCOPING BUYS
+------------------------------------------------------------------------------
+  Full corpus, all 16 files:           19,461 tok
+  Naive: full corpus into all 7 calls:   136,227 tok
+  Scoped: only what each node may cite:     46,945 tok
+  Saved:                                    89,282 tok  (66% less)
+
+  And the corpus itself, against its source instrument:
+    Income-tax Rules 2026, full gazette:  563,371 tok (measured)
+    What we extracted from it:              2,671 tok (measured)
+    Reduction:                               99.5%
+
+------------------------------------------------------------------------------
+3. COST PER RECORD  (USD, and INR at 88/USD)
+------------------------------------------------------------------------------
+model                  pipeline    +cache  baseline   x base   INR/rec
+Opus 5                  $0.8134   $0.5031   $0.2337     2.2x    ₹44.28
+Sonnet 5 (intro)        $0.3254   $0.2013   $0.0935     2.2x    ₹17.71
+Sonnet 5 (Sep 1)        $0.4881   $0.3019   $0.1402     2.2x    ₹26.57
+Haiku 4.5               $0.1251   $0.0774   $0.0360     2.2x     ₹6.81
+
+  'x base' is the CACHED pipeline against the uncached baseline —
+  the honest comparison, because a deployed baseline would cache too.
+  Caching removes ~25% of pipeline cost, not more, because output
+  tokens are roughly half the bill and outputs are never cacheable.
+  The pipeline is ~3x a single prompt. It is not 7x, because six of
+  the seven calls never see the whole corpus.
+
+------------------------------------------------------------------------------
+4. MIXED-MODEL CONFIGURATION  (the production answer)
+------------------------------------------------------------------------------
+1 Intake + extraction     Haiku 4.5           $  0.0098   cached $  0.0091
+2 Gap detector            Haiku 4.5           $  0.0049   cached $  0.0043
+3 Dual valuation          Sonnet 5 (Sep 1)    $  0.0768   cached $  0.0403
+4a Regime · Income tax    Opus 5              $  0.1707   cached $  0.0890
+4b Regime · GST           Sonnet 5 (Sep 1)    $  0.0522   cached $  0.0414
+4c Regime · FEMA          Sonnet 5 (Sep 1)    $  0.0506   cached $  0.0377
+5 Adversarial checker     Opus 5              $  0.2480   cached $  0.1283
+------------------------------------------------------------------------------
+MIXED TOTAL                                   $  0.6129   cached $  0.3501
+                                                                  ₹  30.81/record
+
+  All-Opus 5, cached:  $0.5031  → mixed saves 30%
+  Reasoning capacity is spent on the two nodes that need it:
+  the income-tax resolver and the adversarial checker.
+
+------------------------------------------------------------------------------
+5. LATENCY AND THROUGHPUT  (planning assumptions — measure these)
+------------------------------------------------------------------------------
+model                  parallel    serial    saved  rec/hr (8 conc.)
+Opus 5                     214s      293s      79s              134
+Sonnet 5 (intro)           132s      181s      49s              218
+Sonnet 5 (Sep 1)           132s      181s      49s              218
+Haiku 4.5                   64s       87s      24s              452
+
+  The three regime resolvers are independent: they read the same
+  upstream state and never read each other. Critical path is 5
+  model calls deep, not 7 wide.
+  Deterministic checks add ~80ms total and are not on the model budget at all.
+
+  >>> CONSEQUENCE FOR THE DEMO. Even parallelised, a record takes
+      minutes, not seconds, because ~12,600 output tokens have to
+      be generated. This is a batch product, not an interactive
+      one. Do NOT plan a live cold run on stage. The interface
+      (Step 23) needs staged progress, not a spinner.
+
+------------------------------------------------------------------------------
+6. THE EVALUATION RUN  (Step 25/26 budget)
+------------------------------------------------------------------------------
+  30 cases x 2 systems x 2 models
+    pipeline calls: 30 x 7 x 2 = 420
+    baseline calls: 30 x 1 x 2 = 60
+    TOTAL API requests for the headline result: 480
+
+    30 cases, cached, on Opus 5             $  22.11
+    30 cases, cached, on Sonnet 5 (intro)   $   8.84
+    30 cases, cached, on Haiku 4.5          $   3.40
+
+  Ablation (D5), 120 extra pipeline runs, cached Sonnet: $24.15
+  Headline run, Opus 5 + Sonnet 5:                    $30.95
+  Development burn at 4x the final run:            $123.80
+  Batch API on the final run would halve it:          $15.47
+
+  >>> WHOLE-PROJECT MEASUREMENT BUDGET: $178.89  (~₹15,743)
+
+------------------------------------------------------------------------------
+7. SCALE  (mixed config, cached)
+------------------------------------------------------------------------------
+          1  one invoice                        $        0.35   ₹           31
+         40  one CA client, one year            $       14.00   ₹        1,232
+        500  a small practice                   $      175.06   ₹       15,405
+     10,000  a mid-size firm                    $    3,501.11   ₹      308,098
+  1,000,000  every affected freelancer in India $  350,111.23   ₹   30,809,788
+
+  Batch API halves every row above. Cost is linear: there is no
+  training, no index, no vector store. The corpus is 16 files.
+
+------------------------------------------------------------------------------
+8. SENSITIVITY  (mixed cached config, one parameter at a time)
+------------------------------------------------------------------------------
+  corpus 2x larger        $  0.3769     +7.6%
+  corpus 0.5x             $  0.3367     -3.8%
+  output 2x longer        $  0.5626    +60.7%
+  input docs 2x           $  0.4586    +31.0%
+  system prompts 2x       $  0.3525     +0.7%
+
+  Output tokens dominate. That is the uncomfortable finding:
+  DIVERGENCE is an explanation product, so its cost driver is
+  how much it says, not how much law it reads.
+
+==============================================================================
+HONESTY NOTE
+==============================================================================
+Two corpus provisions are measured from the Gazette text.
+Everything else in the token profile is an ESTIMATE made before
+the pipeline exists. Run measure_corpus.py against the real
+corpus/, then re-run this with --profile, then measure the built
+pipeline and publish the error between predicted and actual.
+That delta is worth more to a judge than a confident number.

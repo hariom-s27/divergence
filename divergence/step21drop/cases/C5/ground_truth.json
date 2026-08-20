@@ -1,0 +1,70 @@
+{
+  "case_id": "C5",
+  "input_type": "natural",
+  "determinate_overall": false,
+  "_instructions": "Fill before any model runs. Commit. Quote the hash in results.md.",
+  "facts": {
+    "amount": {
+      "value": 3000,
+      "confidence": "certain"
+    },
+    "asset": {
+      "value": "USD",
+      "confidence": "certain"
+    },
+    "settlement_datetime_ist": {
+      "value": "2026-06-28T00:00:00+05:30",
+      "confidence": "certain"
+    },
+    "counterparty_declared": {
+      "value": "Cascade Data Inc",
+      "confidence": "certain"
+    },
+    "counterparty_verified": {
+      "value": true,
+      "confidence": "certain"
+    },
+    "invoice_no": {
+      "value": "2026-112",
+      "confidence": "certain"
+    },
+    "supplier_location": {
+      "value": "India",
+      "confidence": "certain"
+    },
+    "recipient_location": {
+      "value": "outside India",
+      "confidence": "certain"
+    },
+    "bank_involved": {
+      "value": true,
+      "confidence": "certain"
+    },
+    "firc_present": {
+      "value": true,
+      "confidence": "certain"
+    }
+  },
+  "missing": [
+    {
+      "item": "official exchange rate for the settlement date",
+      "obtainable": "not_for_this_route",
+      "blocks": [
+        "valuation"
+      ]
+    }
+  ],
+  "elements": {
+    "classification": "settled",
+    "recognition_date": "settled",
+    "official_date": "open",
+    "valuation_method": "settled",
+    "proxy": "n/a",
+    "gst_export": "settled"
+  },
+  "_elements_note": "settled | open | n/a. Metric 5 counts 'open' reported where truth says 'settled'.",
+  "methods_expected": 2,
+  "_methods_note": "Pre-registered count of defensible valuation methods. Metric 4 scores against this.",
+  "citations_expected": [],
+  "_citations_note": "Provisions a correct answer should reach. Fill from architecture.md scoping."
+}
