@@ -1,0 +1,12 @@
+# Normalize line endings on checkin, let git decide the checkout style per
+# platform. This is what's been causing every git command all session to
+# print "LF will be replaced by CRLF" -- harmless, but noisy and a little
+# unprofessional-looking for anyone cloning this locally.
+* text=auto
+
+# Binary files -- never touch line endings on these regardless of extension
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.zip binary
