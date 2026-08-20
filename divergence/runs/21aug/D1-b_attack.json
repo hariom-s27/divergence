@@ -1,0 +1,55 @@
+{
+  "attacked": [
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "checklist_item": 1,
+      "attack": "The provision s.115BBH is referenced from the Income-tax Act, 1961, which has been carried into the Income-tax Act, 2025. However, the specific provision and its applicability need to be verified for the tax year FY 2026-27 to ensure it is current and has not been amended or superseded.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+    },
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "checklist_item": 2,
+      "attack": "The provision s.115BBH applies to the transfer of virtual digital assets, but it does not specify that the valuation date is the date of receipt. The valuation date for capital gains is typically the date of transfer, not receipt. Additionally, the telegraphic transfer buying rate is not explicitly mandated for determining the fair market value of virtual digital assets.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+    },
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the independent verification of Northbay Systems LLC's business identity, which is listed as missing. Asserting the conclusion without this verification is a failure.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "GAP LIST: independent verification of Northbay Systems LLC's business identity"
+    },
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "checklist_item": 4,
+      "attack": "The rate source for USDC is not specified as the one the law names. The telegraphic transfer buying rate is for USD, not USDC. The correct instrument and date pair for USDC need to be verified.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Rule 206, Income-tax Rules, 2026"
+    },
+    {
+      "target": "The supply meets all conditions for being an export of services.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the independent verification of Northbay Systems LLC's business identity, which is listed as missing. Asserting the conclusion without this verification is a failure.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "GAP LIST: independent verification of Northbay Systems LLC's business identity"
+    }
+  ],
+  "checked_and_survived": [],
+  "limits": [],
+  "_meta": {
+    "node": "node5_adversarial",
+    "generated_at": "2026-08-20T15:56:20.239814+00:00",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "calls": 1,
+    "in_tokens": 13477,
+    "out_tokens": 1321,
+    "retries": 0
+  }
+}

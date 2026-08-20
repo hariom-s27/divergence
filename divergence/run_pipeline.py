@@ -43,6 +43,7 @@ from llm_call import LLMError               # noqa: E402
 import node1_extract                        # noqa: E402
 import node2_gaps                           # noqa: E402
 import node_resolver                        # noqa: E402
+import node5_adversarial                    # noqa: E402
 import gap_enforcer                         # noqa: E402
 from citation_matcher import verify as cite_verify  # noqa: E402
 
@@ -138,11 +139,17 @@ def main():
                      help="output of node3_valuation.py (default: ./valuation.json)")
     ap.add_argument("--model", default="small")
     ap.add_argument("--resolver-model", default="large")
+    ap.add_argument("--node5", action="store_true",
+                     help="Step 5: run the adversarial checker on the assembled regimes[] "
+                          "before writing the record. Off by default so every existing run "
+                          "stays reproducible without it.")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
     if not a.text and not a.file:
         die("give at least one --text or --file input for node 1")
+
+    N = 6 if a.node5 else 5
 
     print("=" * 74)
     print(f"  RUN PIPELINE — {a.record_id}  ({a.tax_year})")
@@ -150,7 +157,7 @@ def main():
           f"  large={llm_call.model_id('large')}")
     print("=" * 74)
 
-    print("\n  [1/5] 🤖 1 EXTRACT")
+    print(f"\n  [1/{N}] 🤖 1 EXTRACT")
     try:
         facts, extraction_notes, m1 = node1_extract.extract(a.text, a.file, model=a.model)
     except LLMError as e:
@@ -159,7 +166,7 @@ def main():
           f"({m1.get('in_tokens', '?')} in / {m1.get('out_tokens', '?')} out tokens, "
           f"{m1.get('retries', 0)} retr(y/ies))")
 
-    print("\n  [2/5] 🤖 2 GAP DETECTOR")
+    print(f"\n  [2/{N}] 🤖 2 GAP DETECTOR")
     try:
         missing, m2 = node2_gaps.detect_gaps(facts, model=a.model)
     except LLMError as e:
@@ -171,7 +178,7 @@ def main():
     resolver_limits = []
     regimes_in = list(load_regimes(a.regimes))
     if not a.skip_resolvers:
-        print("\n  [3/5] 🤖 3/4 INCOME TAX + GST RESOLVERS")
+        print(f"\n  [3/{N}] 🤖 3/4 INCOME TAX + GST RESOLVERS")
         for regime in ("income_tax", "gst"):
             try:
                 r_regimes, r_limits, m34 = node_resolver.resolve(regime, facts, missing, a.tax_year,
@@ -184,15 +191,15 @@ def main():
             regimes_in.extend(r_regimes)
             resolver_limits.extend(r_limits)
     else:
-        print("\n  [3/5] 🤖 3/4 INCOME TAX + GST RESOLVERS  (skipped, --skip-resolvers)")
+        print(f"\n  [3/{N}] 🤖 3/4 INCOME TAX + GST RESOLVERS  (skipped, --skip-resolvers)")
 
-    print(f"\n  [4/5] ⚙ C CITATION MATCHER  ({len(regimes_in)} conclusion(s) total)")
+    print(f"\n  [4/{N}] ⚙ C CITATION MATCHER  ({len(regimes_in)} conclusion(s) total)")
     regimes, dropped = apply_citation_matcher(regimes_in, a.tax_year)
     for d in dropped:
         print(f"        DROPPED  {d['regime']:<24} {d['citation']!r:<32} {d['status']} — {d['reason']}")
     print(f"        {len(regimes)} kept, {len(dropped)} dropped")
 
-    print("\n  [5/5] ⚙ A GAP CONSTRAINT ENFORCER")
+    print(f"\n  [5/{N}] ⚙ A GAP CONSTRAINT ENFORCER")
     for r in regimes:
         r.setdefault("depends_on_missing", [])
     record_stub, forced = gap_enforcer.enforce({"regimes": regimes})
@@ -202,6 +209,22 @@ def main():
 
     valuation = load_valuation(a.valuation)
 
+    attacked = None
+    if a.node5:
+        print(f"\n  [6/{N}] 🤖 5 ADVERSARIAL CHECKER")
+        try:
+            attacked, survived, a5_limits, m5 = node5_adversarial.check(
+                regimes, missing, valuation or {}, a.tax_year)
+        except LLMError as e:
+            die(str(e))
+        landed = [x for x in attacked if not x.get("survived")]
+        print(f"        {len(attacked)} attack(s), {len(landed)} landed, "
+              f"{len(survived)} conclusion(s) checked and survived "
+              f"({m5.get('in_tokens', '?')} in / {m5.get('out_tokens', '?')} out tokens, "
+              f"{m5.get('retries', 0)} retr(y/ies))")
+        for at in landed:
+            print(f"        LANDED   {at.get('target')!r:<40} -> {at.get('downgraded_to')}")
+
     limits = list(extraction_notes) + resolver_limits
     for d in dropped:
         limits.append(f"citation dropped: {d['citation']} ({d['status']}) for regime {d['regime']}")
@@ -209,6 +232,15 @@ def main():
         limits.append("valuation.json not found — run node3_valuation.py first; this record has no valuation block")
     if a.skip_resolvers and not a.regimes:
         limits.append("--skip-resolvers was set and no --regimes supplied — regimes[] is empty")
+    if a.node5:
+        limits.extend(a5_limits)
+        if any(not x.get("survived") for x in attacked):
+            limits.append(
+                "node 5 landed at least one attack (see attacked[].downgraded_to) — this is "
+                "NOT auto-applied to regimes[].certainty above. Matching attacked[].target "
+                "(free text) back to a specific regimes[] entry was judged more likely to "
+                "silently corrupt the wrong entry than to help; cross-reference by eye."
+            )
     if not limits:
         limits.append("no limitations recorded by nodes 1/2/3/4 — review before trusting this record (limits[] must never be silently empty)")
 
@@ -224,6 +256,8 @@ def main():
         "limits": limits,
         "_meta": {"llm": llm_call.provenance()},
     }
+    if a.node5:
+        record["attacked"] = attacked
 
     out_path = a.out or os.path.join(HERE, "runs", f"{a.record_id}_pipeline.json")
     os.makedirs(os.path.dirname(out_path), exist_ok=True)

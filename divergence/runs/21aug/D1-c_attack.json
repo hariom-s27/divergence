@@ -1,0 +1,55 @@
+{
+  "attacked": [
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "checklist_item": 1,
+      "attack": "The provision s.115BBH is cited correctly for FY 2026-27. However, the valuation date and the fair market value determination need to be checked against the current provisions.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Section 115BBH, Income-tax Act, 2025: '(1) Where the total income of an assessee includes any income from the transfer of any virtual digital asset, notwithstanding anything contained in any other provision of this Act, the income-tax payable shall be the aggregate of,\u2014 (a) the amount of income-tax calculated on the income from transfer of such virtual digital asset at the rate of thirty per cent; and (b) the amount of income-tax with which the assessee would have been chargeable, had the total income of the assessee been reduced by the income referred to in clause (a).'"
+    },
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "checklist_item": 2,
+      "attack": "The provision s.115BBH does not directly address the valuation date or the method for determining the fair market value of virtual digital assets. The valuation date and fair market value determination should be based on specific rules that apply to virtual digital assets.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Rule 206, Income-tax Rules, 2026: '(1) The rate of exchange for the calculation of the value in rupees of any income, accruing or arising or deemed to accrue or arise to the assessee in foreign currency, or received or deemed to be received by him or on his behalf in foreign currency, shall be the telegraphic transfer buying rate of such currency as on the specified date.'"
+    },
+    {
+      "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the independent verification of Northbay Systems LLC's business identity, which is listed as missing. Therefore, the conclusion is not valid until this information is obtained.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "GAP LIST: 'independent verification of Northbay Systems LLC's business identity'"
+    },
+    {
+      "target": "The supply meets all conditions for being an export of services. All conditions are confirmed.",
+      "checklist_item": 2,
+      "attack": "The condition regarding the place of supply being outside India is marked as unknown. Without this confirmation, the conclusion that all conditions are met for an export of services is incorrect.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017: '\"export of services\" means the supply of any service when,\u2013\u2013 (i) the supplier of service is located in India; (ii) the recipient of service is located outside India; (iii) the place of supply of service is outside India; (iv) the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India; and (v) the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;'"
+    },
+    {
+      "target": "The supply meets all conditions for being an export of services. All conditions are confirmed.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the independent verification of Northbay Systems LLC's business identity, which is listed as missing. Therefore, the conclusion is not valid until this information is obtained.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "GAP LIST: 'independent verification of Northbay Systems LLC's business identity'"
+    }
+  ],
+  "checked_and_survived": [],
+  "limits": [],
+  "_meta": {
+    "node": "node5_adversarial",
+    "generated_at": "2026-08-20T15:59:50.897555+00:00",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "calls": 1,
+    "in_tokens": 13440,
+    "out_tokens": 1430,
+    "retries": 0
+  }
+}

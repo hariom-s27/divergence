@@ -1,0 +1,63 @@
+{
+  "regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31). No TDS obligation arises as the recipient is outside India. Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Rule 11UA, Income-tax Rules, 1962",
+        "former_citation": "Section 115BBH, Income-tax Act, 1961",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The valuation date is determined by Rule 56, which specifies the date of receipt (2026-06-28). The fair market value is determined using the telegraphic transfer buying rate of USDC on the last day of the tax year (2026-03-31) as per Rule 11UA. No TDS obligation arises because the recipient is outside India, as per the TDS rules in s.393(1). Under s.439(8), a bona fide explanation and disclosure of all material facts are required to avoid penalties.",
+      "depends_on_missing": [
+        "independent verification of Northbay Systems LLC's business identity"
+      ],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Northbay Systems LLC, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the provided facts. It is generally presumed to be the location of the recipient, but this is not certain without further information."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India; and",
+          "met": "yes",
+          "why": "The payment of 5,000 USDC was received in convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no independent verification of Northbay Systems LLC's business identity, making it impossible to determine if they are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "independent verification of Northbay Systems LLC's business identity"
+      ],
+      "consequence_if_failed": "If any condition is not met, the supply will not be considered an export of services and will be subject to GST. The relevant section governing the demand for the period would be s.50 of the CGST Act 2017, which specifies the interest and penalties for non-payment or late payment of tax."
+    }
+  ]
+}

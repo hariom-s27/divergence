@@ -114,11 +114,37 @@ Four of six arm-B calls failed on the first attempt tonight with `Concurrency li
 
 ---
 
+## Block D, 21 August: node 5 ran for the first time
+
+`05-adversarial.md`'s own header said this node had never run — everything credited to adversarial review before tonight was found by a human reading adversarially. `node5_adversarial.py` now exists (built the same way `node_resolver.py` was — scoped prompt loading, its own output-shape validation, provenance recorded to `_meta`), wired into `run_pipeline.py` behind `--node5`, off by default so every prior record stays reproducible. Full account: [`DECISION-D50.md`](DECISION-D50.md).
+
+**First run, on D1's real, already-published record, caught a genuine defect no existing metric catches.** D1's `income_tax_on_receipt` conclusion asserts the valuation date is the date of receipt (28 June) in one sentence and then, two sentences later, says the rate is taken from "the last day of the tax year (2026-03-31)" — checked directly against `ITR2026-RULE-206.md`: that date rule belongs to row 3 of the table, scoped to house-property/business/other-source income, not to a s.115BBH virtual-digital-asset receipt. A real citation (`Rule 206` is current and correctly cited, which is why M3 scored it valid) attached to the wrong row of a multi-row table. Node 5 caught it because that is literally checklist item 2, scope reach.
+
+### The ablation — 4 planted defects, D1's real conclusions as the base
+
+`make_ablation_variants.py` plants each defect (by hand, not by model) into a **copy** of D1's real `regimes[]`; `runs/21aug/D1_pipeline.json` itself is untouched.
+
+| Variant | Planted defect | Checklist item | Result |
+|---|---|---|---|
+| D1-a | cites Rule 11UA for FY 2026-27 | 1, operative status | **CAUGHT** |
+| D1-b | applies Rule 57 row 7 to a s.92 receipt | 2, scope reach | **NOT CAUGHT** |
+| D1-c | asserts GST despite FIRC/verification missing | 3, missing document | **CAUGHT** |
+| D1-d | values USDC at the USDT print, proxy unstated | 4, correct instrument | **CAUGHT** |
+
+**3 of 4.** D1-b's miss is reported at the same weight as the three catches — no retry, no prompt change attempted before writing this down, per `05-adversarial.md`'s own pre-registered instruction to report the ablation "whichever way it comes out."
+
+### A calibration finding, visible only across all five runs together
+
+`checked_and_survived` was empty in every one of the five node-5 runs tonight (the real D1 record plus all four variants) — every conclusion it was given, it attacked, every attack landed. `05-adversarial.md` names this exact pattern as a warning sign in its own text, written before any run existed: *"a checker that breaks everything is as useless as one that breaks nothing."* Read plainly: node 5 cannot yet tell a conclusion with a real defect apart from one that is merely, correctly, hedged (every D1-family conclusion here was already `insufficient_evidence` before node 5 ever saw it, forced there by `gap_enforcer.py`). This is the most likely explanation for D1-b's miss too — several generic attacks were available and easy to reissue instead. Not re-tuned tonight; doing so after seeing the miss would be adjusting the test to fit the result. Full reasoning in D50.
+
+---
+
 ## Still open before this table is the final one
 
-- Node 5, the adversarial checker (Step 5) — has never run at all
 - Three seeds on D1, all arms (Step 4) — only possible now that temperature is `default`, not `0`
 - **Why C3 reports more gaps than D1, not fewer** — C3's own case file predicts the opposite; see above. Not yet checked whether this is a gap-detector over-flag or an under-specified ground truth.
+- **The real defect node 5 found in D1's own record (D50)** — Rule 206's "last day of the tax year" row misapplied to a receipt-date valuation. Not yet fixed in `node_resolver.py`'s prompt; D1's published record still carries it, disclosed rather than quietly patched.
+- **Node 5's calibration** (D50) — currently attacks every conclusion it sees; `checked_and_survived` has never been non-empty. Worth investigating before the node's output is used for anything beyond disclosure.
 - `node3_valuation.py` generalized beyond the single canonical case (D47) — needs per-case SBI/FBIL sheet data that was never collected
 - M5's contract gap — see `README.md`'s Honest Limitations
 - Prior-art check (Block C) — OBJ-1 (does software already solve this) done, see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND evidence (do real people hit this) not yet done
