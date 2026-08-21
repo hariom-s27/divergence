@@ -17,6 +17,11 @@ made. DIVERGENCE reads the actual law, and when the law genuinely does not
 decide, it says so — with every defensible number shown, not one invented
 one hidden behind false confidence.
 
+**See it in one click:** [`divergence/index.html`](divergence/index.html) —
+twelve real defensible figures on the hard case, one real figure each on
+two cases that genuinely have no dispute. The same pipeline, unedited
+output, side by side.
+
 ## Run it — one command, real output
 
 ```powershell
@@ -66,6 +71,15 @@ contract and a clause two lawyers would read differently. The fix that
 worked here — a second, independent model whose only job is to attack the
 first one's citations for scope, published whether the attack lands or
 not — doesn't depend on anything about tax law either.
+
+**We tested this in one domain only.** Medical guidelines, insurance
+policies and contracts are a hypothesis about where else this shape of
+failure shows up, not a second result — we have not run this architecture
+against any of them, and are not claiming to have. The five confirmed
+instances above are all from Indian tax law, all from this project's own
+output. Saying that plainly here is what makes the generalization claim
+worth taking seriously rather than a bigger claim than the evidence
+supports.
 
 ## Architecture
 
@@ -181,6 +195,18 @@ template. No API call, no token cost, no inference latency, and (the
 reason they exist at all) no possibility of inventing an answer. Roughly
 half the pipeline's steps carry zero marginal compute cost by construction,
 not by optimization.
+
+**Long-term viability doesn't depend on anyone maintaining a model.** The
+corpus is dated, versioned, and frozen one provision per file, each file
+carrying its own current citation, former citation, and the tax year it
+governs. When a provision changes, the fix is replacing that one corpus
+file — not retraining anything, not touching the pipeline code — and the
+citation matcher catches a citation that's gone stale automatically rather
+than needing a human to notice. That isn't a design promise; it's a
+property this project has already tested on itself: the matcher caught
+five of this project's own historical citation errors this way, including
+one where a retired file had been silently shadowing its replacement for
+four months (`ITERATION-STORY.md` item 2).
 
 **The social dimension is the same claim the whole project rests on.**
 A freelancer who unknowingly files two inconsistent positions across two
@@ -328,6 +354,38 @@ so it can't confuse a reader of the live corpus.
 `tests/` and the root `conftest.py` exist only so CI can import
 `tests/test_gap_enforcer.py` correctly. Plumbing, not evaluation.
 
+## What makes this unusual
+
+Six things, each one checkable against a specific file rather than asserted:
+
+- **Ground truth was committed and hashed before any model ran against
+  it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
+  "Pre-registration" section — a reader can check the hash actually
+  predates the runs, not just trust that it does.
+- **14 dated decision documents**, including the ones that record this
+  project's own mistakes — a stale citation, a scoring bug that faked a
+  perfect score, three named instances of a resolver citing a real
+  provision outside its own scope. None were written after the fact to
+  look tidy; each is dated the day the thing happened.
+- **A "Where we lose" section that leads with the baseline beating us** —
+  the naive single prompt outscored the full pipeline on D1's gap recall,
+  and that's the first bullet in the list, not the last.
+- **An adversarial checker on a deliberately different model family**
+  caught three real, previously-undisclosed defects in this project's own
+  resolver output, on data nobody planted — and its own two live failure
+  modes (it attacks almost everything it's shown; it has produced
+  incoherent output on one run) are published in the same file as its
+  wins, not separately.
+- **Every number on the disclosure page is generated from a record.** None
+  is typed by a person — the page that used to be a hand-built mockup with
+  placeholder figures is now rendered by `node7_disclosure.py` directly
+  from whatever record you point it at.
+- **A seed-selection rule was written down before the seeds it selects
+  from were run** — [`results.md`](divergence/results.md)'s Block F states
+  the exact selection criterion first, then reports all three seeds'
+  results regardless of which one it picked, so the choice can't have been
+  made by looking at the outcome.
+
 ## Where to look, against the actual judging criteria
 
 Written against ReverieHacks' own published rubric for this track
@@ -343,7 +401,7 @@ have.
 | **Problem Solving** — relevance, effectiveness, feasibility | Relevance: real people hitting this exact gap ([`prior-art/DEMAND.md`](divergence/prior-art/DEMAND.md)). Effectiveness: [`results.md`](divergence/results.md), including where it loses. Feasibility: it runs end to end today, CI green, on open models, at [`HOW-TO-RUN.md`](divergence/HOW-TO-RUN.md)'s one command |
 | **Sustainability/Scalability** | The [Sustainability](#sustainability) section above; the scalability proof (C2 — same pipeline, unchanged, on an ordinary bank receipt with no crypto in it at all) |
 | **UX & Design** — ease of use, aesthetic, accessibility | `output-interface.html` (real, generated, not mocked up); [Accessibility](#accessibility) above, with the actual ARIA markup named, not just claimed |
-| **Bonus: Exceptionality** | Five confirmed, self-caught instances of the identical scope-reach failure, invisible to every accuracy metric, disclosed rather than hidden — [`SAMPLES.md`](divergence/SAMPLES.md) §3, [`DOCUMENTATION.md`](divergence/DOCUMENTATION.md) §5 |
+| **Bonus: Exceptionality** | [What makes this unusual](#what-makes-this-unusual), above — five confirmed, self-caught instances of the identical scope-reach failure, invisible to every accuracy metric, disclosed rather than hidden |
 
 Required track submissions and where each one is: ML workflow PNG —
 [`flowchart.png`](divergence/flowchart.png). Samples document —

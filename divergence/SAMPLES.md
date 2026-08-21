@@ -24,6 +24,8 @@ checks run on the answer before it is shown.
 | Approach | One prompt, no scaffolding | One prompt, chain-of-thought, same token budget as the workflow | Five model calls + four deterministic checks |
 | Model calls | 1 | 1 | 5 (small ×2, large ×2, a *different* model for the adversarial check) |
 | Citation verified against real corpus text? | No | No | Yes — every citation, or the conclusion is dropped |
+| M3 citation validity (`eval/score.py`) | 50.0% | 40.0% | **100.0%** |
+| M4 valuation methods named | 2/12 | 2/12 | **12/12** |
 | Valuation dispute reported | ₹250 (0.05%) | ₹250 (0.05%) | **₹47,868.76 (10.19%)** |
 | Own answer attacked before publishing? | No | No | Yes — published either way |
 

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIVERGENCE — three records</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F3F2; --paper-rule:#D3DAD7; --ink:#161C19; --ink-soft:#4A5551;
+  --ink-faint:#78837E; --margin-red:#9E2F26; --figure:#22405A; --elected:#4F6140;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Spectral',Georgia,serif;
+  font-size:17px;line-height:1.6;padding:48px 16px 80px}
+.wrap{max-width:920px;margin:0 auto}
+.label{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-faint)}
+h1{font-size:clamp(26px,4.6vw,36px);font-weight:600;margin:14px 0 8px;letter-spacing:-.015em}
+.sub{color:var(--ink-soft);font-size:16px;margin:0 0 44px;max-width:640px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:760px){.cards{grid-template-columns:1fr}}
+.card{border:1px solid var(--paper-rule);padding:22px;display:flex;flex-direction:column;
+  background:rgba(255,255,255,.4)}
+.card .n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--margin-red);
+  font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.card h2{font-size:19px;font-weight:600;margin:0 0 6px}
+.card .figure{font-family:'IBM Plex Mono',monospace;font-size:clamp(20px,4vw,26px);
+  font-weight:500;color:var(--figure);margin:14px 0 4px;letter-spacing:-.02em}
+.card.one-fig .figure{color:var(--elected)}
+.card p{color:var(--ink-soft);font-size:14.5px;margin:0 0 16px;flex:1}
+.card a{
+  display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink);text-decoration:none;
+  border:1px solid var(--ink);padding:9px 14px;text-align:center;margin-top:auto;
+}
+.card a:hover,.card a:focus-visible{background:var(--ink);color:var(--paper)}
+.thesis{margin-top:44px;padding:22px 24px;border:1px dashed var(--paper-rule);font-size:15px;
+  color:var(--ink-soft)}
+.thesis b{color:var(--ink)}
+footer{margin-top:40px;font-size:13px;color:var(--ink-faint)}
+footer a{color:var(--ink-faint)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <span class="label">DIVERGENCE · three real records, side by side</span>
+  <h1>Twelve answers. One answer. One answer.</h1>
+  <p class="sub">The same pipeline, unchanged code, run against three different real
+  receipts. The system that says "twelve" here is credible specifically because it
+  also says "one" there — a tool that always finds a dispute isn't measuring
+  disagreement, it's manufacturing it.</p>
+
+  <div class="cards">
+    <div class="card">
+      <span class="n">D1 — the hard case</span>
+      <h2>Stablecoin, weekend settlement</h2>
+      <div class="figure">12 methods</div>
+      <p>USDC received on a Sunday no bank published a rate for. The market
+      never stopped trading. Twelve defensible figures, ₹47,868.76 apart —
+      and the "No rule found" chip on the valuation-method question, because
+      none of the text this record was given prescribes how to pick one.</p>
+      <a href="output-interface.html">Open the record →</a>
+    </div>
+    <div class="card one-fig">
+      <span class="n">C1 — plain domestic invoice</span>
+      <h2>INR to INR, no conversion at all</h2>
+      <div class="figure">1 method</div>
+      <p>No currency question, no crypto, nothing to dispute. The same
+      pipeline, the same schema, the same page template — and it correctly
+      renders exactly one figure with zero spread, because that is what
+      this receipt actually has.</p>
+      <a href="demo-C1.html">Open the record →</a>
+    </div>
+    <div class="card one-fig">
+      <span class="n">C2 — the scalability proof</span>
+      <h2>An ordinary cross-border wire, no crypto</h2>
+      <div class="figure">1 method</div>
+      <p>A normal weekday bank wire, an SBI rate that was actually
+      published that day. No crypto anywhere in this case. Same pipeline,
+      no code change, no prompt change — proof this isn't a crypto-only
+      tool wearing a tax-law costume.</p>
+      <a href="demo-C2.html">Open the record →</a>
+    </div>
+  </div>
+
+  <p class="thesis"><b>This is the whole thesis on one screen.</b> A system
+  that reports a dispute on every input isn't trustworthy when it reports
+  one on the input that actually has one. These three records are real,
+  generated from saved runs by the same deterministic composer
+  (<code>node7_disclosure.py</code>) — none of the three pages was
+  hand-edited after being generated.</p>
+
+  <footer>Full metrics, every case, every arm, including where this
+  pipeline loses: <a href="results.md">results.md</a>.
+  What each record's field means: <a href="DOCUMENTATION.md">DOCUMENTATION.md</a>.</footer>
+</main>
+</body>
+</html>
