@@ -39,6 +39,10 @@ jobs:
       run: |
         cd divergence
         python scope_enforcer.py --self-test
+    - name: Corpus integrity hash check
+      run: |
+        cd divergence
+        python corpus_hash.py --verify
     - name: Gate 0 pre-submission audit
       run: |
         cd divergence

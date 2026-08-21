@@ -48,6 +48,7 @@ import gap_enforcer                         # noqa: E402
 import citation_matcher                     # noqa: E402
 from citation_matcher import verify as cite_verify  # noqa: E402
 import scope_enforcer                       # noqa: E402
+import corpus_hash                          # noqa: E402
 
 # schema.json's manifest object (C20/C26, R37 -- "you earn the right to make
 # a negative claim by declaring what you looked at") was defined 6 August
@@ -95,8 +96,16 @@ def build_manifest(regimes, tax_year):
     `verified: true` in the manifest while failing that exact check
     everywhere else in the pipeline. Fixed to call the same
     citation_matcher.verify() every other citation in this project goes
-    through, not a separate, weaker rule for this one field."""
+    through, not a separate, weaker rule for this one field.
+
+    `content_hash` added 21 Aug (D60): the record's own permanent proof of
+    exactly what text `verified` was computed against, not just a claim
+    that verification happened. corpus_hash.py --verify checks the live
+    corpus against a separately frozen hash file; this field lets any
+    single OLD record be checked the same way, independent of whatever
+    the corpus looks like today."""
     corpus = citation_matcher.load_corpus()
+    current_hashes = corpus_hash.compute_hashes()
     files = set()
     for r in regimes:
         files.update(REGIME_CORPUS.get(r.get("regime"), []))
@@ -110,6 +119,7 @@ def build_manifest(regimes, tax_year):
             "former_citation": meta.get("former_citation"),
             "tax_year": tax_year,
             "verified": verdict.accept,
+            "content_hash": current_hashes.get(fn),
         })
     return {
         "provisions_checked": provisions_checked,

@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 19 decision documents merged into one chronological read — so you don't have to open nineteen separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 20 decision documents merged into one chronological read — so you don't have to open twenty separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,7 +123,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Nineteen dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -372,6 +372,19 @@ without also checking *which* claim it's attached to. Fixed using
 candidate (s.393(1), D55) was deliberately left out for the identical
 reason, disclosed rather than force-fit. Self-test: 7/7, plus both real
 records re-checked directly.
+
+## [D60](DECISION-D60.md) — corpus integrity hashing: the "hashed" claim, made real
+`corpus/MANIFEST.md` had said "hashed" next to a few Tier A files since 19
+August with no hash ever recorded anywhere — true in spirit, unverifiable
+in fact. `corpus_hash.py --freeze` records a real SHA-256 per Tier A file
+in `FREEZE-HASHES.json`; `--verify` (now a CI gate) fails on drift, a
+missing file, or an unfrozen new one. Tested both directions: mutated a
+real corpus file, confirmed `--verify` catches it and exits 1; restored it
+byte-for-byte, confirmed clean again. Every disclosure record's manifest
+now also carries `content_hash` per provision (D60's schema addition,
+additive, no breaking change) — proof of exactly what text was checked,
+not just that a check happened, independent of whatever the live corpus
+looks like later.
 
 ---
 

@@ -1,0 +1,24 @@
+{
+  "_comment": "SHA-256 of each Tier A corpus file's body (front matter stripped), computed by corpus_hash.py --freeze. corpus_hash.py --verify checks these have not drifted since. Regenerate deliberately after a real corpus edit, as its own disclosed commit -- never as a side effect of another change.",
+  "frozen_at": "2026-08-21T18:06:39.768636+00:00",
+  "file_count": 17,
+  "hashes": {
+    "FEMA-2n.md": "1867e0db97b9974ed76698042d43881bfddc04a82f52a880d19c6d315931a8ae",
+    "FEMA-3-7-8.md": "a65337a2d047a1aadb4df75f8c00762f67a037b62df14b9aa2d4813730629a9b",
+    "GST-CGST-50.md": "540d2d8e0b7b77da05941810dff27613c14d9f680734312d5c1f43cb16c6cafa",
+    "GST-CGST-74A.md": "fb442edc27ea2d96808a6b2f193e3c5b6c37762f7890d9d7c9c045a6125b9b27",
+    "GST-IGST-2-6.md": "018acc3bbafdcf35ba18218e9e8f5052d1aeadb72c0683b91a624969cd1434a2",
+    "IT-115BBH.md": "501418f0275253c75e72092e7cb4a18315a52a943be69e90a618c27014181b99",
+    "IT-2-47A.md": "ab85795a5de7dd604a651f3b42980f155cbf59317fadb60f1855adbe6ff34d5e",
+    "IT-393-1-T8vi.md": "75cc9b1983136324a95570b54ab4851b1dbef78f16ac23aa45112c613c674f2f",
+    "IT-439-8.md": "0a35fccb167bcce771d221173f04e81aedf3970f685277caed6eccbc2b924623",
+    "IT-56-2-x.md": "479c4a124f2f50874f309dc30c7d171ec696a05a699a0b09fe512d4a0670c5ae",
+    "ITR2026-RCASP-VALUATION.md": "fc684c8763592fbec9ec283adc40daf71b2375d80ebc87af5f227a5f0a2ad0f6",
+    "ITR2026-RULE-206.md": "d622f671d075600466abe134e784bbb749c9fed3ed7d75328587068602a531c2",
+    "ITR2026-RULE-207.md": "3116736afa8f5951ddec719d20bb849f27fa13fbe2e69b8adcd1f214584336d3",
+    "ITR2026-RULE-247.md": "c11b7f165cc58b13f4f0da32a6bb906c91cd94ea83270adcc29e58e41f317420",
+    "ITR2026-RULE-56.md": "e3a8dc10c75144e84d2f67d20d11c68d6b70339e93c5a315584c3389122fdd36",
+    "ITR2026-RULE-57.md": "cc387ca9fafa7745a1ffa809a0d5531534620216239d2627a58aac415e66bbad",
+    "SBI-TTBR-DATA.md": "01c7c2fba910720b64936da00d93228412be62b4f79df7234e97cff182e63776"
+  }
+}

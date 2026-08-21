@@ -269,7 +269,11 @@
         },
         "source_type":      { "enum": ["official", "official_superseded", "unofficial_full_text", "mapping_table"] },
         "corpus_retrieved": { "type": "string", "format": "date" },
-        "known_limitation": { "type": ["string", "null"] }
+        "known_limitation": { "type": ["string", "null"] },
+        "content_hash": {
+          "type": ["string", "null"],
+          "description": "D60. SHA-256 (full hex) of the corpus file's body at the moment this record was generated, only ever populated on manifest.provisions_checked[] entries (build_manifest()), not on regimes[].citation. Lets one OLD record be checked against corpus_hash.py's frozen hashes independent of the live corpus's current state -- 'verified' is a claim that a check happened; this is what the check was actually run against."
+        }
       }
     }
   }

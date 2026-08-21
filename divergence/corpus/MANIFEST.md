@@ -30,21 +30,34 @@ That distinction is the reason this file exists. A negative claim is only as goo
 
 Only Tier A text may be matched by the citation checker. 17 files.
 
+**All 17 are integrity-hashed, not just the ones earlier revisions of this
+file happened to call out.** Several rows below used to say "hashed" as if
+that set the ones that were checked apart from the rest — it didn't mean
+anything checkable when it was written (no hash was ever recorded), so it
+has been removed from individual rows rather than left implying a
+distinction that was never real. `corpus_hash.py --freeze` recorded a
+SHA-256 of every Tier A file's body in
+[`FREEZE-HASHES.json`](FREEZE-HASHES.json); `--verify` (wired into CI)
+fails if any file's content has drifted since. Every disclosure record
+also carries the hash it was actually checked against, per provision, in
+its own `manifest.provisions_checked[].content_hash` (D60) — so a single
+old record stays checkable even if the live corpus changes later.
+
 | File | Provision | Status |
 |---|---|---|
 | `GST-IGST-2-6.md` | IGST s.2(6) — export of services | ✅ **Verbatim text present** |
 | `IT-439-8.md` | s.439(8) — penalty exclusions | ✅ **Verbatim (a) and (b) present** |
-| `IT-115BBH.md` | 30% on VDA transfer | ✅ **COMPLETE, hashed** |
+| `IT-115BBH.md` | 30% on VDA transfer | ✅ **COMPLETE** |
 | `IT-2-47A.md` | Definition of "virtual digital asset" | ✅ **COMPLETE — carries the FEMA cross-reference** |
 | `IT-393-1-T8vi.md` | s.393 — TDS on VDA transfer | ✅ **COMPLETE, verbatim, citable** |
-| `FEMA-2n.md` | s.2(h)(m)(n)(q) — the currency chain | ✅ **COMPLETE, hashed** |
+| `FEMA-2n.md` | s.2(h)(m)(n)(q) — the currency chain | ✅ **COMPLETE** |
 | `FEMA-3-7-8.md` | **s.3(c) prohibition** · s.7 · s.8 | ✅ **COMPLETE — s.3(c) is the strongest FEMA hook** |
 | `GST-CGST-50.md` | s.50 — interest · **ss.73/74 → s.74A catch** | ✅ **COMPLETE** |
 | `GST-CGST-74A.md` | s.74A — the governing demand section for FY 2024-25+ | ✅ **COMPLETE** |
 | `IT-56-2-x.md` | s.56(2)(x) + the FMV Explanation | ✅ **COMPLETE — current text, chain closed** |
 | `SBI-TTBR-DATA.md` | Archived SBI TT BUY rates, cited via **Rule 207(3)(b), Income-tax Rules, 2026** | ✅ **Data present, verified. Citable as of 2026-08-19 — previously had no matchable citation.** |
 | `ITR2026-RULE-56.md` | Rule 56 (was Rule 11U) — fixes the valuation **date** for a s.92 receipt to the day of receipt | ✅ **COMPLETE, gazette-sourced** |
-| `ITR2026-RULE-57.md` | Rule 57 (was 11UA) — fair market value method; zero VDA references | ✅ **COMPLETE, hashed, machine-checked** |
+| `ITR2026-RULE-57.md` | Rule 57 (was 11UA) — fair market value method; zero VDA references | ✅ **COMPLETE, machine-checked** |
 | `ITR2026-RULE-206.md` | Rule 206 (was Rule 115) — rate of exchange for conversion into rupees; does not reach a VDA; borrows its definition from Rule 207 but not the fallback | ✅ **COMPLETE, gazette-sourced. `IT-RULE-206.md` retired 2026-08-19 — filename said Rule 206, body was the old Rule 115 text; this file is now the sole current AND former-numbering source (via `former_citation`).** |
 | `ITR2026-RULE-207.md` | Rule 207 (was Rule 26) — rate of exchange for TDS on payments out; **the only provision naming SBI** (207(3)(b)); has the stale-date fallback Rule 206 lacks | ✅ **COMPLETE, gazette-sourced. `IT-RULE-207.md` retired 2026-08-19 — was a shadow duplicate, same citation, alphabetically shadowed this file.** |
 | `ITR2026-RULE-247.md` | Rule 247 — qualification of a registered valuer; names "a valuer of virtual digital assets" and gives that valuer no class, no qualification, no method | ✅ **COMPLETE, gazette-sourced** |
