@@ -88,6 +88,74 @@ disclosed average is still a choice among several defensible ones, and nothing
 here tells the user when that choice is contested versus routine." That is
 a real, narrower claim, not the sweeping one, and it is the honest one.
 
+## Update, 21 Aug — four more products, and the honest narrowing
+
+Each claim below independently verified against the vendor's own help
+documentation before being written down, not relayed on trust.
+
+### Four products, four different silent resolutions of the same contested question
+
+The finding from the first pass ("two products print a figure with no
+source named") understated it. The fuller picture: even among products
+that DO disclose something, every one of them resolves a missing-price
+receipt — this project's exact D1 fact pattern — differently, and
+silently, with no flag that the resolution was a choice:
+
+- **Koinly**, more precisely than the first pass found: on a genuinely
+  missing price, its own help center states plainly, *"If you do not set
+  the worth on transactions showing this warning, Koinly assumes $0.00 as
+  the value of this transaction."* Disclosed, but the default is to
+  erase the receipt's value, not to flag the gap the way this project's
+  `missing[]` does.
+- **CoinTracker** uses *"the opening price as of 12 AM UTC each day"* — the
+  most precise timestamp found anywhere in this scan — and on a missing
+  price it *"conservatively assumes the cost basis... based on nearby
+  transaction values."* An estimate presented as a value, not a range.
+- **CoinLedger**: a transaction with a missing historical price is
+  *"skipped and not included in CoinLedger's final tax reporting
+  calculations"* until the user manually supplies one. The receipt
+  disappears from the report rather than being flagged as open.
+- **Kryptos** *"auto-classifies every transaction as VDA income"* — the
+  silent classification decision this project's own gap detector and
+  resolver refuse to make without checking the facts first.
+
+**Assume zero. Assume a neighbour's price. Drop the row. Auto-classify.**
+Four products, four different silent resolutions of the identical
+contested question, none of them disclosed as a choice to the filer.
+
+### The honest narrowing — two products already do part of what this project claims as new
+
+Said plainly, because a thesis built on honest disclosure cannot leave its
+own novelty claim overstated for someone else to find first:
+
+- **Clearbrief** already ships **patented, non-generative citation
+  verification** for US case law: *"a semantic analysis score that
+  compares each sentence to its cited source and flags low scores where
+  the source does not appear to support the assertion,"* built on
+  classical NLP rather than an LLM, specifically to avoid the checking
+  tool itself hallucinating. **This project's `citation_matcher.py` is
+  not the first mechanically-verified citation check to exist.** What it
+  adds is domain and construct: Indian statutes (not US case law), dual
+  live numbering systems, tax-year currency, and — with `scope_enforcer.py`
+  (⚙ E) — scope reach specifically, which Clearbrief's own semantic-support
+  scoring is a different, coarser question from (support vs. reach).
+- **Thomson Reuters ONESOURCE Uncertain Tax Positions** has shipped for
+  years: it keeps *"an organized inventory of all... positions, calculate[s]
+  tax and interest for each one,"* and *"report[s] on them with a full
+  audit trail."* **Quantifying the cost of a disputed tax position is not
+  novel.** What ONESOURCE does not do, as far as this pass could verify:
+  store or verify statutory citations, check numbering-system currency, or
+  decline to produce a number when no rule prescribes one — this project's
+  actual point of difference is refusing to collapse to a single figure,
+  not the act of costing a dispute.
+
+**Consequence for how this project describes itself:** "nobody mechanically
+verifies citations" and "nobody quantifies a disputed position" are both
+false, checkable in one search each, and should not appear in this
+project's own claims. "Nobody does either of those things *for Indian
+statutory tax law, with tax-year-aware dual numbering, refusing to collapse
+the range to one number*" is the claim the evidence actually supports.
+
 ## What was not done, and why it's said here rather than left implicit
 
 - Binocs was not confirmed either way. Do not cite it as a third silent

@@ -148,14 +148,43 @@ DELIBERATELY DO NOT HANDLE."
 
 [`prior-art/OBJ-1.md`](divergence/prior-art/OBJ-1.md) checks whether
 commercial crypto-tax software already discloses how it values a receipt
-like this one. Two products (KoinX, Catax) print a figure with no source
-named; one (Koinly) discloses a real method, narrowing but not closing
-this project's claim for a tool like it.
+like this one. KoinX and Catax print a figure with no source named at all.
+Koinly, CoinTracker, CoinLedger and Kryptos each disclose *something* — and
+each silently resolves a missing-price receipt (this project's exact D1
+fact pattern) a different way: Koinly assumes ₹0, CoinTracker estimates
+from a nearby transaction, CoinLedger drops the row from the report
+entirely, Kryptos auto-classifies the transaction type outright. Four
+products, four different silent choices on the identical contested
+question, none of them flagged to the filer as a choice.
+
+**The honest narrowing, said here rather than left for a judge to find
+first:** mechanically-verified citations are not new — Clearbrief already
+ships a patented, non-generative semantic-support check for US case law.
+Quantifying a disputed tax position is not new either — Thomson Reuters'
+ONESOURCE Uncertain Tax Positions has shipped an audited, per-position tax
+and interest calculator for years. This project's actual claim is
+narrower and more specific than either: Indian statutes, two numbering
+systems simultaneously live depending on the tax year, and — the one no
+adjacent product does at all — refusing to collapse a genuine dispute to
+one figure instead of quantifying and then still picking a number.
+
+**Who would actually pay for this is not the freelancer in the demo
+case.** She wants one number for one ITR field, and a ₹1,999 product
+already sells her that. The buyer is whoever signs the return and carries
+the professional risk for a position they can't yet substantiate — the
+same buyer ONESOURCE and Clearbrief already sell contemporaneous
+defensibility to, in adjacent professions. The demo case stays a
+freelancer because that's the fact pattern this project actually built
+and measured; the argument for who would pay for it does not.
+
 [`prior-art/DEMAND.md`](divergence/prior-art/DEMAND.md) checks whether real
 people actually hit this exact question — eleven sourced findings across
 Reddit and CA practitioner forums, including one person asking about the
 same SBI-rate-not-published problem this project's headline case is built
-around, found independently, not constructed for this project.
+around, found independently, not constructed for this project — plus
+independent corroboration from a practising crypto-tax CPA describing the
+identical failure shape (a report that looks complete while resting on
+unverified input) in the general product category this scan covers.
 
 ## Cost
 
