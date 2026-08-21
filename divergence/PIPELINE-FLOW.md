@@ -14,34 +14,51 @@ downgrades the answer instead of letting the model talk past it.
 
 ## The whole chain, in order
 
+**Update, 21 Aug — this diagram now matches `run_pipeline.py`'s actual call
+order, read directly from the source while wiring in ⚙ E, not assumed. The
+previous version of this diagram placed ⚙ A right after 🤖 2, and drew ⚙ B
+feeding directly into 🤖 3/4 — neither is true of the code: `gap_enforcer.py`
+is called only after citation matching, near the end of the automated
+chain, and `node3_valuation.py` runs standalone beforehand (`valuation.json`
+is only ever *read* by `run_pipeline.py`, never computed by it or passed
+into the resolvers, whose `resolve()` signature takes `facts`/`missing`/
+`tax_year` only). Corrected below rather than left for someone else to
+notice against `architecture.md`'s own diagram, which still shows the old
+order and is flagged there rather than redrawn — see the note at ⚙ E in
+that file.**
+
 ```
  invoice/payment          "small" model              "small" model
      text or image  ──▶  🤖 1 EXTRACT   ──▶  facts{}  ──▶  🤖 2 GAP DETECTOR ──▶ missing[]
                        node1_extract.py                    node2_gaps.py
                                                                   │
                                                                   ▼
-                                                    ⚙ A GAP CONSTRAINT ENFORCER
-                                                        gap_enforcer.py
-                                                     (no model — plain code)
+                                     🤖 3/4 INCOME TAX + GST RESOLVERS  ("large" model)
+                                          node_resolver.py  ──▶  regimes[]
                                                                   │
-      canonical_case.json / --case                                │
-             │                                                    │
-             ▼                                                    │
-    ⚙ B VALUATION LATTICE                                         │
-      node3_valuation.py  ──▶  valuation.json                     │
-      (no model — plain code)                                     │
-             │                                                    │
-             └──────────────────────┬─────────────────────────────┘
-                                     ▼
-                     🤖 3/4 INCOME TAX + GST RESOLVERS  ("large" model)
-                                     │  regimes[]
-                                     ▼
-                          ⚙ C CITATION MATCHER
-                          citation_matcher.py  (no model)
-                    drops any conclusion whose citation
-                       doesn't check out for the tax year
-                                     │
-                                     ▼
+                                                                  ▼
+                                                      ⚙ C CITATION MATCHER
+                                                      citation_matcher.py  (no model)
+                                                drops any conclusion whose citation
+                                                   doesn't check out for the tax year
+                                                                  │
+                                                                  ▼
+                                                 ⚙ E SCOPE-REACH ENFORCER
+                                                    scope_enforcer.py  (no model)
+                                             drops any KEPT conclusion whose citation
+                                              doesn't reach these facts (3 provisions)
+                                                                  │
+                                                                  ▼
+                                              ⚙ A GAP CONSTRAINT ENFORCER
+                                                  gap_enforcer.py  (no model)
+                                           forces certainty -> insufficient_evidence
+                                             wherever depends_on_missing is non-empty
+                                                                  │
+      canonical_case.json / --case  ──▶  ⚙ B VALUATION LATTICE                │
+                                       node3_valuation.py                     │
+                                       (standalone — no model)                │
+                                       ──▶  valuation.json  ──────────────────┤
+                                                                  ▼
                     schema.json validation, then written
                           to runs/<record-id>_pipeline.json
                                      │
@@ -61,7 +78,8 @@ GST resolver, and adversarial checker all run as real API calls via
 (the `--node5` flag turns on the fifth). None of this project's nodes are
 hand-run in a chat session any more; the automation table at the bottom of
 this file has been accurate for longer than this paragraph above it was —
-fixed 21 August, see `results.md`'s Block F.
+fixed 21 August, see `results.md`'s Block F. ⚙ E was added the same night,
+after this correction — `DECISION-D59.md`.
 
 ---
 
@@ -178,6 +196,7 @@ tells the difference between "we built it" and "we watched it work."
 | ⚙ B Valuation lattice | **Yes** — `node3_valuation.py`, now per-case (`--case`, D51) |
 | 🤖 3/4 Income-tax & GST resolvers | **Yes** — `node_resolver.py`, real API call (D46 Step 1) |
 | ⚙ C Citation matcher | **Yes** — plain code, always was |
+| ⚙ E Scope-reach enforcer | **Yes** — `scope_enforcer.py`, plain code, added 21 Aug (D59) |
 | 🤖 5 Adversarial checker | **Yes** — `node5_adversarial.py`, real API call (D50) |
 | ⚙ D Disclosure composer | **Yes** — `node7_disclosure.py`, `output-interface.html` generated from a real record, not hand-typed |
 

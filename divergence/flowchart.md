@@ -1,6 +1,7 @@
 # FLOWCHART — DIVERGENCE, end to end
 ### Step 34 deliverable · written 21 August 2026
-### Five model calls, four deterministic steps (three checks, one composer). Shapes below are load-bearing, not decoration.
+### Five model calls, five deterministic steps (four checks, one composer). Shapes below are load-bearing, not decoration.
+### *Update, 21 Aug: ⚙ E added (`DECISION-D59.md`) — this file and `flowchart.png` were regenerated together, from `make_flowchart.py`, so they cannot disagree with each other the way an earlier version of this project's docs briefly did.*
 
 ---
 

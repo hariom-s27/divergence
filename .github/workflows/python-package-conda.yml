@@ -31,6 +31,14 @@ jobs:
       run: |
         cd divergence
         python citation_matcher.py
+    - name: Gap constraint enforcer self-test
+      run: |
+        cd divergence
+        python gap_enforcer.py --self-test
+    - name: Scope-reach enforcer self-test
+      run: |
+        cd divergence
+        python scope_enforcer.py --self-test
     - name: Gate 0 pre-submission audit
       run: |
         cd divergence

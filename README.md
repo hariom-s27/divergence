@@ -377,7 +377,7 @@ Six things, each one checkable against a specific file rather than asserted:
   it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
   "Pre-registration" section — a reader can check the hash actually
   predates the runs, not just trust that it does.
-- **18 dated decision documents**, including the ones that record this
+- **19 dated decision documents**, including the ones that record this
   project's own mistakes — a stale citation, a scoring bug that faked a
   perfect score, three named instances of a resolver citing a real
   provision outside its own scope. None were written after the fact to
@@ -390,7 +390,12 @@ Six things, each one checkable against a specific file rather than asserted:
   resolver output, on data nobody planted — and its own two live failure
   modes (it attacks almost everything it's shown; it has produced
   incoherent output on one run) are published in the same file as its
-  wins, not separately.
+  wins, not separately. Three of those findings no longer depend on that
+  checker being run at all — [`scope_enforcer.py`](divergence/scope_enforcer.py)
+  encodes them as deterministic code, and the version that did that
+  briefly regressed against this project's own shipped demo record before
+  it shipped, caught testing against the real file rather than only the
+  synthetic self-test ([`DECISION-D59.md`](divergence/DECISION-D59.md)).
 - **Every number on the disclosure page is generated from a record.** None
   is typed by a person — the page that used to be a hand-built mockup with
   placeholder figures is now rendered by `node7_disclosure.py` directly

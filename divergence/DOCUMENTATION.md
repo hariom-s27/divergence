@@ -41,10 +41,12 @@ ten seconds rather than mid-evaluation.
 
 ## 3. Every node — reasoning, mechanics, data
 
-Nine steps: five make an LLM call (🤖, can be wrong) and four are plain
+Ten steps: five make an LLM call (🤖, can be wrong) and five are plain
 Python (⚙, cannot invent anything — an `if` statement, a string match,
 arithmetic, a template). The full visual version of this table, with the
-required human-input markers, is [`flowchart.png`](flowchart.png).
+required human-input markers, is [`flowchart.png`](flowchart.png). *Update,
+21 Aug: was nine/four until ⚙ E (`scope_enforcer.py`) was added —
+`DECISION-D59.md`.*
 
 ---
 
@@ -188,6 +190,41 @@ stated on the record.
 
 ---
 
+### ⚙ E — SCOPE-REACH ENFORCER (`scope_enforcer.py`) — no model
+
+*Added 21 Aug, `DECISION-D59.md`.*
+
+**Reasoning.** ⚙ C proves a citation is real and current. It does not, and
+cannot, prove the citation actually reaches the facts it was applied to —
+its own `LIMITATIONS` section says so directly. This project has three
+real, hand-verified instances of exactly that gap in its own resolver
+history (§5 below), each previously caught only when Node 5 happened to
+run and happened to land the attack. This turns those three, specifically,
+into a guarantee.
+
+**How it works.** For each kept conclusion, matches its citation to a
+corpus `provision_id` (the same ref-extraction ⚙ C already trusts) and, if
+that provision is one of the three this project has proven does not reach
+a virtual-digital-asset receipt, drops the conclusion — unless its
+`certainty` is `lacuna`, in which case the citation is being used to prove
+the absence, not claim the authority, and is left alone. Tested against a
+real regression before shipping: a version without that exemption dropped
+this project's own frozen demo record's correct "no rule found" finding —
+see `DECISION-D59.md` for the full account.
+
+**Data needed.** The record's `regimes[]` (after ⚙ C) and `facts{}` —
+specifically the `asset` field, to tell a virtual-digital-asset receipt
+apart from a genuine foreign-currency one.
+
+**Stated limitation.** Three provisions, not a scope-reading model. A
+fourth misapplied provision this project has never analysed is exactly as
+invisible to this file as it was before. `s.393(1)`'s own scope-reach bug
+(`DECISION-D55.md`) was deliberately left out — telling its correct use
+apart from its historical misuse needs the outcome's polarity, not just
+citation and facts, and stays Node 5's job.
+
+---
+
 ### 🤖 5 — ADVERSARIAL CHECKER (`node5_adversarial.py`, prompt `05-adversarial.md`)
 
 **Reasoning.** Every other check in this pipeline verifies a citation is
@@ -266,6 +303,21 @@ visible to any of this project's five accuracy metrics.** Full account,
 each instance verified against the actual gazette text before being
 written down: `DECISION-D50.md`, `DECISION-D54.md`, `DECISION-D55.md`.
 
+**Update, 21 Aug — three of the five no longer depend on Node 5 running at
+all.** `scope_enforcer.py` (⚙ E, `DECISION-D59.md`) encodes the Rule 57,
+Rule 206/207 and Rule 243/247 findings as deterministic code: a conclusion
+citing any of the three against a virtual-digital-asset receipt is now
+dropped unconditionally, the same `accept=False` semantics ⚙ C already
+uses for a fabricated citation. The two `s.393(1)` instances are
+deliberately **not** included — that failure turns on which direction a
+conclusion argues, not on citation + facts alone (the correct current D1
+answer legitimately cites the same provision to explain why no obligation
+arises), and remain Node 5's job alone. This is not a claim that scope-
+reach is solved in general — a sixth, unanalysed misapplication is exactly
+as invisible to the code as it always was. It is a claim that these three,
+specific, already-paid-for findings can no longer reach a record whether or
+not Node 5 happens to be run that day.
+
 **This sits in the same family as a published finding, not just an
 analogy we're drawing.** Magesh, Surani, Dahl, Suzgun, Manning and Ho
 (Stanford RegLab), *"Hallucination-Free? Assessing the Reliability of
@@ -292,7 +344,7 @@ against its own abstract rather than assumed from a title:
 
 ## 6. Where the deeper material lives
 
-- **All 18 decision documents, the mental model, and the full run guide,
+- **All 19 decision documents, the mental model, and the full run guide,
   merged into one chronological file:** [`START-HERE.md`](START-HERE.md)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)

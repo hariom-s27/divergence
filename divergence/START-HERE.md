@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 18 decision documents merged into one chronological read — so you don't have to open eighteen separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 19 decision documents merged into one chronological read — so you don't have to open nineteen separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,7 +123,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Eighteen dated documents. D41 predates D42–D58 chronologically (it's been
+Nineteen dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -353,9 +353,29 @@ real one-to-one bipartite matching, every M2 number in `results.md`
 re-scored against it — four cells actually changed, listed with before/after
 in D58, everything else confirmed unchanged, not assumed.
 
+## [D59](DECISION-D59.md) — ⚙ E, the scope-reach enforcer: node 5's item 2, turned into code
+The one genuine new capability added after the ship-plan work was otherwise
+done, not a found bug. Node 5's own checklist names "scope reach" as item 2
+and this project already has three real, hand-verified instances of it in
+its own history (Rule 206/207 cited against a VDA, Rule 57 cited against a
+VDA, Rule 243/247 cited as the taxpayer's own method instead of an RCASP's)
+— each caught only because node 5, an LLM call, happened to run and happened
+to land the attack that day. `scope_enforcer.py` encodes exactly those three
+as deterministic code, dropping any conclusion whose citation doesn't reach
+the case's facts, same semantics as ⚙ C. **Caught its own regression before
+it shipped**: a first version dropped the project's own frozen demo
+record's correct "no rule found" (`certainty: lacuna`) conclusion, because
+citing Rule 57 to prove absence looks identical to citing it as authority
+without also checking *which* claim it's attached to. Fixed using
+`certainty == "lacuna"` — schema.json's own definition of "no rule exists"
+— as the discriminator, not a keyword guess at outcome text. A fourth
+candidate (s.393(1), D55) was deliberately left out for the identical
+reason, disclosed rather than force-fit. Self-test: 7/7, plus both real
+records re-checked directly.
+
 ---
 
-## What the eighteen decisions add up to
+## What the decisions add up to
 
 Read end to end, the pattern is not fourteen separate bugs. It's one
 recurring shape, showing up at every layer of the project: **something

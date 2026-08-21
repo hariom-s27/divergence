@@ -1,12 +1,22 @@
 # ARCHITECTURE — DIVERGENCE
 ### Step 19 deliverable · written 19 August 2026
-### **Five model calls and three deterministic checks.** Never "seven nodes."
+### **Five model calls and four deterministic checks.** Never "seven nodes."
+### *Update, 21 Aug: was "three" until ⚙ E was added (DECISION-D59.md) — the diagram below and the count are both current as of that addition.*
 
-> **Why the phrasing matters.** A model call and a piece of ordinary code are not the same kind of thing, and calling both "nodes" hides the most reassuring fact about this system: **some parts cannot hallucinate, because they are not models.** When a judge asks *"why so many nodes?"*, the answer is not a number — it is *"five model calls each doing one job, wrapped in three checks that are ordinary code and therefore cannot make things up."*
+> **Why the phrasing matters.** A model call and a piece of ordinary code are not the same kind of thing, and calling both "nodes" hides the most reassuring fact about this system: **some parts cannot hallucinate, because they are not models.** When a judge asks *"why so many nodes?"*, the answer is not a number — it is *"five model calls each doing one job, wrapped in four checks that are ordinary code and therefore cannot make things up."*
 
 ---
 
 # THE DIAGRAM
+
+**Corrected 21 Aug, alongside ⚙ E: this used to draw ⚙ A right after 🤖 2
+and ⚙ B feeding straight into 🤖 3/4. Neither is true of `run_pipeline.py`,
+checked directly rather than assumed — `node_resolver.resolve()`'s own
+signature takes `facts`/`missing`/`tax_year` only, never a valuation
+figure, and `gap_enforcer.enforce()` isn't called until after citation and
+scope-reach checking, near the end of the automated chain. The shape below
+is the real call order; the old shape was never actually run this way. See
+`PIPELINE-FLOW.md`'s matching 21 Aug note and `make_flowchart.py`.**
 
 ```
                             ┌──────────────────────────────┐
@@ -21,18 +31,6 @@
                             │     runs BEFORE any reasoning│
                             └──────────────┬───────────────┘
                                            │  missing[] with blocks[]
-                                           ▼
-                            ╔══════════════════════════════╗
-                            ║  ⚙ A  GAP CONSTRAINT ENFORCER║
-                            ║     deterministic            ║
-                            ╚══════════════┬═══════════════╝
-                                           │  hard constraint, not advice
-                                           ▼
-                            ╔══════════════════════════════╗
-                            ║  ⚙ B  VALUATION LATTICE      ║
-                            ║     deterministic · no model ║
-                            ╚══════════════┬═══════════════╝
-                                           │  12 figures · range · budget
                           ┌────────────────┴────────────────┐
                           ▼                                 ▼
               ┌───────────────────────┐        ┌───────────────────────┐
@@ -46,6 +44,27 @@
                             ║     deterministic · 15/15    ║
                             ╚══════════════┬═══════════════╝
                                            │  accept=False -> conclusion DROPPED
+                                           ▼
+                            ╔══════════════════════════════╗
+                            ║  ⚙ E  SCOPE-REACH ENFORCER   ║
+                            ║     deterministic · 3 rules  ║
+                            ╚══════════════┬═══════════════╝
+                                           │  citation exists but doesn't REACH
+                                           │  these facts -> conclusion DROPPED
+                                           ▼
+                            ╔══════════════════════════════╗
+                            ║  ⚙ A  GAP CONSTRAINT ENFORCER║
+                            ║     deterministic            ║
+                            ╚══════════════┬═══════════════╝
+                                           │  hard constraint, not advice
+                                           ▼
+                            ╔══════════════════════════════╗
+                            ║  ⚙ B  VALUATION LATTICE      ║
+                            ║     deterministic · no model ║
+                            ╚══════════════┬═══════════════╝
+                                           │  12 figures · range · budget
+                                           │
+                                (--node5, optional)
                                            ▼
                             ┌──────────────────────────────┐
                             │  🤖 5  ADVERSARIAL CHECKER   │
@@ -227,7 +246,34 @@ verify("Rule 11UB", "FY 2026-27")  -> REJECTED  — fabricated
 ```
 Same citation, two years, two answers. **It catches five of our own historical errors automatically.**
 
-**Stated limitation: existence is not relevance.** A VERIFIED citation exists and is current. It does **not** mean the provision supports the proposition. That is node 5's job.
+**Stated limitation: existence is not relevance.** A VERIFIED citation exists and is current. It does **not** mean the provision supports the proposition. That was node 5's job alone, until ⚙ E, immediately below, took over three specific instances of it.
+
+---
+
+## ⚙ E — SCOPE-REACH ENFORCER
+
+*Added 21 Aug — DECISION-D59.md. Everything else in this document was written 19 August; this section is the one genuine addition since.*
+
+| | |
+|---|---|
+| **In** | `regimes[]` (post-⚙ C) and `facts{}` |
+| **Out** | matched conclusions **dropped**, same semantics as ⚙ C |
+| **Model** | **none** |
+
+**What it does.** Node 5's own checklist, item 2 above, is "scope reach — does column B / the opening words actually reach this fact pattern," and it is item 2 for a reason: this project has already found and fixed three real instances of it, by hand, each after node 5 (an LLM call, probabilistic) happened to catch it and happened to be run. ⚙ E encodes exactly those three, and only those three, as ordinary code:
+
+```
+Rule 206/207 cited to value a VDA        -> DROPPED. Converts "foreign currency";
+                                             a VDA is defined as not being one (s.2(111)).
+Rule 57 cited to value a VDA             -> DROPPED. Zero VDA references; its one
+                                             residual clause serves s.26(2)(j), not s.92.
+Rule 243(8)(e) / Rule 247 cited as THIS  -> DROPPED. Governs a Reporting Crypto-Asset
+  taxpayer's own valuation method            Service Provider, never the taxpayer.
+```
+
+**The guard that made this safe to ship, not just plausible.** A first version dropped every citation of these three provisions unconditionally — and, tested against `runs/21aug/D1_final_seed2.json`, the frozen record already live on `output-interface.html`, it dropped the record's own headline `valuation_method` conclusion: *"No provision in the text prescribes a specific method... certainty: lacuna."* That citation of Rule 57 is not a claim that Rule 57 governs — it is the citation being used **as evidence that it does not**, the exact pattern this whole project's thesis is built on. `enforce_scope()` now exempts `certainty == "lacuna"` unconditionally, using schema.json's own definition of that value ("no rule exists") as the discriminator, rather than guessing at outcome polarity from free text. The historical bug this file exists to catch (`runs/21aug/D1-a_regimes.json` — *"the fair market value is determined... as per Rule 11UA,"* certainty `insufficient_evidence`) never carries `lacuna`, so the guard costs nothing against the real catch and prevents a false drop on the project's own correct output. See `scope_enforcer.py`'s self-test, seven cases, for both directions.
+
+**Stated limitation: three provisions, not a scope-reading model.** This is not what "NLI-based scope enforcement" would sound like — it does not read arbitrary statutory text against arbitrary facts. It is three hand-verified findings, encoded once each, so that the *next* time one of these three specific errors would have occurred, it cannot reach the record — no dependence on node 5 having been asked, or on it landing the attack that day. A fourth misapplied provision this project has never analysed is exactly as invisible to this file as it was before. `s.393(1)`'s own scope-reach failure (`DECISION-D55.md`) was deliberately left **out**: that error turns on which direction a conclusion argues (the correct D1 answer legitimately cites the same provision to explain why *no* obligation arises), not on citation + facts alone — telling those two apart from citation and facts alone would need reading the outcome text, and a keyword guess at its polarity was judged more likely to silently drop a correct conclusion than to catch a wrong one. Left for node 5, same as before.
 
 ---
 

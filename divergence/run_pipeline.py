@@ -47,6 +47,7 @@ import node5_adversarial                    # noqa: E402
 import gap_enforcer                         # noqa: E402
 import citation_matcher                     # noqa: E402
 from citation_matcher import verify as cite_verify  # noqa: E402
+import scope_enforcer                       # noqa: E402
 
 # schema.json's manifest object (C20/C26, R37 -- "you earn the right to make
 # a negative claim by declaring what you looked at") was defined 6 August
@@ -225,7 +226,7 @@ def main():
     if not a.text and not a.file:
         die("give at least one --text or --file input for node 1")
 
-    N = 6 if a.node5 else 5
+    N = 7 if a.node5 else 6
 
     print("=" * 74)
     print(f"  RUN PIPELINE — {a.record_id}  ({a.tax_year})")
@@ -275,7 +276,13 @@ def main():
         print(f"        DROPPED  {d['regime']:<24} {d['citation']!r:<32} {d['status']} — {d['reason']}")
     print(f"        {len(regimes)} kept, {len(dropped)} dropped")
 
-    print(f"\n  [5/{N}] ⚙ A GAP CONSTRAINT ENFORCER")
+    print(f"\n  [5/{N}] ⚙ E SCOPE-REACH ENFORCER")
+    regimes, scope_dropped = scope_enforcer.enforce_scope(regimes, facts)
+    for d in scope_dropped:
+        print(f"        DROPPED  {d['regime']:<24} {d['citation']!r:<32} scope — {d['reason'][:70]}")
+    print(f"        {len(regimes)} kept, {len(scope_dropped)} dropped")
+
+    print(f"\n  [6/{N}] ⚙ A GAP CONSTRAINT ENFORCER")
     for r in regimes:
         r.setdefault("depends_on_missing", [])
     record_stub, forced = gap_enforcer.enforce({"regimes": regimes})
@@ -287,7 +294,7 @@ def main():
 
     attacked = None
     if a.node5:
-        print(f"\n  [6/{N}] 🤖 5 ADVERSARIAL CHECKER")
+        print(f"\n  [7/{N}] 🤖 5 ADVERSARIAL CHECKER")
         try:
             attacked, survived, a5_limits, m5 = node5_adversarial.check(
                 regimes, missing, valuation or {}, a.tax_year)
@@ -304,6 +311,9 @@ def main():
     limits = list(extraction_notes) + resolver_limits
     for d in dropped:
         limits.append(f"citation dropped: {d['citation']} ({d['status']}) for regime {d['regime']}")
+    for d in scope_dropped:
+        limits.append(f"scope-reach violation: {d['citation']} does not reach these facts "
+                       f"for regime {d['regime']} — {d['reason']}")
     if regimes_in and not valuation:
         limits.append("valuation.json not found — run node3_valuation.py first; this record has no valuation block")
     if a.skip_resolvers and not a.regimes:
