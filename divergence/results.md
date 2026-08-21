@@ -334,17 +334,22 @@ lose") rather than a fifth real finding — but published here rather than
 quietly left out a second time, since leaving it out once was already the
 mistake being corrected in this edit.
 
-**Correction to the plan this Block executes:** the instruction that started
-this cycle asserted D1's frozen `citations_expected[]` "lists Rule 56 and
-Rule 57" and separately "does not list Rule 243," and that ground truth
-"expects s.393(1) Table Sl. No. 8(vi) cited." Checked directly against
-`step21drop/cases/D1/ground_truth.json` before writing any claim about it
-into this file: **`citations_expected` is `[]` — empty, never filled in**,
-with its own note reading *"Fill from architecture.md scoping."* No citation
-match-to-ground-truth claim is made anywhere in this Block for that reason;
-M3 (citation validity) measures only that a citation is real, current and
-correctly quoted, not that it matches a pre-registered expected set, for D1
-specifically. Said here rather than silently repeating the plan's claim.
+**Correction to a correction, made later the same night ([D56](DECISION-D56.md)):**
+the paragraph above originally said the instruction that started this cycle
+was wrong to assert D1's `citations_expected[]` "lists Rule 56 and Rule 57,"
+"does not list Rule 243," and "expects s.393(1) Table Sl. No. 8(vi) cited."
+That "correction" checked `step21drop/cases/D1/ground_truth.json`, a stale
+copy last touched at the rejected pre-freeze commit (`a267f19`), not the
+real, frozen file (`cases/D1/ground_truth.json`, updated by the actual freeze
+commit `225ed20b`, and the one `eval/score.py` has always read from —
+`CASES = os.path.join(ROOT, "cases")`). **The real file has all three:**
+Rule 56, Rule 57, and s.393(1) Table Sl. No. 8(vi) are in
+`citations_expected[]`; Rule 243 is not. The original instruction was
+right; this file's own "correction" of it was the error. Fixed here rather
+than left standing — full account, including why no M1–M5 score anywhere
+was ever affected by the two trees diverging (only `citations_expected`
+itself differs; scoring reads the real file and doesn't consume that field
+regardless): [`DECISION-D56.md`](DECISION-D56.md).
 
 ### The hard-stop, applied
 

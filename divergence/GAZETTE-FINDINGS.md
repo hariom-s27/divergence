@@ -13,6 +13,22 @@ Row 7 is the residual catch-all: **column B — Section 26(2)(j) only**; column 
 
 **Section 92 — the provision that actually taxes this receipt — is not in column B for rows 6 or 7.** A reader who stops at column C sees a catch-all that looks broad enough to reach anything. Column B narrows it to a different section entirely. *(`corpus/tier-a/ITR2026-RULE-57.md`)*
 
+The full research trail behind this finding — the 1962 provenance of each
+row (Rule 57 consolidates three older rules, and each row keeps its
+parent's scope), the verification status of each claim, and why this holds
+across both the 2025 and 2026 tax-year numbering systems — is in
+[`RULE-57-RESEARCH-TRAIL.md`](RULE-57-RESEARCH-TRAIL.md). That file is
+**not** part of the live corpus (`citation_matcher.py` and the resolvers
+only ever read `corpus/tier-a/` and `corpus/verbatim/`) — it is the working
+research that fed into the corpus file and this summary, kept visible
+rather than deleted once the corpus file itself was finalized. Renamed
+21 August, out of `corpus/tier-a/ITR2026-RULE-57.md`'s exact filename, to
+remove a real point of confusion: the two files had drifted to different
+retrieval dates and different levels of detail, sitting under an identical
+name in two different folders — the same *shape* of risk as the shadowing
+bug D44 fixed, though not a live one, since no code ever read the root
+copy.
+
 ---
 
 ## 2. Rule 206 cites an Act repealed twenty-six years before this gazette was printed

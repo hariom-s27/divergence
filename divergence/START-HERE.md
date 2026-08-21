@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 14 decision documents merged into one chronological read — so you don't have to open fourteen separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 15 decision documents merged into one chronological read — so you don't have to open fifteen separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,7 +123,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Fourteen dated documents, `DECISION-D42.md` through `DECISION-D55.md`,
+Fifteen dated documents, `DECISION-D42.md` through `DECISION-D56.md`,
 merged here into one chronological read. Each entry is compressed to what
 changed and why; the full original reasoning, tables, and "what to say
 about it" framing live in the linked file.
@@ -290,9 +290,26 @@ fixed with a sixth prompt edit** — disclosed instead, per a hard-stop rule
 set in advance: after one final cycle, whatever remains gets said, not
 chased. `D1_final_seed2.json` is the frozen demo record on that basis.
 
+## [D56](DECISION-D56.md) — two ground_truth.json trees existed; a claim in this project's own results was wrong
+Found doing a GitHub organization pass, not a code review: `cases/` (the
+real, frozen ground truth — the freeze commit `225ed20b` updated it, and
+`eval/score.py` has always read from it) and `step21drop/cases/` (a stale
+copy, last touched at the earlier, rejected pre-freeze commit) had
+diverged. The only field that actually differs, across all six cases, is
+`citations_expected[]` — facts, gaps, elements and method counts are
+byte-identical, so no M1–M5 score anywhere was ever affected. What *was*
+wrong: an earlier "correction" written into `results.md` and
+`DECISION-D55.md`, checked against the stale copy, claimed
+`citations_expected` was empty. The real file has it filled in correctly —
+the original instruction those two docs were "correcting" had been right
+all along. Fixed in both places. `cases/` was also completed (the real
+input documents copied in, verified byte-identical) so it's a
+self-contained canonical location, and `step21drop/cases/README.md` now
+says plainly which file there is real and which isn't.
+
 ---
 
-## What the fourteen decisions add up to
+## What the fifteen decisions add up to
 
 Read end to end, the pattern is not fourteen separate bugs. It's one
 recurring shape, showing up at every layer of the project: **something

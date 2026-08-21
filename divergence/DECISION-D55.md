@@ -95,14 +95,19 @@ ran: after one final cycle, whatever remains is disclosed, not chased.
 `D1_final_seed2.json` is frozen on that basis. Full account, including the
 "Where we lose" and "Still open" updates, in `results.md`'s Block F.
 
-## One claim in the instruction that started this cycle turned out to be wrong
+## Correction, added later the same night ([D56](DECISION-D56.md))
 
-It asserted D1's `citations_expected[]` "lists Rule 56 and Rule 57" and
-that ground truth "expects s.393(1) Table Sl. No. 8(vi) cited." Checked
-directly against `step21drop/cases/D1/ground_truth.json` before writing
-anything about it: **`citations_expected` is `[]`**, never filled in, with
-its own note saying so. No citation-matches-ground-truth claim is made
-anywhere for D1 as a result — corrected here rather than repeated.
+This section originally said the instruction that started this cycle was
+wrong to assert D1's `citations_expected[]` "lists Rule 56 and Rule 57" and
+that ground truth "expects s.393(1) Table Sl. No. 8(vi) cited" — checked
+against `step21drop/cases/D1/ground_truth.json`, which turned out to be a
+stale copy last touched at the rejected pre-freeze commit, not the real,
+frozen file (`cases/D1/ground_truth.json`, the one the actual freeze commit
+updated and the one `eval/score.py` has always read). **The real file has
+all three claims correct** — Rule 56, Rule 57, and s.393(1) Table Sl. No.
+8(vi) are in `citations_expected[]`. The original instruction was right;
+this doc's "correction" of it, checking the wrong path, was the error. Full
+account: [`DECISION-D56.md`](DECISION-D56.md).
 
 ## What to say about it
 
