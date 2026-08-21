@@ -56,6 +56,17 @@ independently — a human re-reading the record, and the node's own attack on
 it, before the two were ever compared. None of the five were visible to
 the metrics that would normally stand in for "is this answer right."
 
+**This is not a tax-law-specific failure, and that is the actual finding.**
+Nothing about the mechanism is specific to Indian tax rules — it is what
+happens whenever a model is given verbatim source text and a genuinely
+underdetermined question and asked to resolve it confidently. The same
+shape of mistake would show up handing a model a medical guideline and an
+edge-case symptom, an insurance policy and a borderline claim, or a
+contract and a clause two lawyers would read differently. The fix that
+worked here — a second, independent model whose only job is to attack the
+first one's citations for scope, published whether the attack lands or
+not — doesn't depend on anything about tax law either.
+
 ## Architecture
 
 [`flowchart.png`](divergence/flowchart.png) is the submission diagram —
@@ -170,6 +181,16 @@ template. No API call, no token cost, no inference latency, and (the
 reason they exist at all) no possibility of inventing an answer. Roughly
 half the pipeline's steps carry zero marginal compute cost by construction,
 not by optimization.
+
+**The social dimension is the same claim the whole project rests on.**
+A freelancer who unknowingly files two inconsistent positions across two
+tax years because two different tools silently picked two different rates
+is a real, avoidable harm — not a hypothetical one; `prior-art/DEMAND.md`
+found eleven real people and practitioners hitting some version of this
+exact gap. This system's contribution to sustainability isn't only lower
+token spend — it's that the honest, disclosed range is something a
+freelancer or their accountant can act on consistently over multiple
+filing years, where a silently-picked single figure is not.
 
 ## Accessibility
 
@@ -306,3 +327,25 @@ so it can't confuse a reader of the live corpus.
 
 `tests/` and the root `conftest.py` exist only so CI can import
 `tests/test_gap_enforcer.py` correctly. Plumbing, not evaluation.
+
+## Where to look, against the actual judging criteria
+
+Written against ReverieHacks' own published rubric for this track
+(Innovation · Problem Solving · Sustainability/Scalability · UX & Design ·
+Bonus: Exceptionality) rather than an assumed one — the rubric has no
+separate "technical execution" or "presentation" category, so this section
+exists specifically so that work doesn't get lost between the four it does
+have.
+
+| Criterion | Where the evidence is |
+|---|---|
+| **Innovation** — originality, creativity, potential to inspire | The "law does not decide" framing itself; the adversarial checker that attacks its own system's answers and publishes the attack whether it lands or not ([`architecture.md`](divergence/architecture.md)); the generalization beyond tax law, above |
+| **Problem Solving** — relevance, effectiveness, feasibility | Relevance: real people hitting this exact gap ([`prior-art/DEMAND.md`](divergence/prior-art/DEMAND.md)). Effectiveness: [`results.md`](divergence/results.md), including where it loses. Feasibility: it runs end to end today, CI green, on open models, at [`HOW-TO-RUN.md`](divergence/HOW-TO-RUN.md)'s one command |
+| **Sustainability/Scalability** | The [Sustainability](#sustainability) section above; the scalability proof (C2 — same pipeline, unchanged, on an ordinary bank receipt with no crypto in it at all) |
+| **UX & Design** — ease of use, aesthetic, accessibility | `output-interface.html` (real, generated, not mocked up); [Accessibility](#accessibility) above, with the actual ARIA markup named, not just claimed |
+| **Bonus: Exceptionality** | Five confirmed, self-caught instances of the identical scope-reach failure, invisible to every accuracy metric, disclosed rather than hidden — [`SAMPLES.md`](divergence/SAMPLES.md) §3, [`DOCUMENTATION.md`](divergence/DOCUMENTATION.md) §5 |
+
+Required track submissions and where each one is: ML workflow PNG —
+[`flowchart.png`](divergence/flowchart.png). Samples document —
+[`SAMPLES.md`](divergence/SAMPLES.md). Documentation —
+[`DOCUMENTATION.md`](divergence/DOCUMENTATION.md).

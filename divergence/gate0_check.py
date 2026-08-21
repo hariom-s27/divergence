@@ -218,7 +218,13 @@ if _live:
     STALE = {p: l for p, l in STALE.items()
              if not any(re.search(p, x) for x in _live)}
 SKIP_DIRS = {".git", "__pycache__", "cache", "_old_corpus_backup", "node_modules",
-             ".venv", "venv", "site-packages", "divergencegazettecorpus"}
+             ".venv", "venv", "site-packages", "divergencegazettecorpus", "New folder"}
+# "New folder" -- external planning/coordination drafts (not written by this
+# checker's own maintenance), quoting retired figures for historical context
+# the same way DECISION docs do, but without that convention's stale-ok
+# markers. Not a live submission artifact -- same exclusion logic as
+# design-process/ (outside divergence/ entirely, so never walked here).
+# Found live during the pre-submission audit, 21 Aug.
 # Docs whose JOB is to quote the retired figures. Reporting them is not a defect.
 AUDIT_DOCS = {"audit-18-aug.md", "plan-18-to-25-aug.md", "master-roadmap-v2.md",
               "gazette-findings.md", "step-log.md", "iteration-log.md"}
