@@ -140,6 +140,23 @@ python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" `
 python node7_disclosure.py --record runs\D1_pipeline.json --out output-interface.html
 ```
 
+If node 5 was run separately (`node5_adversarial.py`'s own CLI, decoupled
+from `run_pipeline.py --node5` — useful since node 5 is retriable on its
+own without re-spending nodes 1-4's tokens), pass its output file to the
+composer with `--attack`:
+
+```powershell
+python node7_disclosure.py --record runs\D1_pipeline.json `
+    --attack runs\D1_attack.json --out output-interface.html
+```
+
+This merges `attacked[]`/`checked_and_survived[]` in memory for rendering
+only — neither source file is modified. Section 05, "What we tried to
+break," is what shows the attack. Without `--attack` and without
+`run_pipeline.py --node5` having embedded it already, that section says
+plainly that node 5 was not run for the record, rather than rendering an
+empty section that would look like zero attacks were made.
+
 `--regimes <file.json>` still exists as a flag for merging in ADDITIONAL
 hand-coded conclusions alongside nodes 3/4's own output — a planted-defect
 ablation variant, for instance — not as the normal way to supply resolver

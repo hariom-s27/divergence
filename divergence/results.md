@@ -291,8 +291,16 @@ documented in Block E2 (M1 was never that unstable across those three seeds
 either) — flagged, not chased, per the hard-stop below.
 
 **Node 5 ran against the selected record** (`D1_final_seed2_attack.json`):
-4 attacks, 2 landed, 2 survived, no rejections needed from the downgrade
-guard. One of the two landed attacks is a **fourth independent catch of the
+4 attacks, **all 4 landed** (`survived: false` on every one — corrected
+here; an earlier pass through this file mis-stated this as "2 landed, 2
+survived," reading node5_adversarial.py's own CLI print wrong. The "2" in
+that print is `checked_and_survived`'s length — two *separate* conclusions
+checked and never attacked at all, not two of the four attacked ones
+holding up. Caught re-verifying against the raw JSON before writing this
+correction, not assumed). No rejections were needed from the downgrade
+guard on any of the four.
+
+One of the four landed attacks is a **fourth independent catch of the
 identical scope-reach failure**, on a claim this same fix cycle introduced
 minutes earlier: seed 2's `income_tax_on_receipt` reasoning says *"no
 deduction obligation arises under s.393(1)... because the recipient is a
@@ -309,11 +317,22 @@ already added this cycle correctly stopped the *first* version of this error
 hatch not addressed by that same edit. One generalized gate closed one
 failure mode, not the whole space of ways to reach the same wrong outcome.
 
-The other landed attack repeats Rule 57 row 7's own "catch-all" objection
+A second landed attack repeats Rule 57 row 7's own "catch-all" objection
 (risks.md's ⭐ strongest-attack-on-the-project row) — expected, already
-answered there. A third attack, on the `place_of_supply` GST condition,
-is the incoherent-attack-text failure mode already disclosed in "Where we
-lose," not a new instance of anything.
+answered there. A third, on the `place_of_supply` GST condition, is the
+incoherent-attack-text failure mode already disclosed in "Where we lose,"
+not a new instance of anything ("two trees somehow link... the Law of
+Supply Location must thus be definitely USA" is not a coherent legal
+argument). **The fourth, not previously written up here, argues the
+classification limb itself** — that receiving USDC as payment may not be a
+"transfer" of a virtual digital asset under s.2(47), so s.115BBH might not
+even reach this receipt. Ground truth's `elements.classification: settled`
+and this project's entire case narrative treat classification as the one
+genuinely settled question in D1; this attack contests that. Read as node
+5's documented over-eagerness (attacks nearly everything, per "Where we
+lose") rather than a fifth real finding — but published here rather than
+quietly left out a second time, since leaving it out once was already the
+mistake being corrected in this edit.
 
 **Correction to the plan this Block executes:** the instruction that started
 this cycle asserted D1's frozen `citations_expected[]` "lists Rule 56 and
@@ -360,6 +379,36 @@ submission, deliberately, because every fix cycle this project has run has
 surfaced a new error, and we would rather publish a known, honestly-labelled
 state than an unexamined one.
 
+### Addendum: the attacks are on the page now, and one accounting error caught fixing it
+
+"We publish the attack" was a claim this project made from the start
+(architecture.md's own words on 🤖 5) that `node7_disclosure.py` never
+actually rendered — the composer read `regimes[]`, `missing[]`,
+`valuation[]`, never `attacked[]`. Fixed: a new section 05, "What we tried
+to break," reads `attacked[]`/`checked_and_survived[]` exactly as
+`node5_adversarial.py` wrote them, with a LANDED/SURVIVED badge per attack
+and the downgrade it proposed where one exists. Deterministic — no new
+model call, same discipline as every other part of the composer. A
+`--attack <file>` CLI flag merges a separately-kept attack file in at
+render time (D1_final_seed2.json and its attack file were never merged on
+disk, matching how earlier records in this project were kept); the
+frozen record itself is untouched.
+
+**Regenerating the page to test this surfaced a real accounting error in
+this file and in `DECISION-D55.md`, fixed in place above**: both said
+"4 attacks, 2 landed, 2 survived" for the selected record, reading
+`node5_adversarial.py`'s own CLI summary line wrong — the "2" there is
+`checked_and_survived`'s length (two separate conclusions never attacked at
+all), not a 2-2 split of the four that were. The raw JSON shows
+`survived: false` on all four `attacked[]` entries — **all four landed**,
+verified directly against the file before writing this correction, not
+assumed from memory. A fourth landed attack (contesting whether receiving
+USDC counts as a "transfer" under s.2(47), and so whether s.115BBH reaches
+this receipt at all) had also gone unmentioned in the original write-up;
+it's now in both docs, read as node 5's documented attack-everything
+over-eagerness rather than a sixth real finding, but published rather than
+quietly dropped a second time.
+
 ## Where we lose
 
 Every finding below is already documented elsewhere in this file or in a decision doc. Collected here, in one place, because a reader should not have to hunt through the night's chronology to find out where the pipeline is actually worse than the alternative, or wrong outright. Nothing here is softened and nothing carries a mitigating clause.
@@ -368,7 +417,7 @@ Every finding below is already documented elsewhere in this file or in a decisio
 - **Arm C scores 0.0% gap recall on C3, C4, and C5 in the 21-Aug table** — three of six cases where the structured pipeline found none of the gaps ground truth expects. This is the same node (🤖 2) credited elsewhere with genuine successes; on these three cases it found nothing.
 - **Gap detection is measurably unstable, not just imprecise.** Three seeds of the identical D1 case, same code, same input, same everything except sampling: 50%, 75%, 0% recall. No single number from that spread is quotable as "the" result — see Block E2.
 - **The adversarial node missed a planted defect outright.** D1-b's planted misapplication of Rule 57 row 7 was sitting verbatim in the text node 5 was given, and none of its five attacks on that variant mentioned it.
-- **The adversarial node attacks almost everything it sees.** `checked_and_survived` was non-empty in 3 of 8 runs across the night (Block F's seed 2 run added a third, 2 of 4 conclusions surviving) — every other run attacked every conclusion it was given. That is very likely the same reason D1-b's specific defect was missed: several generic attacks were available and easier to reissue than reading for the one planted sentence.
+- **The adversarial node attacks almost everything it sees.** `checked_and_survived` was non-empty in 3 of 8 runs across the night (Block F's seed 2 run added a third — 2 separate conclusions checked and never attacked at all; all 4 of that same run's actual attacks landed, 0 survived) — every other run attacked every conclusion it was given. That is very likely the same reason D1-b's specific defect was missed: several generic attacks were available and easier to reissue than reading for the one planted sentence.
 - **The adversarial node has also emitted incoherent output and mislabeled an upgrade as a downgrade**, twice, on real runs — not a hypothetical edge case exercised only in testing. The downgrade bug is now fixed and guarded in code (D54); the incoherent-attack-text failure mode is not.
 - **Two of six cases (C3, C4) still carry a valuation block belonging to a different case (D1's), not their own.** We refused to fabricate the missing rate/market data rather than paper over it, which is the right call and also means the gap is still open, not resolved.
 - **M5 (false abstention) has never been scoreable, on any run, and the scorer was silently returning a false "0.0%, perfect" for it until that bug was caught and fixed (D48).** No arm has ever been asked to produce the data this metric needs.

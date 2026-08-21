@@ -68,16 +68,25 @@ M4=12/12; M2 (gap recall) varies 50%/50%/25% — full table in `results.md`.
 
 ## Node 5, run against the selected record — a fifth instance, disclosed not fixed
 
-`D1_final_seed2_attack.json`: 4 attacks, 2 landed, 2 survived, no
-rejections needed from the downgrade guard (one target's before-certainty
-was ambiguous under the word-overlap matcher and correctly skipped, not
-guessed). One landed attack is a **fifth instance of the scope-reach
-pattern**: seed 2's own `income_tax_on_receipt` reasoning invented a new
-escape hatch this fix cycle didn't anticipate — *"no deduction obligation
-arises under s.393(1)... because... the payer is outside India"* — an
-exemption not stated anywhere in the text. Node 5 caught it, unprompted,
-matching a direct read of the corpus text done independently before this
-attack ran.
+`D1_final_seed2_attack.json`: 4 attacks, **all 4 landed** — corrected here;
+this doc originally said "2 landed, 2 survived," which mis-read the CLI's
+own summary line. `checked_and_survived` (length 2) is a separate list of
+conclusions never attacked at all, not a split of the four that were. No
+rejections were needed from the downgrade guard on any of the four (one
+target's before-certainty was ambiguous under the word-overlap matcher and
+correctly skipped, not guessed). One landed attack is a **fifth instance of
+the scope-reach pattern**: seed 2's own `income_tax_on_receipt` reasoning
+invented a new escape hatch this fix cycle didn't anticipate — *"no
+deduction obligation arises under s.393(1)... because... the payer is
+outside India"* — an exemption not stated anywhere in the text. Node 5
+caught it, unprompted, matching a direct read of the corpus text done
+independently before this attack ran. A second landed attack repeats Rule
+57 row 7's own catch-all objection (expected); a third is the incoherent
+place-of-supply argument already named as a known failure mode; a fourth
+contests the classification limb itself (whether receiving USDC is a
+"transfer" under s.2(47)) — most likely the node's documented
+attack-everything over-eagerness rather than a sixth real finding, noted
+rather than omitted.
 
 **This is not fixed with a sixth prompt edit.** The instruction that opened
 this cycle said explicitly that each previous fix had produced a new error

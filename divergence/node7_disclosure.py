@@ -150,6 +150,20 @@ summary::before{content:"+ ";font-family:'IBM Plex Mono',monospace;color:var(--m
 details[open] summary::before{content:"\\2212 "}
 .man{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.9;color:var(--ink-soft);margin:14px 0 0;padding:0;list-style:none}
 .man li{border-bottom:1px dotted var(--paper-rule);padding:3px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.attack{border-top:1px solid var(--paper-rule);padding:16px 0}
+.attack:last-of-type{border-bottom:1px solid var(--paper-rule)}
+.a-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+.a-target{font-weight:600;font-size:14.5px}
+.verdict{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;padding:2px 7px;border:1px solid currentColor;white-space:nowrap;
+}
+.verdict.landed{color:var(--margin-red)}
+.verdict.survived{color:var(--elected)}
+.a-body{font-size:15px;color:var(--ink-soft);margin:7px 0 0}
+.a-down{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);margin:5px 0 0}
+.survived-list{list-style:none;margin:14px 0 0;padding:0}
+.survived-list li{padding:7px 0;border-bottom:1px dotted var(--paper-rule);font-size:14.5px;color:var(--ink-soft)}
 .limits{margin-top:40px;padding:20px;border:1px solid var(--paper-rule);background:rgba(255,255,255,.45)}
 .limits p{margin:9px 0 0;font-size:14.5px;color:var(--ink-soft)}
 .limits p:first-of-type{margin-top:12px}
@@ -341,6 +355,55 @@ def render_manifest(regimes, corpus_frozen_at):
     )
 
 
+def render_attacks(record):
+    """Section 05 -- what node 5 (adversarial) tried against this record's
+    own conclusions. Reads attacked[]/checked_and_survived[] exactly as
+    node5_adversarial.py wrote them; makes no model call and adds no
+    judgement of its own, same discipline as render_regimes() reading
+    regimes[]. If a record was generated without --node5, both keys are
+    simply absent -- say that plainly rather than rendering an empty
+    section that looks like zero attacks were made."""
+    if "attacked" not in record:
+        return (
+            '<p class="lede">Node 5 (adversarial) was not run for this record. '
+            'Nothing below was attacked, and nothing here should be read as '
+            'having survived scrutiny.</p>'
+        )
+    attacked = record.get("attacked") or []
+    survived = record.get("checked_and_survived") or []
+    if not attacked and not survived:
+        return '<p class="lede">Node 5 ran and found nothing to attack in this record.</p>'
+
+    parts = [
+        f'<p class="lede">{len(attacked)} attack{"s" if len(attacked) != 1 else ""} '
+        f'made by a different model than the one that wrote the conclusions above '
+        f'(decision D41). Published whether it landed or not.</p>'
+    ]
+    for a in attacked:
+        landed = not a.get("survived", True)
+        verdict = "LANDED" if landed else "SURVIVED"
+        cls = "landed" if landed else "survived"
+        target = esc(a.get("target", ""))
+        attack_txt = esc(a.get("attack", ""))
+        dg = a.get("downgraded_to")
+        dg_html = (f'<p class="a-down">proposed downgrade: {esc(dg)}</p>' if dg else "")
+        parts.append(
+            f'<div class="attack"><div class="a-top">'
+            f'<span class="a-target">{target}</span>'
+            f'<span class="verdict {cls}">{verdict}</span></div>'
+            f'<p class="a-body">{attack_txt}</p>{dg_html}</div>'
+        )
+    if survived:
+        items = "\n".join(f"<li>{esc(s)}</li>" for s in survived)
+        parts.append(
+            f'<p class="gap-note" style="margin-top:20px">'
+            f'{len(survived)} conclusion{"s" if len(survived) != 1 else ""} checked and '
+            f'not attacked at all -- not the same as surviving an attack:</p>'
+            f'<ul class="survived-list">{items}</ul>'
+        )
+    return "\n".join(parts)
+
+
 def render_limits(limits):
     if not limits:
         return '<p><b>limits[] was empty — this record is malformed; do not trust it.</b></p>'
@@ -394,6 +457,11 @@ def compose(record):
     {render_manifest(record.get("regimes", []), record.get("corpus_frozen_at"))}
   </section>
 
+  <section aria-labelledby="s5">
+    <div class="sec-head"><span class="sec-n">05</span><h2 id="s5">What we tried to break</h2></div>
+    {render_attacks(record)}
+  </section>
+
   <div class="limits">
     <span class="label">What this is not</span>
     <p>This is not tax advice, and it does not make anything compliant. It records what was known at the time and what was not.</p>
@@ -424,10 +492,21 @@ def compose(record):
 def main():
     ap = argparse.ArgumentParser(description="Node 7 / ⚙ D -- disclosure composer")
     ap.add_argument("--record", required=True, help="path to a run_pipeline.py output record")
+    ap.add_argument("--attack", default=None,
+                     help="path to a node5_adversarial.py output (attacked[]/"
+                          "checked_and_survived[]), when it was kept as a separate "
+                          "file rather than embedded via run_pipeline.py --node5. "
+                          "Merged in memory for rendering only -- never written back "
+                          "to either source file.")
     ap.add_argument("--out", default=DEFAULT_OUT)
     a = ap.parse_args()
 
     record = json.load(open(a.record, encoding="utf-8"))
+    if a.attack:
+        attack = json.load(open(a.attack, encoding="utf-8"))
+        record = dict(record)
+        record["attacked"] = attack.get("attacked", [])
+        record["checked_and_survived"] = attack.get("checked_and_survived", [])
     page = compose(record)
     with open(a.out, "w", encoding="utf-8") as f:
         f.write(page)

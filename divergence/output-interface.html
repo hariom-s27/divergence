@@ -121,6 +121,20 @@ summary::before{content:"+ ";font-family:'IBM Plex Mono',monospace;color:var(--m
 details[open] summary::before{content:"\2212 "}
 .man{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.9;color:var(--ink-soft);margin:14px 0 0;padding:0;list-style:none}
 .man li{border-bottom:1px dotted var(--paper-rule);padding:3px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.attack{border-top:1px solid var(--paper-rule);padding:16px 0}
+.attack:last-of-type{border-bottom:1px solid var(--paper-rule)}
+.a-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+.a-target{font-weight:600;font-size:14.5px}
+.verdict{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;padding:2px 7px;border:1px solid currentColor;white-space:nowrap;
+}
+.verdict.landed{color:var(--margin-red)}
+.verdict.survived{color:var(--elected)}
+.a-body{font-size:15px;color:var(--ink-soft);margin:7px 0 0}
+.a-down{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);margin:5px 0 0}
+.survived-list{list-style:none;margin:14px 0 0;padding:0}
+.survived-list li{padding:7px 0;border-bottom:1px dotted var(--paper-rule);font-size:14.5px;color:var(--ink-soft)}
 .limits{margin-top:40px;padding:20px;border:1px solid var(--paper-rule);background:rgba(255,255,255,.45)}
 .limits p{margin:9px 0 0;font-size:14.5px;color:var(--ink-soft)}
 .limits p:first-of-type{margin-top:12px}
@@ -177,6 +191,17 @@ a:focus-visible,summary:focus-visible,input:focus-visible,label:focus-visible{
     <details><summary>3 provision(s) actually cited in this record, corpus frozen 2026-08-19</summary><ul class="man"><li><span>Section 115BBH, Income-tax Act, 2025</span><span>2026-08-19</span></li>
 <li><span>Rule 57, Income-tax Rules, 2026</span><span>2026-08-19</span></li>
 <li><span>Section 2(6), Integrated Goods and Services Tax Act, 2017</span><span>2026-08-19</span></li></ul><p class="gap-note"><b>Not checked:</b> state levies, treaty relief, anything outside Indian law. Where we say no rule was found, we mean within this scope.</p></details>
+  </section>
+
+  <section aria-labelledby="s5">
+    <div class="sec-head"><span class="sec-n">05</span><h2 id="s5">What we tried to break</h2></div>
+    <p class="lede">4 attacks made by a different model than the one that wrote the conclusions above (decision D41). Published whether it landed or not.</p>
+<div class="attack"><div class="a-top"><span class="a-target">The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.</span><span class="verdict landed">LANDED</span></div><p class="a-body">Section 115BBH specifically applies to the &#x27;transfer&#x27; of virtual digital assets. The term &#x27;transfer&#x27; is defined in Section 2(47) of the Income-tax Act, 1961, which generally involves the relinquishment of ownership or control. The mere receipt of USDC does not necessarily constitute a &#x27;transfer&#x27; as defined, unless it is explicitly shown that the USDC was received in exchange for another asset or service. Without evidence of such an exchange, s.115BBH may not apply.</p><p class="a-down">proposed downgrade: contested</p></div>
+<div class="attack"><div class="a-top"><span class="a-target">No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.</span><span class="verdict landed">LANDED</span></div><p class="a-body">Section 393(1) specifically applies to payments made to residents. However, the condition that no deduction obligation arises because the payer is outside India is not supported by the text of s.393(1). The section does not exempt payments from non-residents to residents from the deduction obligation. Therefore, the conclusion that no deduction obligation arises is incorrect.</p><p class="a-down">proposed downgrade: contested</p></div>
+<div class="attack"><div class="a-top"><span class="a-target"> Rule 57 does not provide a specific method for valuing USDC, a virtual digital asset, under s.92.</span><span class="verdict landed">LANDED</span></div><p class="a-body">Rule 57, Row 7, provides a method for valuing &#x27;any other property&#x27; not specifically listed in Rows 1 to 6. Since USDC is a virtual digital asset and not listed in Rows 1 to 6, it falls under &#x27;any other property.&#x27; Therefore, Rule 57 does provide a method for valuing USDC, contrary to the conclusion.</p><p class="a-down">proposed downgrade: contested</p></div>
+<div class="attack"><div class="a-top"><span class="a-target">The place of supply is not explicitly stated in the facts provided.</span><span class="verdict landed">LANDED</span></div><p class="a-body">While it is not explicitly stated as a fact statement nearby we know that two trees somehow link — see Tax Gap Node 2 — there IS an answer present in the other tax gaps, and By virtue of the reciept taking place at an address in NY, USA - the Law of Supply Location must thus be definitely USA.</p></div>
+<p class="gap-note" style="margin-top:20px">2 conclusions checked and not attacked at all -- not the same as surviving an attack:</p><ul class="survived-list"><li>Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation.</li>
+<li>Every exporter of services shall furnish to the Reserve Bank or to such other authorities a declaration in such form and in such manner as may be specified, containing the true and correct material particulars in relation to payment for such services.</li></ul>
   </section>
 
   <div class="limits">

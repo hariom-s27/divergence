@@ -59,13 +59,13 @@ Apply the test to anything not on these lists. It resolves most cases in ten sec
 | **Inputs** | One invoice and one payment record, as PDF or photograph. Typed entry as fallback |
 | **Asset** | Stablecoins only (USDC, USDT) |
 | **Jurisdiction** | India only |
-| **Valuation** | Two methods, the gap in rupees and percent, and the gap decomposed by source |
+| **Valuation** | Twelve methods, the gap in rupees and percent, and the gap decomposed by source |
 | **Regimes** | Income tax, GST export, FEMA — each with the provision it rests on and how settled that provision is |
 | **Absence** | Missing documents enumerated *before* any reasoning, as a hard constraint |
-| **Grounding** | Eleven provisions, dated, frozen, scoped per regime |
+| **Grounding** | 17 corpus files, dated, frozen, scoped per regime |
 | **Verification** | Citations string-matched against the corpus. Deterministic, not a prompt instruction |
 | **Output** | A disclosure record, and a visible manifest of what we checked |
-| **Evaluation** | 30 cases · 2 models · per-field scoring · published baseline · reported losses |
+| **Evaluation** | 6 cases · 3 arms · Featherless-hosted open models only · per-field scoring · published baseline · reported losses |
 | **Scalability proof** | One ordinary cross-border bank receipt through the same pipeline, unchanged |
 
 ## One in-scope decision worth explaining
