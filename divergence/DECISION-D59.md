@@ -142,3 +142,18 @@ from the start but, unlike `citation_matcher.py` and `gate0_check.py`
 (D57), was never actually wired into `.github/workflows/python-package-conda.yml`
 — the same class of gap D57 fixed, found doing the same kind of pass. Both
 now run on every push.
+
+## Update, same night — a published precedent, independently re-verified
+
+A literature pass surfaced Blair-Stanek, Holzenberger and Van Durme,
+*"Can GPT-3 Perform Statutory Reasoning?"* (ICAIL 2023, arXiv:2302.06100):
+on synthetic statutes the model cannot have memorized, 2,204 of 2,272
+errors were false positives — the model asserting a rule applies when it
+doesn't. That is the published precedent for exactly this file's finding,
+tighter than the Magesh et al. citation already in `DOCUMENTATION.md` §5:
+their failure mode is false-positive scope application under controlled,
+synthetic conditions; ⚙ E exists because this project measured the
+real-statute version three times. Re-verified independently against the
+paper's own text before citing — two specific sub-figures relayed
+alongside it did not match that re-verification and are not used anywhere
+in this project. Full card: `prior-art/READING-CARDS.md`, #5.

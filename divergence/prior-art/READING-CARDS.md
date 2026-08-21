@@ -145,12 +145,55 @@ SAY     "Panickssery et al. (NeurIPS 2024) measured that LLM evaluators
         the resolvers it checks, not a design preference."
 ```
 
+## 5. Blair-Stanek, Holzenberger, Van Durme — *Can GPT-3 Perform Statutory Reasoning?*
+
+```
+PAPER   Andrew Blair-Stanek, Nils Holzenberger, Benjamin Van Durme —
+        ICAIL 2023, DOI 10.1145/3594536.3595163. arXiv:2302.06100
+CLAIM   GPT-3 beats the prior state of the art on real-statute reasoning,
+        but on SYNTHETIC statutes it cannot have memorized, its errors run
+        overwhelmingly in one direction: it says a rule applies when it
+        doesn't.
+METHOD  SARA benchmark (real US Internal Revenue Code sections) plus
+        synthetic statutes generated at controlled "width" (number of
+        conditions) and "depth" (nesting), so the model is guaranteed
+        never to have seen them; zero-shot and few-shot prompting.
+NUMBER  Best GPT-3 result on SARA: 71% (71/100), vs prior BERT-based state
+        of the art 59% (59/100). On synthetic statutes: of 2,272 total
+        errors, 2,204 were false positives (the model asserting a rule
+        applies when it does not) against 61 false negatives. Both
+        figures independently re-confirmed against the paper's own text,
+        not the abstract, which doesn't carry them.
+FOR US  The published, peer-reviewed precedent for this project's own
+        central finding, and a tighter match than card 1 — their errors
+        are false positives on invented statutes; ours are the real-
+        statute counterpart, three confirmed instances (Rule 206/207,
+        Rule 57, Rule 243/247, `DECISION-D59.md`) of a resolver asserting
+        a REAL, CURRENT, CORRECTLY-QUOTED provision reaches facts it does
+        not — passing every citation-existence check and still wrong, in
+        the identical direction this experiment measured.
+SAY     "Blair-Stanek, Holzenberger and Van Durme (ICAIL 2023) found that
+        when GPT-3 can't have memorized the statute, 2,204 of its 2,272
+        errors were false positives — asserting a rule applies when it
+        doesn't. We found the real-statute version of the same failure:
+        three instances of a resolver citing a real, current, correctly-
+        quoted provision whose own scope doesn't reach the facts, which
+        is why we built a deterministic scope-reach check rather than
+        trusting a bigger model to catch it."
+```
+*Caution, disclosed rather than smoothed over: a relayed research pass
+citing this same paper also carried several more granular sub-figures — a
+74%/64% split and a specific title-identification percentage — that did
+not match this card's own independent re-verification of the paper's
+text. Only the two numbers above are used anywhere in this project for
+that reason.*
+
 ---
 
 ## What this file is for
 
 `novelty.md`'s one real weakness was citations with no identifier a judge
 could check — every reference there is an inline marker, not a link. This
-file exists specifically to fix that for the four papers this project's
-own decisions actually rest on. Linked from
+file exists specifically to fix that for the papers this project's own
+decisions actually rest on. Linked from
 [`DOCUMENTATION.md`](../DOCUMENTATION.md)'s prior-art section.

@@ -318,9 +318,34 @@ as invisible to the code as it always was. It is a claim that these three,
 specific, already-paid-for findings can no longer reach a record whether or
 not Node 5 happens to be run that day.
 
-**This sits in the same family as a published finding, not just an
-analogy we're drawing.** Magesh, Surani, Dahl, Suzgun, Manning and Ho
-(Stanford RegLab), *"Hallucination-Free? Assessing the Reliability of
+**A closer precedent, found later and independently re-verified rather
+than taken on trust: this failure direction is the one a published,
+peer-reviewed statutory-reasoning experiment already measured.**
+Blair-Stanek, Holzenberger and Van Durme, *"Can GPT-3 Perform Statutory
+Reasoning?"* (ICAIL 2023, DOI 10.1145/3594536.3595163;
+[arXiv:2302.06100](https://arxiv.org/abs/2302.06100)) tested GPT-3 on
+synthetic statutes it could not have memorized. Two numbers, each
+independently confirmed against the paper's own text (not the abstract
+alone, which doesn't carry them): GPT-3's best result on the real-statute
+SARA benchmark, **71% (71/100), against a prior BERT-based state of the
+art of 59% (59/100)**; and, on the synthetic statutes, of **2,272 total
+errors, 2,204 were false positives** — the model asserting a rule applies
+when it does not — against only 61 false negatives. Their errors are on
+statutes invented for the experiment, so a model reaching for a
+plausible-sounding rule can never be right by accident. This project's
+three code-confirmed instances (Rule 206/207, Rule 57, Rule 243/247) are
+the real-statute counterpart: the same directional failure, on real,
+current, correctly-quoted provisions that pass every citation-existence
+check and are still wrong. *(One caution, disclosed rather than smoothed
+over: a research pass that named this same paper also relayed several
+more granular sub-figures — a 74%/64% split and a specific title-
+identification percentage — that did not match this independent
+re-verification of the paper's own text. Only the two numbers above are
+used here for that reason; the rest are not asserted.)*
+
+**This also sits in the same family as a second published finding, not
+just an analogy we're drawing.** Magesh, Surani, Dahl, Suzgun, Manning and
+Ho (Stanford RegLab), *"Hallucination-Free? Assessing the Reliability of
 Leading AI Legal Research Tools"* (Journal of Empirical Legal Studies,
 2025; [arXiv:2405.20362](https://arxiv.org/abs/2405.20362)) splits legal
 AI hallucination into two dimensions — correctness and *groundedness* —
