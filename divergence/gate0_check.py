@@ -364,3 +364,10 @@ if warnings:
 if not problems:
     print("  GATE 0 CLEAR on everything this script can see.")
 print()
+
+# Found running this in CI, 21 Aug: this script never called sys.exit(1) on
+# a real failure -- every run exited 0 regardless of problem count, so
+# wiring it into CI as a "gate" would have produced a green badge whether
+# or not it actually passed. Fixed so the exit code means what the name
+# of the script says it should.
+sys.exit(1 if problems else 0)

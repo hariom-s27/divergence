@@ -50,8 +50,8 @@ All six cases now have complete, schema-valid, full-pipeline (arm C) records. No
 ### What each number actually means, read this before quoting one
 
 - **M1 (extraction accuracy) is capped below 100% by construction for five of six cases, not just unfairly field-named.** D45 already flagged the field-name mismatch. D48 found something larger and upstream: C1, C2, C4, C5's ground truth expects a counterparty name and invoice number that were never written into that case's `case.md` at all — no extractor could ever reach them. C3 is missing even its primary facts (amount, asset) from the body text. D1 is the one case built with a full input paragraph, which is why it's also the only case where M1 numbers reflect a real attempt. Fixing field names (still-needed, still Step 2) will not close this gap on its own.
-- **M5 (false abstention) is undefined on every row, and now correctly reported as such.** No prompt anywhere asks any arm to report the `elements{}` shape the scorer needs. `eval/score.py` previously computed `0.0%` (a false "perfect" score) for this exact situation — found and fixed under D48, see that file for the one-line bug.
-- **All six cases now have arm-C rows.** M3 (citation validity) is 100% on every one of them — every citation the pipeline produced was real, current, and individually verified. M4 (method enumeration) is 100% or higher on every row for the same reason it was on D1/C2: ⚙ B's valuation lattice enumerates deterministically, so this reflects arithmetic, not resolver quality.
+- **M5 (false abstention) is undefined on every row, and now correctly reported as such.** No prompt anywhere asks any arm to report the `elements{}` shape the scorer needs. `eval/score.py` previously computed `0.0%` (a false "perfect" score) for this exact situation — found and fixed under D48, see that file for the one-line bug. **The closest thing this project has to real false-abstention evidence is C1 and C2's records, said plainly here rather than left implicit:** both receipts genuinely have zero valuation dispute, and the pipeline reports exactly one method with `spread.inr == 0` on both — it does not manufacture a range where none exists. That is evidence the system doesn't cry wolf on every input, on two real cases; it is not a measurement of M5, and the two should not be conflated. If the sharpest version of "how do we know you don't just flag everything" comes up, this is the answer that exists today.
+- **All six cases now have arm-C rows.** M3 (citation validity) is 100% on every one of them — every citation the pipeline produced was real, current, and individually verified. M4 (method enumeration) is 100% or higher on every row for the same reason it was on D1/C2: ⚙ B's valuation lattice enumerates deterministically, so this reflects arithmetic, not resolver quality. **`m4_enumeration()` has no ceiling and can read well over 100%** — C3 scores 12/5 (240%), because C3's `valuation` block is still D1's borrowed 12-method lattice (see the row below), scored against C3's own `methods_expected: 5`. Not a metric bug and not silently capped; a number over 100% on this metric always means the same known, disclosed cause: a case scored against a lattice that isn't its own.
 - **C2's M2 recall reads "—" for a real reason still not investigated.** C2's ground truth expects zero gaps — node 2 reported one anyway, so precision scores 0.0 rather than the undefined-recall case being neutral. Whether that is a real false positive or a legitimate finding ground truth under-specified is still open.
 - **C3's M2 recall (50.0%) should not be read as "the gap detector did well on C3."** Read D48. C3's own case file explicitly predicts it should show *fewer* gaps than D1, as the test of whether the system reads facts rather than pattern-matches case shape. It showed more, because its input text does not restate its own facts, not because of a gap-detector defect.
 - **Node 3's `valuation` block inside every non-D1 record is the canonical D1 case's valuation, not that case's own.** `node3_valuation.py` was built for one case and never parametrized (D47). It does not affect any of the five metrics above — neither resolver reads it — but the `valuation` field itself, if opened directly in any `runs/*.json` file other than D1's, should not be read as describing that case.
@@ -221,6 +221,30 @@ D52 (above) found that every run through Block E1 was actually still at temperat
 **M2 (gap recall) moves on every arm, arm C included — 50%, 75%, then 0% across its three seeds of the same case, same input, same code.** Step 21 calls M2 "the strongest metric"; at three data points with that much movement between them, no single number from this table should be quoted as *the* M2 result — only the three together. Not investigated further tonight; the individual numbers are reported so a reader can see exactly what happened rather than a smoothed-over summary of it.
 
 **This instability is not just our own measurement — it's a specific, published finding about legal-domain LLM behavior at temperature 0.** Blair-Stanek and Van Durme, *"LLMs Provide Unstable Answers to Legal Questions"* (ICAIL 2025; [arXiv:2502.05196](https://arxiv.org/abs/2502.05196)), curated 500 real legal questions from split-decision court cases and found leading models — GPT-4o, Claude-3.5, Gemini-1.5 — reach different conclusions on identical questions at temperature 0, checked directly against their own abstract rather than assumed from the title. Their instability is about which party wins; ours is about which gaps get found — different task, same underlying property (a temperature-0 legal-reasoning call is not the fully deterministic thing it's often assumed to be). Read together, this project's 50/75/0% spread looks less like a defect specific to this pipeline and more like a reproduction of an already-published result, on a different task, in the same domain.
+
+**Checked directly, not assumed: the instability is real, but one of the three
+numbers is inflated by a real, separate bug in the scorer.** Ran
+`eval/score.py`'s own `_similar()` function against every ground-truth-gap ×
+reported-gap pair by hand, for all three seeds, rather than trusting the
+summary line. Seed 1 (50%) and seed 3 (0%) hold up exactly — every credited
+match and every miss is a fair reading of what the model actually reported.
+**Seed 2 (75%) does not, fully.** `_similar()` has no one-to-one constraint: a
+single reported item, *"documentation proving the foreign exchange
+transaction,"* shares distinctive tokens with **two different** ground-truth
+gaps (*"bank certificate of foreign inward remittance"* and *"official
+exchange rate for the settlement date"*) and gets credited against both,
+because the matcher checks each ground-truth item independently rather than
+matching reported items one-to-one. Seed 2 substantively identified two real
+gaps (counterparty verification, and one vague item gesturing at the
+foreign-exchange documentation generally); the scorer credited three. **Not
+fixed tonight** — `_similar()`'s matching logic has been re-run across every
+already-published number in this file, and changing it now means
+re-verifying all of them, which is exactly the kind of under-pressure change
+this project's own hard-stop rule exists to prevent. Disclosed here instead:
+the real instability finding stands (0% and 50% are both real, independently
+confirmed low numbers on the same case), and one of the three published
+figures — 75%, not 50% or 0% — is measured with a scorer that has a known,
+now-documented double-counting bug.
 
 **Arm A produced one schema-invalid record out of three seeds** (seed 2) — a real baseline failure rate, 1/3, consistent with `run_arms.py`'s own standing framing that a baseline unable to hold the output contract is itself a finding, not noise to discard.
 

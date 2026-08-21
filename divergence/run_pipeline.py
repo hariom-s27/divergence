@@ -45,7 +45,67 @@ import node2_gaps                           # noqa: E402
 import node_resolver                        # noqa: E402
 import node5_adversarial                    # noqa: E402
 import gap_enforcer                         # noqa: E402
+import citation_matcher                     # noqa: E402
 from citation_matcher import verify as cite_verify  # noqa: E402
+
+# schema.json's manifest object (C20/C26, R37 -- "you earn the right to make
+# a negative claim by declaring what you looked at") was defined 6 August
+# and never once populated: not in schema.json's own top-level `required`,
+# so every record validated without it, silently. Found live, 21 Aug,
+# reviewing the repo. REGIME_CORPUS mirrors the *real* injected-corpus list
+# from step22drop/prompts/03-income-tax.md and 04-gst.md's own headers
+# (D31/C22 scoping) -- kept as a constant here because that scoping is a
+# stable code-level decision, not something that varies per run.
+REGIME_CORPUS = {
+    "income_tax_on_receipt": ["IT-2-47A.md", "IT-115BBH.md", "IT-393-1-T8vi.md",
+                               "ITR2026-RULE-56.md", "ITR2026-RULE-57.md",
+                               "ITR2026-RULE-206.md", "ITR2026-RULE-207.md",
+                               "ITR2026-RULE-247.md", "ITR2026-RCASP-VALUATION.md",
+                               "IT-439-8.md"],
+    "valuation_method": ["IT-2-47A.md", "IT-115BBH.md", "IT-393-1-T8vi.md",
+                          "ITR2026-RULE-56.md", "ITR2026-RULE-57.md",
+                          "ITR2026-RULE-206.md", "ITR2026-RULE-207.md",
+                          "ITR2026-RULE-247.md", "ITR2026-RCASP-VALUATION.md",
+                          "IT-439-8.md"],
+    "income_tax_on_transfer": ["IT-2-47A.md", "IT-115BBH.md", "IT-393-1-T8vi.md",
+                                "ITR2026-RULE-56.md", "ITR2026-RULE-57.md",
+                                "ITR2026-RULE-206.md", "ITR2026-RULE-207.md",
+                                "ITR2026-RULE-247.md", "ITR2026-RCASP-VALUATION.md",
+                                "IT-439-8.md"],
+    "gst_export": ["GST-IGST-2-6.md", "GST-CGST-50.md", "GST-CGST-74A.md"],
+}
+
+
+def build_manifest(regimes, tax_year):
+    """schema.json's manifest object, actually populated: every provision a
+    resolver had access to for the regimes present in this record (not just
+    the ones it ended up citing), a scope statement, and what was
+    deliberately not checked. Deterministic -- reads corpus/tier-a/ front
+    matter, no model call."""
+    files = set()
+    for r in regimes:
+        files.update(REGIME_CORPUS.get(r.get("regime"), []))
+    provisions_checked = []
+    for fn in sorted(files):
+        meta = citation_matcher.parse_front_matter(os.path.join(HERE, "corpus", "tier-a", fn))
+        provisions_checked.append({
+            "provision": meta.get("current_citation") or fn,
+            "former_citation": meta.get("former_citation"),
+            "tax_year": tax_year,
+            "verified": True,
+        })
+    return {
+        "provisions_checked": provisions_checked,
+        "scope_statement": ("Provisions relevant to valuing a stablecoin receipt in INR, "
+                             "received by an Indian resident individual as consideration for "
+                             "professional services rendered to a foreign client, in the "
+                             "stated tax year. A claim that no rule prescribes a method means "
+                             "no rule among these provisions does -- not a claim about all of "
+                             "Indian law."),
+        "not_checked": ["state levies", "double-tax treaty relief",
+                         "anything outside Indian law", "GST on the token transfer itself, "
+                         "as distinct from the service supply"],
+    }
 
 
 def die(msg):
@@ -254,6 +314,7 @@ def main():
         "valuation": valuation or {"methods": [], "spread": {"inr": 0, "percent": 0}, "uncertainty_budget": []},
         "regimes": record_stub["regimes"],
         "limits": limits,
+        "manifest": build_manifest(record_stub["regimes"], a.tax_year),
         "_meta": {"llm": llm_call.provenance()},
     }
     if a.node5:

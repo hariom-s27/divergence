@@ -27,3 +27,11 @@ jobs:
     - name: Test with pytest
       run: |
         pytest || [ $? -eq 5 ]
+    - name: Citation matcher self-test
+      run: |
+        cd divergence
+        python citation_matcher.py
+    - name: Gate 0 pre-submission audit
+      run: |
+        cd divergence
+        python gate0_check.py

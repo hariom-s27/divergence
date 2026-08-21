@@ -24,6 +24,13 @@ Reads   a schema.json-shaped disclosure record (the output of run_pipeline.py)
 Writes  an HTML page in the same visual language as the original
         output-interface.html mockup -- same CSS, same section ordering
         (absence first, range second, single answer never), real data.
+
+DO NOT RENDER OR SHOW C3/C4's PAGE AS A DEMO. Their `valuation` block is
+still D1's borrowed 12-method lattice (D47/D51, results.md) -- real crypto
+market data for their own dates was never collected. Rendering their page
+looks identical to a real one; the field itself is the only place this is
+visible. Generate D1, C1, or C2 for a demo, never C3/C4, until that data
+exists.
 """
 
 import argparse
@@ -421,28 +428,47 @@ def render_regimes(regimes):
     return "\n".join(blocks)
 
 
-def render_manifest(regimes, corpus_frozen_at):
-    # Same matching primitives citation_matcher.py itself uses to decide
-    # "verified: true" -- exact string equality between a regime's
-    # citation.provision and a corpus file's current_citation is too
-    # strict and produces false negatives (found live: IT-115BBH.md's
-    # current_citation carries extra "carried into the 2025 Act" prose the
-    # regime's own citation field doesn't repeat, so a naive `in` check
-    # marked a real, verified citation as "not cited" here).
+def render_manifest(record):
+    regimes = record.get("regimes", [])
+    corpus_frozen_at = record.get("corpus_frozen_at")
+    date = (corpus_frozen_at or "?")[:10]
     cited_refs = []
     for r in regimes:
         prov = (r.get("citation") or {}).get("provision")
         if prov:
             cited_refs.append(citation_matcher.extract_refs(prov))
-    date = (corpus_frozen_at or "?")[:10]
 
-    checked_files = set()
-    for r in regimes:
-        checked_files.update(REGIME_CORPUS.get(r.get("regime"), []))
+    manifest = record.get("manifest")
+    if manifest and manifest.get("provisions_checked"):
+        # run_pipeline.py populated schema.json's manifest object directly
+        # (fixed 21 Aug -- it was defined 6 August and never once written).
+        # Prefer it; it's the record's own claim, not a render-time guess.
+        names = [(p.get("provision"), p) for p in manifest["provisions_checked"]]
+        not_checked = manifest.get("not_checked", [])
+    else:
+        # Fallback for records generated before the manifest field existed
+        # (including the frozen D1 demo record, which this project's own
+        # hard-stop rule says does not get regenerated post-freeze). Same
+        # matching primitives citation_matcher.py itself uses to decide
+        # "verified: true" -- exact string equality between a regime's
+        # citation.provision and a corpus file's current_citation is too
+        # strict and produces false negatives (found live: IT-115BBH.md's
+        # current_citation carries extra "carried into the 2025 Act" prose
+        # the regime's own citation field doesn't repeat).
+        checked_files = set()
+        for r in regimes:
+            checked_files.update(REGIME_CORPUS.get(r.get("regime"), []))
+        names = []
+        for fn in sorted(checked_files):
+            meta = citation_matcher.parse_front_matter(os.path.join(HERE, "corpus", "tier-a", fn))
+            names.append((meta.get("current_citation") or fn, {}))
+        not_checked = ["state levies", "treaty relief", "anything outside Indian law"]
+
+    if not names:
+        return '<p class="lede">No regime conclusions to check a corpus against.</p>'
+
     checked = []
-    for fn in sorted(checked_files):
-        meta = citation_matcher.parse_front_matter(os.path.join(HERE, "corpus", "tier-a", fn))
-        name = meta.get("current_citation") or fn
+    for name, _ in names:
         stored_refs = citation_matcher.extract_refs(name)
         was_cited = any(
             citation_matcher._refs_match(c, s)
@@ -450,22 +476,20 @@ def render_manifest(regimes, corpus_frozen_at):
         )
         checked.append((name, was_cited))
 
-    if not checked:
-        return '<p class="lede">No regime conclusions to check a corpus against.</p>'
-
     n_cited = sum(1 for _, was_cited in checked if was_cited)
     items = "\n".join(
         f'<li><span>{esc(name)}{" — cited above" if was_cited else ""}</span>'
         f'<span>{esc(date)}</span></li>'
         for name, was_cited in checked
     )
+    not_checked_txt = esc(", ".join(not_checked)) if not_checked else "state levies, treaty relief, anything outside Indian law"
     return (
         f'<details><summary>{len(checked)} provision(s) actually checked for this record '
         f'({n_cited} cited above, {len(checked) - n_cited} checked and correctly not relied on), '
         f'corpus frozen {esc(date)}</summary>'
         f'<ul class="man">{items}</ul>'
-        '<p class="gap-note"><b>Not checked:</b> state levies, treaty relief, anything '
-        'outside Indian law. Where we say no rule was found, we mean within this scope.</p>'
+        f'<p class="gap-note"><b>Not checked:</b> {not_checked_txt}. Where we say no rule '
+        'was found, we mean within this scope.</p>'
         '</details>'
     )
 
@@ -569,7 +593,7 @@ def compose(record):
 
   <section aria-labelledby="s4">
     <div class="sec-head"><span class="sec-n">04</span><h2 id="s4">What we checked</h2></div>
-    {render_manifest(record.get("regimes", []), record.get("corpus_frozen_at"))}
+    {render_manifest(record)}
   </section>
 
   <section aria-labelledby="s5">

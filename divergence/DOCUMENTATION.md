@@ -287,7 +287,7 @@ independently, in two different legal systems.
 
 ## 6. Where the deeper material lives
 
-- **All 15 decision documents, the mental model, and the full run guide,
+- **All 16 decision documents, the mental model, and the full run guide,
   merged into one chronological file:** [`START-HERE.md`](START-HERE.md)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)

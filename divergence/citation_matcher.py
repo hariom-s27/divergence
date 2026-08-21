@@ -289,10 +289,14 @@ def self_test():
     print(f"Conclusions the pipeline would ACCEPT: {accepted}/{len(CASES)}")
     print(f"Conclusions DROPPED:                  {len(CASES)-accepted}/{len(CASES)}")
     print("\nEvery dropped one is dropped by code, not by asking the model nicely.")
+    return passed == len(CASES)
 
 
 if __name__ == "__main__":
-    self_test()
+    # Found running this in CI, 21 Aug: self_test() printed pass/fail but
+    # never returned a real exit code, so "python citation_matcher.py" in a
+    # workflow would report success even on a regressed self-test. Fixed.
+    sys.exit(0 if self_test() else 1)
 
 # ─────────────────────────────────────────────────────────────
 # LIMITATIONS — state these in the documentation. Do not hide them.

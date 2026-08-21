@@ -252,7 +252,7 @@ Same citation, two years, two answers. **It catches five of our own historical e
 
 **Why a different model.** Self-refutation by the same model over its own reasoning has strong self-consistency bias, and the literature is explicit that *intrinsic* self-correction without external signals is unreliable. Ours is grounded externally: the citation matcher and the gap list are mechanical inputs to the critique.
 
-**What is unusual is not that we critique — it is what the critique is allowed to do.** Every system in the literature uses critique to *improve* the answer before you see it. **We publish the attack and downgrade the conclusion.** The critique is an output, not a hidden step.
+**What is unusual is not that we critique — it is what the critique is allowed to do.** Every system in the literature uses critique to *improve* the answer before you see it. **We publish the attack and never let it silently improve the answer.** `downgraded_to` is computed and shown, but deliberately never written back into `regimes[].certainty` (decision from the first real run: fuzzy-matching a free-text attack target back to one specific conclusion was judged more likely to silently corrupt the wrong entry than to help — see `results.md`). The critique is an output a reader cross-checks by eye, not a hidden step that edits the answer for them.
 
 > ⚠️ **This warning box is kept as written, not deleted, because the ablation
 > it predicted actually happened — see the update immediately below rather

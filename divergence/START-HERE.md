@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 15 decision documents merged into one chronological read — so you don't have to open fifteen separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 16 decision documents merged into one chronological read — so you don't have to open sixteen separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,7 +123,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Fifteen dated documents, `DECISION-D42.md` through `DECISION-D56.md`,
+Sixteen dated documents, `DECISION-D42.md` through `DECISION-D57.md`,
 merged here into one chronological read. Each entry is compressed to what
 changed and why; the full original reasoning, tables, and "what to say
 about it" framing live in the linked file.
@@ -307,9 +307,27 @@ input documents copied in, verified byte-identical) so it's a
 self-contained canonical location, and `step21drop/cases/README.md` now
 says plainly which file there is real and which isn't.
 
+## [D57](DECISION-D57.md) — a schema field populated for the first time, two CI checks that were never real gates, a scoring bug found checking another finding
+`schema.json`'s `manifest` object had been defined since 6 August and never
+once written by `run_pipeline.py` — fixed, verified against a fresh test run
+and validated in isolation against its own schema definition.
+`gate0_check.py` and `citation_matcher.py`'s self-test both printed
+pass/fail but never called `sys.exit(1)`, so wiring either into CI would
+have shown green regardless of whether it actually passed — fixed, both now
+gate CI for real. A wording claim ("we publish the attack and downgrade the
+conclusion") repeated in `architecture.md` and `schema.json` was never
+fully true — `downgraded_to` is shown, never auto-applied — fixed in both.
+**Hand-checking whether the M2 instability finding itself was real** (not
+just trusting the summary numbers) confirmed two of the three seeds hold up
+exactly and found a genuine third thing: `eval/score.py`'s gap matcher has
+no one-to-one constraint, so one seed's 75% figure double-counts a single
+reported item against two different ground-truth gaps. Not fixed — changing
+the scorer now means re-verifying every M2 number already published — but
+disclosed in `results.md` and directly in the scorer's own code.
+
 ---
 
-## What the fifteen decisions add up to
+## What the sixteen decisions add up to
 
 Read end to end, the pattern is not fourteen separate bugs. It's one
 recurring shape, showing up at every layer of the project: **something

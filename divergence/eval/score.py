@@ -103,7 +103,19 @@ def m1_extraction(run, gt):
 
 # ── M2 ────────────────────────────────────────────────────────────────
 def m2_gaps(run, gt):
-    """Recall and precision against the gaps WE planted — genuine ground truth."""
+    """Recall and precision against the gaps WE planted — genuine ground truth.
+
+    KNOWN LIMITATION, found live 21 Aug hand-checking D1's three-seed M2
+    spread (results.md): `found` has no one-to-one constraint against
+    `reported` -- a single reported item can independently satisfy two
+    different planted items if it shares distinctive tokens with both,
+    inflating recall. Confirmed on a real run (D1-seed2_pipeline.json):
+    "documentation proving the foreign exchange transaction" matched both
+    the FIRC gap and the official-exchange-rate gap, crediting one real
+    finding as two. Not fixed -- doing so now means re-verifying every
+    already-published M2 number in results.md, which is exactly the kind
+    of under-pressure scoring change this project's hard-stop rule exists
+    to prevent. Disclosed here and in results.md instead."""
     planted = [m["item"] for m in gt["missing"]]
     reported = [m.get("item", "") if isinstance(m, dict) else str(m)
                 for m in run.get("missing", [])]

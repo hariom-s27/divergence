@@ -175,7 +175,7 @@
 
     "attacked": {
       "type": "array",
-      "description": "Node 5. R35 — everyone else uses critique to improve the answer before you see it. We publish the attack and downgrade the conclusion.",
+      "description": "Node 5. R35 — everyone else uses critique to improve the answer before you see it. We publish the attack and never let it silently improve the answer (downgraded_to is shown, not auto-applied to regimes[].certainty).",
       "items": {
         "type": "object",
         "required": ["target", "attack", "survived"],
