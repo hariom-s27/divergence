@@ -58,18 +58,30 @@ the metrics that would normally stand in for "is this answer right."
 
 ## Architecture
 
-[`flowchart.md`](divergence/flowchart.md) is the current diagram: five
-model calls (can be wrong) and four deterministic steps (cannot invent
-anything — an `if` statement, a string match, arithmetic), shown as
-different shapes so the distinction is visible, not just claimed. Full
-node-by-node rationale, each one traced to a pre-registered predicted
-failure: [`architecture.md`](divergence/architecture.md). Plain-language
-walkthrough of an actual run: [`PIPELINE-FLOW.md`](divergence/PIPELINE-FLOW.md).
+[`flowchart.png`](divergence/flowchart.png) is the submission diagram —
+where human input is required, the actual query sent to each model, which
+model answers it, and what each step does, for every node in the pipeline.
+[`flowchart.md`](divergence/flowchart.md) is the same shape as a Mermaid
+source diagram for anyone reading this on GitHub. Full node-by-node
+rationale, each one traced to a pre-registered predicted failure:
+[`architecture.md`](divergence/architecture.md). Plain-language walkthrough
+of an actual run: [`PIPELINE-FLOW.md`](divergence/PIPELINE-FLOW.md).
 
 We avoid saying "nine nodes" for the same reason — it hides the fact that
 some of these steps are ordinary Python, not a model, and cannot make
 things up no matter how the model upstream of them was talked into wording
 something.
+
+## The workflow vs. a single prompt, same test case
+
+[`SAMPLES.md`](divergence/SAMPLES.md) runs the same real input through a
+naive single prompt, a token-matched chain-of-thought single prompt, and
+the actual workflow, and quotes all three verbatim. The two single-prompt
+arms both report a ₹250 valuation spread; the real spread on that receipt
+is ₹47,868.76 — about 191× larger, because nothing in a single pass forces
+a model to enumerate every defensible method rather than stop at the first
+two. Both single-prompt arms also cite the same wrong, out-of-scope
+provision this project's own workflow needed four fix cycles to correct.
 
 ## Results, including where we lose
 
@@ -129,6 +141,35 @@ actually-measured run, and we say so rather than let a precise-looking
 rupee figure imply otherwise. The real evaluation in `results.md` ran on
 Featherless-hosted open-weight models exclusively (decision D44), where the
 marginal cost per record is zero under the plan used.
+
+## Sustainability
+
+Three real, measured properties, not aspirations:
+
+**Scoping the corpus cuts token spend by two orders of magnitude.**
+Injecting the full corpus into every model call would cost 136,227 tokens
+per record; scoping each call to only the law text that call is allowed to
+cite (decision C22) cuts that to 46,945 — **66% fewer tokens**, for the
+same seven calls. Measured against the source instrument itself, the cut is
+starker: the notified Income-tax Rules, 2026 gazette runs 563,371 tokens in
+full; what this project actually extracts and injects from it is 2,671 —
+a **99.5% reduction**. Both figures are measured, in
+[`cost-model-output.txt`](divergence/cost-model-output.txt), not estimated.
+
+**No frontier-model dependency.** The entire evaluation in `results.md` ran
+on open-weight models — Qwen2.5-7B and -72B for extraction and resolution,
+Mistral-Large for the adversarial check — hosted via Featherless, not a
+closed frontier API. The system's central claims (the gap findings, the
+scope-reach failures, the metrics) do not rest on access to any single
+vendor's model continuing to exist on its current terms.
+
+**Four of the nine pipeline steps run no model at all.** The gap enforcer,
+the valuation lattice, the citation matcher, and the disclosure composer
+are plain Python — an `if` statement, arithmetic, a string match, a
+template. No API call, no token cost, no inference latency, and (the
+reason they exist at all) no possibility of inventing an answer. Roughly
+half the pipeline's steps carry zero marginal compute cost by construction,
+not by optimization.
 
 ## Accessibility
 
