@@ -268,6 +268,8 @@ written down: `DECISION-D50.md`, `DECISION-D54.md`, `DECISION-D55.md`.
 
 ## 6. Where the deeper material lives
 
+- **All 14 decision documents, the mental model, and the full run guide,
+  merged into one chronological file:** [`START-HERE.md`](START-HERE.md)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)
 - Plain-language run-through of an actual invocation:

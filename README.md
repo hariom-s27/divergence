@@ -4,6 +4,11 @@
 
 Built for Reverie Hacks 2026, ML Prompt Engineering track.
 
+**One file, the whole thing, in order:** [`divergence/START-HERE.md`](divergence/START-HERE.md) —
+the mental model, every command to run the full pipeline, and all 14
+dated design decisions merged into a single chronological read instead of
+14 separate files.
+
 ## The problem
 
 A freelancer in India gets paid for her work and needs one rupee number for
@@ -313,7 +318,8 @@ finding than the ordinary silent absences elsewhere in the same rules.
 Full list: the `divergence/DECISION-D*.md` files — numbered up to D55, though
 not every decision number in that range got its own file; several earlier
 ones are recorded inline in `architecture.md` and `GAZETTE-FINDINGS.md`
-instead.
+instead. **All 14 merged into one chronological read:**
+[`divergence/START-HERE.md`](divergence/START-HERE.md) Part 3.
 
 ## Evaluation
 
