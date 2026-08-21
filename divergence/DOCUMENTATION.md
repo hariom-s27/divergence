@@ -188,6 +188,18 @@ replacements for four months (`ITERATION-STORY.md` item 2).
 citation, former citation, and the tax year it governs) and the tax year
 stated on the record.
 
+**Why a frozen verbatim corpus rather than embedding retrieval — now with
+an external number attached, not just an internal preference.** Cymbler,
+Guez and Fabre, *"Temporal Misgrounding in Legal RAG"*
+([arXiv:2608.09393](https://arxiv.org/abs/2608.09393), independently
+verified) built a 32,436-article-version, 93-year French tax code
+benchmark and found static RAG retrieves the date-applicable version of a
+statute **0% of the time** — 2.7% accuracy overall, against 98.3% for a
+purpose-built multi-version retriever. This project's corpus is frozen and
+verbatim, with an explicit tax-year currency check, precisely because that
+is the failure mode a naive retrieval approach over statutory text
+predictably hits. Full card: `prior-art/READING-CARDS.md`, #7.
+
 ---
 
 ### ⚙ E — SCOPE-REACH ENFORCER (`scope_enforcer.py`) — no model
@@ -303,6 +315,23 @@ visible to any of this project's five accuracy metrics.** Full account,
 each instance verified against the actual gazette text before being
 written down: `DECISION-D50.md`, `DECISION-D54.md`, `DECISION-D55.md`.
 
+**The failure has a published name, found independently and re-verified
+rather than assumed: Silent Scope Omission (SSO).** Chen, Li, Wan and Yuan,
+*"From Statute to Control Flow: Span-Grounded Deontic Trees for Defeasible
+Scope Parsing"* (KDD '26; [arXiv:2606.08932](https://arxiv.org/abs/2606.08932))
+define it as a model applying a general rule while silently dropping a
+nested exception, producing output that *looks* compliant but breaks
+exactly where the exception exists. Their diagnosis of the mechanism — an
+*"Auditability Trap"*: models retrieve the relevant span but fail to
+attach it to its correct logical parent, so finding the rule outperforms
+understanding its scope — is a precise description of what this project's
+own five instances are. **Be exact about the fit, not a stretch:** their
+SSO is exceptions dropped from *inside* a provision; this project's is a
+provision's own *governing* scope — column B, its opening words, who it
+addresses. Same family — the citation stays real while the thing that
+should have limited it goes missing — not the identical failure. Full
+card: `prior-art/READING-CARDS.md`, #6.
+
 **Update, 21 Aug — three of the five no longer depend on Node 5 running at
 all.** `scope_enforcer.py` (⚙ E, `DECISION-D59.md`) encodes the Rule 57,
 Rule 206/207 and Rule 243/247 findings as deterministic code: a conclusion
@@ -360,11 +389,12 @@ naming precisely rather than claiming a broader match than the evidence
 supports: we are not asserting this project rediscovered Magesh et al.'s
 exact taxonomy category, only that both are instances of a model treating
 citation validity as a proxy for citation relevance, measured
-independently, in two different legal systems. Three more papers grounding
+independently, in two different legal systems. Five more papers grounding
 specific design decisions in this project (why the adversarial checker is
 a different model family, why abstention isn't the right frame, why
-temperature-0 instability isn't unique to this pipeline), each checked
-against its own abstract rather than assumed from a title:
+temperature-0 instability isn't unique to this pipeline, why a frozen
+verbatim corpus beats embedding retrieval for statutory text), each
+checked independently rather than assumed from a title:
 [`prior-art/READING-CARDS.md`](prior-art/READING-CARDS.md).
 
 ## 6. Where the deeper material lives

@@ -17,28 +17,48 @@ it isn't asserted here.
 
 ## 1. Magesh et al., *Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools*
 
+*Numbers updated 21 Aug — a fuller research pass confirmed the exact
+per-tool figures and the annotation statistic this card originally left
+general, and explicitly ruled out a "GPT-4 hallucinates 60%+" line I had
+already independently declined to use two commits earlier: this paper
+reports no per-category percentage for GPT-4 at all, so that figure was
+never sourced from here.*
+
 ```
 PAPER   Magesh, Surani, Dahl, Suzgun, Manning, Ho — Journal of Empirical
         Legal Studies, 2025. arXiv:2405.20362 (Stanford RegLab / HAI)
 CLAIM   Commercial AI legal research tools (LexisNexis, Thomson Reuters,
-        and others) hallucinate between 17% and 33% of the time, despite
-        vendor claims of being "hallucination-free."
-METHOD  First preregistered empirical evaluation of AI legal research
-        tools, on real legal queries, comparing vendor products directly.
-NUMBER  17-33% hallucination rate across evaluated commercial tools.
+        and others) hallucinate far more than vendors' "hallucination-
+        free" claims suggest, and at meaningfully different rates from
+        each other.
+METHOD  202 preregistered queries (general legal research, jurisdiction/
+        time-specific, false-premise, factual recall). Two-axis
+        definition — correctness AND groundedness — a response counts as
+        hallucinated if EITHER is wrong. Three labellers plus a fourth,
+        independent labeller blind-re-scoring a stratified sample of 48
+        responses.
+NUMBER  Lexis+ AI: 65% accurate / 17% hallucinated / 18% incomplete.
+        Westlaw AI-Assisted Research: 41% / 33% / 25%. Ask Practical Law
+        AI: 19% accurate / 62% incomplete (its hallucination rate is
+        implied, not stated as a figure — do not quote it as ~20%).
+        Inter-rater agreement: Cohen's κ = 0.77, 85.4% on the final
+        outcome label — both quoted verbatim from the paper's own text.
 FOR US  Names the same family of failure this project measures on itself.
         Their own framing (checked directly): a response can be "correct
         but improperly grounded" — retrieval is poor or irrelevant, the
         model still lands on a defensible answer, but falsely asserts an
-        unrelated source supports it. Our five scope-reach instances are
-        a narrower, more specific variant: not an unrelated source, but a
+        unrelated source supports it. Our scope-reach instances are a
+        narrower, more specific variant: not an unrelated source, but a
         real, current, correctly-quoted one whose own scope doesn't reach
-        the facts.
+        the facts — their groundedness axis is a human judgement about
+        proposition support, and has no label for a source that genuinely
+        supports the proposition but isn't reachable here.
 SAY     "This is the same family as Magesh et al.'s (JELS 2025) finding
-        that commercial legal-AI tools hallucinate on 17-33% of queries,
-        including citations that are real but don't support the claim
-        attached to them — we measured a narrower version of that same
-        failure shape, five times, in our own output."
+        that commercial legal-AI tools hallucinate 17-33% of the time —
+        Lexis+ AI 17%, Westlaw AI-AR 33% — including citations that are
+        real but don't support the claim attached to them. We measured a
+        narrower version of that same failure shape in our own output,
+        and it has no cell in their own groundedness taxonomy."
 ```
 
 ## 2. Blair-Stanek & Van Durme, *LLMs Provide Unstable Answers to Legal Questions*
@@ -187,6 +207,85 @@ citing this same paper also carried several more granular sub-figures — a
 not match this card's own independent re-verification of the paper's
 text. Only the two numbers above are used anywhere in this project for
 that reason.*
+
+## 6. Chen, Li, Wan, Yuan — *From Statute to Control Flow: Span-Grounded Deontic Trees for Defeasible Scope Parsing*
+
+```
+PAPER   Jian Chen, Siyuan Li, Chucheng Wan, Zixuan Yuan — accepted KDD '26
+        (32nd ACM SIGKDD Conference on Knowledge Discovery and Data
+        Mining; venue confirmed via independent search, not the arXiv
+        abstract page itself, which states no venue). arXiv:2606.08932
+CLAIM   Names this project's central failure: "Silent Scope Omission"
+        (SSO) — a model applies a general rule but silently drops nested
+        exceptions or counter-exceptions, producing output that LOOKS
+        compliant but breaks on the cases the exceptions exist for.
+        Diagnoses the mechanism as an "Auditability Trap": models retrieve
+        the relevant span but fail to attach it to its correct logical
+        parent — finding the rule outperforms understanding its scope.
+METHOD  NormBench: a benchmark of statutory/policy provisions compiled
+        into span-grounded deontic trees, across Chinese law, English
+        (including US tax law and GDPR), and corporate policy.
+NUMBER  2,290 provision items (independently confirmed). More granular
+        figures relayed alongside it (9,019 compiled branches, six
+        annotators, agreement 0.76→0.91 / 81.2%→92.4%) were not present on
+        the pages this card could independently fetch — not asserted here
+        for that reason, though nothing found contradicts them either.
+FOR US  BE PRECISE ABOUT THE FIT, not a stretch. SSO as defined is about
+        exceptions dropped FROM INSIDE a provision; this project's three
+        scope-reach instances (`DECISION-D59.md`) are about a provision's
+        OWN governing scope — column B, its opening words, who it
+        addresses. Same family — a scope limiter goes missing while the
+        citation stays real — not the identical failure. Claim the
+        family, not the identity: five (now three, code-closed) anecdotes
+        become instances of a phenomenon independently named and
+        benchmarked at KDD '26, in a different jurisdiction.
+SAY     "The closest name for this in the literature is 'Silent Scope
+        Omission,' from a KDD '26 statutory-parsing paper (Chen et al.) —
+        theirs is exceptions dropped from inside a provision, ours is the
+        provision's own governing scope, but it's the same family: the
+        citation stays real while the thing that should have limited it
+        goes missing, silently."
+```
+
+## 7. Cymbler, Guez, Fabre — *Temporal Misgrounding in Legal RAG: A Versioned-Corpus Benchmark for French Tax Law*
+
+```
+PAPER   Rose Cymbler, Daniel Guez, Laurent Fabre — submitted 10 August
+        2026. arXiv:2608.09393 (independently verified via the arXiv
+        abstract page; word-for-word match on every number below)
+CLAIM   Retrieval-augmented legal QA treats its corpus as static. Real
+        statutes are versioned over time, and a system that retrieves the
+        currently-in-force text when an earlier or later version actually
+        governs is confidently citing a real, but inapplicable, version.
+METHOD  32,436 article-versions of the French tax code spanning 93 years
+        (1938-2031). 209 expert-reviewed questions over 33 articles.
+        Deterministic regex-with-numeric-tolerance scoring, explicitly
+        NOT LLM-as-judge, to avoid inheriting the same temporal bias into
+        the evaluator itself.
+NUMBER  Parametric knowledge alone: 3.0% mean strict accuracy. Static RAG
+        over the current-version corpus: 2.7% — and static RAG retrieves
+        the date-applicable version 0% of the time. A multi-version
+        retriever reaches 98.3%; an oracle-article ablation reaches 99.1%
+        (so the residual error, once the version is right, is article
+        retrieval, not version selection).
+FOR US  The strongest available external justification for a decision
+        already made independently (D31/C22): a frozen, verbatim corpus
+        with an explicit tax-year currency check (`citation_matcher.py`),
+        not embedding-based retrieval. Their contrast also defines this
+        project's own contribution precisely: with the right version,
+        they reach 98.3%. This project HAS the right version, the right
+        article, the right quotation — and still produces no determinate
+        figure for D1. That residual is what their benchmark cannot
+        express, and is the actual thesis.
+SAY     "Static RAG retrieves the date-applicable version of a statute 0%
+        of the time (Cymbler et al., 2026) — which is exactly why this
+        project uses a frozen, verbatim corpus with an explicit tax-year
+        check instead of embedding retrieval. But even with the right
+        version, the right article, and the right quotation — which their
+        benchmark shows is the hard 97% of the problem — this project's
+        hardest case still has no determinate figure. That's the part no
+        retrieval benchmark can measure."
+```
 
 ---
 

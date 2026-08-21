@@ -157,3 +157,26 @@ real-statute version three times. Re-verified independently against the
 paper's own text before citing — two specific sub-figures relayed
 alongside it did not match that re-verification and are not used anywhere
 in this project. Full card: `prior-art/READING-CARDS.md`, #5.
+
+## Update, a fuller literature pass later the same night — the phenomenon has a name
+
+Chen, Li, Wan and Yuan, *"From Statute to Control Flow: Span-Grounded
+Deontic Trees for Defeasible Scope Parsing"* (KDD '26, arXiv:2606.08932;
+venue independently confirmed via search, not the arXiv page itself)
+name **Silent Scope Omission (SSO)**: a model applies a general rule
+while silently dropping a nested exception, producing output that looks
+compliant but breaks exactly where the exception exists. Their own
+diagnosis — an *"Auditability Trap"*, where a model retrieves the
+relevant span but fails to attach it to its correct logical parent — is a
+precise description of what this file's three findings are. **The fit is
+a family, not an identity, and is stated that way everywhere this is
+cited**: their SSO is an exception dropped from inside a provision; ⚙ E's
+three findings are about a provision's own governing scope. Full card:
+`prior-art/READING-CARDS.md`, #6.
+
+Also added from the same pass, directly grounding a different existing
+decision (⚙ C / D31 / C22, the frozen verbatim corpus): Cymbler, Guez and
+Fabre, *"Temporal Misgrounding in Legal RAG"* (arXiv:2608.09393,
+independently re-verified word-for-word) — static RAG retrieves the
+date-applicable version of a statute 0% of the time in their 93-year,
+32,436-version French tax code benchmark. `prior-art/READING-CARDS.md`, #7.

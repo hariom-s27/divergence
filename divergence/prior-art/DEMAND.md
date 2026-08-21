@@ -48,3 +48,15 @@ No two sources here contradict each other outright — a stronger single finding
 ## What was not done
 
 Titles and descriptions were collected via Firecrawl's search endpoint; full page scrapes were not attempted for every result (search already returned enough signal to paraphrase honestly, and several targets — Reddit specifically — are known to resist automated scraping). A deeper pass could fetch full thread content for the strongest candidates (1, 3, 4, 6) if more detail is needed before submission. No usernames or other personal details are included above — URL and date are the citable unit.
+
+## Independent corroboration, from a practising CPA — added 21 Aug
+
+A separate literature/market pass surfaced this and it was checked directly (fetched, quotes below verified verbatim against the live page) before being added here, not taken on the strength of the pass alone. **Camuso CPA**, *["Why Crypto Tax Software Fails With Historical Portfolios"](https://camusocpa.com/why-crypto-tax-software-fails-with-historical-portfolios/)*:
+
+> "The basis figures produced for income-type acquisitions carry as much uncertainty as the underlying price data. That uncertainty is not disclosed in the gain and loss report."
+
+> "A substantiated tax position is a reported number that can be traced back to documented evidence for every lot disposed of... A calculation is a number produced by a software platform from whatever transaction data it received."
+
+> "When the input has gaps, errors, or misclassifications... the output reflects those deficiencies without identifying them. The report appears complete but the basis figures it contains are not accurate."
+
+This is not a forum post or a hypothetical — it is a working US crypto-tax CPA practice's own stated reason clients need a human to redo software output, describing the identical failure shape this project studies (a report that looks complete while silently resting on unverified or incomplete input), independently, about the general category of product this project's own OBJ-1 competitive scan covers. It corroborates rather than duplicates the eleven items above: those are people hitting the specific rate/date/method gap; this is a professional stating the general principle of why software-produced numbers need substantiation, not just calculation.
