@@ -96,11 +96,13 @@ Mean across the six cases moved from **11.8% to 94.6%**. That is the real effect
 | C5 | A | Qwen2.5-72B | 0.0% | 0.0% | 0.0% | 50.0% | 0.0% | 2/2 | — |
 | C5 | B | Qwen2.5-72B | 0.0% | 100.0% | 33.3% | 50.0% | 0.0% | 2/2 | — |
 | **C5** | **C** | **Qwen2.5-7B+72B** | **90.0%** | **0.0%** | **0.0%** | **100.0%** | **0.0%** | **2/2**\* | **—** |
-| D1 | A | Qwen2.5-72B | 0.0% | 25.0% | 66.7% | 50.0% | 0.0% | 2/12 | — |
+| D1 | A | Qwen2.5-72B | 0.0% | 25.0% | 33.3%<sup>†</sup> | 50.0% | 0.0% | 2/12 | — |
 | D1 | B | Qwen2.5-72B | 0.0% | 75.0% | 50.0% | 40.0% | 0.0% | 2/12 | — |
 | **D1** | **C** | **Qwen2.5-7B+72B** | **100.0%** | **25.0%** | **50.0%** | **100.0%** | **0.0%** | **12/12** | **—** |
 
 \* C1, C2, and C5's M4 columns were updated after Block E1 and the Firecrawl follow-up below gave each its own real valuation instead of D1's borrowed one — see those sections for why the count dropped and what it now means.
+
+<sup>†</sup> Corrected from 66.7%, per D58 — the one cell in this entire 18-row table the fixed gap-matcher actually changed; every other cell here was re-checked and confirmed unchanged.
 
 Citation recall, mean by arm, 21-Aug documents: arm A 0.100, arm B 0.100, arm C **0.307** (n=5, same sample size as before). Arm C improved; arms A/B moved slightly the other way. **Correction, D52: this is not temperature variance** — every run through Block E1 was actually still at temperature 0 (see D52), so the honest explanation is the changed input document (`input.md` replacing `case.md`), not sampling. Not a regression worth chasing tonight either way.
 
@@ -168,8 +170,10 @@ Three real records now exist for D1's arm C. Shown separately, not collapsed to 
 | Record | What it has | M1 | M2 recall | M3 valid | M4 methods |
 |---|---|---|---|---|---|
 | `D1_pipeline.json` | Rule 206 defect (D50) | 100.0% | 25.0% | 100.0% | 12/12 |
-| `D1_fixed_pipeline.json` | Rule 206 fixed, Rule 243 defect introduced (D50 addendum) | 81.8% | 75.0% | 100.0% | 12/12 |
-| `D1_v3_pipeline.json` | Both fixed — the current record, what `output-interface.html` renders (D54) | 45.5% | 0.0% | 100.0% | 12/12 |
+| `D1_fixed_pipeline.json` | Rule 206 fixed, Rule 243 defect introduced (D50 addendum) | 81.8% | 50.0%<sup>†</sup> | 100.0% | 12/12 |
+| `D1_v3_pipeline.json` | Both fixed — the record `output-interface.html` rendered until Block F superseded it (D54) | 45.5% | 0.0% | 100.0% | 12/12 |
+
+<sup>†</sup> Corrected from 75.0%, per D58: `eval/score.py`'s gap matcher was not one-to-one at the time this row was first published; re-scored with the fixed matcher.
 
 **M3 and M4 are identical across all three, and that is the real finding, not a null result.** Neither metric is capable of seeing any of the three scope-reach defects — M3 only checks a citation is real and current (it was, every time, including both defective versions), M4 only counts the deterministic valuation lattice's own method count, untouched by which regime cites what. **Three substantive, confirmed-wrong legal conclusions, invisible to every metric that would normally stand in for "is this record correct," caught only by adversarial reading.** That is a stronger argument for node 5's place in this pipeline than the ablation score is on its own.
 
@@ -212,39 +216,45 @@ D52 (above) found that every run through Block E1 was actually still at temperat
 | Metric | Arm A (seed 1, 2, 3) | Arm B (seed 1, 2, 3) | Arm C (seed 1, 2, 3) |
 |---|---|---|---|
 | M1 extraction | 0.0%, 0.0%, 0.0% | 0.0%, 0.0%, 0.0% | **100.0%, 100.0%, 100.0%** |
-| M2 gap recall | 50.0%, 0.0%, 25.0% | 25.0%, 75.0%, 50.0% | 50.0%, 75.0%, 0.0% |
-| M2 gap precision | 100.0%, 0.0%, 50.0% | 33.3%, 100.0%, 50.0% | 100.0%, 40.0%, 0.0% |
+| M2 gap recall | 50.0%, 0.0%, 25.0% | 25.0%, 75.0%, 50.0% | 50.0%, 50.0%<sup>†</sup>, 0.0% |
+| M2 gap precision | 100.0%, 0.0%, 50.0% | 33.3%, 75.0%<sup>†</sup>, 50.0% | 100.0%, 40.0%, 0.0% |
 | M3 citation valid | 50.0%, 20.0%, 25.0% | 50.0%, 20.0%, 40.0% | **100.0%, 100.0%, 100.0%** |
 
 **Arm C's M1 and M3 are the same value on all three seeds — 100.0% every time.** That is a real result now, not an artifact of measuring the same deterministic draw three times: this is the first point in the project where "stable" and "measured at temperature 0" are no longer the same claim. Arms A and B's M1 stayed at 0.0% on every seed too, for the reason already established (the field-name contract lives in `01-extract.md` only) — consistent across seeds, not a coincidence of one draw.
 
-**M2 (gap recall) moves on every arm, arm C included — 50%, 75%, then 0% across its three seeds of the same case, same input, same code.** Step 21 calls M2 "the strongest metric"; at three data points with that much movement between them, no single number from this table should be quoted as *the* M2 result — only the three together. Not investigated further tonight; the individual numbers are reported so a reader can see exactly what happened rather than a smoothed-over summary of it.
+**M2 (gap recall) moves on every arm, arm C included — 50%, 50%, then 0% across its three seeds of the same case, same input, same code<sup>†</sup>.** Step 21 calls M2 "the strongest metric"; at three data points with that much movement between them, no single number from this table should be quoted as *the* M2 result — only the three together. The individual numbers are reported so a reader can see exactly what happened rather than a smoothed-over summary of it.
 
 **This instability is not just our own measurement — it's a specific, published finding about legal-domain LLM behavior at temperature 0.** Blair-Stanek and Van Durme, *"LLMs Provide Unstable Answers to Legal Questions"* (ICAIL 2025; [arXiv:2502.05196](https://arxiv.org/abs/2502.05196)), curated 500 real legal questions from split-decision court cases and found leading models — GPT-4o, Claude-3.5, Gemini-1.5 — reach different conclusions on identical questions at temperature 0, checked directly against their own abstract rather than assumed from the title. Their instability is about which party wins; ours is about which gaps get found — different task, same underlying property (a temperature-0 legal-reasoning call is not the fully deterministic thing it's often assumed to be). Read together, this project's 50/75/0% spread looks less like a defect specific to this pipeline and more like a reproduction of an already-published result, on a different task, in the same domain.
 
-**Checked directly, not assumed: the instability is real, but one of the three
-numbers is inflated by a real, separate bug in the scorer.** Ran
-`eval/score.py`'s own `_similar()` function against every ground-truth-gap ×
-reported-gap pair by hand, for all three seeds, rather than trusting the
-summary line. Seed 1 (50%) and seed 3 (0%) hold up exactly — every credited
-match and every miss is a fair reading of what the model actually reported.
-**Seed 2 (75%) does not, fully.** `_similar()` has no one-to-one constraint: a
-single reported item, *"documentation proving the foreign exchange
-transaction,"* shares distinctive tokens with **two different** ground-truth
-gaps (*"bank certificate of foreign inward remittance"* and *"official
-exchange rate for the settlement date"*) and gets credited against both,
-because the matcher checks each ground-truth item independently rather than
-matching reported items one-to-one. Seed 2 substantively identified two real
-gaps (counterparty verification, and one vague item gesturing at the
-foreign-exchange documentation generally); the scorer credited three. **Not
-fixed tonight** — `_similar()`'s matching logic has been re-run across every
-already-published number in this file, and changing it now means
-re-verifying all of them, which is exactly the kind of under-pressure change
-this project's own hard-stop rule exists to prevent. Disclosed here instead:
-the real instability finding stands (0% and 50% are both real, independently
-confirmed low numbers on the same case), and one of the three published
-figures — 75%, not 50% or 0% — is measured with a scorer that has a known,
-now-documented double-counting bug.
+**<sup>†</sup> Checked directly, not assumed: the instability is real, and one
+of the three published numbers was inflated by a real, separate bug in the
+scorer — since fixed.** Ran `eval/score.py`'s own `_similar()` function
+against every ground-truth-gap × reported-gap pair by hand, for all three
+seeds, rather than trusting the summary line. Seed 1 (50%) and seed 3 (0%)
+held up exactly — every credited match and every miss was a fair reading of
+what the model actually reported. **Seed 2 (originally published as 75%)
+didn't, fully.** `_similar()` had no one-to-one constraint: a single reported
+item, *"documentation proving the foreign exchange transaction,"* shared
+distinctive tokens with **two different** ground-truth gaps (*"bank
+certificate of foreign inward remittance"* and *"official exchange rate for
+the settlement date"*) and got credited against both, because the matcher
+checked each ground-truth item independently rather than matching reported
+items one-to-one. Seed 2 substantively identified two real gaps (counterparty
+verification, and one vague item gesturing at the foreign-exchange
+documentation generally); the scorer credited three.
+
+**Fixed properly ([D58](DECISION-D58.md)):** `eval/score.py` now uses a real
+maximum bipartite matching (`_max_bipartite_match`, Kuhn's algorithm) so a
+reported item can satisfy at most one ground-truth gap. Every M2 number in
+this file that the fix actually changed has been re-scored and corrected in
+place, marked with this same <sup>†</sup> and a note of what it was before —
+not silently replaced. Seed 2's recall corrects to 50% (matching seed 1,
+not 75%); its Arm B precision corrects to 75% (was 100%). Every other M2
+number in this entire file, across every table, was re-checked against the
+fixed scorer and confirmed unchanged. The instability finding itself is
+undiminished by the correction — it's now measured with a scorer that
+doesn't have a known bug in it, which is a stronger position than disclosing
+around one.
 
 **Arm A produced one schema-invalid record out of three seeds** (seed 2) — a real baseline failure rate, 1/3, consistent with `run_arms.py`'s own standing framing that a baseline unable to hold the output contract is itself a finding, not noise to discard.
 
@@ -298,11 +308,24 @@ a *schema-invalid* record purely from our own guard's side effect. Fixed to
 delete the key instead of nulling it. Both found live, both fixed before any
 seed was scored.
 
-**Seed 1 is schema-invalid** — `regimes[1].condition_met: null`, not one of
-`yes|no|unknown` (a node 3/4 output-shape slip, not a node 5 issue). Per the
-pre-registered rule, **seed 2 is the selected demo record** — schema-valid,
-`regimes[]` carries all three expected objects, `valuation_method` now cites
-**Rule 57** (not Rule 243), `certainty: lacuna`.
+**Seed 1 was schema-invalid at the time this selection was made** —
+`regimes[1].condition_met: null`, not one of `yes|no|unknown` (a node 3/4
+output-shape slip, not a node 5 issue). Per the pre-registered rule, **seed 2
+was the selected demo record** — schema-valid, `regimes[]` carries all three
+expected objects, `valuation_method` now cites **Rule 57** (not Rule 243),
+`certainty: lacuna`.
+
+**Later correction that does not reopen this selection ([D58](DECISION-D58.md)):**
+`condition_met` was widened to allow `null` the same night `qualifying_condition`
+and `consequence_if_failed` already allow it (same shape bug, simply missed
+earlier) — seed 1 would validate today. **The freeze stands anyway.** By the
+time this was found, seed 1's full content had already been read and quoted
+multiple times in this project's own documentation — re-running the selection
+now, with that content already known, would be exactly the after-the-fact
+cherry-picking risk the pre-registered rule exists to prevent, even though
+the rule itself was applied honestly and mechanically at the time. Said here
+rather than left for a reader to notice the schema changed and wonder why
+the selection didn't move with it.
 
 | Seed | Schema | M1 | M2 recall | M3 valid | M4 methods |
 |---|---|---|---|---|---|

@@ -81,18 +81,34 @@ def build_manifest(regimes, tax_year):
     resolver had access to for the regimes present in this record (not just
     the ones it ended up citing), a scope statement, and what was
     deliberately not checked. Deterministic -- reads corpus/tier-a/ front
-    matter, no model call."""
+    matter, no model call.
+
+    `verified` was hardcoded True for every entry in the first version of
+    this function (21 Aug) -- found live doing a bug pass: these ARE real
+    files read directly off disk, so there's no external claim to check
+    existence of, but there IS a real, meaningful check available and
+    skipped -- whether the provision's own citation is actually CURRENT
+    for the record's stated tax_year (the same check citation_matcher.py
+    runs on every resolver-produced citation). A provision file whose own
+    metadata doesn't cover the stated tax year would have silently shown
+    `verified: true` in the manifest while failing that exact check
+    everywhere else in the pipeline. Fixed to call the same
+    citation_matcher.verify() every other citation in this project goes
+    through, not a separate, weaker rule for this one field."""
+    corpus = citation_matcher.load_corpus()
     files = set()
     for r in regimes:
         files.update(REGIME_CORPUS.get(r.get("regime"), []))
     provisions_checked = []
     for fn in sorted(files):
         meta = citation_matcher.parse_front_matter(os.path.join(HERE, "corpus", "tier-a", fn))
+        name = meta.get("current_citation") or fn
+        verdict = cite_verify(name, tax_year, corpus)
         provisions_checked.append({
-            "provision": meta.get("current_citation") or fn,
+            "provision": name,
             "former_citation": meta.get("former_citation"),
             "tax_year": tax_year,
-            "verified": True,
+            "verified": verdict.accept,
         })
     return {
         "provisions_checked": provisions_checked,

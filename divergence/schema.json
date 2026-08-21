@@ -163,7 +163,10 @@
             }
           },
           "qualifying_condition": { "type": ["string", "null"] },
-          "condition_met": { "enum": ["yes", "no", "unknown"] },
+          "condition_met": {
+            "enum": ["yes", "no", "unknown", null],
+            "description": "D58. Same shape as qualifying_condition and consequence_if_failed, which were already nullable -- this one was missed. condition_met was rejecting a schema-valid, semantically correct response: when qualifying_condition is null (no qualifying condition applies to this regime), asking whether it was met has no sensible non-null answer, and the resolver was correctly returning null there every time, consistently, and being rejected for it. Found live, 21 Aug."
+          },
           "consequence_if_failed": { "type": ["string", "null"] },
           "depends_on_missing": {
             "type": "array", "items": { "type": "string" },

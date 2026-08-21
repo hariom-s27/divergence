@@ -102,32 +102,64 @@ def m1_extraction(run, gt):
 
 
 # ── M2 ────────────────────────────────────────────────────────────────
-def m2_gaps(run, gt):
-    """Recall and precision against the gaps WE planted — genuine ground truth.
+def _max_bipartite_match(left, right, sim_fn):
+    """Standard augmenting-path (Kuhn's algorithm) maximum bipartite
+    matching. Small N here (a handful of gaps per side) so no need for
+    anything faster. Returns (matched_left_indices, matched_right_indices,
+    pairs) -- each item on either side used at most once.
 
-    KNOWN LIMITATION, found live 21 Aug hand-checking D1's three-seed M2
-    spread (results.md): `found` has no one-to-one constraint against
-    `reported` -- a single reported item can independently satisfy two
-    different planted items if it shares distinctive tokens with both,
-    inflating recall. Confirmed on a real run (D1-seed2_pipeline.json):
-    "documentation proving the foreign exchange transaction" matched both
-    the FIRC gap and the official-exchange-rate gap, crediting one real
-    finding as two. Not fixed -- doing so now means re-verifying every
-    already-published M2 number in results.md, which is exactly the kind
-    of under-pressure scoring change this project's hard-stop rule exists
-    to prevent. Disclosed here and in results.md instead."""
+    FIX, 21 Aug (results.md, DECISION-D57.md): m2_gaps() used to check
+    `any(_similar(p, r) for r in reported)` independently per planted item,
+    with no constraint that two different planted items couldn't both
+    claim the SAME reported item. Confirmed on a real run
+    (D1-seed2_pipeline.json): "documentation proving the foreign exchange
+    transaction" matched both the FIRC gap and the official-exchange-rate
+    gap under the old logic, crediting one real finding as two and
+    inflating that run's recall from a fair 50% to a credited 75%. This
+    was disclosed rather than fixed for one night while it would have
+    meant re-verifying every already-published M2 number under deadline
+    pressure; now fixed properly, with every affected number in
+    results.md re-scored and reported, not silently replaced."""
+    adj = {i: [j for j, r in enumerate(right) if sim_fn(left[i], r)] for i in range(len(left))}
+    match_right = {}  # right index -> left index currently matched to it
+
+    def try_match(i, visited):
+        for j in adj[i]:
+            if j in visited:
+                continue
+            visited.add(j)
+            if j not in match_right or try_match(match_right[j], visited):
+                match_right[j] = i
+                return True
+        return False
+
+    matched_left = set()
+    for i in range(len(left)):
+        if try_match(i, set()):
+            matched_left.add(i)
+    matched_right = set(match_right.keys())
+    pairs = [(left[i], right[j]) for j, i in match_right.items()]
+    return matched_left, matched_right, pairs
+
+
+def m2_gaps(run, gt):
+    """Recall and precision against the gaps WE planted — genuine ground
+    truth. Matching is one-to-one (max bipartite matching, see
+    _max_bipartite_match) -- a single reported item can satisfy at most
+    one planted gap, and vice versa."""
     planted = [m["item"] for m in gt["missing"]]
     reported = [m.get("item", "") if isinstance(m, dict) else str(m)
                 for m in run.get("missing", [])]
     if not planted:
         # nothing to find: recall is undefined, every report is a false positive
         return (None, 0.0 if reported else 1.0, [], reported)
-    found = [p for p in planted if any(_similar(p, r) for r in reported)]
-    real  = [r for r in reported if any(_similar(p, r) for p in planted)]
+    matched_planted, matched_reported, _pairs = _max_bipartite_match(planted, reported, _similar)
+    found     = [planted[i] for i in matched_planted]
+    real      = [reported[j] for j in matched_reported]
     recall    = len(found) / len(planted)
     precision = len(real) / len(reported) if reported else 0.0
-    missed    = [p for p in planted if p not in found]
-    spurious  = [r for r in reported if r not in real]
+    missed    = [p for i, p in enumerate(planted) if i not in matched_planted]
+    spurious  = [r for j, r in enumerate(reported) if j not in matched_reported]
     return recall, precision, missed, spurious
 
 

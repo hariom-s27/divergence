@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 17 decision documents merged into one chronological read — so you don't have to open seventeen separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 18 decision documents merged into one chronological read — so you don't have to open eighteen separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,10 +123,10 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Seventeen dated documents. D41 predates D42–D57 chronologically (it's been
+Eighteen dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
-started) but only got its own file on 21 August, alongside D57 — noted
-here so the numbering makes sense rather than looking like a gap.
+started) but only got its own file on 21 August, alongside D57 and D58 —
+noted here so the numbering makes sense rather than looking like a gap.
 
 ## [D41](DECISION-D41.md) — the adversarial checker must be a different model family from the resolvers
 Node 5's model slot must never resolve to the same family as the resolvers'
@@ -332,13 +332,30 @@ fully true — `downgraded_to` is shown, never auto-applied — fixed in both.
 just trusting the summary numbers) confirmed two of the three seeds hold up
 exactly and found a genuine third thing: `eval/score.py`'s gap matcher has
 no one-to-one constraint, so one seed's 75% figure double-counts a single
-reported item against two different ground-truth gaps. Not fixed — changing
-the scorer now means re-verifying every M2 number already published — but
-disclosed in `results.md` and directly in the scorer's own code.
+reported item against two different ground-truth gaps. Disclosed without
+fixing for one night (D58 fixes it properly, once there was room to).
+
+## [D58](DECISION-D58.md) — four bugs found by deliberately hunting for them, including the M2 scorer fixed properly
+Different in kind from the decisions around it: found by being asked to
+look for bugs, not by reviewing docs. `schema.json`'s `condition_met`
+couldn't be null even though it always should be exactly when
+`qualifying_condition` is null — same shape as two earlier amendments that
+had already fixed sibling fields, this one was simply missed; retroactively
+makes Block F's seed 1 schema-valid too, but the frozen demo record does
+**not** change (re-selecting now, with seed 1's content already read and
+quoted, would be the exact cherry-picking the pre-registered rule exists to
+prevent). The manifest's `verified` field (D57) was hardcoded true — fixed
+to run the real check, confirmed meaningful by testing against a wrong tax
+year and watching it correctly fail. The election radios never recorded
+anything despite saying they would — fixed with browser-local storage, no
+network call. **And the M2 scorer bug D57 disclosed was fixed properly**:
+real one-to-one bipartite matching, every M2 number in `results.md`
+re-scored against it — four cells actually changed, listed with before/after
+in D58, everything else confirmed unchanged, not assumed.
 
 ---
 
-## What the seventeen decisions add up to
+## What the eighteen decisions add up to
 
 Read end to end, the pattern is not fourteen separate bugs. It's one
 recurring shape, showing up at every layer of the project: **something

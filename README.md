@@ -5,9 +5,9 @@
 Built for Reverie Hacks 2026, ML Prompt Engineering track.
 
 **One file, the whole thing, in order:** [`divergence/START-HERE.md`](divergence/START-HERE.md) —
-the mental model, every command to run the full pipeline, and all 17
+the mental model, every command to run the full pipeline, and all 18
 dated design decisions merged into a single chronological read instead of
-17 separate files.
+18 separate files.
 
 ## The problem
 
@@ -315,7 +315,7 @@ finding than the ordinary silent absences elsewhere in the same rules.
 | [D54](divergence/DECISION-D54.md) | Third scope-reach defect, fixed with one generalized rule instead of a third patch |
 | [D55](divergence/DECISION-D55.md) | Fourth and fifth scope-reach defects; the fifth disclosed rather than chased, per a pre-set hard-stop rule |
 
-Full list: the `divergence/DECISION-D*.md` files — numbered up to D57 (plus D41, which predates the sequence), though
+Full list: the `divergence/DECISION-D*.md` files — numbered up to D58 (plus D41, which predates the sequence), though
 not every decision number in that range got its own file; several earlier
 ones are recorded inline in `architecture.md` and `GAZETTE-FINDINGS.md`
 instead. **All 14 merged into one chronological read:**
@@ -368,7 +368,7 @@ Six things, each one checkable against a specific file rather than asserted:
   it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
   "Pre-registration" section — a reader can check the hash actually
   predates the runs, not just trust that it does.
-- **17 dated decision documents**, including the ones that record this
+- **18 dated decision documents**, including the ones that record this
   project's own mistakes — a stale citation, a scoring bug that faked a
   perfect score, three named instances of a resolver citing a real
   provision outside its own scope. None were written after the fact to

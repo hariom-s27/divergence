@@ -27,6 +27,8 @@ Hand-checked every ground-truth-gap-to-reported-gap pairing `eval/score.py`'s `_
 
 **Not fixed tonight.** `_similar()`'s matching logic underlies every M2 number already published in `results.md`, across every arm and every case. Changing it now means re-verifying all of them — exactly the kind of under-pressure scoring change this project's own hard-stop rule exists to prevent. Disclosed instead, in `results.md` and as a code comment on `m2_gaps()` itself, so the next person who reads that function doesn't have to rediscover it.
 
+**Update, same night, once there was room to do it properly: fixed. See [D58](DECISION-D58.md).** Every M2 number this affected was re-scored, not assumed — four cells across the file, listed in D58, everything else confirmed unchanged.
+
 **This does not undermine the instability finding — it narrows one number inside it.** 0% and 50% are both real, independently confirmed low numbers on the identical case, same input, same code. The instability itself stands; the specific claim that one of the three seeds scored *75%* is now qualified rather than asserted flatly.
 
 ## 5. Smaller fixes, same pass

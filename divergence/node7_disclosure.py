@@ -172,6 +172,12 @@ legend{padding:0 8px}
   font-size:14px;color:var(--ink-soft);
 }
 .stamp b{color:var(--ink);font-weight:600}
+.clear-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+  background:none;border:1px solid var(--ink-faint);color:var(--ink-soft);
+  padding:3px 9px;margin-left:8px;cursor:pointer;
+}
+.clear-btn:hover,.clear-btn:focus-visible{border-color:var(--ink);color:var(--ink)}
 .regime{border-top:1px solid var(--paper-rule);padding:16px 0}
 .regime:last-of-type{border-bottom:1px solid var(--paper-rule)}
 .r-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
@@ -291,7 +297,7 @@ def render_missing(missing):
     return '<ul class="missing">' + "\n".join(items) + "</ul>"
 
 
-def render_valuation(valuation):
+def render_valuation(valuation, record_key):
     methods = valuation.get("methods") or []
     spread = valuation.get("spread") or {"inr": 0, "percent": 0}
     if not methods:
@@ -335,7 +341,7 @@ def render_valuation(valuation):
         f'{extra}'
         f'</div>'
         + render_uncertainty_budget(valuation.get("uncertainty_budget"), spread)
-        + render_election(lo, hi)
+        + render_election(lo, hi, record_key)
     )
 
 
@@ -386,18 +392,50 @@ def render_uncertainty_budget(budget, spread):
     )
 
 
-def render_election(lo, hi):
+def render_election(lo, hi, record_key):
+    """The radio buttons here used to be pure decoration -- nothing wrote
+    the choice anywhere, so "record it here" wasn't literally true. Found
+    live, 21 Aug: fixed with localStorage, keyed to this specific record
+    (record_id + invoice number, so two different receipts opened in the
+    same browser never collide), so a real tick actually persists across a
+    page reload. No server, no network call -- consistent with this
+    project's own "no API for the demo" discipline (D33): this is storage
+    in the reader's own browser, nothing sent anywhere."""
+    key = esc(f"divergence-election-{record_key}")
     return (
         '<fieldset><legend class="label">If you have already decided, record it here</legend>'
-        f'<div class="opt"><input type="radio" name="election" id="ea">'
+        f'<div class="opt"><input type="radio" name="election" id="ea" value="{esc(lo.get("label"))}">'
         f'<label for="ea"><span class="t">{fmt_inr(lo["inr_value"])} — {esc(lo.get("label"))}</span>'
         f'<span class="d">{esc((lo.get("source") or {}).get("note", ""))[:160]}</span></label></div>'
-        f'<div class="opt"><input type="radio" name="election" id="eb">'
+        f'<div class="opt"><input type="radio" name="election" id="eb" value="{esc(hi.get("label"))}">'
         f'<label for="eb"><span class="t">{fmt_inr(hi["inr_value"])} — {esc(hi.get("label"))}</span>'
         f'<span class="d">{esc((hi.get("source") or {}).get("note", ""))[:160]}</span></label></div>'
         '<p class="stamp"><b>This record is complete whether or not you tick anything.</b> '
         'What matters if the figure is ever questioned is that both were shown and both '
         'were recorded — not which one you chose, and not that we chose for you.</p>'
+        '<p class="stamp"><span id="election-status" role="status" aria-live="polite"></span> '
+        '<button type="button" id="election-clear" class="clear-btn" hidden>Clear this record</button></p>'
+        '<script>(function(){'
+        f'var KEY={json.dumps(key)};'
+        'var radios=document.querySelectorAll(\'input[name="election"]\');'
+        'var status=document.getElementById("election-status");'
+        'var clearBtn=document.getElementById("election-clear");'
+        'function render(){'
+        'var saved=localStorage.getItem(KEY);'
+        'if(saved){'
+        'radios.forEach(function(r){r.checked=(r.value===saved);});'
+        'status.textContent="Recorded in this browser: "+saved+".";'
+        'clearBtn.hidden=false;'
+        '}else{status.textContent="";clearBtn.hidden=true;}'
+        '}'
+        'radios.forEach(function(r){r.addEventListener("change",function(){'
+        'localStorage.setItem(KEY,r.value);render();'
+        '});});'
+        'clearBtn.addEventListener("click",function(){'
+        'localStorage.removeItem(KEY);radios.forEach(function(r){r.checked=false;});render();'
+        '});'
+        'render();'
+        '})();</script>'
         '</fieldset>'
     )
 
@@ -561,6 +599,7 @@ def compose(record):
 
     title = f"Payment received {esc(fmt_datetime(settle))}"
     subtitle = f"{esc(fmt_amount(amount, asset))} · Invoice {esc(invoice_no)} · Counterparty declared as {esc(counterparty)}"
+    record_key = f"{record_id}-{invoice_no}"
 
     body = f"""
 <main class="sheet">
@@ -582,7 +621,7 @@ def compose(record):
 
   <section aria-labelledby="s2">
     <div class="sec-head"><span class="sec-n">02</span><h2 id="s2">What it was worth in rupees</h2></div>
-    {render_valuation(record.get("valuation", {}))}
+    {render_valuation(record.get("valuation", {}), record_key)}
   </section>
 
   <section aria-labelledby="s3">
