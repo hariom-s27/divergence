@@ -153,7 +153,20 @@ and a certainty label: `settled | inference | open_texture | lacuna |
 contested | insufficient_evidence`. `lacuna` — the strongest, easiest to
 get wrong claim in the whole schema — means a provision demands a method
 and none in the given text supplies one; it is not the same claim as
-`insufficient_evidence` (missing facts, not a missing rule). The prompt
+`insufficient_evidence` (missing facts, not a missing rule).
+
+**Why this is a different kind of indeterminacy than the ML literature's
+nearest named concept, checked rather than assumed.** Guerdan et al.
+(NeurIPS 2025, arXiv:2503.05965) name "rating indeterminacy" — many rating
+tasks admit multiple defensible answers, and forcing a single label anyway
+before validating against it selects a judge system up to 31% worse than
+keeping the full defensible set. Real, measured, and the honest competitor
+to `contested`/`open_texture`/`lacuna` — but a different failure to fix.
+Their indeterminacy lives in the rating rubric: a better-written question
+resolves it. This project's lives in the statute itself: no better-written
+prompt closes a gap Parliament left, which is the entire reason these
+three certainty values are enforced as a closed enum rather than left to
+free text. Full card: `prior-art/READING-CARDS.md`, #8. The prompt
 contains an explicit **SCOPE GATE** instruction, generalized after three
 separate real failures of the identical shape (Rule 57's own column B,
 Rule 206's own "foreign currency" opening words, Rule 243's own
@@ -389,11 +402,13 @@ naming precisely rather than claiming a broader match than the evidence
 supports: we are not asserting this project rediscovered Magesh et al.'s
 exact taxonomy category, only that both are instances of a model treating
 citation validity as a proxy for citation relevance, measured
-independently, in two different legal systems. Five more papers grounding
+independently, in two different legal systems. Six more papers grounding
 specific design decisions in this project (why the adversarial checker is
 a different model family, why abstention isn't the right frame, why
 temperature-0 instability isn't unique to this pipeline, why a frozen
-verbatim corpus beats embedding retrieval for statutory text), each
+verbatim corpus beats embedding retrieval for statutory text, why this
+project's indeterminacy is not the same as measurement-rubric
+indeterminacy), each
 checked independently rather than assumed from a title:
 [`prior-art/READING-CARDS.md`](prior-art/READING-CARDS.md).
 

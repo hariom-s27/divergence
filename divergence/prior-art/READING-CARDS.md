@@ -287,6 +287,44 @@ SAY     "Static RAG retrieves the date-applicable version of a statute 0%
         retrieval benchmark can measure."
 ```
 
+## 8. Guerdan, Barocas, Holstein, Wallach, Wu, Chouldechova — *Validating LLM-as-a-Judge Systems under Rating Indeterminacy*
+
+```
+PAPER   Luke Guerdan, Solon Barocas, Kenneth Holstein, Hanna Wallach,
+        Zhiwei Steven Wu, Alexandra Chouldechova — NeurIPS 2025.
+        arXiv:2503.05965
+CLAIM   Many rating tasks admit more than one defensible answer ("rating
+        indeterminacy"). Forcing a single forced-choice label anyway, then
+        validating a judge system against it, selects a WORSE judge system
+        than validating against the full set of defensible answers.
+METHOD  11 real-world rating tasks, 9 commercial LLMs. Compares
+        forced-choice validation against their own multi-label
+        "response-set" validation, which keeps every rating a reasonable
+        person could defend instead of collapsing to one.
+NUMBER  Forced-choice validation selects judge systems performing as much
+        as 31% worse than response-set validation, across the 11 tasks
+        and 9 models tested.
+FOR US  The honest competitor to this project's `certainty` enum, not an
+        analogy to wave past. Their indeterminacy and this project's are
+        NOT the same thing, and the difference is the whole argument:
+        theirs lives in the RUBRIC — a better-written rating instruction
+        can resolve it. This project's `lacuna`/`open_texture`/`contested`
+        distinctions (`schema.json`, C22) live in the LAW ITSELF — no
+        better-written prompt closes a gap Parliament left. Theirs is
+        fixable by a better rubric; this project's is fixable only by a
+        legislature. Their own method — keep the full defensible set
+        rather than force one label — is also the right shape for scoring
+        this project's own 12-figure valuation lattice, which is a
+        response set in their exact sense.
+SAY     "Rating indeterminacy (Guerdan et al., NeurIPS 2025) is the
+        nearest named concept to what we measure, and the distinction
+        matters: theirs is indeterminacy in the measurement rubric,
+        fixable by a better question. Ours is indeterminacy in the law
+        itself — three named certainty values (lacuna, open_texture,
+        contested), none of which a better prompt can resolve, because
+        the gap is in the statute, not in how we're asking about it."
+```
+
 ---
 
 ## What this file is for
