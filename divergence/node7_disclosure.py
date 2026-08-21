@@ -84,7 +84,10 @@ CSS = """
   --paper-rule:#D3DAD7;   /* ledger ruling */
   --ink:#161C19;          /* blue-black ink */
   --ink-soft:#4A5551;
-  --ink-faint:#78837E;
+  --ink-faint:#666F6B;    /* darkened from #78837E, 21 Aug -- the original was 3.52:1 against
+                             --paper, below WCAG AA's 4.5:1 for normal text (a11y_check.py
+                             found this; the ARIA/heading work was real but nobody had checked
+                             contrast). Same hue, darkened until it clears 4.5:1 with margin. */
   --margin-red:#9E2F26;   /* the red margin rule of a bahi khata */
   --figure:#22405A;       /* stamp indigo -- used only for money */
   --elected:#4F6140;      /* olive -- confirmation only */

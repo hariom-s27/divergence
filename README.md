@@ -234,6 +234,15 @@ number a sighted reader gets from the line. `lang="en"` is set on the page.
 This was built into the composer itself (decision D34/D53), not added
 afterward — every generated page gets it, not just the one shown in a demo.
 
+**Checkable, not just asserted:** [`divergence/a11y_check.py`](divergence/a11y_check.py)
+verifies all of the above mechanically — heading hierarchy, the `<main>`
+landmark, label/`aria-label` coverage on every input and button — plus real
+WCAG contrast ratios computed from this project's actual CSS colors, not a
+visual guess. It found one genuine failure while being built (a label color
+at 3.52:1, below the 4.5:1 AA minimum) — fixed, verified at 4.65:1, and the
+checker now runs in CI on every push, the same way `gate0_check.py` and
+`citation_matcher.py`'s self-test do.
+
 ## How it is built
 
 Five model calls, four deterministic steps. In order: extract facts from

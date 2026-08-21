@@ -35,3 +35,7 @@ jobs:
       run: |
         cd divergence
         python gate0_check.py
+    - name: Accessibility audit
+      run: |
+        cd divergence
+        python a11y_check.py --all
