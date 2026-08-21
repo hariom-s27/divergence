@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 16 decision documents merged into one chronological read — so you don't have to open sixteen separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 17 decision documents merged into one chronological read — so you don't have to open seventeen separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,10 +123,21 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Sixteen dated documents, `DECISION-D42.md` through `DECISION-D57.md`,
-merged here into one chronological read. Each entry is compressed to what
-changed and why; the full original reasoning, tables, and "what to say
-about it" framing live in the linked file.
+Seventeen dated documents. D41 predates D42–D57 chronologically (it's been
+referenced throughout the project since before this numbered sequence
+started) but only got its own file on 21 August, alongside D57 — noted
+here so the numbering makes sense rather than looking like a gap.
+
+## [D41](DECISION-D41.md) — the adversarial checker must be a different model family from the resolvers
+Node 5's model slot must never resolve to the same family as the resolvers'
+— enforced by `check_llm.py` checking the org prefix of both at session
+start. Grounded in two measured results, verified against their own
+abstracts before citing (`prior-art/READING-CARDS.md`): Huang et al. (ICLR
+2024) found LLMs can't reliably self-correct without external feedback;
+Panickssery et al. (NeurIPS 2024) measured that LLM evaluators favor their
+own generations, correlated with their ability to recognize their own
+output. Node 5's three real, unplanted catches this project made only mean
+what they're claimed to mean because this constraint held every time.
 
 ## [D42](DECISION-D42.md) — the model provider is chosen at runtime, not hardcoded
 `llm_call.py` resolves a provider from whichever API key is in the
@@ -327,7 +338,7 @@ disclosed in `results.md` and directly in the scorer's own code.
 
 ---
 
-## What the sixteen decisions add up to
+## What the seventeen decisions add up to
 
 Read end to end, the pattern is not fourteen separate bugs. It's one
 recurring shape, showing up at every layer of the project: **something

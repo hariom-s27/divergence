@@ -283,11 +283,16 @@ naming precisely rather than claiming a broader match than the evidence
 supports: we are not asserting this project rediscovered Magesh et al.'s
 exact taxonomy category, only that both are instances of a model treating
 citation validity as a proxy for citation relevance, measured
-independently, in two different legal systems.
+independently, in two different legal systems. Three more papers grounding
+specific design decisions in this project (why the adversarial checker is
+a different model family, why abstention isn't the right frame, why
+temperature-0 instability isn't unique to this pipeline), each checked
+against its own abstract rather than assumed from a title:
+[`prior-art/READING-CARDS.md`](prior-art/READING-CARDS.md).
 
 ## 6. Where the deeper material lives
 
-- **All 16 decision documents, the mental model, and the full run guide,
+- **All 17 decision documents, the mental model, and the full run guide,
   merged into one chronological file:** [`START-HERE.md`](START-HERE.md)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)
@@ -299,5 +304,8 @@ independently, in two different legal systems.
   [`SAMPLES.md`](SAMPLES.md)
 - Seven curated moments of what broke and what changed:
   [`ITERATION-STORY.md`](ITERATION-STORY.md)
+- Real, verified published research grounding specific decisions, each
+  checked against its own abstract before being cited:
+  [`prior-art/READING-CARDS.md`](prior-art/READING-CARDS.md)
 - Every individually dated design decision:
   `DECISION-D*.md`, up to `DECISION-D55.md`
