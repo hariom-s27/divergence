@@ -30,9 +30,44 @@ import argparse
 import html
 import json
 import os
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import citation_matcher  # noqa: E402
+
 DEFAULT_OUT = os.path.join(HERE, "output-interface.html")
+
+# Which corpus/tier-a files each resolver's prompt actually injects -- read
+# directly from step22drop/prompts/03-income-tax.md and 04-gst.md's own
+# "Injected at runtime" headers (D31/C22: scoped per regime, not the full
+# corpus). Kept as a constant here rather than re-parsed from the prompt
+# file at render time because this scoping is a stable code-level design
+# decision, not something that varies per run. Found live, 21 Aug: the
+# manifest section was rendering only citations[], 2-3 provisions, under a
+# heading that says "What we checked" -- which understates, by a factor of
+# 3-5x, how much of the corpus a resolver actually reads before deciding
+# what to cite. A reader seeing "3 provisions" under that heading could
+# reasonably conclude the legal research was narrow; it wasn't -- most of
+# what was checked was checked and correctly NOT cited.
+REGIME_CORPUS = {
+    "income_tax_on_receipt": ["IT-2-47A.md", "IT-115BBH.md", "IT-393-1-T8vi.md",
+                               "ITR2026-RULE-56.md", "ITR2026-RULE-57.md",
+                               "ITR2026-RULE-206.md", "ITR2026-RULE-207.md",
+                               "ITR2026-RULE-247.md", "ITR2026-RCASP-VALUATION.md",
+                               "IT-439-8.md"],
+    "valuation_method": ["IT-2-47A.md", "IT-115BBH.md", "IT-393-1-T8vi.md",
+                          "ITR2026-RULE-56.md", "ITR2026-RULE-57.md",
+                          "ITR2026-RULE-206.md", "ITR2026-RULE-207.md",
+                          "ITR2026-RULE-247.md", "ITR2026-RCASP-VALUATION.md",
+                          "IT-439-8.md"],
+    "income_tax_on_transfer": ["IT-2-47A.md", "IT-115BBH.md", "IT-393-1-T8vi.md",
+                                "ITR2026-RULE-56.md", "ITR2026-RULE-57.md",
+                                "ITR2026-RULE-206.md", "ITR2026-RULE-207.md",
+                                "ITR2026-RULE-247.md", "ITR2026-RCASP-VALUATION.md",
+                                "IT-439-8.md"],
+    "gst_export": ["GST-IGST-2-6.md", "GST-CGST-50.md", "GST-CGST-74A.md"],
+}
 
 # unchanged from the original hand-built mockup -- this is a good, tested
 # design; only the body content below it is now generated, not the look
@@ -150,6 +185,11 @@ summary::before{content:"+ ";font-family:'IBM Plex Mono',monospace;color:var(--m
 details[open] summary::before{content:"\\2212 "}
 .man{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.9;color:var(--ink-soft);margin:14px 0 0;padding:0;list-style:none}
 .man li{border-bottom:1px dotted var(--paper-rule);padding:3px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.budget{list-style:none;margin:14px 0 0;padding:0}
+.budget li{border-bottom:1px dotted var(--paper-rule);padding:9px 0}
+.budget .t{display:block;font-size:14.5px}
+.budget .t b{font-family:'IBM Plex Mono',monospace;color:var(--figure);font-weight:600}
+.budget .d{display:block;font-size:13.5px;color:var(--ink-soft);margin-top:3px}
 .attack{border-top:1px solid var(--paper-rule);padding:16px 0}
 .attack:last-of-type{border-bottom:1px solid var(--paper-rule)}
 .a-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
@@ -287,7 +327,55 @@ def render_valuation(valuation):
         f'<p class="gap-mobile">Difference: {fmt_inr(spread.get("inr", 0))} · {spread.get("percent", 0):.2f}%</p>'
         f'{extra}'
         f'</div>'
+        + render_uncertainty_budget(valuation.get("uncertainty_budget"), spread)
         + render_election(lo, hi)
+    )
+
+
+def render_uncertainty_budget(budget, spread):
+    """The metrology decomposition -- named in this project's own early
+    design notes as its single most valuable idea, and until 21 Aug never
+    actually rendered anywhere, existing only inside the JSON record. Found
+    live doing a review pass: node7_disclosure.py had no reference to
+    uncertainty_budget at all.
+
+    The components are one-at-a-time sensitivities, each measured against
+    its OWN reference point (the official-date line varies only the two
+    published rates; the domestic-premium line pivots off the candle's
+    CLOSE, not the HIGH that actually drives the lattice's overall
+    maximum) -- not a strict decomposition of the total spread into
+    orthogonal, additive parts. They do not sum to spread.inr, and
+    shouldn't be expected to. Said here, once, rather than left for a
+    reader to notice the arithmetic doesn't close and wonder why."""
+    if not budget:
+        return ""
+    ordered = sorted(budget, key=lambda b: -abs(b.get("inr", 0)))
+    total_inr = spread.get("inr", 0)
+    parts_sum = sum(b.get("inr", 0) for b in ordered)
+    items = "\n".join(
+        f'<li><span class="t">{esc(b.get("source", "?"))} '
+        f'<b>{fmt_inr(b.get("inr", 0))}</b></span>'
+        f'<span class="d">{esc(b.get("explanation", ""))}</span></li>'
+        for b in ordered
+    )
+    note = ""
+    gap = parts_sum - total_inr
+    if abs(gap) > 1:
+        note = (
+            f'<p class="gap-note">These {len(ordered)} components sum to '
+            f'{fmt_inr(parts_sum)}, not the {fmt_inr(total_inr)} total spread above '
+            f'— a {fmt_inr(abs(gap))} difference. Each line is measured one at a time '
+            f'against its own reference point (the domestic-premium line, for instance, '
+            f'pivots off the day\'s closing price, not the high that actually sets the '
+            f'lattice\'s maximum), not a strict split of the total into non-overlapping '
+            f'parts. Both numbers are real; they answer different questions.</p>'
+        )
+    return (
+        '<details style="margin-top:22px">'
+        '<summary>Where the spread actually comes from — decomposed by source</summary>'
+        f'<ul class="budget">{items}</ul>'
+        f'{note}'
+        '</details>'
     )
 
 
@@ -334,19 +422,46 @@ def render_regimes(regimes):
 
 
 def render_manifest(regimes, corpus_frozen_at):
-    seen = {}
+    # Same matching primitives citation_matcher.py itself uses to decide
+    # "verified: true" -- exact string equality between a regime's
+    # citation.provision and a corpus file's current_citation is too
+    # strict and produces false negatives (found live: IT-115BBH.md's
+    # current_citation carries extra "carried into the 2025 Act" prose the
+    # regime's own citation field doesn't repeat, so a naive `in` check
+    # marked a real, verified citation as "not cited" here).
+    cited_refs = []
     for r in regimes:
-        cite = (r.get("citation") or {}).get("provision")
-        if cite:
-            seen[cite] = corpus_frozen_at
-    if not seen:
-        return '<p class="lede">No citations to list.</p>'
+        prov = (r.get("citation") or {}).get("provision")
+        if prov:
+            cited_refs.append(citation_matcher.extract_refs(prov))
     date = (corpus_frozen_at or "?")[:10]
+
+    checked_files = set()
+    for r in regimes:
+        checked_files.update(REGIME_CORPUS.get(r.get("regime"), []))
+    checked = []
+    for fn in sorted(checked_files):
+        meta = citation_matcher.parse_front_matter(os.path.join(HERE, "corpus", "tier-a", fn))
+        name = meta.get("current_citation") or fn
+        stored_refs = citation_matcher.extract_refs(name)
+        was_cited = any(
+            citation_matcher._refs_match(c, s)
+            for refs in cited_refs for c in refs for s in stored_refs
+        )
+        checked.append((name, was_cited))
+
+    if not checked:
+        return '<p class="lede">No regime conclusions to check a corpus against.</p>'
+
+    n_cited = sum(1 for _, was_cited in checked if was_cited)
     items = "\n".join(
-        f'<li><span>{esc(name)}</span><span>{esc(date)}</span></li>' for name in seen
+        f'<li><span>{esc(name)}{" — cited above" if was_cited else ""}</span>'
+        f'<span>{esc(date)}</span></li>'
+        for name, was_cited in checked
     )
     return (
-        f'<details><summary>{len(seen)} provision(s) actually cited in this record, '
+        f'<details><summary>{len(checked)} provision(s) actually checked for this record '
+        f'({n_cited} cited above, {len(checked) - n_cited} checked and correctly not relied on), '
         f'corpus frozen {esc(date)}</summary>'
         f'<ul class="man">{items}</ul>'
         '<p class="gap-note"><b>Not checked:</b> state levies, treaty relief, anything '

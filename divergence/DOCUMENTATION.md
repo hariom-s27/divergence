@@ -266,6 +266,25 @@ visible to any of this project's five accuracy metrics.** Full account,
 each instance verified against the actual gazette text before being
 written down: `DECISION-D50.md`, `DECISION-D54.md`, `DECISION-D55.md`.
 
+**This sits in the same family as a published finding, not just an
+analogy we're drawing.** Magesh, Surani, Dahl, Suzgun, Manning and Ho
+(Stanford RegLab), *"Hallucination-Free? Assessing the Reliability of
+Leading AI Legal Research Tools"* (Journal of Empirical Legal Studies,
+2025; [arXiv:2405.20362](https://arxiv.org/abs/2405.20362)) splits legal
+AI hallucination into two dimensions — correctness and *groundedness* —
+and names the case where "retrieval results are poor or irrelevant, but
+the model happens to produce the correct answer, falsely asserting that an
+unrelated source supports its conclusion" (checked against their own
+framing, not paraphrased from memory). Our five instances are a specific,
+narrower variant of the same groundedness failure: the source isn't
+unrelated or irrelevant — it's real, current, and correctly quoted — but
+its own scope, read plainly, doesn't reach the facts it's cited for. Worth
+naming precisely rather than claiming a broader match than the evidence
+supports: we are not asserting this project rediscovered Magesh et al.'s
+exact taxonomy category, only that both are instances of a model treating
+citation validity as a proxy for citation relevance, measured
+independently, in two different legal systems.
+
 ## 6. Where the deeper material lives
 
 - **All 15 decision documents, the mental model, and the full run guide,

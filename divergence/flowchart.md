@@ -27,20 +27,27 @@ cross-reference.
 
 ## The diagram
 
+**This is the exact shape rendered in [`flowchart.png`](flowchart.png)** —
+the PNG the track's submission rules actually require, with the same three
+classes: where human input is necessary, which model answers each call, and
+what each action does. This Mermaid version exists so the diagram also
+renders directly on GitHub, without needing to open the image file.
+
 ```mermaid
 flowchart TD
-    IN["📄 invoice + payment record<br/>PDF, photo, or typed text"]
+    IN["🧑 HUMAN INPUT — REQUIRED<br/>invoice + payment record<br/>PDF, photo, or typed text<br/>the pipeline cannot start without this"]
 
-    N1(("🤖 1 EXTRACT<br/>facts + confidence + source_span"))
-    N2(("🤖 2 GAP DETECTOR<br/>missing[] — runs BEFORE reasoning"))
-    A["⚙ A GAP CONSTRAINT ENFORCER<br/>forces certainty to insufficient_evidence"]
-    B["⚙ B VALUATION LATTICE<br/>12 figures, arithmetic only, no API"]
-    N3(("🤖 3 INCOME TAX RESOLVER<br/>scoped corpus only"))
-    N4(("🤖 4 GST RESOLVER<br/>scoped corpus only"))
-    C["⚙ C CITATION MATCHER<br/>accept=False → conclusion DROPPED"]
-    N5(("🤖 5 ADVERSARIAL CHECKER<br/>different model, attacks everything above"))
-    D["⚙ D DISCLOSURE COMPOSER<br/>deterministic HTML template"]
+    N1(("🤖 1 EXTRACT<br/>Qwen2.5-7B-Instruct<br/>facts + confidence + source_span"))
+    N2(("🤖 2 GAP DETECTOR<br/>Qwen2.5-7B-Instruct<br/>missing[] — runs BEFORE reasoning"))
+    A["⚙ A GAP CONSTRAINT ENFORCER<br/>no model<br/>forces certainty to insufficient_evidence"]
+    B["⚙ B VALUATION LATTICE<br/>no model, no API<br/>every defensible figure, arithmetic only"]
+    N3(("🤖 3 INCOME TAX RESOLVER<br/>Qwen2.5-72B-Instruct<br/>scoped corpus only"))
+    N4(("🤖 4 GST RESOLVER<br/>Qwen2.5-72B-Instruct<br/>scoped corpus only"))
+    C["⚙ C CITATION MATCHER<br/>no model<br/>accept=False → conclusion DROPPED"]
+    N5(("🤖 5 ADVERSARIAL CHECKER<br/>Mistral-Large-Instruct-2411, deliberately different family<br/>attacks every conclusion above, publishes it either way"))
+    D["⚙ D DISCLOSURE COMPOSER<br/>no model<br/>deterministic HTML template"]
     OUT["📋 disclosure record<br/>output-interface.html"]
+    ELECT["🧑 HUMAN INPUT — OPTIONAL, NEVER REQUIRED<br/>taxpayer may tick which figure they file<br/>no option is pre-selected"]
 
     IN --> N1 --> N2 --> A
     A --> N3
@@ -49,19 +56,22 @@ flowchart TD
     B --> N4
     N3 --> C
     N4 --> C
-    C --> N5 --> D --> OUT
+    C --> N5 --> D --> OUT --> ELECT
 
     classDef model fill:#fde3cf,stroke:#c2571a,stroke-width:2px,color:#5c2a00;
     classDef code fill:#d6f5e3,stroke:#1a7a4c,stroke-width:2px,color:#0a3d24;
+    classDef human fill:#e8d9f5,stroke:#6a3fa0,stroke-width:2px,color:#3a1f5c;
     classDef io fill:#e8e8f0,stroke:#4a4a6a,stroke-width:1.5px,color:#222;
 
     class N1,N2,N3,N4,N5 model;
     class A,B,C,D code;
-    class IN,OUT io;
+    class IN,ELECT human;
+    class OUT io;
 ```
 
-**Legend:** 🤖 round = a model call, can be wrong. ⚙ square = ordinary code,
-cannot invent. Grey = input/output, not a processing step.
+**Legend:** 🧑 purple = a human input point (marked required or optional).
+🤖 round orange = a model call, names the real model, can be wrong. ⚙ square
+green = ordinary code, cannot invent.
 
 ---
 
@@ -83,13 +93,14 @@ cannot invent. Grey = input/output, not a processing step.
 
 ## One thing this diagram cannot show, said here instead
 
-`architecture.md`'s own warning box under 🤖 5 still reads *"this node has
-never run."* That was true 19 August. It is not true now — node 5 has run
-eight times as of `results.md`'s Block F (21 August), caught three real,
+`architecture.md`'s own warning box under 🤖 5 originally read *"this node
+has never run"* — true 19 August, false by the time this flowchart was
+first built. Fixed directly in `architecture.md` itself as of this
+revision, not just noted here. Node 5 has since run repeatedly, caught real,
 previously-undisclosed scope-reach errors in this project's own output
-unprompted, and also produced two documented failures of its own (attacking
-almost everything it sees; emitting incoherent output on one run). Both are
+unprompted, and also produced real failure modes of its own (attacking
+almost everything it sees; emitting incoherent output on one run) —
 disclosed in `results.md`'s "Where we lose," not hidden because the node
-also has real wins. This diagram shows the pipeline's shape, which hasn't
-changed since 19 August; it does not show which claims about that shape are
-now stale — `results.md` is where the current numbers live.
+also has real wins. This diagram shows the pipeline's shape, which has been
+stable since 19 August; `results.md` and `START-HERE.md` are where the
+current numbers and the full decision history actually live.

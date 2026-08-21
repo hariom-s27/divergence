@@ -167,7 +167,7 @@ Every "what fails without this" traces to a numbered, **pre-registered** failure
 
 **Why it is not a model call.** The headline number must never be a token prediction (D38). Everything here is arithmetic over retrieved inputs, each carrying its source. It also means **the demo needs no API**, which is why the recorded run cannot fail on stage.
 
-**Why the schema forbids one answer.** `valuation.methods` has `minItems: 2`. **A single figure is a schema violation, not a valid output.** The thesis, in code.
+**Why the schema forbids a silently-picked single answer.** `valuation.methods` originally had `minItems: 2` — **a single figure was a schema violation, not a valid output.** Amended to `minItems: 1` (decision D51, C1's real case: a plain domestic invoice genuinely has no currency dispute to enumerate). The distinction the schema now enforces is narrower and more honest: a single method is valid only when `spread.inr == 0` — a real, checkable absence of dispute — never as an incomplete lattice standing in for one. The thesis is still in code; the code got more precise about what it actually forbids.
 
 ---
 
@@ -254,7 +254,23 @@ Same citation, two years, two answers. **It catches five of our own historical e
 
 **What is unusual is not that we critique — it is what the critique is allowed to do.** Every system in the literature uses critique to *improve* the answer before you see it. **We publish the attack and downgrade the conclusion.** The critique is an output, not a hidden step.
 
-> ⚠️ **This node has never run.** Its real successes so far — Rule 57 row 7, the five stale citations, the FERA finding — were all found by **humans** reading adversarially. **The ablation at Step 29b is what decides whether it earns its place.** If it catches the four planted defects, it earns it with evidence. If it does not, that is a more interesting result than a working feature, and we report it.
+> ⚠️ **This warning box is kept as written, not deleted, because the ablation
+> it predicted actually happened — see the update immediately below rather
+> than treating this as still-current.** It originally read: *"This node has
+> never run. Its real successes so far — Rule 57 row 7, the five stale
+> citations, the FERA finding — were all found by humans reading
+> adversarially. The ablation at Step 29b is what decides whether it earns
+> its place."*
+>
+> **Update, 21 Aug — no longer accurate, kept for the record:** the node has
+> now run repeatedly. The planted-defect ablation scored 3 of 4
+> (`DECISION-D50.md`). It went on to catch three real, previously
+> undisclosed scope-reach defects in this project's own resolver output, on
+> unplanted data, the same night — `DECISION-D50.md`'s addendum,
+> `DECISION-D54.md`, `DECISION-D55.md`. It also, separately, produced two
+> real failure modes of its own (attacking almost everything it's shown; one
+> run of incoherent output) — disclosed in `results.md`'s "Where we lose,"
+> not hidden because the node also has real wins.
 
 ---
 
