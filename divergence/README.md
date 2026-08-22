@@ -8,7 +8,7 @@ the folder you opened.
 ## Read this first
 
 **[`START-HERE.md`](START-HERE.md)** — the mental model, every command to
-run the pipeline end to end, and all 27 dated design decisions merged into
+run the pipeline end to end, and all 28 dated design decisions merged into
 one chronological read. If you only open one file, open that one.
 
 ## The three files required by the track's submission rules
@@ -34,7 +34,7 @@ that genuinely have no dispute. Open it directly in a browser.
 | `runs/` | Saved, real output records from actual runs — nothing in here is a mockup |
 | `eval/` | The scoring scripts (`score.py`, `normalize_runs.py`) |
 | `prior-art/` | Two research documents checking whether this problem is already solved, and whether real people actually hit it |
-| `DECISION-D41.md` … `DECISION-D67.md` | Twenty-seven dated documents, each recording one real design decision or bug — merged into `START-HERE.md`, kept individually for full detail |
+| `DECISION-D41.md` … `DECISION-D68.md` | Twenty-eight dated documents, each recording one real design decision or bug — merged into `START-HERE.md`, kept individually for full detail |
 | `corpus_hash.py`, `corpus/FREEZE-HASHES.json` | Corpus integrity: a real SHA-256 per Tier A file, checked in CI so a corpus edit that isn't re-frozen deliberately fails loudly instead of shipping silently |
 | `make_flowchart.py` | Regenerates `flowchart.png` from scratch (matplotlib, not a screenshot or a Mermaid export) — real model names and human-input markers baked into the image itself |
 | `mutation_corpus.py`, `binom_ci.py` | Reports, not gates: 7 mutation operators measuring what the deterministic checks actually catch (D61); exact Clopper-Pearson intervals for this project's own small-n proportions |
@@ -43,6 +43,7 @@ that genuinely have no dispute. Open it directly in a browser.
 | `disagreement_gate.py` | Arm D: deterministic k-sample disagreement check on certainty/citation, self-tested against D1's real 3-seed data — and the file that found a real cross-Act citation bug already shipped in `scope_enforcer.py` (D65) |
 | `CONTRASTIVE-EXEMPLARS.md` | The three real scope-reach failures as WRONG/RIGHT pairs, each sourced and quoted, not constructed — for Q&A now, and the literal content for a tested prompt change later |
 | `CORPUS-PROVENANCE.md` | Why the corpus is hand-curated: six real sources checked directly, including a genuine surprise — India Code's own JSON API exists and works, but indexes catalogue metadata only, never the statute text itself |
+| `capability_probe.py` | S8: is `response_format` a silent no-op on this provider? A prompt/flag conflict test isolates the flag's real effect from the model's own willingness to comply — classifier self-tested against five fixtures (D68); the live two-call probe itself needs an API key, so it's a manual tool, not a CI gate |
 | `results.md`, `ITERATION-STORY.md`, `architecture.md`, `GAZETTE-FINDINGS.md` | The deeper reading — metrics including where the pipeline loses, seven curated moments of what broke, node-by-node rationale, and what the actual gazette text says |
 | `step19drop/`, `step21drop/`, `step22drop/` | Earlier project states, kept for the record as the project evolved — not the current submission, but not deleted either |
 | `output-interface.html`, `demo-C1.html`, `demo-C2.html` | The generated disclosure pages `index.html` links to |

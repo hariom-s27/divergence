@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 27 decision documents merged into one chronological read — so you don't have to open twenty-seven separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 28 decision documents merged into one chronological read — so you don't have to open twenty-eight separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-seven dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-eight dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -524,6 +524,32 @@ a new key, proving the prompt genuinely changed rather than silently
 no-op'ing. **Not built**: whether draft-blind verification actually
 catches more — that needs a live call comparing both prompts, the same
 constraint every S/M item touching real model behaviour has hit.
+
+## [D68](DECISION-D68.md) — capability probe: is `response_format` a silent no-op?
+Every resolver call sets `response_format={"type": "json_object"}`. If
+Featherless's OpenAI-compatible layer hard-rejects it, `_raw_call`
+already catches that and retries without it — a loud, handled failure.
+Never checked the quiet case: the field is accepted without complaint,
+but the actual open-weight model behind the proxy never implemented
+grammar-constrained decoding and just ignores it — no exception, no
+signal, indistinguishable from working. `capability_probe.py` fires the
+same prompt twice per model slot, asking explicitly for plain prose, not
+JSON — once with the flag set, once without (the control). If the flag
+has real teeth it should win against an instruction that directly
+contradicts it; if the flagged call comes back as prose too, identical
+to the unflagged control, the flag changed nothing observable.
+Deliberately not this project's own "reply in JSON" prompts, so the
+model's own voluntary compliance can't manufacture a false positive.
+Grepped every doc first for an existing "JSON mode" claim to correct —
+zero hits, so this closes a gap rather than walking back an overclaim.
+The classifier is a pure function, self-tested against five hand-built
+fixtures (all five verdicts), and CI-gated on that basis; also added
+`llm_call.try_parse_json()`, a small public wrapper around the
+pipeline's existing relaxed JSON parser, so the probe judges "is this
+JSON" by the exact standard the real pipeline uses. **Not built**: which
+verdict any real model slot actually gets — needs a live
+`FEATHERLESS_API_KEY` this environment doesn't have, the same
+constraint as D62 through D67.
 
 ---
 

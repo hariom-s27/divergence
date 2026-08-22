@@ -333,6 +333,20 @@ def _extract_json(text):
     raise ValueError("no parseable JSON object in response")
 
 
+def try_parse_json(text):
+    """Public, side-effect-free wrapper around _extract_json.
+
+    S8/D68: capability_probe.py needs to know whether a raw response
+    would satisfy the pipeline's own relaxed parser (fence-stripping,
+    brace-matching -- not just strict json.loads), without pulling in
+    any of call_json's retry-and-repair loop. Returns the parsed object,
+    or None if the pipeline's own parser would also reject it."""
+    try:
+        return _extract_json(text)
+    except ValueError:
+        return None
+
+
 # ----------------------------------------------------------------------
 # Retry policy  --  retry what can succeed, fail fast on what cannot
 # ----------------------------------------------------------------------
