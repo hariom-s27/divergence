@@ -2,6 +2,12 @@
 ### What we looked at — and therefore what our silence means
 **Regenerated: 2026-08-19 · 17 Tier A files · ALL COMPLETE**
 
+**Why hand-curated at all, rather than fetched:** [`../CORPUS-PROVENANCE.md`](../CORPUS-PROVENANCE.md)
+checks six real sources for a machine-readable Indian-statute feed. One
+genuine surprise: India Code's own JSON API is real and works — but
+indexes catalogue metadata only, never section text. No source checked
+can deliver what this file's own rows do.
+
 **Superseded the 2026-08-06 freeze.** The notified Income-tax Rules, 2026 gazette added four more provisions since the original freeze (`ITR2026-RULE-206`, `ITR2026-RULE-207`, `ITR2026-RULE-247`, `ITR2026-RULE-56`), and the corpus was re-audited against `gate0_check.py` on 2026-08-19: two shadow/stale duplicates retired (`IT-RULE-207.md`, and `IT-RULE-206.md` which despite its name held the old Rule 115 text), one non-statutory document demoted to Tier B (`FBIL-METHODOLOGY.md`), and two documents given a citable handle that were previously unmatchable (`ITR2026-RCASP-VALUATION.md`, `SBI-TTBR-DATA.md`). Citing "Rule 115" for FY 2026-27 now correctly resolves `STALE` (redirects to Rule 206) instead of the old file's accidental `VERIFIED` — see `citation_matcher.py`'s self-test, case "OUR OWN ERROR #3".
 
 ---
