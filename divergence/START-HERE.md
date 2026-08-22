@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 24 decision documents merged into one chronological read — so you don't have to open twenty-four separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 25 decision documents merged into one chronological read — so you don't have to open twenty-five separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-four dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-five dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -466,6 +466,30 @@ every existing saved record predates this instrumentation, and producing
 a genuine one needs a live API key this environment doesn't have. Stated
 as pending, same as D62's live verification, not fabricated or quietly
 dropped.
+
+## [D65](DECISION-D65.md) — disagreement gate (Arm D), and a real cross-Act bug it caught in already-shipped code
+`disagreement_gate.py` compares *k* independent resolver samples of the
+same input on `certainty`/`citation`, deterministically — the structured
+signal `results.md` Block F's real 50/75/0 seed instability never got
+turned into. Self-tested against D1's three real frozen seed records
+(genuine *k*=3): correctly flags disagreement on 2 of 3 regimes, unanimous
+on the third. **Building it found a real, latent bug in `scope_enforcer.py`
+(D59) — already shipped, already a CI gate.** Citation normalisation
+needs to compare which Act a reference is in before trusting a base-number
+match; the first version of this file's own comparison skipped that
+check, and a real GST citation resolved to a FEMA corpus file's
+provision_id. The identical gap, traced back, was already present in
+`scope_enforcer.py`'s `_match_provision_id()` — `SCOPE_CHECKS` happens to
+be keyed to three bracket-less provision references (Rule 206/207/57),
+exactly the precondition that triggers it. No evidence a real record was
+ever mismatched this way, but the guard was structurally absent, not
+merely untested. Fixed in both files; re-verified `scope_enforcer.py`'s
+full self-test, the real D1 regression, and the real historical-bug catch
+all still pass unchanged, then added a permanent regression test using
+the actual GST/FEMA collision so this cannot silently reopen. **Not
+built**: real *k*=5 sampling — needs five live resolver calls this
+environment has no key for; the comparison logic itself is *k*-agnostic
+and needs no change once someone with a key produces them.
 
 ---
 

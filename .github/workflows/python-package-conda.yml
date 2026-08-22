@@ -47,6 +47,10 @@ jobs:
       run: |
         cd divergence
         python injection_scanner.py --self-test
+    - name: Disagreement gate self-test (Arm D)
+      run: |
+        cd divergence
+        python disagreement_gate.py --self-test
     - name: Replay reproducibility check (no API key)
       run: |
         cd divergence

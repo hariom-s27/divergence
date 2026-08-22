@@ -425,7 +425,7 @@ checked independently rather than assumed from a title:
 
 ## 6. Where the deeper material lives
 
-- **All 24 decision documents, the mental model, and the full run guide,
+- **All 25 decision documents, the mental model, and the full run guide,
   merged into one chronological file:** [`START-HERE.md`](START-HERE.md)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)

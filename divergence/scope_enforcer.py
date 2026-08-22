@@ -143,12 +143,37 @@ SCOPE_CHECKS = {
 
 
 def _match_provision_id(citation_text, corpus):
+    """D65: MUST cross-check the instrument (which Act/Rules) before
+    trusting a ref match, same as citation_matcher.verify() itself does.
+    Found live, 22 Aug, building disagreement_gate.py against this exact
+    same pattern copied there: without the instrument check,
+    _refs_match()'s "one bracket chain is a prefix of the other" rule
+    means a BRACKET-LESS stored reference (Rule 206/207/57 are all bare
+    rule numbers, no sub-clause) matches ANY cited reference with the
+    same base number, regardless of which Act or Rules it's actually in.
+    Confirmed concretely: a GST citation to "Section 2(6)" and a FEMA
+    citation to "Section 2, clauses (h)(m)(n)(q)" both matched on bare
+    section number 2 without this guard. This function had silently
+    carried the same gap since it was written (D59) -- SCOPE_CHECKS is
+    keyed to exactly the bracket-less provision_ids (Rule 206/207/57)
+    that trigger it, so an unrelated citation sharing one of those base
+    numbers under a different Act could have been mismatched into a
+    scope-violation drop it had nothing to do with. No evidence this
+    happened on any real record (the resolvers' scoped corpora don't
+    plausibly produce that collision), but the guard was missing on
+    principle, not caught by any test until a second file copied the
+    same gap and got checked against real data."""
     cited_refs = citation_matcher.extract_refs(citation_text)
     if not cited_refs:
         return None
+    cited_inst = citation_matcher.instrument_of(citation_text)
     for e in corpus:
-        cur_refs = citation_matcher.extract_refs(e.get("current_citation") or "")
-        old_refs = citation_matcher.extract_refs(e.get("former_citation") or "")
+        cur_txt, old_txt = e.get("current_citation") or "", e.get("former_citation") or ""
+        stored_inst = citation_matcher.instrument_of(cur_txt) or citation_matcher.instrument_of(e.get("provision_id") or "")
+        if cited_inst and stored_inst and cited_inst != stored_inst:
+            continue
+        cur_refs = citation_matcher.extract_refs(cur_txt)
+        old_refs = citation_matcher.extract_refs(old_txt)
         if any(citation_matcher._refs_match(c, s)
                for c in cited_refs for s in cur_refs + old_refs):
             return e.get("provision_id")
@@ -262,6 +287,25 @@ SELF_TEST_REGIMES = [
 ]
 
 
+def _test_instrument_cross_check(corpus):
+    """D65 regression. Real corpus data, real collision: 'Section 2(6),
+    Integrated Goods and Services Tax Act, 2017' and FEMA-2n's own
+    'Section 2, clauses (h), (m), (n), (q), Foreign Exchange Management
+    Act, 1999' both extract base section number 2 -- and FEMA-2n's
+    reference carries no bracket suffix, which _refs_match()'s own
+    "one bracket chain is a prefix of the other" rule treats as a
+    prefix-match for ANY more specific citation to the same base number,
+    in ANY Act, without the instrument cross-check this test exists to
+    lock in. Confirmed live, 22 Aug, building disagreement_gate.py: this
+    function returned 'FEMA-2n' for a GST citation until fixed."""
+    gst_pid = _match_provision_id("Section 2(6), Integrated Goods and Services Tax Act, 2017", corpus)
+    fema_pid = _match_provision_id("Section 2, clauses (h)(m)(n)(q), Foreign Exchange Management Act, 1999", corpus)
+    ok = gst_pid == "GST-IGST-2-6" and fema_pid == "FEMA-2n" and gst_pid != fema_pid
+    print(f"  {'instrument cross-check (D65)':<38}{'':<8}{'':<24}"
+          f"{'GST≠FEMA':<10}{gst_pid + '/' + str(fema_pid):<10}{'OK' if ok else 'FAIL'}")
+    return ok
+
+
 def self_test():
     corpus = citation_matcher.load_corpus()
     print("\n  SELF-TEST — scope-reach enforcer\n")
@@ -279,10 +323,12 @@ def self_test():
               f"{'DROP' if got_dropped else 'keep':<10}{'OK' if ok else 'FAIL'}")
         if dropped:
             print(f"    -> {dropped[0]['reason']}")
-    print(f"\n  {passed}/{len(SELF_TEST_REGIMES)} as expected.")
+    passed += _test_instrument_cross_check(corpus)
+    total = len(SELF_TEST_REGIMES) + 1
+    print(f"\n  {passed}/{total} as expected.")
     print("  Every DROP above happened in code, keyed to a real historical "
           "misfire. Nothing here asked the model nicely.\n")
-    return passed == len(SELF_TEST_REGIMES)
+    return passed == total
 
 
 def main():
