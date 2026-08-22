@@ -41,6 +41,7 @@ that genuinely have no dispute. Open it directly in a browser.
 | `injection_scanner.py`, `cases/ADV1-injection/` | Prompt-injection defence for the one node that reads untrusted text — a CI-gated pattern scanner plus nonce spotlighting in `node1_extract.py`, verified against a real adversarial case (D62) |
 | `replay_cache.py`, `build_replay_cache.py`, `replay_cache/` | Reproduces D1's real run with `DIVERGENCE_REPLAY=1` and zero API calls — a CI gate on every push, in a runner with no key configured at all (D63) |
 | `disagreement_gate.py` | Arm D: deterministic k-sample disagreement check on certainty/citation, self-tested against D1's real 3-seed data — and the file that found a real cross-Act citation bug already shipped in `scope_enforcer.py` (D65) |
+| `CONTRASTIVE-EXEMPLARS.md` | The three real scope-reach failures as WRONG/RIGHT pairs, each sourced and quoted, not constructed — for Q&A now, and the literal content for a tested prompt change later |
 | `results.md`, `ITERATION-STORY.md`, `architecture.md`, `GAZETTE-FINDINGS.md` | The deeper reading — metrics including where the pipeline loses, seven curated moments of what broke, node-by-node rationale, and what the actual gazette text says |
 | `step19drop/`, `step21drop/`, `step22drop/` | Earlier project states, kept for the record as the project evolved — not the current submission, but not deleted either |
 | `output-interface.html`, `demo-C1.html`, `demo-C2.html` | The generated disclosure pages `index.html` links to |

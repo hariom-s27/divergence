@@ -93,7 +93,10 @@ planted. **None of the five was visible to any of our five accuracy
 metrics** — M3 and M4 stayed at 100% and 12/12 through every version.
 That's not our bug list, it's our result: a model given verbatim statute
 and an underdetermined question reliably reaches for the nearest rule that
-mentions the right words. Full account: `DOCUMENTATION.md` §5.
+mentions the right words. Full account: `DOCUMENTATION.md` §5. **If asked
+for a concrete example on the spot**, `CONTRASTIVE-EXEMPLARS.md` has three,
+each the real wrong output next to the exact corpus text that makes it
+wrong — no need to reconstruct one live.
 
 ### 9. "Why nine steps and not one prompt?"
 
