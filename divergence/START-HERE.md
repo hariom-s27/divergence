@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 26 decision documents merged into one chronological read — so you don't have to open twenty-six separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 27 decision documents merged into one chronological read — so you don't have to open twenty-seven separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-six dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-seven dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -506,6 +506,24 @@ versions this project's own work has run against all session
 `jsonschema==4.26.0`), re-verified `pip-audit` still clean against the
 pinned file. The other (no cost ceiling on API spend) stays open,
 disclosed, not silently implied fixed by the same commit.
+
+## [D67](DECISION-D67.md) — factored (draft-blind) verification in node 5, opt-in
+Node 5 has always seen each conclusion's own `reasoning` field before
+attacking it — the resolver's own persuasive case for its own conclusion,
+read by the step meant to independently check it, the same
+self-favouring-evaluator mechanism D41 already cites (Panickssery et al.)
+to justify the cross-model-family rule, just not yet addressed for the
+narrower within-prompt version. `node5_adversarial.check(...,
+draft_blind=False)` and `run_pipeline.py --node5 --draft-blind` strip
+`reasoning` from a deep copy of each conclusion before it reaches the
+model, off by default. Verified three ways without a live key: the
+default path's cache key is provably byte-identical to before (still hits
+the seeded replay entry); `_strip_draft_fields()` never mutates the
+caller's own list; the blind path correctly misses the replay cache with
+a new key, proving the prompt genuinely changed rather than silently
+no-op'ing. **Not built**: whether draft-blind verification actually
+catches more — that needs a live call comparing both prompts, the same
+constraint every S/M item touching real model behaviour has hit.
 
 ---
 

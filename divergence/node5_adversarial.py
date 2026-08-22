@@ -28,7 +28,7 @@ Reads   the SYSTEM block of step22drop/prompts/05-adversarial.md
 Writes  attack.json: {"attacked": [...], "checked_and_survived": [...], "limits": [...]}
 """
 
-import os, sys, json, glob, re, argparse
+import os, sys, json, glob, re, copy, argparse
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -200,16 +200,62 @@ def _reject_upward_revisions(attacked, regimes):
     return rejected
 
 
-def check(regimes, missing, valuation, tax_year, model="adversarial"):
+_DRAFT_FIELDS = ("reasoning",)  # the resolver's OWN persuasive case for its
+# own conclusion -- schema.json's description of this field is literally
+# "why this provision reaches these facts, or why it does not." Exactly
+# the thing a factored/draft-blind verifier isn't supposed to read.
+
+
+def _strip_draft_fields(regimes):
+    """S6: node 5 currently reads the resolver's own `reasoning` alongside
+    the claim it's meant to independently check -- a real, direct
+    self-consistency-bias exposure of the identical shape D41 already
+    grounds this node's model-family requirement in (Panickssery et al.,
+    NeurIPS 2024: an LLM evaluator favours reasoning that reads like its
+    own). "Draft-blind" / factored verification means showing a verifier
+    the claim and the evidence it can check independently, not the
+    original producer's argument for why it should be believed. Returns a
+    deep copy -- the caller's regimes[] (which downstream code still
+    needs `reasoning` in) is never mutated."""
+    out = []
+    for r in regimes:
+        r2 = copy.deepcopy(r)
+        for f in _DRAFT_FIELDS:
+            r2.pop(f, None)
+        out.append(r2)
+    return out
+
+
+def check(regimes, missing, valuation, tax_year, model="adversarial", draft_blind=False):
     """The reusable entry point -- run_pipeline.py calls this when --node5
-    is passed. Returns (attacked, checked_and_survived, limits, meta)."""
+    is passed. Returns (attacked, checked_and_survived, limits, meta).
+
+    draft_blind=True (S6, DECISION-D67.md): strips each conclusion's own
+    `reasoning` field before node 5 ever sees it, forcing it to check the
+    outcome/citation/certainty against the statutory text directly rather
+    than against the resolver's own explanation of itself. Off by
+    default -- changes what the model actually receives, and the only
+    way to know whether it changes what the model actually catches is a
+    live run this environment has no API key to make (same constraint as
+    D62/D63/D64/D65/D66). Built and wired so the comparison is one flag
+    away the moment someone can run it, not designed for and left
+    unbuilt."""
     system = load_system_prompt()
     corpus_text, corpus_files = load_full_corpus()
+    regimes_shown = _strip_draft_fields(regimes) if draft_blind else regimes
+    blind_note = (
+        "\n\nNOTE: each conclusion below has had its own `reasoning` field "
+        "removed on purpose (factored/draft-blind verification, S6). "
+        "Check the outcome, citation, and certainty against the statutory "
+        "text yourself -- do not assume the omitted reasoning would have "
+        "justified it."
+    ) if draft_blind else ""
     user = (
         f"TAX YEAR: {tax_year}\n\n"
         f"CONCLUSIONS TO ATTACK (already through the citation matcher -- "
-        f"these are nodes 3/4's kept output, not raw model text):\n"
-        f"{json.dumps(regimes, indent=2)}\n\n"
+        f"these are nodes 3/4's kept output, not raw model text):"
+        f"{blind_note}\n"
+        f"{json.dumps(regimes_shown, indent=2)}\n\n"
         f"GAP LIST (from node 2):\n{json.dumps(missing, indent=2)}\n\n"
         f"VALUATION LATTICE (from node 3, deterministic arithmetic -- do "
         f"not attack the rupee figures themselves, only a label on one or "
@@ -241,6 +287,9 @@ def main():
     ap.add_argument("--tax-year", required=True)
     ap.add_argument("--out", default=None)
     ap.add_argument("--model", default="adversarial")
+    ap.add_argument("--draft-blind", action="store_true",
+                     help="S6: strip each conclusion's own reasoning[] before node 5 "
+                          "sees it -- factored verification, off by default")
     a = ap.parse_args()
 
     regimes_doc = json.load(open(a.regimes, encoding="utf-8"))
@@ -252,7 +301,8 @@ def main():
 
     print(f"  [{NODE_NAME}] provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}")
     try:
-        attacked, survived, limits, meta = check(regimes, missing, valuation, a.tax_year, model=a.model)
+        attacked, survived, limits, meta = check(regimes, missing, valuation, a.tax_year,
+                                                 model=a.model, draft_blind=a.draft_blind)
     except LLMError as e:
         die(str(e))
 

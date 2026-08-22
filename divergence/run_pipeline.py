@@ -230,6 +230,11 @@ def main():
                      help="Step 5: run the adversarial checker on the assembled regimes[] "
                           "before writing the record. Off by default so every existing run "
                           "stays reproducible without it.")
+    ap.add_argument("--draft-blind", action="store_true",
+                     help="S6/D67: with --node5, strip each conclusion's own reasoning[] "
+                          "before node 5 sees it (factored verification). Off by default -- "
+                          "changes what the model receives, so every existing --node5 run "
+                          "stays reproducible without it too.")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -304,10 +309,11 @@ def main():
 
     attacked = None
     if a.node5:
-        print(f"\n  [7/{N}] 🤖 5 ADVERSARIAL CHECKER")
+        print(f"\n  [7/{N}] 🤖 5 ADVERSARIAL CHECKER"
+              + ("  (draft-blind)" if a.draft_blind else ""))
         try:
             attacked, survived, a5_limits, m5 = node5_adversarial.check(
-                regimes, missing, valuation or {}, a.tax_year)
+                regimes, missing, valuation or {}, a.tax_year, draft_blind=a.draft_blind)
         except LLMError as e:
             die(str(e))
         landed = [x for x in attacked if not x.get("survived")]
