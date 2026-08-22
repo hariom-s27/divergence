@@ -3,8 +3,18 @@
 # The eval runs on Featherless open models (D35/D42) -> needs `openai`.
 # `anthropic` is kept so the Claude cost estimate can be re-metered if asked.
 # The provider is chosen at runtime by which API key is set (llm_call.py).
+#
+# Pinned with == (D66, S7 of the SHOULD list) -- these are the exact
+# versions this project's own CI has actually run and passed against, not
+# a guess at "latest". A floor (>=) means a fresh install six months from
+# now silently pulls whatever is newest at that moment; pip-audit (CI)
+# still catches a KNOWN vulnerability in a pinned version, but an
+# unpinned floor means the version installed on any given day isn't even
+# a fixed target to audit. Bump deliberately, as its own commit, after
+# confirming CI still passes -- never as a side effect of an unrelated
+# change.
 
-openai>=1.40.0
-anthropic>=0.97.0
-pypdf>=4.0.0          # node1_extract.py: text-extracts a --file PDF (no native PDF block over OpenAI-compat)
-jsonschema>=4.0.0     # optional: run_pipeline.py falls back to a structural check without it
+openai==2.30.0
+anthropic==0.97.0
+pypdf==6.16.1          # node1_extract.py: text-extracts a --file PDF (no native PDF block over OpenAI-compat)
+jsonschema==4.26.0     # optional: run_pipeline.py falls back to a structural check without it

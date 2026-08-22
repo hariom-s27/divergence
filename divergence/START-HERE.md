@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 25 decision documents merged into one chronological read — so you don't have to open twenty-five separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 26 decision documents merged into one chronological read — so you don't have to open twenty-six separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-five dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-six dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -490,6 +490,22 @@ the actual GST/FEMA collision so this cannot silently reopen. **Not
 built**: real *k*=5 sampling — needs five live resolver calls this
 environment has no key for; the comparison logic itself is *k*-agnostic
 and needs no change once someone with a key produces them.
+
+## [D66](DECISION-D66.md) — OWASP LLM Top 10 mapping, and pinning requirements.txt
+`SECURITY.md` gained a table against the real, verified OWASP Top 10 for
+LLM Applications 2025 (checked against two independent sources, not
+memory) — mapped honestly: three categories marked not applicable by
+design (no tool access, no vector DB, prompts already public), two named
+as this project's actual thesis rather than a defended-against risk
+(output validation, misinformation), and two marked explicitly partial
+with the exact gap named. One of those two gaps — `requirements.txt`
+using `>=` instead of `==`, meaning `pip-audit`'s clean scan was never
+auditing a fixed target — closed the same commit: pinned to the exact
+versions this project's own work has run against all session
+(`openai==2.30.0`, `anthropic==0.97.0`, `pypdf==6.16.1`,
+`jsonschema==4.26.0`), re-verified `pip-audit` still clean against the
+pinned file. The other (no cost ceiling on API spend) stays open,
+disclosed, not silently implied fixed by the same commit.
 
 ---
 

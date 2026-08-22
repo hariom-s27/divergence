@@ -87,6 +87,27 @@ than let a reader discover it, and that applies to this file too:
   shadow-citation checks, human review against `source_url`), not by
   cryptography.
 
+## Threat model, mapped to OWASP Top 10 for LLM Applications 2025
+
+Verified against the official list (two independent sources, since the
+canonical `genai.owasp.org` page 403'd a direct fetch) before mapping
+anything to it — not assumed from memory. Mapped honestly: several
+categories genuinely don't apply to this architecture, and that's stated
+as plainly as the ones that do, not padded to look more complete.
+
+| # | Category | This project |
+|---|---|---|
+| LLM01 | Prompt Injection | **Addressed, not solved.** `injection_scanner.py` + nonce spotlighting, above. Real defence, real stated limits, live verification still pending a key. |
+| LLM02 | Sensitive Information Disclosure | **Mostly moot by design.** No real user data exists to disclose (every case is fictional); the one real secret class (API keys) is covered above. Nothing else in this pipeline handles data a disclosure would harm anyone over — the statutory corpus is meant to be public. |
+| LLM03 | Supply Chain | **Partial.** `pip-audit` scans `requirements.txt` in CI (clean as of this writing) — but the file pins with `>=`, not `==`, so a dependency update between scans could still land unreviewed. Open; see `DECISION-D66.md`. |
+| LLM04 | Data and Model Poisoning | **Not model training — corpus integrity is the real analogue, and it's covered.** No model is trained or fine-tuned here. This pipeline's closest equivalent to a poisoned knowledge base is a tampered statutory corpus, and that's exactly what `corpus_hash.py` (D60) defends against — a corpus edit that isn't followed by a deliberate `--freeze` fails CI, visibly. |
+| LLM05 | Improper Output Handling | **This is close to the project's actual thesis, not a gap.** Every model output is validated and cross-checked before it reaches a reader — `citation_matcher.py`, `scope_enforcer.py`, `gap_enforcer.py`, `node5_adversarial.py`'s own `_reject_upward_revisions`. Nothing here treats a model's JSON as trusted just because it parsed. |
+| LLM06 | Excessive Agency | **Not applicable — by design, not by luck.** No node has tool access, autonomous action, or the ability to affect anything beyond its own JSON output. Every real decision (drop a citation, force a certainty value) happens in deterministic code that reads a model's output, never in the model itself acting. |
+| LLM07 | System Prompt Leakage | **Low stakes, and mostly moot.** Every system prompt this project uses is already public, in this repository, in `step22drop/prompts/*.md` — there is no hidden instruction whose disclosure would matter. The nonce-spotlighting instruction (D62) is a real addition to those prompts and is exactly as public as the rest. |
+| LLM08 | Vector and Embedding Weaknesses | **Not applicable.** No vector database, no embeddings, no semantic retrieval anywhere in this pipeline — corpus injection is a fixed, hand-scoped file list per node (D31/C22), not a retrieval step. Also the reason this project cites Cymbler et al.'s static-RAG finding (`prior-art/READING-CARDS.md` #7) as external support for that choice, not just an internal preference. |
+| LLM09 | Misinformation | **The project's actual subject, not a side effect.** Hallucinated citations, scope-reach failures, and false confidence are what `citation_matcher.py`, `scope_enforcer.py`, and node 5 exist to catch — documented at length everywhere else in this repository, not just here. |
+| LLM10 | Unbounded Consumption | **Partially bounded.** `llm_call.py` caps retries (`MAX_ATTEMPTS = 3`) and output tokens (`max_tokens`) on every call. No cost ceiling or spend alerting exists — moot for a local/CI pipeline with no public endpoint accepting input, but would need to exist before this became a real product, same caveat as rate limiting above. |
+
 ## Reporting something
 
 This is a student hackathon project with no dedicated security contact
