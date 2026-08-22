@@ -22,10 +22,12 @@ made. DIVERGENCE reads the actual law, and when the law genuinely does not
 decide, it says so — with every defensible number shown, not one invented
 one hidden behind false confidence.
 
-**See it in one click:** [`divergence/index.html`](divergence/index.html) —
-twelve real defensible figures on the hard case, one real figure each on
-two cases that genuinely have no dispute. The same pipeline, unedited
-output, side by side.
+**See it in one click, live, no download:**
+[hariom-s27.github.io/divergence](https://hariom-s27.github.io/divergence/)
+— or open [`divergence/index.html`](divergence/index.html) directly from
+this repo, same file either way. Twelve real defensible figures on the
+hard case, one real figure each on two cases that genuinely have no
+dispute. The same pipeline, unedited output, side by side.
 
 ## Run it — one command, real output
 

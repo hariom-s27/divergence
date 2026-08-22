@@ -1,0 +1,35 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          # Publishes the actual submission folder as-is -- index.html is
+          # the entry point (three real records side by side). .md files
+          # linked from it render as raw text here, not GitHub's rendered
+          # markdown -- a known, accepted tradeoff for a static Pages site,
+          # not silently hidden (see README.md's Sustainability/UX section).
+          path: 'divergence'
+      - id: deployment
+        uses: actions/deploy-pages@v4

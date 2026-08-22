@@ -1,9 +1,11 @@
 # Security
 
-This is a hackathon submission (DIVERGENCE, ReverieHacks 2026), not a
-deployed service. No live server, no user accounts, no database of real
-people's data. That shapes what "security" actually means here — this
-file says what is and is not true, not a generic policy copied in.
+This is a hackathon submission (DIVERGENCE, ReverieHacks 2026). No user
+accounts, no database of real people's data, no backend at all — the one
+thing served live is the same static HTML this repository already
+contains, unmodified, via GitHub Pages. That shapes what "security"
+actually means here — this file says what is and is not true, not a
+generic policy copied in.
 
 ## What is actually true
 
@@ -28,9 +30,15 @@ file says what is and is not true, not a generic policy copied in.
 - **Dependencies are scanned.** `pip-audit` runs against
   `divergence/requirements.txt` in CI on every push. Clean as of this
   writing.
-- **Nothing is deployed.** The pipeline runs locally or in CI, writing
-  files to disk. There is no live endpoint to attack, because there is no
-  live endpoint.
+- **The only thing deployed is a static file mirror.** `divergence/` is
+  published to GitHub Pages (`.github/workflows/pages.yml`,
+  `actions/deploy-pages`) exactly as it sits in this repository — no
+  server, no build step beyond copying files, no code that executes on
+  request. The pipeline itself (every 🤖/⚙ node) still only ever runs
+  locally or in CI, writing files to disk; nothing about *that* changed.
+  There is no live endpoint that accepts input, because there is no live
+  endpoint that accepts input — only one that serves already-generated,
+  already-public files.
 
 ## What is genuinely not defended against — said plainly, not hidden
 
