@@ -14,6 +14,38 @@
 
 ---
 
+## STATISTICAL LIMITS — read this before any percentage below
+
+**n=6.** Every M1–M5 metric in this file is computed over six cases
+(C1–C5, D1). Six hand-built cases, not a random sample from a population
+of possible tax scenarios — chosen to cover specific, named fact patterns
+(a plain domestic invoice, an ordinary cross-border wire, the hard
+crypto-weekend case), not drawn to be statistically representative of
+anything. Two consequences, stated plainly rather than left for a reader
+to work out:
+
+1. **The confidence interval on any single-digit-out-of-6 proportion is
+   enormous.** `binom_ci.py`'s exact (Clopper-Pearson) 95% interval for a
+   metric that reads **4 of 6** cases passing is **[22.3%, 95.7%]** — wide
+   enough to contain both "barely better than a coin flip" and "almost
+   always works." **3 of 6** is **[11.8%, 88.2%]**. **5 of 6** is
+   **[35.9%, 99.6%]**. A percentage quoted anywhere below without this
+   context implies a precision six hand-picked cases cannot support.
+2. **Even that wide interval overstates generalisability**, because it
+   assumes random sampling from a population this project never claims to
+   have sampled from. The honest reading of every M1–M5 number in this
+   file is *"measured on these six specific, named cases,"* not *"the
+   true rate at which this pipeline works."* Extending any claim here
+   beyond those six cases needs either many more cases or an explicit,
+   argued reason the six chosen are representative — neither exists yet.
+
+This is not a reason to distrust the numbers below; every one of them is
+real, computed the same way every time, and reported whichever way it
+comes out (`results.md`'s own discipline throughout). It is a reason to
+read "83%" as "5 of 6," not as a population estimate.
+
+---
+
 ## Step 1 complete: nodes 3/4 automated, arm C has real regimes now, for all 6 cases
 
 `regimes[]` is no longer structurally empty. `node_resolver.py` automates the income-tax and GST resolvers (prompts 03/04), wired into `run_pipeline.py` by default. Ten real bugs found and fixed getting from "it runs" to "it produces a correct record" across two passes tonight — full account in [`DECISION-D45.md`](DECISION-D45.md), [`DECISION-D46.md`](DECISION-D46.md), [`DECISION-D47.md`](DECISION-D47.md), [`DECISION-D48.md`](DECISION-D48.md) and [`iteration-log.md`](step22drop/iteration-log.md).
