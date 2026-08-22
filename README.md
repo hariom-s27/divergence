@@ -5,22 +5,28 @@
 Built for Reverie Hacks 2026, ML Prompt Engineering track.
 
 **One file, the whole thing, in order:** [`divergence/START-HERE.md`](divergence/START-HERE.md) —
-the mental model, every command to run the full pipeline, and all 18
+the mental model, every command to run the full pipeline, and all 24
 dated design decisions merged into a single chronological read instead of
-18 separate files.
+24 separate files.
 
-## The problem
+## The problem, stated as a loss, not an abstraction
 
-A freelancer in India gets paid for her work and needs one rupee number for
-her tax return. The tax rules tell her exactly which day to value that
-payment on — and then, four lines later, do not tell her how to turn that
-day into a number. Two people reading the same rules honestly can file two
-different, both-defensible numbers.
+Two accountants, reading the identical Indian tax rules in good faith,
+file two different numbers for the same stablecoin receipt — ₹47,868.76
+apart, on a single transaction. Neither is wrong. The rule that names
+which *day* to value a foreign receipt on exists; four lines later, the
+rule that says *how* to turn that day into rupees does not. That gap
+costs money the moment someone has to guess, and worse than the rupee
+spread: a wrong classification on the GST side turns an export at
+0%-with-refund into 18% owed in cash, sometimes retroactively, sometimes
+with a fraud penalty on top of the tax (`architecture.md`'s GST resolver
+section, the ₹1,19,205-vs-₹2,01,752 case).
 
-Most tools guess anyway and print one figure with no hint that a choice was
-made. DIVERGENCE reads the actual law, and when the law genuinely does not
-decide, it says so — with every defensible number shown, not one invented
-one hidden behind false confidence.
+Every commercial tool checked for this project (`prior-art/OBJ-1.md`)
+prints one figure anyway. None of them show the reader that a choice was
+made, let alone which one. DIVERGENCE reads the statute text directly and,
+when it genuinely does not decide, says so — every defensible figure
+shown, none invented, none picked to look confident.
 
 **See it in one click, live, no download:**
 [hariom-s27.github.io/divergence](https://hariom-s27.github.io/divergence/)
@@ -59,7 +65,7 @@ that scored 15/15 for four months against the wrong files, and a metric
 built to catch overconfidence that was itself silently returning a
 fabricated "0.0%, perfect" score. The other four are about the pipeline
 finding real defects in its own legal reasoning — most notably the same
-kind of mistake, a real and correctly-quoted provision applied outside its
+mistake, a real and correctly-quoted provision applied outside its
 own scope, confirmed **five separate times** in this project's own output.
 One instance was found only by a human, and our own adversarial node
 missed it outright when tested directly against it. Two were found only by
