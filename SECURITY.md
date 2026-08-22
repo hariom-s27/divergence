@@ -30,6 +30,18 @@ generic policy copied in.
 - **Dependencies are scanned.** `pip-audit` runs against
   `divergence/requirements.txt` in CI on every push. Clean as of this
   writing.
+- **The one node that reads untrusted document text has two real
+  defence layers**, added after this file first shipped without them
+  (`DECISION-D62.md`). `injection_scanner.py` — deterministic, no
+  model — scans the raw input for known injection phrasings (override
+  claims, fake system/role messages, an in-document legal conclusion,
+  chat-role delimiters) before it's ever sent, and again on the model's
+  own output afterward; both advisory, folded into `extraction_notes`,
+  not a hard block. `node1_extract.py` wraps the untrusted text in a
+  fresh, random per-call nonce marker and tells the model explicitly
+  that text inside those markers is data, never instructions, no matter
+  what it claims to be. See the next section for what this does not
+  guarantee.
 - **The only thing deployed is a static file mirror.** `divergence/` is
   published to GitHub Pages (`.github/workflows/pages.yml`,
   `actions/deploy-pages`) exactly as it sits in this repository — no
@@ -45,16 +57,23 @@ generic policy copied in.
 This project's own discipline is to disclose a real limitation rather
 than let a reader discover it, and that applies to this file too:
 
-- **No prompt-injection defence.** `node1_extract.py` (🤖 1) reads a
-  user-supplied invoice or payment record and passes its text into an LLM
-  call. Nothing here detects or resists a document that contains text
-  aimed at the model itself (e.g. instructions embedded in a PDF telling
-  the extractor to misreport a field). The downstream deterministic gates
-  (⚙ A/C/E, `gap_enforcer.py`/`citation_matcher.py`/`scope_enforcer.py`)
-  constrain what a resolver's *conclusion* can assert against the
-  statutory corpus, which limits the damage such an attack could do to
-  the final disclosure — but nothing in this pipeline is designed to
-  catch the injection at the point it enters, at Node 1.
+- **The prompt-injection defence is real but not a guarantee.**
+  `injection_scanner.py`'s own pattern list is invisible to a phrasing it
+  doesn't recognize — an attacker who avoids the ~10 known families this
+  scans for is undetected by layer one. Nonce spotlighting narrows what a
+  model is willing to do with embedded instructions; it does not formally
+  prove the model will never comply with a sufficiently novel one. Tested
+  offline against a constructed adversarial case
+  (`cases/ADV1-injection/`, `DECISION-D62.md`) covering every pattern
+  family at once — both layers behaved as designed. The live check of
+  whether the model itself resists the embedded instructions, rather than
+  just receiving the spotlighting markers, is recorded as pending in that
+  same decision doc, not assumed to pass. The downstream deterministic
+  gates (⚙ A/C/E, `gap_enforcer.py`/`citation_matcher.py`/
+  `scope_enforcer.py`) still constrain what a resolver's *conclusion* can
+  assert against the statutory corpus regardless of what Node 1 produces,
+  which bounds the damage even a fully successful injection could do to
+  the final disclosure.
 - **No rate limiting, no auth, no multi-tenant isolation.** None of these
   apply to a local/CI-run research pipeline with no live endpoint, but
   they would need to exist before this became a real product, and this

@@ -68,6 +68,17 @@ document in seconds rather than trusting it.
 
 **Data needed.** The raw document only. No corpus, no prior state.
 
+**Security, added 22 Aug (D62).** This is the one node that reads
+untrusted, user-supplied text and hands it to a model. `injection_scanner.py`
+scans the raw input for known injection phrasings before it's sent (and
+the model's own output afterward), advisory not blocking. The document
+text itself is wrapped in a fresh, random per-call nonce marker
+(`<<<DOCUMENT-{nonce}-START/END>>>`), with an explicit system-prompt
+instruction that text between those markers is data, never instructions.
+Both verified offline against a constructed adversarial case
+(`cases/ADV1-injection/`); full account, including what this does not
+guarantee, in `SECURITY.md` and `DECISION-D62.md`.
+
 ---
 
 ### 🤖 2 — GAP DETECTOR (`node2_gaps.py`)
@@ -414,7 +425,7 @@ checked independently rather than assumed from a title:
 
 ## 6. Where the deeper material lives
 
-- **All 21 decision documents, the mental model, and the full run guide,
+- **All 22 decision documents, the mental model, and the full run guide,
   merged into one chronological file:** [`START-HERE.md`](START-HERE.md)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)

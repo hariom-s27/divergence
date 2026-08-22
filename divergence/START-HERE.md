@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 21 decision documents merged into one chronological read — so you don't have to open twenty-one separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 22 decision documents merged into one chronological read — so you don't have to open twenty-two separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,7 +123,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-one dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-two dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -400,6 +400,23 @@ and worth naming: relabelling D1's `lacuna` valuation finding as `settled`
 defeats ⚙ E's own lacuna exemption and correctly exposes Rule 57's
 underlying scope violation again — the mutation corpus validating that
 exemption's precision from the inside, not by accident.
+
+## [D62](DECISION-D62.md) — prompt-injection scanner + nonce spotlighting
+Closes a limitation `SECURITY.md` disclosed about itself two commits
+earlier: no defence on the one node (🤖 1) that reads untrusted document
+text. Two layers. `injection_scanner.py` — deterministic, 10 pattern
+families, advisory not blocking, self-tested (clean sample 0 findings,
+constructed injection sample 6+). `node1_extract.py` wraps the untrusted
+text in a fresh random per-call nonce and tells the model explicitly that
+text inside those markers is data, never instructions. Verified offline
+against a real constructed adversarial case
+(`cases/ADV1-injection/`): scanner found all 7 embedded pattern families;
+spotlighting correctly wrapped the full document. **Not yet verified**:
+whether the model itself resists the embedded instructions when actually
+called — `FEATHERLESS_API_KEY` wasn't set in the building environment,
+and `llm_call.py`'s refusal to fall back to any other provider (D44)
+correctly blocked an accidental spend on an unrelated account rather than
+silently substituting one. Stated as pending, not assumed to pass.
 
 ---
 

@@ -43,6 +43,10 @@ jobs:
       run: |
         cd divergence
         python corpus_hash.py --verify
+    - name: Prompt-injection scanner self-test
+      run: |
+        cd divergence
+        python injection_scanner.py --self-test
     - name: Gate 0 pre-submission audit
       run: |
         cd divergence
