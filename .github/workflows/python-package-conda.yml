@@ -47,6 +47,23 @@ jobs:
       run: |
         cd divergence
         python injection_scanner.py --self-test
+    - name: Replay reproducibility check (no API key)
+      run: |
+        cd divergence
+        python run_pipeline.py --record-id CI-replay-check --tax-year "FY 2026-27" --text cases/D1/input.md --node5 --out runs/ci_replay_check.json
+        python -c "
+        import json
+        rec = json.load(open('runs/ci_replay_check.json', encoding='utf-8'))
+        orig = json.load(open('runs/21aug/D1_final_seed2.json', encoding='utf-8'))
+        attack = json.load(open('runs/21aug/D1_final_seed2_attack.json', encoding='utf-8'))
+        assert rec['facts'] == orig['facts'], 'replayed facts do not match the frozen record'
+        assert rec['missing'] == orig['missing'], 'replayed missing[] does not match the frozen record'
+        assert rec['attacked'] == attack['attacked'], 'replayed attacked[] does not match the frozen record'
+        assert rec['_meta']['llm']['provider'] == 'replay', 'record does not show it was actually replayed'
+        print('replay reproducibility: OK -- facts, missing, and attacked all match the frozen record byte-for-byte, with 0 API calls')
+        "
+      env:
+        DIVERGENCE_REPLAY: "1"
     - name: Gate 0 pre-submission audit
       run: |
         cd divergence

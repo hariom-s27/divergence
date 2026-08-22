@@ -1,0 +1,75 @@
+{
+  "node": "node1_extract",
+  "source": "seeded",
+  "cached_at": "2026-08-22T11:23:16.335236+00:00",
+  "response": {
+    "facts": {
+      "invoice_no": {
+        "value": "2026-114",
+        "confidence": "certain",
+        "source_span": "Invoice No: 2026-114"
+      },
+      "invoice_date": {
+        "value": "2026-06-28",
+        "confidence": "certain",
+        "source_span": "Invoice Date: 2026-06-28"
+      },
+      "supplier_location": {
+        "value": "India",
+        "confidence": "certain",
+        "source_span": "Supplier: Resident individual, freelance service provider, India."
+      },
+      "recipient_location": {
+        "value": "outside India",
+        "confidence": "certain",
+        "source_span": "Recipient: Northbay Systems LLC, outside India."
+      },
+      "amount": {
+        "value": 5000,
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet"
+      },
+      "asset": {
+        "value": "USDC",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet"
+      },
+      "settlement_datetime_ist": {
+        "value": "2026-06-28T03:14:00+05:30",
+        "confidence": "certain",
+        "source_span": "Payment of 5,000 USDC received to the supplier's self-custody wallet on 28 June 2026 at 03:14 IST"
+      },
+      "settlement_datetime_utc": {
+        "value": "2026-06-27T21:44:00Z",
+        "confidence": "certain",
+        "source_span": "(2026-06-27T21:44:00Z UTC.)"
+      },
+      "bank_involved": {
+        "value": false,
+        "confidence": "certain",
+        "source_span": "No bank was involved at any point in this transfer"
+      },
+      "purpose_code": {
+        "value": null,
+        "confidence": "unresolved",
+        "source_span": "Line item: Professional / consulting services rendered."
+      },
+      "counterparty_declared": {
+        "value": "Northbay Systems LLC",
+        "confidence": "certain",
+        "source_span": "Recipient: Northbay Systems LLC, outside India."
+      },
+      "counterparty_verified": {
+        "value": false,
+        "confidence": "certain",
+        "source_span": "Counterparty verification: Northbay Systems LLC's business identity has NOT been independently verified. No registration or KYC check has been performed against this name."
+      },
+      "invoice_amount_usd": {
+        "value": 4000,
+        "confidence": "certain",
+        "source_span": "Invoice raised in USD equivalent terms: USD 4,000."
+      }
+    },
+    "extraction_notes": []
+  }
+}

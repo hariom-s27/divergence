@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 22 decision documents merged into one chronological read — so you don't have to open twenty-two separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 23 decision documents merged into one chronological read — so you don't have to open twenty-three separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -115,6 +115,15 @@ every commit:** `python gate0_check.py` — it scans the whole repo for stale
 headline numbers, missing required files, and open corpus caveats, and
 should say `0 problem(s) that block Gate 0`.
 
+**No API key? Replay D1 instead of running it live** (D63) — real cached
+responses from the actual frozen run, zero network calls:
+
+```powershell
+$env:DIVERGENCE_REPLAY = "1"
+python run_pipeline.py --record-id D1-replay --tax-year "FY 2026-27" `
+    --text cases\D1\input.md --node5 --out runs\replay_test.json
+```
+
 Full detail: [`HOW-TO-RUN.md`](HOW-TO-RUN.md) (setup), [`PIPELINE-FLOW.md`](PIPELINE-FLOW.md)
 (what each file does), [`DOCUMENTATION.md`](DOCUMENTATION.md) (reasoning +
 mechanics + data per node, plus the real model registry).
@@ -123,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-two dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-three dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -417,6 +426,26 @@ called — `FEATHERLESS_API_KEY` wasn't set in the building environment,
 and `llm_call.py`'s refusal to fall back to any other provider (D44)
 correctly blocked an accidental spend on an unrelated account rather than
 silently substituting one. Stated as pending, not assumed to pass.
+
+## [D63](DECISION-D63.md) — replay cache: reproduces D1 with zero API calls
+`DIVERGENCE_REPLAY=1` + `replay_cache.py` makes `run_pipeline.py`
+reproduce D1's real, frozen run from cached request/response pairs — a
+demo that only runs for whoever holds a paid key isn't actually
+reproducible. Two real bugs caught building this, both before shipping:
+(1) `provenance()` and every node's own CLI print called
+`provider_name()`/`model_id()` unconditionally, both deliberately built
+(D44) to error without an API key — would have crashed replay one line
+after the first cache hit; fixed with replay-safe display helpers.
+(2) nonce spotlighting's own random-per-call nonce (D62) appears in both
+the system prompt and the content, so hashing either directly means the
+identical document never produces the identical cache key twice — replay
+would have silently missed on node 1, always. Caught by actually testing
+key stability across two different real nonces, not assumed from reading
+the code; fixed with a nonce-normalised key computed separately from the
+real request. Verified end to end: full `--node5` pipeline run, zero
+`FEATHERLESS_API_KEY`, output `facts`/`missing`/`attacked` all
+byte-for-byte identical to the frozen originals. Now a CI gate on every
+push, in a runner that has no API key configured at all.
 
 ---
 

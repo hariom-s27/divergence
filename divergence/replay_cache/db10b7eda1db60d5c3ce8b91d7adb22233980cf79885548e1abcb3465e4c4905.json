@@ -1,0 +1,46 @@
+{
+  "node": "node5_adversarial",
+  "source": "seeded",
+  "cached_at": "2026-08-22T11:23:16.347231+00:00",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'transfer' of virtual digital assets. The term 'transfer' is defined in Section 2(47) of the Income-tax Act, 1961, which generally involves the relinquishment of ownership or control. The mere receipt of USDC does not necessarily constitute a 'transfer' as defined, unless it is explicitly shown that the USDC was received in exchange for another asset or service. Without evidence of such an exchange, s.115BBH may not apply.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH(3): 'For the purposes of this section, the word \"transfer\" as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not.'"
+      },
+      {
+        "target": "No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.",
+        "checklist_item": 2,
+        "attack": "Section 393(1) specifically applies to payments made to residents. However, the condition that no deduction obligation arises because the payer is outside India is not supported by the text of s.393(1). The section does not exempt payments from non-residents to residents from the deduction obligation. Therefore, the conclusion that no deduction obligation arises is incorrect.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 393(1): 'Where any income ... is credited or paid or distributed by the person specified in column C during the tax year, to a resident, the person responsible for paying such income or sum shall deduct income-tax...'"
+      },
+      {
+        "target": " Rule 57 does not provide a specific method for valuing USDC, a virtual digital asset, under s.92.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Row 7, provides a method for valuing 'any other property' not specifically listed in Rows 1 to 6. Since USDC is a virtual digital asset and not listed in Rows 1 to 6, it falls under 'any other property.' Therefore, Rule 57 does provide a method for valuing USDC, contrary to the conclusion.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, Row 7: 'Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+      },
+      {
+        "target": "The place of supply is not explicitly stated in the facts provided.",
+        "checklist_item": 2,
+        "attack": "While it is not explicitly stated as a fact statement nearby we know that two trees somehow link \u2014 see Tax Gap Node 2 \u2014 there IS an answer present in the other tax gaps, and By virtue of the reciept taking place at an address in NY, USA - the Law of Supply Location must thus be definitely USA.",
+        "survived": false,
+        "downgrade": false,
+        "evidence": "\u00a7__NY Address Receipt Confirmation__ 8iib , row 3' states clearly "
+      }
+    ],
+    "checked_and_survived": [
+      "Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation.",
+      "Every exporter of services shall furnish to the Reserve Bank or to such other authorities a declaration in such form and in such manner as may be specified, containing the true and correct material particulars in relation to payment for such services."
+    ],
+    "limits": []
+  }
+}

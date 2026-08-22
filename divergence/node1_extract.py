@@ -253,7 +253,20 @@ def extract(text_paths, file_paths, model="small"):
 
     system = load_system_prompt() + _spotlight_instruction(nonce)
     content = build_content(text_paths, file_paths, model, nonce=nonce)
-    parsed = llm_call.call_json(system, content, model, node_name=NODE_NAME)
+    # D63: the real nonce above is cryptographically random on purpose
+    # (D62 — a predictable one is forgeable) and appears in BOTH `system`
+    # (the spotlighting instruction names it) and `content` (the document
+    # is wrapped in it), so either one alone would make every call's cache
+    # key unique even for the identical document -- replay would never
+    # hit. Rebuilding the same request with a FIXED nonce gives a stable
+    # pair for caching only; the actual request sent to the model (above)
+    # still uses the real random one throughout.
+    _REPLAY_KEY_NONCE = "replay-cache-key-nonce"
+    cache_key_system = load_system_prompt() + _spotlight_instruction(_REPLAY_KEY_NONCE)
+    cache_key_content = build_content(text_paths, file_paths, model, nonce=_REPLAY_KEY_NONCE)
+    parsed = llm_call.call_json(system, content, model, node_name=NODE_NAME,
+                                cache_key_system=cache_key_system,
+                                cache_key_content=cache_key_content)
     if "facts" not in parsed or not isinstance(parsed["facts"], dict):
         raise LLMError(f"{NODE_NAME}: model output has no top-level 'facts' object\n{parsed}")
     facts, repairs = _validate_facts_shape(parsed["facts"], parsed)
@@ -290,7 +303,7 @@ def main():
     if not a.text and not a.file:
         die("give at least one --text or --file input")
 
-    print(f"  [{NODE_NAME}] provider={llm_call.provider_name()} model={llm_call.model_id(a.model)}")
+    print(f"  [{NODE_NAME}] provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}")
     try:
         facts, notes, meta = extract(a.text, a.file, model=a.model)
     except LLMError as e:

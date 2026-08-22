@@ -250,7 +250,7 @@ def main():
     valuation_doc = json.load(open(a.valuation, encoding="utf-8"))
     valuation = valuation_doc.get("valuation", valuation_doc) if isinstance(valuation_doc, dict) else valuation_doc
 
-    print(f"  [{NODE_NAME}] provider={llm_call.provider_name()} model={llm_call.model_id(a.model)}")
+    print(f"  [{NODE_NAME}] provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}")
     try:
         attacked, survived, limits, meta = check(regimes, missing, valuation, a.tax_year, model=a.model)
     except LLMError as e:

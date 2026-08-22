@@ -224,13 +224,23 @@ closed frontier API. The system's central claims (the gap findings, the
 scope-reach failures, the metrics) do not rest on access to any single
 vendor's model continuing to exist on its current terms.
 
-**Four of the nine pipeline steps run no model at all.** The gap enforcer,
-the valuation lattice, the citation matcher, and the disclosure composer
+**Five of the ten pipeline steps run no model at all.** *(Was four of
+nine before ⚙ E, the scope-reach enforcer, was added — D59; updated here
+rather than left stale.)* The gap enforcer, the valuation lattice, the
+citation matcher, the scope-reach enforcer, and the disclosure composer
 are plain Python — an `if` statement, arithmetic, a string match, a
 template. No API call, no token cost, no inference latency, and (the
-reason they exist at all) no possibility of inventing an answer. Roughly
-half the pipeline's steps carry zero marginal compute cost by construction,
-not by optimization.
+reason they exist at all) no possibility of inventing an answer. Exactly
+half the pipeline's steps carry zero marginal compute cost by
+construction, not by optimization.
+
+**The pipeline is reproducible without a paid API key.** `DIVERGENCE_REPLAY=1`
+replays D1's real, already-verified run — every one of the five model
+calls — from cached request/response pairs, with zero network calls and
+zero marginal cost, verified continuously in this project's own CI
+(`DECISION-D63.md`). A demo that only runs for whoever holds a live key
+isn't actually reproducible; this one is checked to be, on every push, in
+an environment that has no key configured at all.
 
 **Long-term viability doesn't depend on anyone maintaining a model.** The
 corpus is dated, versioned, and frozen one provision per file, each file
@@ -408,7 +418,7 @@ Six things, each one checkable against a specific file rather than asserted:
   it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
   "Pre-registration" section — a reader can check the hash actually
   predates the runs, not just trust that it does.
-- **22 dated decision documents**, including the ones that record this
+- **23 dated decision documents**, including the ones that record this
   project's own mistakes — a stale citation, a scoring bug that faked a
   perfect score, three named instances of a resolver citing a real
   provision outside its own scope. None were written after the fact to

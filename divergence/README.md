@@ -8,7 +8,7 @@ the folder you opened.
 ## Read this first
 
 **[`START-HERE.md`](START-HERE.md)** — the mental model, every command to
-run the pipeline end to end, and all 22 dated design decisions merged into
+run the pipeline end to end, and all 23 dated design decisions merged into
 one chronological read. If you only open one file, open that one.
 
 ## The three files required by the track's submission rules
@@ -34,11 +34,12 @@ that genuinely have no dispute. Open it directly in a browser.
 | `runs/` | Saved, real output records from actual runs — nothing in here is a mockup |
 | `eval/` | The scoring scripts (`score.py`, `normalize_runs.py`) |
 | `prior-art/` | Two research documents checking whether this problem is already solved, and whether real people actually hit it |
-| `DECISION-D41.md` … `DECISION-D62.md` | Twenty-two dated documents, each recording one real design decision or bug — merged into `START-HERE.md`, kept individually for full detail |
+| `DECISION-D41.md` … `DECISION-D63.md` | Twenty-three dated documents, each recording one real design decision or bug — merged into `START-HERE.md`, kept individually for full detail |
 | `corpus_hash.py`, `corpus/FREEZE-HASHES.json` | Corpus integrity: a real SHA-256 per Tier A file, checked in CI so a corpus edit that isn't re-frozen deliberately fails loudly instead of shipping silently |
 | `make_flowchart.py` | Regenerates `flowchart.png` from scratch (matplotlib, not a screenshot or a Mermaid export) — real model names and human-input markers baked into the image itself |
 | `mutation_corpus.py`, `binom_ci.py` | Reports, not gates: 7 mutation operators measuring what the deterministic checks actually catch (D61); exact Clopper-Pearson intervals for this project's own small-n proportions |
 | `injection_scanner.py`, `cases/ADV1-injection/` | Prompt-injection defence for the one node that reads untrusted text — a CI-gated pattern scanner plus nonce spotlighting in `node1_extract.py`, verified against a real adversarial case (D62) |
+| `replay_cache.py`, `build_replay_cache.py`, `replay_cache/` | Reproduces D1's real run with `DIVERGENCE_REPLAY=1` and zero API calls — a CI gate on every push, in a runner with no key configured at all (D63) |
 | `results.md`, `ITERATION-STORY.md`, `architecture.md`, `GAZETTE-FINDINGS.md` | The deeper reading — metrics including where the pipeline loses, seven curated moments of what broke, node-by-node rationale, and what the actual gazette text says |
 | `step19drop/`, `step21drop/`, `step22drop/` | Earlier project states, kept for the record as the project evolved — not the current submission, but not deleted either |
 | `output-interface.html`, `demo-C1.html`, `demo-C2.html` | The generated disclosure pages `index.html` links to |

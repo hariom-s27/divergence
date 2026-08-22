@@ -36,6 +36,9 @@ try:
 except Exception:
     pass
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import replay_cache  # noqa: E402
+
 
 class LLMError(RuntimeError):
     pass
@@ -155,6 +158,23 @@ def provider_name():
     return prov
 
 
+def provider_display():
+    """Same as provider_name(), except safe to call in replay mode
+    (D63) -- every node's own CLI main() prints this before doing
+    anything else, which would otherwise crash replay mode (no API key)
+    before a single cache lookup ever happened."""
+    if replay_cache.is_replay_mode():
+        return "replay"
+    return provider_name()
+
+
+def model_display(model_key):
+    """Same as model_id(), safe to call in replay mode (D63)."""
+    if replay_cache.is_replay_mode():
+        return "replay"
+    return model_id(model_key)
+
+
 def model_id(model_key, prov=None):
     prov = prov or provider_name()
     override = os.environ.get(_ENV_OVERRIDE.get(model_key, ""), "").strip()
@@ -229,9 +249,19 @@ def provenance():
         row["in_tokens"] += c["in_tokens"]
         row["out_tokens"] += c["out_tokens"]
         row["retries"] += c["retries"]
+
+    # D63: replay mode has no API key, so provider_name()/model_id() (both
+    # require one) cannot be called here unconditionally -- every node
+    # calls provenance() right after call_json(), so this would otherwise
+    # crash replay mode immediately after the first cache hit.
+    if replay_cache.is_replay_mode():
+        provider, models = "replay", {"small": "replay", "large": "replay", "adversarial": "replay"}
+    else:
+        provider, models = provider_name(), {k: model_id(k) for k in ("small", "large", "adversarial")}
+
     return {
-        "provider": provider_name(),
-        "models": {k: model_id(k) for k in ("small", "large", "adversarial")},
+        "provider": provider,
+        "models": models,
         "by_node": by_node,
         "total_calls": len(_CALLS),
         "total_in_tokens": sum(c["in_tokens"] for c in _CALLS),
@@ -380,10 +410,56 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
     return text, r.usage.input_tokens, r.usage.output_tokens
 
 
-def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"):
+def call_json(system, user_content, model_key, max_tokens=4096, node_name="node",
+              cache_key_system=None, cache_key_content=None):
     """Ask for JSON. Get JSON, or raise LLMError.
 
-    Signature unchanged — node1_extract.py and node2_gaps.py do not change."""
+    Signature additive — every existing caller works unchanged; only
+    node1_extract.py actually passes the two cache_key_* overrides.
+
+    D63: DIVERGENCE_REPLAY=1 makes this reproducible without an API key.
+    A hit returns the cached response with no network call at all -- not
+    a mock, a real response this exact (node, system, input) triple
+    actually produced before. A miss raises LLMError naming exactly what
+    is missing, rather than silently falling through to a real call
+    (which would defeat the point of replay mode) or fabricating a
+    plausible-looking response (which would be worse than either).
+
+    cache_key_system / cache_key_content: what to hash for the cache key,
+    when it must differ from what's actually sent. Exists for exactly one
+    reason -- node1's nonce spotlighting (D62) puts a fresh,
+    cryptographically random per-call nonce inside BOTH the system prompt
+    (the spotlighting instruction names it) and the user content (the
+    document is wrapped in it), on purpose: a predictable nonce is a
+    forgeable one, which defeats the whole point of spotlighting. Hashing
+    either nonce-bearing text directly would mean the SAME document never
+    produces the SAME cache key twice, so replay would never hit.
+    node1_extract.py passes nonce-normalised versions of both here
+    instead, while the real random nonce still goes into the request
+    that's actually sent to the model."""
+    key_system = cache_key_system if cache_key_system is not None else system
+    key_content = cache_key_content if cache_key_content is not None else user_content
+
+    if replay_cache.is_replay_mode():
+        # Deliberately does not call provider_name()/model_id() anywhere on
+        # this path -- both require an API key, and requiring one here
+        # would defeat the entire point of replay mode. model_key (the
+        # slot name, e.g. "small") is recorded as-is, not resolved to a
+        # real provider-specific model id.
+        cached = replay_cache.load(node_name, key_system, key_content)
+        if cached is None:
+            key = replay_cache._key(node_name, key_system, key_content)
+            raise LLMError(
+                f"[{node_name}] DIVERGENCE_REPLAY=1 but no cached response for this "
+                f"exact request (key {key[:16]}...). Replay only reproduces requests "
+                f"that have actually been made and recorded before -- unset "
+                f"DIVERGENCE_REPLAY to make a real call (needs an API key), or run "
+                f"build_replay_cache.py if you expected this one to be seeded."
+            )
+        _CALLS.append({"node": node_name, "model": model_key,
+                       "provider": "replay", "in_tokens": 0, "out_tokens": 0, "retries": 0})
+        return cached
+
     prov = provider_name()
     model = model_id(model_key, prov)
     messages = [{"role": "user", "content": user_content}]
@@ -428,6 +504,10 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
 
         _CALLS.append({"node": node_name, "model": model, "provider": prov,
                        "in_tokens": tin, "out_tokens": tout, "retries": retries})
+        try:
+            replay_cache.save(node_name, key_system, key_content, obj, source="live")
+        except Exception:
+            pass  # recording must never be able to fail a real, successful call
         return obj
 
     raise LLMError(

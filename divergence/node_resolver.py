@@ -165,7 +165,7 @@ def main():
     missing_doc = json.load(open(a.missing, encoding="utf-8"))
     missing = missing_doc.get("missing", missing_doc)
 
-    print(f"  [{NODE_NAME[a.regime]}] provider={llm_call.provider_name()} model={llm_call.model_id(a.model)}")
+    print(f"  [{NODE_NAME[a.regime]}] provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}")
     try:
         regimes, limits, meta = resolve(a.regime, facts, missing, a.tax_year, model=a.model)
     except LLMError as e:

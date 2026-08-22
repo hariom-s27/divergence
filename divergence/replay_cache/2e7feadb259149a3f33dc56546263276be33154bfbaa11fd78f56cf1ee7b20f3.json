@@ -1,0 +1,50 @@
+{
+  "node": "node4_gst",
+  "source": "seeded",
+  "cached_at": "2026-08-22T11:23:16.342296+00:00",
+  "response": {
+    "regimes": [
+      {
+        "regime": "gst_export",
+        "outcome": "The supply does not meet all conditions for being an export of services.",
+        "certainty": "insufficient_evidence",
+        "citation": {
+          "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+          "tax_year": "FY 2026-27"
+        },
+        "conditions": [
+          {
+            "condition": "the supplier of service is located in India",
+            "met": "yes",
+            "why": "The supplier is a resident individual located in India (Fact: supplier_location)."
+          },
+          {
+            "condition": "the recipient of service is located outside India",
+            "met": "yes",
+            "why": "The recipient is Northbay Systems LLC, located outside India (Fact: recipient_location)."
+          },
+          {
+            "condition": "the place of supply of service is outside India",
+            "met": "unknown",
+            "why": "The place of supply is not explicitly stated in the facts provided."
+          },
+          {
+            "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India",
+            "met": "no",
+            "why": "The payment was received in USDC, which is not convertible foreign exchange as defined by the Reserve Bank of India (Fact: asset)."
+          },
+          {
+            "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8",
+            "met": "unknown",
+            "why": "There is no independent verification of Northbay Systems LLC (Fact: counterparty_verified)."
+          }
+        ],
+        "depends_on_missing": [
+          "independent verification of Northbay Systems LLC"
+        ],
+        "consequence_if_failed": "If the supply is not zero-rated as an export, the supplier will be liable to pay GST on the supply. Interest and penalties may also apply if the tax is not paid on time, as governed by Section 50 and Section 74A of the CGST Act 2017."
+      }
+    ],
+    "limits": []
+  }
+}

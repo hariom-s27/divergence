@@ -1,0 +1,35 @@
+{
+  "node": "node2_gaps",
+  "source": "seeded",
+  "cached_at": "2026-08-22T11:23:16.337137+00:00",
+  "response": {
+    "missing": [
+      {
+        "item": "declaration of payment for services to the Reserve Bank",
+        "why_absent": "No declaration of payment for services to the Reserve Bank has been provided.",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "no"
+      },
+      {
+        "item": "independent verification of Northbay Systems LLC",
+        "why_absent": "Independent verification of Northbay Systems LLC has not been performed.",
+        "blocks": [
+          "income_tax",
+          "gst",
+          "fema"
+        ],
+        "obtainable": "no"
+      },
+      {
+        "item": "valuation of the professional/consulting services",
+        "why_absent": "No valuation of the professional/consulting services has been provided.",
+        "blocks": [
+          "valuation"
+        ],
+        "obtainable": "not_for_this_route"
+      }
+    ]
+  }
+}
