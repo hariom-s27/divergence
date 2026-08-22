@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 20 decision documents merged into one chronological read — so you don't have to open twenty separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 21 decision documents merged into one chronological read — so you don't have to open twenty-one separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -123,7 +123,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-one dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -385,6 +385,21 @@ now also carries `content_hash` per provision (D60's schema addition,
 additive, no breaking change) — proof of exactly what text was checked,
 not just that a check happened, independent of whatever the live corpus
 looks like later.
+
+## [D61](DECISION-D61.md) — mutation corpus: manufacturing labelled defects at zero cost
+Seven mutation operators applied to the six real cases' own saved regime
+conclusions — no model call, reproducible, zero marginal cost. Reported
+per-operator, never as one blended number: `FABRICATED_CITATION` and
+`SCOPE_VIOLATION` both 100% caught (citation matcher, scope enforcer, as
+designed); `DEPENDENCY_DROP` **0/6** — `gap_enforcer.py` can only act on a
+dependency that's declared, and has no way to notice one was silently
+removed; `REGIME_CROSS_CITE` **1/6**, and that one catch is honestly
+disclosed as coincidental (an unrelated scope-reach rule firing for its
+own reason, not a regime check, which doesn't exist). One catch *is* real
+and worth naming: relabelling D1's `lacuna` valuation finding as `settled`
+defeats ⚙ E's own lacuna exemption and correctly exposes Rule 57's
+underlying scope violation again — the mutation corpus validating that
+exemption's precision from the inside, not by accident.
 
 ---
 
