@@ -8,6 +8,11 @@ Standard library only. No API key, no network.
     python cost_model.py                      # full report
     python cost_model.py --profile corpus_profile.json   # measured corpus
     python cost_model.py --sensitivity        # which parameter dominates
+    python cost_model.py --measured runs/some_pipeline_record.json  # D64:
+        # real wall-clock latency read from a record's own _meta.llm.by_node
+        # (llm_call.py's time.time(), added D64) -- not this file's own
+        # modelled latency_estimate(), which prices a different, hypothetical
+        # Anthropic Claude deployment, not the real Featherless one.
 
 PRICES: taken from Anthropic's published pricing page on 9 August 2026.
         https://platform.claude.com/docs/en/about-claude/pricing
@@ -25,7 +30,19 @@ TOKEN COUNTS: characters/4 per Anthropic's own stated approximation,
 """
 
 import json
+import os
 import sys
+
+# Found live, 22 Aug, testing --measured (D64): this file prints the rupee
+# sign, and unlike every other executable script in this project, never
+# guarded stdout's encoding -- a plain `python cost_model.py` crashes with
+# UnicodeEncodeError on a default Windows console (cp1252), a pre-existing
+# gap this file happened to be the one to surface. Same one-line fix
+# citation_matcher.py etc. already carry.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 
 # ----------------------------------------------------------------------
 # PRICES  --  USD per million tokens. Source: Anthropic pricing page.
@@ -442,6 +459,57 @@ def main():
         print("  how much it says, not how much law it reads.")
         print()
 
+    if "--measured" in sys.argv:
+        mpath = sys.argv[sys.argv.index("--measured") + 1]
+        with open(mpath, encoding="utf-8") as fh:
+            mrec = json.load(fh)
+        by_node = (mrec.get("_meta") or {}).get("llm", {}).get("by_node", {})
+        hr("-")
+        print(f"9. MEASURED vs MODELLED — real wall-clock from {os.path.basename(mpath)}")
+        print("   (D64 -- llm_call.py's own time.time(), not this file's latency_estimate())")
+        hr("-")
+        provider = (mrec.get("_meta") or {}).get("llm", {}).get("provider")
+        has_timing = any("elapsed_s" in row for row in by_node.values())
+        if provider == "replay":
+            print("  This record was produced by DIVERGENCE_REPLAY=1 -- every elapsed_s")
+            print("  is 0.0 by construction (no network call was made). Not evidence of")
+            print("  latency, real or otherwise. Point --measured at a LIVE run's record.\n")
+        elif not by_node:
+            print(f"  {os.path.basename(mpath)} has no _meta.llm.by_node -- predates D64's")
+            print("  timing instrumentation, or was assembled from hand-run node output.\n")
+        elif not has_timing:
+            print(f"  {os.path.basename(mpath)} has by_node entries but none carry")
+            print("  'elapsed_s' -- this record was written before D64 added timing.")
+            print("  Showing '0.00' here would look like a measurement of zero seconds,")
+            print("  which is not what an absent field means, so nothing is shown here.\n")
+        else:
+            print(f"{'node':<20}{'calls':>8}{'measured_s':>14}")
+            total_measured = 0.0
+            for node, row in sorted(by_node.items()):
+                if "elapsed_s" not in row:
+                    print(f"{node:<20}{row.get('calls', 0):>8}{'(no data)':>14}")
+                    continue
+                measured = row["elapsed_s"]
+                total_measured += measured
+                print(f"{node:<20}{row.get('calls', 0):>8}{measured:>14.2f}")
+            print("-" * 42)
+            print(f"{'TOTAL (sequential wall-clock, as measured)':<28}{total_measured:>14.2f}s")
+            print()
+            print("  Not compared against Section 5's modelled figures above, on purpose:")
+            print("  those model an Anthropic Claude deployment (README's Cost section --")
+            print("  'not a number from an actually-measured run'), and this pipeline's")
+            print("  real runs are on Featherless-hosted Qwen/Mistral (decision D44).")
+            print("  Different providers, different models -- one ratio between them would")
+            print("  imply Section 5 predicts this deployment's speed, which it was never")
+            print("  built to do.")
+            print()
+            print("  This total IS real, not modelled -- one live run's actual elapsed time")
+            print("  per node, read from the record's own _meta.llm.by_node. It is one")
+            print("  sample, not a distribution; run several times before quoting a single")
+            print("  number as representative (same discipline as this project's own M2")
+            print("  seed-instability finding, results.md Block E2).")
+        print()
+
     hr()
     print("HONESTY NOTE")
     hr()
@@ -451,6 +519,7 @@ def main():
     print("corpus/, then re-run this with --profile, then measure the built")
     print("pipeline and publish the error between predicted and actual.")
     print("That delta is worth more to a judge than a confident number.")
+    print("--measured <record.json> now does exactly that for latency (D64).")
 
 
 if __name__ == "__main__":

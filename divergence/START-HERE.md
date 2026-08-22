@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 23 decision documents merged into one chronological read — so you don't have to open twenty-three separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 24 decision documents merged into one chronological read — so you don't have to open twenty-four separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-three dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-four dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -446,6 +446,26 @@ real request. Verified end to end: full `--node5` pipeline run, zero
 `FEATHERLESS_API_KEY`, output `facts`/`missing`/`attacked` all
 byte-for-byte identical to the frozen originals. Now a CI gate on every
 push, in a runner that has no API key configured at all.
+
+## [D64](DECISION-D64.md) — real wall-clock latency instrumentation, honestly unpopulated
+`llm_call.py` now records real `time.time()` per call into
+`_meta.llm.by_node[node].elapsed_s`, and `cost_model.py --measured
+<record.json>` reports it — separated from `cost_model.py`'s own modelled
+`latency_estimate()`, which prices a hypothetical Anthropic Claude
+deployment, not the real Featherless one; the two are never put in one
+ratio, with the reason stated explicitly rather than left implicit. Found
+and fixed while testing, not designed for and skipped: the first version
+showed `0.00` for any pre-D64 record (no `elapsed_s` key, silently
+defaulted), indistinguishable from a genuine near-instant measurement —
+caught testing against a real old record, fixed to print "no data"
+instead. Also fixed the same pass: `cost_model.py` never guarded stdout's
+encoding, unlike every other executable script here — crashed on the ₹
+sign on a default Windows console. **What is not claimed**: no real
+measured latency number is published anywhere as a result of this work —
+every existing saved record predates this instrumentation, and producing
+a genuine one needs a live API key this environment doesn't have. Stated
+as pending, same as D62's live verification, not fabricated or quietly
+dropped.
 
 ---
 

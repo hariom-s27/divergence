@@ -244,11 +244,13 @@ def provenance():
     for c in _CALLS:
         row = by_node.setdefault(c["node"], {"model": c["model"], "calls": 0,
                                              "in_tokens": 0, "out_tokens": 0,
-                                             "retries": 0})
+                                             "retries": 0, "elapsed_s": 0.0})
         row["calls"] += 1
         row["in_tokens"] += c["in_tokens"]
         row["out_tokens"] += c["out_tokens"]
         row["retries"] += c["retries"]
+        row["elapsed_s"] += c.get("elapsed_s", 0.0)  # D64: real wall-clock per node,
+        row["elapsed_s"] = round(row["elapsed_s"], 3)  # not cost_model.py's modelled estimate
 
     # D63: replay mode has no API key, so provider_name()/model_id() (both
     # require one) cannot be called here unconditionally -- every node
@@ -457,7 +459,8 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
                 f"build_replay_cache.py if you expected this one to be seeded."
             )
         _CALLS.append({"node": node_name, "model": model_key,
-                       "provider": "replay", "in_tokens": 0, "out_tokens": 0, "retries": 0})
+                       "provider": "replay", "in_tokens": 0, "out_tokens": 0, "retries": 0,
+                       "elapsed_s": 0.0})
         return cached
 
     prov = provider_name()
@@ -466,6 +469,7 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
     retries = 0
     last_text = None
     last_err = None
+    started = time.time()  # D64: real wall-clock, not cost_model.py's modelled estimate
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
@@ -503,7 +507,8 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
             continue
 
         _CALLS.append({"node": node_name, "model": model, "provider": prov,
-                       "in_tokens": tin, "out_tokens": tout, "retries": retries})
+                       "in_tokens": tin, "out_tokens": tout, "retries": retries,
+                       "elapsed_s": round(time.time() - started, 3)})
         try:
             replay_cache.save(node_name, key_system, key_content, obj, source="live")
         except Exception:
