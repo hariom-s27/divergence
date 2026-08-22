@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install -r divergence/requirements.txt flake8 pytest
+        python -m pip install -r divergence/requirements.txt flake8 pytest pip-audit
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -51,3 +51,6 @@ jobs:
       run: |
         cd divergence
         python a11y_check.py --all
+    - name: Dependency vulnerability audit
+      run: |
+        python -m pip_audit -r divergence/requirements.txt

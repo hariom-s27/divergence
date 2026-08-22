@@ -457,6 +457,13 @@ Required track submissions and where each one is: ML workflow PNG —
 [`SAMPLES.md`](divergence/SAMPLES.md). Documentation —
 [`DOCUMENTATION.md`](divergence/DOCUMENTATION.md).
 
+## Security
+
+[SECURITY.md](SECURITY.md) — what's actually true about secret handling
+and data in this repo, and, in the same file, what genuinely isn't
+defended against (prompt injection at Node 1, named plainly rather than
+implied away). `pip-audit` runs against every push in CI.
+
 ## License
 
 [MIT](LICENSE).
