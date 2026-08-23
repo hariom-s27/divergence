@@ -1,7 +1,15 @@
 {
   "node": "node3_income_tax",
   "source": "seeded",
-  "cached_at": "2026-08-22T11:23:16.340398+00:00",
+  "cached_at": "2026-08-23T11:02:06.275355+00:00",
+  "model_key": "large",
+  "provider": "featherless",
+  "model": "Qwen/Qwen2.5-72B-Instruct",
+  "in_tokens": 8784,
+  "out_tokens": 668,
+  "retries": 0,
+  "elapsed_s": 0.0,
+  "seed": null,
   "response": {
     "regimes": [
       {

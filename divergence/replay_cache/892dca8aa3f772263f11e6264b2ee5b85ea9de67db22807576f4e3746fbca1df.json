@@ -1,7 +1,15 @@
 {
   "node": "node4_gst",
   "source": "seeded",
-  "cached_at": "2026-08-22T11:23:16.342296+00:00",
+  "cached_at": "2026-08-23T11:02:06.276858+00:00",
+  "model_key": "large",
+  "provider": "featherless",
+  "model": "Qwen/Qwen2.5-72B-Instruct",
+  "in_tokens": 2547,
+  "out_tokens": 515,
+  "retries": 0,
+  "elapsed_s": 0.0,
+  "seed": null,
   "response": {
     "regimes": [
       {

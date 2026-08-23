@@ -1,7 +1,15 @@
 {
   "node": "node2_gaps",
   "source": "seeded",
-  "cached_at": "2026-08-22T11:23:16.337137+00:00",
+  "cached_at": "2026-08-23T11:02:06.272182+00:00",
+  "model_key": "small",
+  "provider": "featherless",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "in_tokens": 3119,
+  "out_tokens": 183,
+  "retries": 0,
+  "elapsed_s": 0.0,
+  "seed": null,
   "response": {
     "missing": [
       {

@@ -72,7 +72,9 @@ jobs:
         assert rec['missing'] == orig['missing'], 'replayed missing[] does not match the frozen record'
         assert rec['attacked'] == attack['attacked'], 'replayed attacked[] does not match the frozen record'
         assert rec['_meta']['llm']['provider'] == 'replay', 'record does not show it was actually replayed'
-        print('replay reproducibility: OK -- facts, missing, and attacked all match the frozen record byte-for-byte, with 0 API calls')
+        assert rec['_meta']['llm']['replayed'] is True, 'D72: replayed marker missing or false on a replayed run'
+        assert all(row.get('replayed') is True for row in rec['_meta']['llm']['by_node'].values()), 'D72: every by_node row must carry replayed=True on a replayed run'
+        print('replay reproducibility: OK -- facts, missing, and attacked all match the frozen record byte-for-byte, with 0 API calls, and the D72 replayed marker is set throughout')
         "
       env:
         DIVERGENCE_REPLAY: "1"

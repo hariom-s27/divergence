@@ -1,7 +1,15 @@
 {
   "node": "node5_adversarial",
   "source": "seeded",
-  "cached_at": "2026-08-22T11:23:16.347231+00:00",
+  "cached_at": "2026-08-23T11:02:06.281220+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13658,
+  "out_tokens": 979,
+  "retries": 0,
+  "elapsed_s": 0.0,
+  "seed": null,
   "response": {
     "attacked": [
       {

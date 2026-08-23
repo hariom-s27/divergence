@@ -246,7 +246,15 @@ calls — from cached request/response pairs, with zero network calls and
 zero marginal cost, verified continuously in this project's own CI
 (`DECISION-D63.md`). A demo that only runs for whoever holds a live key
 isn't actually reproducible; this one is checked to be, on every push, in
-an environment that has no key configured at all.
+an environment that has no key configured at all. **Not from a `seed`
+parameter** — Featherless's own docs, quoted verbatim: *"Random seed for
+generation. (Not reliable, as we use multiple servers)."* Sent through
+when set, recorded in every run's own `_meta.llm.seed`, never relied on:
+this project's reproducibility rests on the replay cache above and the
+frozen, hashed statutory corpus (`corpus_hash.py`), not on a parameter
+its own provider documents as unreliable. Full account and the exact
+verify commands: `divergence/README.md`'s "Reproducibility" section,
+`DECISION-D72.md`.
 
 **Long-term viability doesn't depend on anyone maintaining a model.** The
 corpus is dated, versioned, and frozen one provision per file, each file
@@ -424,7 +432,7 @@ Six things, each one checkable against a specific file rather than asserted:
   it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
   "Pre-registration" section — a reader can check the hash actually
   predates the runs, not just trust that it does.
-- **31 dated decision documents**, including the ones that record this
+- **32 dated decision documents**, including the ones that record this
   project's own mistakes — a stale citation, a scoring bug that faked a
   perfect score, three named instances of a resolver citing a real
   provision outside its own scope. None were written after the fact to

@@ -244,13 +244,19 @@ def provenance():
     for c in _CALLS:
         row = by_node.setdefault(c["node"], {"model": c["model"], "calls": 0,
                                              "in_tokens": 0, "out_tokens": 0,
-                                             "retries": 0, "elapsed_s": 0.0})
+                                             "retries": 0, "elapsed_s": 0.0,
+                                             "replayed": c.get("replayed", False)})
         row["calls"] += 1
         row["in_tokens"] += c["in_tokens"]
         row["out_tokens"] += c["out_tokens"]
         row["retries"] += c["retries"]
         row["elapsed_s"] += c.get("elapsed_s", 0.0)  # D64: real wall-clock per node,
         row["elapsed_s"] = round(row["elapsed_s"], 3)  # not cost_model.py's modelled estimate
+        # D72: OR, not overwrite -- a node called more than once (retries
+        # aside; this is about a node genuinely invoked twice) with mixed
+        # replay/live status should show as replayed, not silently hide it
+        # behind whichever call happened to update the row last.
+        row["replayed"] = row["replayed"] or c.get("replayed", False)
 
     # D63: replay mode has no API key, so provider_name()/model_id() (both
     # require one) cannot be called here unconditionally -- every node
@@ -268,8 +274,19 @@ def provenance():
         "total_calls": len(_CALLS),
         "total_in_tokens": sum(c["in_tokens"] for c in _CALLS),
         "total_out_tokens": sum(c["out_tokens"] for c in _CALLS),
+        "replayed": any(c.get("replayed", False) for c in _CALLS),  # D72: true if ANY
+        # call in this run was served from the cache -- so a replayed run can
+        # never look like a fresh one, at a glance, without reading by_node.
         "temperature": ("0 (DIVERGENCE_DEV=1)" if os.environ.get("DIVERGENCE_DEV", "").strip() == "1"
                          else (os.environ.get("DIVERGENCE_TEMPERATURE", "").strip() or "default (model's own)")),
+        "seed": (os.environ.get("DIVERGENCE_SEED", "").strip() or "not set"),  # D72
+        "seed_note": ("Featherless's own docs, /v1/chat/completions: \"Random seed for "
+                      "generation. (Not reliable, as we use multiple servers).\" Sent "
+                      "through anyway when set, for whatever weak effect it has. This "
+                      "project's actual reproducibility comes from the replay cache "
+                      "(replay_cache.py, DIVERGENCE_REPLAY=1) and the frozen, hashed "
+                      "corpus (corpus_hash.py) -- never from this. See README.md, "
+                      "'Reproducibility'."),
         "note": ("Figures above are the MEASURED run on this provider. Any "
                  "Claude rupee-per-record figure quoted elsewhere is a metered "
                  "deployment estimate, not this run."),
@@ -400,9 +417,17 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
         _t = temperature()
         if _t is not None:
             kwargs["temperature"] = _t
-        seed = os.environ.get("DIVERGENCE_SEED")
-        if seed:
-            kwargs["seed"] = int(seed)
+        # D72: Featherless's own docs, /v1/chat/completions, quoted verbatim,
+        # not paraphrased -- "Random seed for generation. (Not reliable, as
+        # we use multiple servers)." Sent through anyway, for whatever weak
+        # effect it has, but this project's actual reproducibility comes
+        # from the replay cache and the frozen, hashed corpus
+        # (corpus_hash.py), never from this. See provenance()'s own
+        # "seed_note" and README.md's "Reproducibility" section.
+        seed_env = os.environ.get("DIVERGENCE_SEED")
+        seed_used = int(seed_env) if seed_env else None
+        if seed_used is not None:
+            kwargs["seed"] = seed_used
         if json_mode:
             kwargs["response_format"] = {"type": "json_object"}
         try:
@@ -415,15 +440,18 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
                 raise
         text = r.choices[0].message.content
         u = getattr(r, "usage", None)
-        return text, getattr(u, "prompt_tokens", 0) or 0, getattr(u, "completion_tokens", 0) or 0
+        return (text, getattr(u, "prompt_tokens", 0) or 0,
+                getattr(u, "completion_tokens", 0) or 0, seed_used)
 
+    # Anthropic's Messages API has no seed parameter at all -- always None
+    # here, not a gap, a different API shape.
     anthropic_kwargs = dict(model=model, system=system, messages=messages, max_tokens=max_tokens)
     _t = temperature()
     if _t is not None:
         anthropic_kwargs["temperature"] = _t
     r = c.messages.create(**anthropic_kwargs)
     text = "".join(b.text for b in r.content if getattr(b, "type", "") == "text")
-    return text, r.usage.input_tokens, r.usage.output_tokens
+    return text, r.usage.input_tokens, r.usage.output_tokens, None
 
 
 def call_json(system, user_content, model_key, max_tokens=4096, node_name="node",
@@ -440,6 +468,13 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
     is missing, rather than silently falling through to a real call
     (which would defeat the point of replay mode) or fabricating a
     plausible-looking response (which would be worse than either).
+    D72 widened the cache key to also cover model_key/temperature/
+    max_tokens (previously only node/system/user -- a live model or
+    temperature change could silently replay a response generated under
+    different settings) and made a replay hit restore the ORIGINAL call's
+    real provenance (model, tokens, wall-clock, seed) instead of the
+    zeroed stand-in this used to fabricate, with every _CALLS entry now
+    carrying an explicit `replayed` bool either way.
 
     cache_key_system / cache_key_content: what to hash for the cache key,
     when it must differ from what's actually sent. Exists for exactly one
@@ -455,16 +490,19 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
     that's actually sent to the model."""
     key_system = cache_key_system if cache_key_system is not None else system
     key_content = cache_key_content if cache_key_content is not None else user_content
+    _t = temperature()
 
     if replay_cache.is_replay_mode():
         # Deliberately does not call provider_name()/model_id() anywhere on
         # this path -- both require an API key, and requiring one here
         # would defeat the entire point of replay mode. model_key (the
-        # slot name, e.g. "small") is recorded as-is, not resolved to a
-        # real provider-specific model id.
-        cached = replay_cache.load(node_name, key_system, key_content)
-        if cached is None:
-            key = replay_cache._key(node_name, key_system, key_content)
+        # slot name, e.g. "small") is part of the lookup key (D72); the
+        # fully-resolved provider/model id is not computed here at all.
+        entry = replay_cache.load(node_name, key_system, key_content,
+                                   model_key=model_key, temperature=_t, max_tokens=max_tokens)
+        if entry is None:
+            key = replay_cache._key(node_name, key_system, key_content,
+                                     model_key=model_key, temperature=_t, max_tokens=max_tokens)
             raise LLMError(
                 f"[{node_name}] DIVERGENCE_REPLAY=1 but no cached response for this "
                 f"exact request (key {key[:16]}...). Replay only reproduces requests "
@@ -472,10 +510,20 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
                 f"DIVERGENCE_REPLAY to make a real call (needs an API key), or run "
                 f"build_replay_cache.py if you expected this one to be seeded."
             )
-        _CALLS.append({"node": node_name, "model": model_key,
-                       "provider": "replay", "in_tokens": 0, "out_tokens": 0, "retries": 0,
-                       "elapsed_s": 0.0})
-        return cached
+        # D72: restores the ORIGINAL live call's own real provenance (model,
+        # tokens, wall-clock, seed) from the cache entry, rather than the
+        # zeroed stand-in this used to fabricate for every replayed call --
+        # `replayed: True` makes it impossible to mistake for a fresh one
+        # even though the other fields now look like real measurements,
+        # because they ARE real measurements, just from an earlier call.
+        _CALLS.append({
+            "node": node_name, "model": entry.get("model") or model_key,
+            "provider": entry.get("provider") or "replay",
+            "in_tokens": entry.get("in_tokens", 0), "out_tokens": entry.get("out_tokens", 0),
+            "retries": entry.get("retries", 0), "elapsed_s": entry.get("elapsed_s", 0.0),
+            "seed": entry.get("seed"), "replayed": True,
+        })
+        return entry["response"]
 
     prov = provider_name()
     model = model_id(model_key, prov)
@@ -485,10 +533,11 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
     last_err = None
     started = time.time()  # D64: real wall-clock, not cost_model.py's modelled estimate
 
+    seed_used = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
-            text, tin, tout = _raw_call(prov, model, system, messages,
-                                        max_tokens, json_mode=True)
+            text, tin, tout, seed_used = _raw_call(prov, model, system, messages,
+                                                    max_tokens, json_mode=True)
         except Exception as e:
             retryable, wrapped = _classify(e, model)
             if wrapped is not None:
@@ -520,11 +569,15 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
             ]
             continue
 
+        elapsed = round(time.time() - started, 3)
         _CALLS.append({"node": node_name, "model": model, "provider": prov,
                        "in_tokens": tin, "out_tokens": tout, "retries": retries,
-                       "elapsed_s": round(time.time() - started, 3)})
+                       "elapsed_s": elapsed, "seed": seed_used, "replayed": False})
         try:
-            replay_cache.save(node_name, key_system, key_content, obj, source="live")
+            replay_cache.save(node_name, key_system, key_content, obj, source="live",
+                              model_key=model_key, temperature=_t, max_tokens=max_tokens,
+                              provider=prov, model=model, in_tokens=tin, out_tokens=tout,
+                              retries=retries, elapsed_s=elapsed, seed=seed_used)
         except Exception:
             pass  # recording must never be able to fail a real, successful call
         return obj

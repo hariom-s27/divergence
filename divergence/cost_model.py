@@ -469,12 +469,15 @@ def main():
         print("   (D64 -- llm_call.py's own time.time(), not this file's latency_estimate())")
         hr("-")
         provider = (mrec.get("_meta") or {}).get("llm", {}).get("provider")
+        replayed = (mrec.get("_meta") or {}).get("llm", {}).get("replayed", provider == "replay")
         has_timing = any("elapsed_s" in row for row in by_node.values())
-        if provider == "replay":
-            print("  This record was produced by DIVERGENCE_REPLAY=1 -- every elapsed_s")
-            print("  is 0.0 by construction (no network call was made). Not evidence of")
-            print("  latency, real or otherwise. Point --measured at a LIVE run's record.\n")
-        elif not by_node:
+        if replayed:
+            print("  DIVERGENCE_REPLAY=1 -- no network call was made for this run. Since")
+            print("  D72, elapsed_s below (where present) is the ORIGINAL live call's own")
+            print("  real measurement, restored from the cache, not fabricated for this")
+            print("  replay -- 0.0 specifically means that cached entry predates D64's")
+            print("  wall-clock instrumentation, not that the original call took no time.\n")
+        if not by_node:
             print(f"  {os.path.basename(mpath)} has no _meta.llm.by_node -- predates D64's")
             print("  timing instrumentation, or was assembled from hand-run node output.\n")
         elif not has_timing:

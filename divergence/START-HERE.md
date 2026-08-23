@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 31 decision documents merged into one chronological read — so you don't have to open thirty-one separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 32 decision documents merged into one chronological read — so you don't have to open thirty-two separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Thirty-one dated documents. D41 predates D42–D58 chronologically (it's been
+Thirty-two dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -636,6 +636,42 @@ it. Fixed identically in all five; reverified with a full
 against a real model, or whether the model complies with the embedded
 instruction at all — needs a live key this environment doesn't have,
 same as D62. Full account: `SAMPLES.md` §5.
+
+## [D72](DECISION-D72.md) — the replay cache's own real gaps closed: key completeness, provenance restoration, seed honesty
+A request asked for "a response cache and replay mode" — reading
+`llm_call.py` first (as asked) found that mechanism already shipped as
+D63. Not rebuilt; instead, three real, verified gaps in it were closed.
+1) The cache key was `node/system/user` only — no model, temperature, or
+max_tokens, so a model or temperature change between a live run and a
+later replay could silently serve a stale response. Extended, but
+deliberately with `model_key` (the slot name) rather than the literally-
+requested resolved provider/model id — resolving those needs
+`provider_name()`/`model_id()`, which need an API key, and replay mode's
+whole reason for existing is running with none. 2) The seed value was
+sent to the API (`_raw_call()`, pre-D72) but never recorded anywhere.
+Now surfaced in `provenance()`, alongside 3) Featherless's own
+documented caveat, fetched and verified against the primary source
+before writing it down, not taken on the request's word: *"Random seed
+for generation. (Not reliable, as we use multiple servers)."* A replay
+hit now restores the ORIGINAL call's real provenance (model, tokens,
+wall-clock, seed) from the cache instead of the zeroed stand-in it used
+to fabricate, with an explicit `replayed: true` on every entry so a
+replayed run can never be mistaken for a fresh one — confirmed live: a
+replayed D1 run now shows real non-zero token counts
+(`29559 in / 3042 out`) instead of the `0 in / 0 out` every prior replay
+this session has shown. `build_replay_cache.py` re-seeded using D1's own
+real historical `_meta` (never fabricated), with `elapsed_s`/`seed`
+honestly empty for the two fields that record predates. Caught and fixed
+a real knock-on regression while verifying: `cost_model.py --measured`
+special-cased `provider == "replay"` to always claim "every elapsed_s is
+0.0 by construction" — no longer true now that a replay hit can carry a
+real historical measurement; message and branching corrected, tested
+against a live replay run. **Not claimed**: the exact "run live once,
+then replay it" sequence documented in `divergence/README.md` was not
+executed end to end — the live half needs a key this environment
+doesn't have. What was verified is the identical code path under a
+different call site (`source="seeded"`, same `save()` signature), which
+reproduced the frozen record exactly.
 
 ---
 

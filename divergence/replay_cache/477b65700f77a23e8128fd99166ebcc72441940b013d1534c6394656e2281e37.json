@@ -1,7 +1,15 @@
 {
   "node": "node1_extract",
   "source": "seeded",
-  "cached_at": "2026-08-23T10:14:12.675891+00:00",
+  "cached_at": "2026-08-23T11:02:06.270540+00:00",
+  "model_key": "small",
+  "provider": "featherless",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "in_tokens": 1451,
+  "out_tokens": 697,
+  "retries": 0,
+  "elapsed_s": 0.0,
+  "seed": null,
   "response": {
     "facts": {
       "invoice_no": {
