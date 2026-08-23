@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 29 decision documents merged into one chronological read — so you don't have to open twenty-nine separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 30 decision documents merged into one chronological read — so you don't have to open thirty separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-nine dated documents. D41 predates D42–D58 chronologically (it's been
+Thirty dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -575,6 +575,41 @@ into CI on that basis. "Caught" is deliberately coarse — any landed
 attack, not one that names the specific corrupted field — disclosed as
 exactly that. **Not run**: the real 42-mutant sweep against a live node
 5, the same `FEATHERLESS_API_KEY` constraint as D62 through D68.
+
+## [D70](DECISION-D70.md) — injection defence, extended: hidden characters, field-setting attempts, a visible disclosure section
+A request asked for a new `injection_scan.py` and a new nonce-marker
+format; reading `node1_extract.py`/`injection_scanner.py` first (as
+asked) found both already shipped as D62, and rebuilding either would
+have meant two parallel security mechanisms instead of one maintained
+one — confirmed with the user before touching anything. What was
+genuinely missing, found the same way: `injection_scanner.py` had zero
+non-printing/bidirectional-character detection, and no pattern for a
+document instructing the model to set a field/confidence value directly.
+Both added — the hidden-character list built with `chr(0x....)`, never
+a literal character typed into the file, after a literal-character first
+attempt kept silently round-tripping back to the actual invisible glyph
+no matter how the surrounding text phrased the escape, exactly the kind
+of unauditable risk a file whose job is detecting these codepoints
+cannot carry in its own source. Bigger gap: injection findings only ever
+reached a reader as prose inside `extraction_notes`, never structurally
+and never on the disclosure page. `node1_extract.extract()` now returns
+a fourth value (`pre_scan_findings`/`post_scan_findings`/
+`nonce_spotlighting_applied`), stored by `run_pipeline.py` at
+`_meta.input_integrity` and rendered by `node7_disclosure.py` as its own
+numbered section, **00 — Input integrity**, ahead of "what is missing" —
+the same design rule as the rest of this project: detect, refuse to let
+it change a field, disclose, never silently strip. Self-test rebuilt
+from aggregate-only to one planted sample per pattern (14/14, all real,
+including the hidden-char check); already CI-gated since D62 wired the
+same file's `--self-test` in, no new step needed. Verified end to end:
+full `DIVERGENCE_REPLAY=1` run byte-identical to the frozen D1 originals
+after reseeding the cache for the changed system-prompt text, both
+disclosure-page branches (clean and findings-present) rendered against
+constructed fixtures, `a11y_check.py --all` clean. **Not claimed**: the
+hidden-character list is named, not exhaustive; homoglyph substitution
+is undetected by either layer; whether a live model actually resists an
+embedded instruction is still the same open question every version of
+this defence has carried since D62 — no key to test it with here.
 
 ---
 

@@ -251,12 +251,17 @@ def main():
 
     print(f"\n  [1/{N}] 🤖 1 EXTRACT")
     try:
-        facts, extraction_notes, m1 = node1_extract.extract(a.text, a.file, model=a.model)
+        facts, extraction_notes, m1, input_integrity = node1_extract.extract(
+            a.text, a.file, model=a.model)
     except LLMError as e:
         die(str(e))
+    n_integrity = (len(input_integrity["pre_scan_findings"])
+                   + len(input_integrity["post_scan_findings"]))
     print(f"        {len(facts)} field(s) extracted "
           f"({m1.get('in_tokens', '?')} in / {m1.get('out_tokens', '?')} out tokens, "
-          f"{m1.get('retries', 0)} retr(y/ies))")
+          f"{m1.get('retries', 0)} retr(y/ies))"
+          + (f"  -- {n_integrity} injection-scanner finding(s), see input integrity"
+             if n_integrity else ""))
 
     print(f"\n  [2/{N}] 🤖 2 GAP DETECTOR")
     try:
@@ -357,7 +362,7 @@ def main():
         "regimes": record_stub["regimes"],
         "limits": limits,
         "manifest": build_manifest(record_stub["regimes"], a.tax_year),
-        "_meta": {"llm": llm_call.provenance()},
+        "_meta": {"llm": llm_call.provenance(), "input_integrity": input_integrity},
     }
     if a.node5:
         record["attacked"] = attacked

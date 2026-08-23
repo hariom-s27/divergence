@@ -32,16 +32,28 @@ generic policy copied in.
   writing.
 - **The one node that reads untrusted document text has two real
   defence layers**, added after this file first shipped without them
-  (`DECISION-D62.md`). `injection_scanner.py` — deterministic, no
-  model — scans the raw input for known injection phrasings (override
-  claims, fake system/role messages, an in-document legal conclusion,
-  chat-role delimiters) before it's ever sent, and again on the model's
-  own output afterward; both advisory, folded into `extraction_notes`,
-  not a hard block. `node1_extract.py` wraps the untrusted text in a
-  fresh, random per-call nonce marker and tells the model explicitly
-  that text inside those markers is data, never instructions, no matter
-  what it claims to be. See the next section for what this does not
-  guarantee.
+  (`DECISION-D62.md`, extended `DECISION-D70.md`). `injection_scanner.py`
+  — deterministic, no model — scans the raw input for known injection
+  phrasings (override claims, fake system/role messages, an in-document
+  legal conclusion, chat-role delimiters, a direct instruction to set a
+  field or confidence value) before it's ever sent, and again on the
+  model's own output afterward, plus a structurally separate check for
+  hidden/non-printing characters (bidirectional overrides, zero-width
+  joiners) — an instruction does not need to be human-readable to reach
+  a model reading raw bytes. All of it advisory, never a hard block: a
+  finding is detected, refused the ability to change a field, and
+  disclosed — never silently stripped (the same silent-resolution move
+  this project criticises competitors for elsewhere). Findings are
+  stored structurally at `_meta.input_integrity`, not just folded into
+  `extraction_notes` prose, and rendered as their own visible section on
+  the disclosure page (§00, before "what is missing"), not buried inside
+  the general limitations box. `node1_extract.py` wraps the untrusted
+  text in a fresh, random per-call nonce marker and tells the model
+  explicitly that text inside those markers is data, never instructions,
+  no matter what it claims to be — including an explicit instruction
+  (D70) that an imperative found inside the document is a fact ABOUT the
+  document to record, never a reason to change a confidence value. See
+  the next section for what this does not guarantee.
 - **The only thing deployed is a static file mirror.** `divergence/` is
   published to GitHub Pages (`.github/workflows/pages.yml`,
   `actions/deploy-pages`) exactly as it sits in this repository — no
@@ -59,13 +71,18 @@ than let a reader discover it, and that applies to this file too:
 
 - **The prompt-injection defence is real but not a guarantee.**
   `injection_scanner.py`'s own pattern list is invisible to a phrasing it
-  doesn't recognize — an attacker who avoids the ~10 known families this
-  scans for is undetected by layer one. Nonce spotlighting narrows what a
-  model is willing to do with embedded instructions; it does not formally
-  prove the model will never comply with a sufficiently novel one. Tested
-  offline against a constructed adversarial case
-  (`cases/ADV1-injection/`, `DECISION-D62.md`) covering every pattern
-  family at once — both layers behaved as designed. The live check of
+  doesn't recognize — an attacker who avoids the 11 known phrase families
+  this scans for is undetected by that half of layer one. The
+  hidden-character check (D70) is exact for the codepoints it names, but
+  the list is hand-kept, not exhaustive — an unlisted non-printing
+  codepoint, or a homoglyph substitution that reads correctly to a human
+  while dodging the regexes, is invisible to it. Nonce spotlighting
+  narrows what a model is willing to do with embedded instructions; it
+  does not formally prove the model will never comply with a
+  sufficiently novel one. Tested offline against a constructed
+  adversarial case (`cases/ADV1-injection/`, `DECISION-D62.md`) covering
+  every pattern family at once — both layers behaved as designed. The
+  live check of
   whether the model itself resists the embedded instructions, rather than
   just receiving the spotlighting markers, is recorded as pending in that
   same decision doc, not assumed to pass. The downstream deterministic

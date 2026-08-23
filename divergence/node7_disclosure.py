@@ -584,6 +584,54 @@ def render_attacks(record):
     return "\n".join(parts)
 
 
+def render_input_integrity(record):
+    """D70: a visible section, not one more prose line inside limits[].
+    Reads _meta.input_integrity (node1_extract.py's structured findings,
+    stored by run_pipeline.py) rather than re-scanning anything -- this
+    function makes no judgement of its own and calls injection_scanner
+    for nothing, same discipline as render_attacks() reading attacked[]
+    exactly as node5_adversarial.py wrote it.
+
+    Design rule (explicit, not incidental): nothing here was stripped or
+    sanitised. A finding below means the pattern/character was detected,
+    reported, and NOT allowed to change a field -- never that it was
+    quietly removed. Silently cleaning the input would hide exactly the
+    kind of thing this section exists to show a reader."""
+    integrity = (record.get("_meta") or {}).get("input_integrity")
+    if integrity is None:
+        return (
+            '<p class="lede">Input-integrity scanning was not recorded for this '
+            'record (generated before D70, or node 1 was not run through '
+            'run_pipeline.py). Not the same as a clean scan.</p>'
+        )
+    pre = integrity.get("pre_scan_findings") or []
+    post = integrity.get("post_scan_findings") or []
+    total = len(pre) + len(post)
+    if total == 0:
+        return (
+            '<p class="lede">No suspicious patterns or hidden characters found in the '
+            'input, before or after extraction. Nonce-spotlighted regardless — see '
+            '<code>injection_scanner.py</code>\'s own LIMITATIONS for what "no findings" '
+            'does and does not mean.</p>'
+        )
+    parts = [
+        f'<p class="lede">{total} finding{"s" if total != 1 else ""} in the raw input or '
+        f'the extracted output. Nothing below was stripped, corrected, or hidden — each '
+        f'one was detected, refused the ability to change a field, and is disclosed here '
+        f'verbatim.</p>'
+    ]
+    for label, findings in (("in the raw document", pre), ("in the model\'s own extracted output", post)):
+        if not findings:
+            continue
+        items = "\n".join(
+            f'<p><b>[{esc(f.get("severity", "?"))}]</b> line {esc(f.get("line", "?"))}: '
+            f'{esc(f.get("label", "?"))} — <code>{esc(f.get("matched_text", ""))}</code></p>'
+            for f in findings
+        )
+        parts.append(f'<p class="gap-note"><b>{esc(label)}:</b></p>{items}')
+    return "\n".join(parts)
+
+
 def render_limits(limits):
     if not limits:
         return '<p><b>limits[] was empty — this record is malformed; do not trust it.</b></p>'
@@ -615,6 +663,14 @@ def compose(record):
     <p class="sub">{subtitle}</p>
   </header>
   <hr class="rule">
+
+  <section aria-labelledby="s0">
+    <div class="sec-head"><span class="sec-n">00</span><h2 id="s0">Input integrity</h2></div>
+    <p class="lede">Checked before the document is read for anything else. The same
+    "absence first" ordering as section 01 below — whether the input itself can be
+    trusted matters before what it says does.</p>
+    {render_input_integrity(record)}
+  </section>
 
   <section aria-labelledby="s1">
     <div class="sec-head"><span class="sec-n">01</span><h2 id="s1">What is missing</h2></div>
