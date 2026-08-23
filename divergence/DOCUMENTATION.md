@@ -425,7 +425,7 @@ checked independently rather than assumed from a title:
 
 ## 6. Where the deeper material lives
 
-- **All 30 decision documents, the mental model, and the full run guide,
+- **All 31 decision documents, the mental model, and the full run guide,
   merged into one chronological file:** [`START-HERE.md`](START-HERE.md)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)
@@ -441,4 +441,4 @@ checked independently rather than assumed from a title:
   checked against its own abstract before being cited:
   [`prior-art/READING-CARDS.md`](prior-art/READING-CARDS.md)
 - Every individually dated design decision:
-  `DECISION-D*.md`, up to `DECISION-D70.md`
+  `DECISION-D*.md`, up to `DECISION-D71.md`

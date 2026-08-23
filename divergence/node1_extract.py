@@ -319,7 +319,11 @@ def main():
     if not a.text and not a.file:
         die("give at least one --text or --file input")
 
-    print(f"  [{NODE_NAME}] provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}")
+    try:
+        provider_line = f"provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}"
+    except LLMError as e:
+        die(str(e))
+    print(f"  [{NODE_NAME}] {provider_line}")
     try:
         facts, notes, meta, integrity = extract(a.text, a.file, model=a.model)
     except LLMError as e:

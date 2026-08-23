@@ -243,10 +243,14 @@ def main():
 
     N = 7 if a.node5 else 6
 
+    try:
+        provider_line = (f"provider={llm_call.provider_display()}  small={llm_call.model_display('small')}"
+                          f"  large={llm_call.model_display('large')}")
+    except LLMError as e:
+        die(str(e))
     print("=" * 74)
     print(f"  RUN PIPELINE — {a.record_id}  ({a.tax_year})")
-    print(f"  provider={llm_call.provider_display()}  small={llm_call.model_display('small')}"
-          f"  large={llm_call.model_display('large')}")
+    print(f"  {provider_line}")
     print("=" * 74)
 
     print(f"\n  [1/{N}] 🤖 1 EXTRACT")

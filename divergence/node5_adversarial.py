@@ -299,7 +299,11 @@ def main():
     valuation_doc = json.load(open(a.valuation, encoding="utf-8"))
     valuation = valuation_doc.get("valuation", valuation_doc) if isinstance(valuation_doc, dict) else valuation_doc
 
-    print(f"  [{NODE_NAME}] provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}")
+    try:
+        provider_line = f"provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}"
+    except LLMError as e:
+        die(str(e))
+    print(f"  [{NODE_NAME}] {provider_line}")
     try:
         attacked, survived, limits, meta = check(regimes, missing, valuation, a.tax_year,
                                                  model=a.model, draft_blind=a.draft_blind)

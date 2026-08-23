@@ -99,7 +99,11 @@ def main():
     facts_doc = json.load(open(a.facts, encoding="utf-8"))
     facts = facts_doc.get("facts", facts_doc)  # accept either a facts.json or a bare facts{}
 
-    print(f"  [{NODE_NAME}] provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}")
+    try:
+        provider_line = f"provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}"
+    except LLMError as e:
+        die(str(e))
+    print(f"  [{NODE_NAME}] {provider_line}")
     try:
         missing, meta = detect_gaps(facts, model=a.model)
     except LLMError as e:
