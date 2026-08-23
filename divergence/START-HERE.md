@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 33 decision documents merged into one chronological read — so you don't have to open thirty-three separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 34 decision documents merged into one chronological read — so you don't have to open thirty-four separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Thirty-three dated documents. D41 predates D42–D58 chronologically (it's been
+Thirty-four dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -697,6 +697,39 @@ node 3's real 8,784-token dominance over nodes 1+2+4 combined (7,117).
 **Not claimed**: any case's real wall-clock time — every existing
 record predates D64's instrumentation, and the column says "not
 measured," never a fabricated number, for exactly that reason.
+
+## [D74](DECISION-D74.md) — human-subjects study instrument: baseline interface + pre-registered protocol
+The preparatory instrument for M7, not the study itself — running it
+needs the user's own four real participants, the same boundary every
+human-subjects or live-model item has drawn since D62.
+`baseline_interface.py` reuses `node7_disclosure.py`'s own CSS/helpers
+directly so the only real variable is the uncertainty display; its
+single figure is the record's real lattice **median**, not `methods[0]`
+(checked first: that sits near the low end of D1's real range, which
+would have silently biased the control toward understatement). Two real
+internal-validity bugs caught before this was usable: a visible
+"(baseline condition)" header label, and a figure caption explaining its
+own derivation "exactly the display condition this study is testing" —
+both would have revealed the manipulation to a participant; both fixed
+to read like an ordinary product page, with the real derivation moved to
+this decision doc instead. `study/PROTOCOL.md`'s two external citations
+were fetched and read in full before use, not relayed: the SURE
+screener (Légaré et al., *Canadian Family Physician* 2010, PMC2920798)
+and Fernandes/Walls/Munson/Hullman/Kay, CHI 2018 (DOI
+10.1145/3173574.3173718) for the expected/optimal-payoff decision-quality
+measure, precisely disclosed as Kay being senior/last author, not first,
+despite "Kay et al." being the common shorthand. **A real, fabricated
+error caught and disclosed, not silently fixed**: a first draft invented
+plausible-looking Légaré co-author names when an initial fetch only
+returned "et al."; a second, more targeted fetch of the same source that
+had already supplied the verbatim SURE items returned the real byline,
+corrected before commit. C3/C4 excluded from the study's four cases —
+their real spread figures match D1's to five decimal places, confirming
+`node7_disclosure.py`'s own existing "do not demo" warning applies
+exactly as much to a study stimulus as to a public page. The payoff
+function (asymmetric, steeper for understatement than overpayment) and
+its constants are pre-registered with a worked, Python-verified numeric
+example, not hand-rounded.
 
 ---
 

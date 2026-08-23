@@ -8,7 +8,7 @@ the folder you opened.
 ## Read this first
 
 **[`START-HERE.md`](START-HERE.md)** — the mental model, every command to
-run the pipeline end to end, and all 33 dated design decisions merged into
+run the pipeline end to end, and all 34 dated design decisions merged into
 one chronological read. If you only open one file, open that one.
 
 ## The three files required by the track's submission rules
@@ -69,7 +69,7 @@ token counts and model on a replay hit, not a zeroed stand-in.
 | `runs/` | Saved, real output records from actual runs — nothing in here is a mockup |
 | `eval/` | The scoring scripts (`score.py`, `normalize_runs.py`) |
 | `prior-art/` | Two research documents checking whether this problem is already solved, and whether real people actually hit it |
-| `DECISION-D41.md` … `DECISION-D73.md` | Thirty-three dated documents, each recording one real design decision or bug — merged into `START-HERE.md`, kept individually for full detail |
+| `DECISION-D41.md` … `DECISION-D74.md` | Thirty-four dated documents, each recording one real design decision or bug — merged into `START-HERE.md`, kept individually for full detail |
 | `corpus_hash.py`, `corpus/FREEZE-HASHES.json` | Corpus integrity: a real SHA-256 per Tier A file, checked in CI so a corpus edit that isn't re-frozen deliberately fails loudly instead of shipping silently |
 | `make_flowchart.py` | Regenerates `flowchart.png` from scratch (matplotlib, not a screenshot or a Mermaid export) — real model names and human-input markers baked into the image itself |
 | `mutation_corpus.py`, `binom_ci.py` | Reports, not gates: 7 mutation operators measuring what the deterministic checks actually catch (D61); exact Clopper-Pearson intervals for this project's own small-n proportions |
@@ -81,6 +81,7 @@ token counts and model on a replay hit, not a zeroed stand-in.
 | `capability_probe.py` | S8: is `response_format` a silent no-op on this provider? A prompt/flag conflict test isolates the flag's real effect from the model's own willingness to comply — classifier self-tested against five fixtures (D68); the live two-call probe itself needs an API key, so it's a manual tool, not a CI gate |
 | `mutate.py` | A deterministic, seeded defect-injection harness for node 5 specifically (not the deterministic gates `mutation_corpus.py` already covers) — 7 operators × 6 real cases = 42 reproducible mutants; `--self-test`'s two checks run for real with zero API calls (D69), the real 42-mutant sweep needs a key |
 | `run_all_cases.py` | Runs all six real cases through `run_pipeline.py` (one subprocess per case, unmodified) and builds `results.md`'s "Measured cost and tokens" table — real token counts and costs for all six today, real wall-clock the first time it runs with a working key (no case has ever produced one, D73) |
+| `baseline_interface.py`, `baseline-interface.html`, `study/PROTOCOL.md` | The instrument for M7's human-subjects study — a single-number control page (reusing `output-interface.html`'s own CSS so the only real variable is the uncertainty display) plus a pre-registered protocol: payoff function, 8-trial counterbalanced design, the verbatim SURE decisional-conflict screener, and an empty results template (D74). Running the actual study with real participants is the user's own task |
 | `results.md`, `ITERATION-STORY.md`, `architecture.md`, `GAZETTE-FINDINGS.md` | The deeper reading — metrics including where the pipeline loses, seven curated moments of what broke, node-by-node rationale, and what the actual gazette text says |
 | `step19drop/`, `step21drop/`, `step22drop/` | Earlier project states, kept for the record as the project evolved — not the current submission, but not deleted either |
 | `output-interface.html`, `demo-C1.html`, `demo-C2.html` | The generated disclosure pages `index.html` links to |

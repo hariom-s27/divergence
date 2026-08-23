@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disclosure record (baseline) — 2026-114</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F3F2;        /* cool foolscap, not cream */
+  --paper-rule:#D3DAD7;   /* ledger ruling */
+  --ink:#161C19;          /* blue-black ink */
+  --ink-soft:#4A5551;
+  --ink-faint:#666F6B;    /* darkened from #78837E, 21 Aug -- the original was 3.52:1 against
+                             --paper, below WCAG AA's 4.5:1 for normal text (a11y_check.py
+                             found this; the ARIA/heading work was real but nobody had checked
+                             contrast). Same hue, darkened until it clears 4.5:1 with margin. */
+  --margin-red:#9E2F26;   /* the red margin rule of a bahi khata */
+  --figure:#22405A;       /* stamp indigo -- used only for money */
+  --elected:#4F6140;      /* olive -- confirmation only */
+  --measure:2px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:'Spectral',Georgia,serif; font-weight:400;
+  font-size:17px; line-height:1.62;
+  padding:0 16px 96px;
+}
+.sheet{
+  max-width:760px; margin:0 auto; position:relative;
+  border-left:var(--measure) solid var(--margin-red);
+  padding:0 0 0 clamp(18px,5vw,44px);
+}
+.label{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint);
+}
+.rule{border:0;border-top:1px solid var(--paper-rule);margin:40px 0 0}
+header{padding:44px 0 0}
+.formno{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+h1{
+  font-size:clamp(26px,4.6vw,36px); font-weight:600; line-height:1.18;
+  margin:20px 0 6px; letter-spacing:-.015em;
+}
+.sub{color:var(--ink-soft);font-size:16px;margin:0 0 4px}
+section{padding-top:34px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.sec-head h2{font-size:19px;font-weight:600;margin:0;letter-spacing:-.01em}
+.sec-n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--margin-red);font-weight:600}
+.lede{color:var(--ink-soft);margin:0 0 18px;font-size:16px}
+.missing{list-style:none;margin:0;padding:0;border-top:1px solid var(--paper-rule)}
+.missing li{
+  display:grid;grid-template-columns:auto 1fr;gap:14px;
+  padding:13px 0;border-bottom:1px solid var(--paper-rule);align-items:start;
+}
+.mark{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--margin-red);border:1.5px solid var(--margin-red);
+  width:22px;height:22px;display:grid;place-items:center;flex:none;margin-top:2px;
+}
+.missing b{font-weight:600}
+.missing .blocks{display:block;font-size:14px;color:var(--ink-soft);margin-top:2px}
+.gap{margin:26px 0 8px}
+.gap-ends{display:flex;justify-content:space-between;gap:20px}
+.method{flex:1}
+.method.b{text-align:right}
+.amt{
+  font-family:'IBM Plex Mono',monospace;font-size:clamp(19px,3.6vw,25px);
+  font-weight:500;color:var(--figure);letter-spacing:-.02em;display:block;
+}
+.method small{display:block;font-size:13px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
+.dim{position:relative;height:46px;margin:14px 0 2px}
+.dim-line{position:absolute;top:23px;left:0;right:0;height:1px;background:var(--ink)}
+.dim-line::before,.dim-line::after{
+  content:"";position:absolute;top:-6px;width:1px;height:13px;background:var(--ink);
+}
+.dim-line::before{left:0}
+.dim-line::after{right:0}
+.dim-val{
+  position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  background:var(--paper);padding:0 14px;
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(15px,3vw,18px);
+  color:var(--margin-red);white-space:nowrap;
+}
+.gap-note{font-size:15px;color:var(--ink-soft);margin:12px 0 0}
+.one-answer{
+  margin:26px 0 8px;padding:18px 20px;border:1px solid var(--elected);
+}
+.one-answer .amt{color:var(--elected)}
+.one-answer .label{color:var(--elected)}
+fieldset{border:1px solid var(--paper-rule);padding:18px;margin:26px 0 0}
+legend{padding:0 8px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:9px 0}
+.opt input{margin-top:6px;width:17px;height:17px;accent-color:var(--elected);flex:none}
+.opt label{cursor:pointer}
+.opt .t{font-weight:600}
+.opt .d{display:block;font-size:14px;color:var(--ink-soft)}
+.stamp{
+  margin-top:16px;padding:11px 14px;border:1px dashed var(--paper-rule);
+  font-size:14px;color:var(--ink-soft);
+}
+.stamp b{color:var(--ink);font-weight:600}
+.clear-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+  background:none;border:1px solid var(--ink-faint);color:var(--ink-soft);
+  padding:3px 9px;margin-left:8px;cursor:pointer;
+}
+.clear-btn:hover,.clear-btn:focus-visible{border-color:var(--ink);color:var(--ink)}
+.regime{border-top:1px solid var(--paper-rule);padding:16px 0}
+.regime:last-of-type{border-bottom:1px solid var(--paper-rule)}
+.r-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+.r-name{font-weight:600}
+.cert{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;padding:2px 7px;border:1px solid currentColor;white-space:nowrap;
+}
+.cert.settled{color:var(--elected)}
+.cert.inference,.cert.open_texture,.cert.contested{color:var(--margin-red)}
+.cert.lacuna,.cert.insufficient_evidence,.cert.none{color:var(--ink-faint)}
+.r-body{font-size:15px;color:var(--ink-soft);margin:7px 0 0}
+.cite{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);}
+details{border-top:1px solid var(--paper-rule);padding-top:16px}
+summary{cursor:pointer;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ ";font-family:'IBM Plex Mono',monospace;color:var(--margin-red)}
+details[open] summary::before{content:"\2212 "}
+.man{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.9;color:var(--ink-soft);margin:14px 0 0;padding:0;list-style:none}
+.man li{border-bottom:1px dotted var(--paper-rule);padding:3px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.budget{list-style:none;margin:14px 0 0;padding:0}
+.budget li{border-bottom:1px dotted var(--paper-rule);padding:9px 0}
+.budget .t{display:block;font-size:14.5px}
+.budget .t b{font-family:'IBM Plex Mono',monospace;color:var(--figure);font-weight:600}
+.budget .d{display:block;font-size:13.5px;color:var(--ink-soft);margin-top:3px}
+.attack{border-top:1px solid var(--paper-rule);padding:16px 0}
+.attack:last-of-type{border-bottom:1px solid var(--paper-rule)}
+.a-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+.a-target{font-weight:600;font-size:14.5px}
+.verdict{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;padding:2px 7px;border:1px solid currentColor;white-space:nowrap;
+}
+.verdict.landed{color:var(--margin-red)}
+.verdict.survived{color:var(--elected)}
+.a-body{font-size:15px;color:var(--ink-soft);margin:7px 0 0}
+.a-down{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);margin:5px 0 0}
+.survived-list{list-style:none;margin:14px 0 0;padding:0}
+.survived-list li{padding:7px 0;border-bottom:1px dotted var(--paper-rule);font-size:14.5px;color:var(--ink-soft)}
+.limits{margin-top:40px;padding:20px;border:1px solid var(--paper-rule);background:rgba(255,255,255,.45)}
+.limits p{margin:9px 0 0;font-size:14.5px;color:var(--ink-soft)}
+.limits p:first-of-type{margin-top:12px}
+a:focus-visible,summary:focus-visible,input:focus-visible,label:focus-visible{
+  outline:2px solid var(--figure);outline-offset:3px;
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){
+  .gap-ends{flex-direction:column;gap:4px}
+  .method.b{text-align:left;margin-top:14px}
+  .dim{display:none}
+  .gap-mobile{display:block!important}
+}
+.gap-mobile{display:none;font-family:'IBM Plex Mono',monospace;font-weight:600;
+  color:var(--margin-red);font-size:17px;padding:12px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin:14px 0}
+</style>
+</head>
+<body>
+
+<main class="sheet">
+  <header>
+    <div class="formno">
+      <span class="label">Disclosure record · D1</span>
+      <span class="label">Corpus frozen 2026-08-19 · Tax year FY 2026-27</span>
+    </div>
+    <h1>Payment received 28 June 2026, 03:14 IST</h1>
+    <p class="sub">5,000 USDC · Invoice 2026-114 · Counterparty declared as Northbay Systems LLC</p>
+  </header>
+  <hr class="rule">
+
+  <section aria-labelledby="s2">
+    <div class="sec-head"><h2 id="s2">What it was worth in rupees</h2></div>
+    <div class="one-answer"><span class="label">Payable value</span><span class="amt">₹514,200</span><small style="display:block;margin-top:6px;color:var(--ink-soft);font-size:14px">Based on available market and bank rate data for this transaction.</small></div>
+  </section>
+</main>
+
+</body>
+</html>
