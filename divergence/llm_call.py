@@ -239,8 +239,22 @@ def client(prov=None):
 _CALLS = []
 
 
+def _median(values):
+    """D73: standard median (even-length lists average the two middle
+    values). No numpy/statistics-module dependency drama -- this project
+    is standard-library only throughout, and a handful of samples per
+    node doesn't need more than this."""
+    s = sorted(values)
+    n = len(s)
+    mid = n // 2
+    if n % 2:
+        return s[mid]
+    return (s[mid - 1] + s[mid]) / 2.0
+
+
 def provenance():
     by_node = {}
+    wall_ms_samples = {}
     for c in _CALLS:
         row = by_node.setdefault(c["node"], {"model": c["model"], "calls": 0,
                                              "in_tokens": 0, "out_tokens": 0,
@@ -257,6 +271,17 @@ def provenance():
         # replay/live status should show as replayed, not silently hide it
         # behind whichever call happened to update the row last.
         row["replayed"] = row["replayed"] or c.get("replayed", False)
+        # D73: a list, not a running sum -- p50/max need every individual
+        # sample, not just the total. Trivial (p50 == max == the one value)
+        # within a single pipeline run, since each node is normally called
+        # once; only becomes meaningful across multiple runs sharing one
+        # process without reset_provenance() between them (run_all_cases.py).
+        wall_ms_samples.setdefault(c["node"], []).append(c.get("wall_ms", 0.0))
+
+    for node, samples in wall_ms_samples.items():
+        by_node[node]["total_wall_ms"] = round(sum(samples), 1)
+        by_node[node]["p50_wall_ms"] = round(_median(samples), 1)
+        by_node[node]["max_wall_ms"] = round(max(samples), 1)
 
     # D63: replay mode has no API key, so provider_name()/model_id() (both
     # require one) cannot be called here unconditionally -- every node
@@ -521,6 +546,9 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
             "provider": entry.get("provider") or "replay",
             "in_tokens": entry.get("in_tokens", 0), "out_tokens": entry.get("out_tokens", 0),
             "retries": entry.get("retries", 0), "elapsed_s": entry.get("elapsed_s", 0.0),
+            "wall_ms": entry.get("elapsed_s", 0.0) * 1000,  # D73: derived from the
+            # same stored elapsed_s, not a second independently-cached field --
+            # one real number, two units, not two numbers that could drift apart.
             "seed": entry.get("seed"), "replayed": True,
         })
         return entry["response"]
@@ -531,7 +559,11 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
     retries = 0
     last_text = None
     last_err = None
-    started = time.time()  # D64: real wall-clock, not cost_model.py's modelled estimate
+    # D73: perf_counter(), not time.time() -- the correct tool for measuring
+    # an INTERVAL (monotonic, immune to system clock adjustments happening
+    # mid-call); time.time() answers "what time is it", perf_counter()
+    # answers "how long did this take", which is the actual question here.
+    started = time.perf_counter()
 
     seed_used = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
@@ -569,10 +601,12 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
             ]
             continue
 
-        elapsed = round(time.time() - started, 3)
+        delta = time.perf_counter() - started
+        elapsed = round(delta, 3)
         _CALLS.append({"node": node_name, "model": model, "provider": prov,
                        "in_tokens": tin, "out_tokens": tout, "retries": retries,
-                       "elapsed_s": elapsed, "seed": seed_used, "replayed": False})
+                       "elapsed_s": elapsed, "wall_ms": round(delta * 1000, 1),
+                       "seed": seed_used, "replayed": False})
         try:
             replay_cache.save(node_name, key_system, key_content, obj, source="live",
                               model_key=model_key, temperature=_t, max_tokens=max_tokens,

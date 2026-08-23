@@ -590,6 +590,54 @@ The scaffolding this section will be filled into, the moment someone with a key 
 
 ---
 
+## Measured cost and tokens, per case
+
+Added 23 Aug (`DECISION-D73.md`). `run_all_cases.py` runs all six real
+cases through `run_pipeline.py`, one subprocess per case, and builds
+this table — regenerate it with `python run_all_cases.py`.
+
+| Case | Wall (s) | Input tokens | Output tokens | Cost @ Featherless (USD) | Cost @ Claude, metered (USD) | Source |
+|---|---|---|---|---|---|---|
+| C1 | not measured | 13,402 | 1,681 | $0.00000 partial (Qwen/Qwen2.5-72B-Instruct, Qwen/Qwen2.5-7B-Instruct unpriced) | $0.0567 | historical (frozen record; live/replay attempt failed: no replay cache entry for this case) |
+| C2 | not measured | 14,155 | 1,997 | $0.00000 partial (Qwen/Qwen2.5-72B-Instruct, Qwen/Qwen2.5-7B-Instruct unpriced) | $0.0628 | historical (frozen record; live/replay attempt failed: no replay cache entry for this case) |
+| C3 | not measured | 13,367 | 1,727 | $0.00000 partial (Qwen/Qwen2.5-72B-Instruct, Qwen/Qwen2.5-7B-Instruct unpriced) | $0.0572 | historical (frozen record; live/replay attempt failed: no replay cache entry for this case) |
+| C4 | not measured | 13,061 | 1,771 | $0.00000 partial (Qwen/Qwen2.5-72B-Instruct, Qwen/Qwen2.5-7B-Instruct unpriced) | $0.0570 | historical (frozen record; live/replay attempt failed: no replay cache entry for this case) |
+| C5 | not measured | 13,546 | 1,688 | $0.00000 partial (Qwen/Qwen2.5-72B-Instruct, Qwen/Qwen2.5-7B-Instruct unpriced) | $0.0572 | historical (frozen record; live/replay attempt failed: no replay cache entry for this case) |
+| D1 | not measured | 29,559 | 3,042 | $0.00283 partial (Qwen/Qwen2.5-72B-Instruct, Qwen/Qwen2.5-7B-Instruct unpriced) | $0.1164 | measured (this run, replayed) |
+
+**What's real here, and what isn't yet:**
+
+- **Every token count is real.** C1–C5's come from their own frozen,
+  already-verified historical records (`runs/21aug/*.json`); D1's comes
+  from a genuine replay-cache hit against D1's own real historical
+  record (D63/D72) — none of the six is invented.
+- **Wall-clock is genuinely absent for all six, not rounded to zero.**
+  Every one of these records predates `llm_call.py`'s wall-clock
+  instrumentation (D64) or, for D1, replays a cached response whose own
+  original call predates it too. `run_all_cases.py` will report a real
+  number here the first time it runs with a working `FEATHERLESS_API_KEY`
+  — no case has ever produced one.
+- **Cost @ Featherless is real but partial for all six.** Verified
+  directly against Featherless's own live `/v1/models` catalog, 23 Aug
+  2026 (not a third-party aggregator — several disagreed with each
+  other and with the catalog when checked): `mistralai/Mistral-Large-
+  Instruct-2411` (node 5) prices at $0.125 / $1.15 per million
+  input/output tokens. **`Qwen/Qwen2.5-7B-Instruct` and `Qwen/Qwen2.5-
+  72B-Instruct` — this project's own configured "small"/"large" slots,
+  which have served every real call this project has ever made — are
+  genuinely absent from that same live catalog.** A listed catalog and a
+  model's real serving availability on an existing account are not
+  necessarily the same thing; `DECISION-D43.md` already documents the
+  identical shape of gap for `meta-llama/*` licence gating. Reported as
+  unpriced, not guessed at — which is why every Featherless figure above
+  is marked "partial."
+- **Cost @ Claude (metered) is real**, computed from each case's real
+  token counts through `cost_model.py`'s own existing `PRICES` table —
+  the same figures this project has used throughout for the "what would
+  this cost on a frontier API" comparison (D35).
+
+---
+
 ## Still open before this table is the final one
 
 - **M2's real instability under temperature** (Block E2) — arm C's three seeds on D1 alone: 50%, 75%, 0% gap recall. Worth understanding before results.md is called final, and worth five more seeds before quoting any single M2 number as representative — not yet done.
@@ -601,3 +649,4 @@ The scaffolding this section will be filled into, the moment someone with a key 
 - M5's contract gap — see `README.md`'s Honest Limitations
 - Prior-art check (Block C) — both done: OBJ-1 (does software already solve this), see [`prior-art/OBJ-1.md`](prior-art/OBJ-1.md); DEMAND (do real people hit this), see [`prior-art/DEMAND.md`](prior-art/DEMAND.md) — a real person hitting D1's exact fact pattern (SBI TT rate not published for the settlement date) found independently on a public forum
 - **`mutate.py`'s real 42-mutant sweep against node 5** (D69, "Mutation testing" above) — the harness, its determinism, and both self-test checks are verified; the actual sweep needs a live `FEATHERLESS_API_KEY` this environment doesn't have. First thing to run the moment one is available — the overall score, per-operator table, and surviving-mutants list are all scaffolded and waiting in "Mutation testing" above.
+- **Real wall-clock timing for any of the six cases** (D73, "Measured cost and tokens" above) — `llm_call.py` has measured every field it can without a live call; wall time specifically has never been recorded for any of the six real cases, ever, because every existing record predates D64. `python run_all_cases.py` with a working key is the only thing that closes this, and it will also fill in the two Featherless-priced-model gaps if the account's own catalog resolves them differently than the public one checked here.

@@ -206,6 +206,21 @@ def baseline_rows():
 
 
 def latency_estimate(model):
+    """D73: retained for PROJECTION only -- a hypothetical Anthropic
+    Claude deployment's modelled speed (D35), never this project's real,
+    Featherless-hosted one. Real measured wall-clock is now available two
+    ways: --measured <record.json> below, reading one real record's own
+    _meta.llm.by_node (D64/D72/D73 -- perf_counter(), per-node p50/max/
+    total); and run_all_cases.py's own results.md table, real for all six
+    cases' tokens/cost, real for wall-clock the first time it runs with a
+    working key (none of the six real cases has ever produced one --
+    every existing record predates this instrumentation). Neither
+    replaces this function -- a projection for "what if this ran on
+    Claude instead" still needs a model, since nobody has actually run it
+    there. What changed is that a reader no longer has to take THIS
+    project's own actual speed on faith; it's measured, or explicitly
+    marked as not yet measured, never modelled and presented as if real.
+    """
     speed = (LATENCY["out_tok_per_s_opus"] if "Opus" in model
              else LATENCY["out_tok_per_s_haiku"] if "Haiku" in model
              else LATENCY["out_tok_per_s_sonnet"])

@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 32 decision documents merged into one chronological read — so you don't have to open thirty-two separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 33 decision documents merged into one chronological read — so you don't have to open thirty-three separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Thirty-two dated documents. D41 predates D42–D58 chronologically (it's been
+Thirty-three dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -672,6 +672,31 @@ executed end to end — the live half needs a key this environment
 doesn't have. What was verified is the identical code path under a
 different call site (`source="seeded"`, same `save()` signature), which
 reproduced the frozen record exactly.
+
+## [D73](DECISION-D73.md) — real measured cost/timing infrastructure, and what it actually found
+`llm_call.py` gained `time.perf_counter()` (the correct tool for an
+interval, not `time.time()`), `wall_ms` on every call, and per-node
+p50/max/total in `provenance()` (trivial within one run, meaningful once
+`run_all_cases.py` — new, one subprocess per case, `run_pipeline.py`
+itself untouched — shares a process across cases). Two real external
+facts verified directly before use, not taken from third-party summaries
+that disagreed with each other: Featherless's concurrency model scales
+by model size (1/2/4 units under 16B/34B/70B+ — this project's own
+`small`=1, `large`/`adversarial`=4), and its live `/v1/models` catalog
+(public, unauthenticated, no key touched) prices
+`mistralai/Mistral-Large-Instruct-2411` at $0.125/$1.15 per million
+tokens — but does not list `Qwen/Qwen2.5-7B-Instruct` or
+`-72B-Instruct` at all, despite them serving every real call this
+project has made (the same catalog-vs-availability gap D43 already
+names for `meta-llama/*`). All six cases' real historical token counts
+(five frozen, D1 via a genuine replay hit) now feed a real, generated
+`results.md` table and a new README "Scalability" section — real
+concurrency math, the real "judgement doesn't scale, enumeration does"
+architecture argument (⚙ B's lattice vs. the D58 election control), and
+node 3's real 8,784-token dominance over nodes 1+2+4 combined (7,117).
+**Not claimed**: any case's real wall-clock time — every existing
+record predates D64's instrumentation, and the column says "not
+measured," never a fabricated number, for exactly that reason.
 
 ---
 

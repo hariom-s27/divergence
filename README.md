@@ -209,6 +209,63 @@ rupee figure imply otherwise. The real evaluation in `results.md` ran on
 Featherless-hosted open-weight models exclusively (decision D44), where the
 marginal cost per record is zero under the plan used.
 
+## Scalability
+
+**What actually scales here, and what deliberately does not** —
+`DECISION-D73.md`, real numbers where real numbers exist, disclosed gaps
+where they don't.
+
+**Records per hour is bounded by concurrency, not by per-token spend** —
+consistent with the ₹0-metered plan-tier row above, not in tension with
+it. The five model calls in one record run strictly sequentially (read
+`run_pipeline.py`'s own code — no threading, no async; confirmed, not
+assumed), so one record in flight occupies exactly one node's own
+concurrency cost at a time, never all five simultaneously. Featherless's
+own docs, verified directly against the live catalog rather than a
+third-party summary: concurrent-unit cost scales with model size —
+1 unit under 16B parameters, 2 units under 34B, 4 units at 70B or
+more. This project's own three model slots: `small` (Qwen2.5-7B) costs
+1 unit; `large` (Qwen2.5-72B) and `adversarial` (Mistral-Large,
+~123B) both cost 4 units — meaning a record's peak concurrency draw is
+4 units, whichever of nodes 3/4/5 happens to be running. **Records/hour
+= (available concurrent-unit budget ÷ 4) × (3600 ÷ per-record wall-clock
+seconds).** Both real inputs that formula needs are honestly missing
+right now, not guessed at: this project's own account's specific
+concurrent-unit budget is not documented anywhere in this repository,
+and no case has ever produced a real per-record wall-clock measurement
+— every existing record predates `llm_call.py`'s own timing
+instrumentation (D64). `results.md`'s "Measured cost and tokens, per
+case" table is the first place either number would land.
+
+**The cost that does not scale is legal judgement, and this system does
+not try to make it scale.** What scales, deliberately: enumeration.
+`node3_valuation.py` (⚙ B) enumerates every defensible valuation method
+mechanically — 2 official dates × 5 market readings × 2 currency-peg
+assumptions on D1, arithmetic, not reasoning, and it does that the same
+way for the millionth record as the first. What does not scale, on
+purpose: which of those defensible figures a taxpayer actually files.
+That decision is routed to a human, explicitly, every time — the
+election control on the disclosure page itself (`node7_disclosure.py`,
+decision D58), with nothing pre-selected (`scope.md` Part 8: "a default
+is a recommendation," this project's own stated refusal to make a tax
+decision for anyone). Processing more records faster does not make that
+judgement call any easier, any more automatable, or any less a human's
+to make — this system scales the enumeration that judgement is
+exercised over, never the judgement itself.
+
+**Corpus tokens injected into the resolver prompts are the dominant
+cost term, not the facts or the output** — measured, not assumed, from
+D1's own real, frozen call record. Node 3 (the income-tax resolver)
+alone consumed 8,784 input tokens on that record — more than nodes 1, 2,
+and 4 *combined* (7,117) — while node 4 (the GST resolver), given the
+identical facts/gap-list payload and only a smaller corpus scope (3
+files against node 3's 10), used 2,547. The one structural difference
+between those two calls is how much statutory text each one is scoped
+to (`node_resolver.py`'s own scoped-corpus loader) — everything else
+about the request shape is the same. The lever that actually moves this
+pipeline's cost is which provisions a regime's prompt is scoped to
+inject, not the size of the taxpayer's own input document.
+
 ## Sustainability
 
 Three real, measured properties, not aspirations:
@@ -432,7 +489,7 @@ Six things, each one checkable against a specific file rather than asserted:
   it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
   "Pre-registration" section — a reader can check the hash actually
   predates the runs, not just trust that it does.
-- **32 dated decision documents**, including the ones that record this
+- **33 dated decision documents**, including the ones that record this
   project's own mistakes — a stale citation, a scoring bug that faked a
   perfect score, three named instances of a resolver citing a real
   provision outside its own scope. None were written after the fact to
