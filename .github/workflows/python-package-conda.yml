@@ -55,6 +55,10 @@ jobs:
       run: |
         cd divergence
         python capability_probe.py --self-test
+    - name: Mutation harness self-test (mutate.py)
+      run: |
+        cd divergence
+        python mutate.py --self-test
     - name: Replay reproducibility check (no API key)
       run: |
         cd divergence

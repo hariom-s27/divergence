@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 28 decision documents merged into one chronological read — so you don't have to open twenty-eight separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 29 decision documents merged into one chronological read — so you don't have to open twenty-nine separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -132,7 +132,7 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Twenty-eight dated documents. D41 predates D42–D58 chronologically (it's been
+Twenty-nine dated documents. D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
@@ -550,6 +550,31 @@ JSON" by the exact standard the real pipeline uses. **Not built**: which
 verdict any real model slot actually gets — needs a live
 `FEATHERLESS_API_KEY` this environment doesn't have, the same
 constraint as D62 through D67.
+
+## [D69](DECISION-D69.md) — mutate.py: a deterministic, seeded defect-injection harness for node 5
+`mutation_corpus.py` (D61) already measures what the deterministic gates
+catch; this project's own thesis (DOCUMENTATION.md §5, Silent Scope
+Omission) is that a real, current, correctly-quoted citation can still be
+wrong in a way nothing but node 5 catches — so `mutate.py` stress-tests
+node 5 itself. Seven operators (CITE_SWAP, DATE_SHIFT, RATE_SUB,
+LABEL_MISMATCH, ARITH_CORRUPT, SILENT_OMIT, OVERCLAIM) × six real cases =
+42 seeded, reproducible mutants fed to `node5_adversarial.check()`
+unchanged from its real contract. First draft seeded each mutant's RNG
+with a tuple; caught before shipping that Python's `hash()` of a `str` is
+salted per-process by default, which would have made "deterministic,
+seeded" silently false across separate runs — fixed with a plain
+f-string seed, then verified (not just reasoned about) by diffing output
+from two genuinely separate processes. All 42 mutants confirmed to
+construct as valid, non-mutating JSON across all six real cases.
+`--self-test`'s two required checks both run for real and pass with zero
+API calls: a null (identity) mutant reproduces D1's own frozen attack
+result exactly, via the replay cache D63 already seeded; and the three
+real scope-reach failures `scope_enforcer.py` (D59/D65) already proves it
+catches are still caught when shaped as this file's own mutants. Wired
+into CI on that basis. "Caught" is deliberately coarse — any landed
+attack, not one that names the specific corrupted field — disclosed as
+exactly that. **Not run**: the real 42-mutant sweep against a live node
+5, the same `FEATHERLESS_API_KEY` constraint as D62 through D68.
 
 ---
 
