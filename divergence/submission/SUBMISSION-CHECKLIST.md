@@ -19,13 +19,14 @@ three; no other requirement is invented here.
 ## 2. A video/document showing the workflow used on sample test cases, vs. a single-prompt approach on the same test cases
 
 - **File:** [`divergence/SAMPLES.md`](../SAMPLES.md)
-- **Size:** 7,406 bytes
-- **Last-modified commit:** `4e95f41`, 2026-08-21 — "Ship-plan response:
-  strengthen SAMPLES.md with verified metrics, close remaining named
-  sub-criteria, add the three-record comparison page"
-- **Phone-readable PDF companion:** [`SAMPLES.pdf`](SAMPLES.pdf) (154,484
-  bytes) — same content, exported via `build_pdfs.py` so a judge doesn't
-  have to render Markdown.
+- **Size:** 10,916 bytes (updated 2026-08-24, submission-finalization pass —
+  was 7,406 bytes as of the `4e95f41` check; re-measured directly, not
+  carried over)
+- **Phone-readable PDF companion:** [`SAMPLES.pdf`](SAMPLES.pdf) (179,993
+  bytes, regenerated 2026-08-24 with `build_pdfs.py`'s link-rewriting pass
+  — every relative link now resolves to an absolute GitHub URL in the PDF,
+  see `build_pdfs.py`'s own docstring) — same content, exported so a judge
+  doesn't have to render Markdown.
 - Every quote in it is copied verbatim from a real, saved run
   (`runs/21aug/D1_armA.json`, `D1_armB.json`, `D1_final_seed2.json`) —
   the document *is* the comparison, not a summary of one.
@@ -33,15 +34,25 @@ three; no other requirement is invented here.
 ## 3. Detailed documentation of the reasoning behind each node, how it works, and any other necessary data
 
 - **File:** [`divergence/DOCUMENTATION.md`](../DOCUMENTATION.md)
-- **Size:** 26,076 bytes
-- **Last-modified commit:** `a0c25f0`, 2026-08-23 — "S8: capability probe
-  -- is response_format a silent no-op?" (a decision-count bump; the
-  per-node content itself was last substantively touched adding ⚙ E)
+- **Size:** 27,679 bytes (updated 2026-08-24, submission-finalization pass —
+  was 26,076 bytes as of the `a0c25f0` check; re-measured directly, not
+  carried over)
 - **Phone-readable PDF companion:** [`DOCUMENTATION.pdf`](DOCUMENTATION.pdf)
-  (290,626 bytes) — same content, 11 pages, tables intact.
+  (302,084 bytes, regenerated 2026-08-24, same link-rewriting pass as
+  `SAMPLES.pdf` above) — same content, tables intact.
 - Organized exactly as the track's rule text asks: per node, why it
   exists, how it works, the data it needs — plus the model registry the
   track separately asks the flowchart to name.
+
+**A note on "Last-modified commit" fields, removed from both rows above
+rather than left stale a second time:** naming a specific commit hash
+here means it goes stale the instant either file is edited again without
+this checklist being updated in the same commit — which is exactly what
+happened between the `4e95f41`/`a0c25f0` checks and this one. Sizes are
+re-measured directly (`wc -c`) each time this file is touched instead;
+`git log -1 -- divergence/SAMPLES.md` (or `DOCUMENTATION.md`) gives the
+real current answer to "when was this last touched" without this file
+needing to track it separately.
 
 ## Regenerating the two PDFs
 
