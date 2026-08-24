@@ -2,7 +2,6 @@
 
 [![CI](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/hariom-s27/divergence/actions/workflows/python-package-conda.yml)
 
-Built for Reverie Hacks 2026, ML Prompt Engineering track.
 
 **One file, the whole thing, in order:** [`divergence/START-HERE.md`](divergence/START-HERE.md) —
 the mental model, every command to run the full pipeline, and all 24
