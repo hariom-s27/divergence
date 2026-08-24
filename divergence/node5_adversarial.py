@@ -278,6 +278,53 @@ def check(regimes, missing, valuation, tax_year, model="adversarial", draft_blin
     return parsed["attacked"], parsed["checked_and_survived"], limits, meta
 
 
+def check_factored(regimes, missing, valuation, tax_year, model="adversarial", draft_blind=False):
+    """S6/D76: TRUE factored verification -- Dhuliawala et al., Chain-of-
+    Verification (Findings of ACL 2024): draft a response, plan
+    verification questions, then answer each one independently, "so the
+    answers are not biased by other responses" (their words, quoted in
+    DECISION-D76.md; the paper's abstract carries no precision/F1 numbers,
+    so none is claimed here -- the design lesson is taken, not a figure).
+
+    D67 (S6's first half) already made node 5 draft-blind: it can strip
+    the PRODUCER's own `reasoning` before the CHECKER reads a conclusion.
+    It never addressed the other half of the same risk, found reading
+    check()'s own user-prompt construction: every call -- draft-blind or
+    not -- still bundles ALL of regimes[] into ONE shared context, so an
+    attack on conclusion 2 is still formed after the model has just read
+    conclusions 1 and 3 in the same turn. That is joint verification, not
+    factored, regardless of whether `reasoning` was stripped from what it
+    joint-verifies.
+
+    This makes ONE independent call per conclusion instead -- a plain
+    Python loop over the existing check(), reusing it as the per-target
+    primitive rather than a new call shape (the same "loop over the
+    existing primitive" pattern node_resolver.resolve_k() already
+    established, D75). Each call sees exactly one conclusion, still
+    checked against the same gap list, valuation lattice, and full
+    corpus every call already used -- only cross-conclusion visibility is
+    removed, nothing else about what a single call can check.
+
+    Costs N calls instead of 1 (N = len(regimes), typically 3) --
+    disclosed, not hidden; see DECISION-D76.md's cost accounting.
+    Returns (attacked, checked_and_survived, limits, per_target_meta) --
+    per_target_meta is a list of one llm_call provenance row per
+    conclusion, in order, not a single merged row, so a caller can see
+    exactly which of the N calls cost what."""
+    if len(regimes) < 1:
+        raise ValueError("check_factored needs at least one conclusion to check")
+    attacked_all, survived_all, limits_all, per_target_meta = [], [], [], []
+    for i, r in enumerate(regimes):
+        attacked, survived, limits, meta = check(
+            [r], missing, valuation, tax_year, model=model, draft_blind=draft_blind,
+        )
+        attacked_all.extend(attacked)
+        survived_all.extend(survived)
+        limits_all.extend(limits)
+        per_target_meta.append({"target_index": i, "regime": r.get("regime"), **meta})
+    return attacked_all, survived_all, limits_all, per_target_meta
+
+
 def main():
     ap = argparse.ArgumentParser(description="Node 5 -- adversarial checker")
     ap.add_argument("--regimes", required=True, help="regimes[] from a pipeline record "
@@ -288,8 +335,12 @@ def main():
     ap.add_argument("--out", default=None)
     ap.add_argument("--model", default="adversarial")
     ap.add_argument("--draft-blind", action="store_true",
-                     help="S6: strip each conclusion's own reasoning[] before node 5 "
+                     help="S6/D67: strip each conclusion's own reasoning[] before node 5 "
                           "sees it -- factored verification, off by default")
+    ap.add_argument("--factored", action="store_true",
+                     help="S6/D76: one independent call per conclusion, not one joint call "
+                          "attacking all of them together -- off by default, combine freely "
+                          "with --draft-blind")
     a = ap.parse_args()
 
     regimes_doc = json.load(open(a.regimes, encoding="utf-8"))
@@ -303,16 +354,22 @@ def main():
         provider_line = f"provider={llm_call.provider_display()} model={llm_call.model_display(a.model)}"
     except LLMError as e:
         die(str(e))
-    print(f"  [{NODE_NAME}] {provider_line}")
+    print(f"  [{NODE_NAME}] {provider_line}" + ("  (factored)" if a.factored else ""))
     try:
-        attacked, survived, limits, meta = check(regimes, missing, valuation, a.tax_year,
-                                                 model=a.model, draft_blind=a.draft_blind)
+        if a.factored:
+            attacked, survived, limits, meta = check_factored(
+                regimes, missing, valuation, a.tax_year, model=a.model, draft_blind=a.draft_blind)
+        else:
+            attacked, survived, limits, meta = check(regimes, missing, valuation, a.tax_year,
+                                                     model=a.model, draft_blind=a.draft_blind)
     except LLMError as e:
         die(str(e))
 
     out = {
         "attacked": attacked, "checked_and_survived": survived, "limits": limits,
-        "_meta": {"node": NODE_NAME, "generated_at": datetime.now(timezone.utc).isoformat(), **meta},
+        "_meta": {"node": NODE_NAME, "generated_at": datetime.now(timezone.utc).isoformat(),
+                  "factored": a.factored,
+                  **({"by_node": meta} if a.factored else meta)},
     }
     out_path = a.out or os.path.join(os.path.dirname(os.path.abspath(a.regimes)), "attack.json")
     with open(out_path, "w", encoding="utf-8") as f:

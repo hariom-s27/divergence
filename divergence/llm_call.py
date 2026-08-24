@@ -259,7 +259,9 @@ def provenance():
         row = by_node.setdefault(c["node"], {"model": c["model"], "calls": 0,
                                              "in_tokens": 0, "out_tokens": 0,
                                              "retries": 0, "elapsed_s": 0.0,
-                                             "replayed": c.get("replayed", False)})
+                                             "replayed": c.get("replayed", False),
+                                             "json_repairs": 0, "response_format_popped": 0,
+                                             "response_format_not_applicable": 0})
         row["calls"] += 1
         row["in_tokens"] += c["in_tokens"]
         row["out_tokens"] += c["out_tokens"]
@@ -271,6 +273,25 @@ def provenance():
         # replay/live status should show as replayed, not silently hide it
         # behind whichever call happened to update the row last.
         row["replayed"] = row["replayed"] or c.get("replayed", False)
+        # S8/D76: json_repairs counts calls where the relaxed parser had to
+        # strip a fence or brace-match around prose (repair_method !=
+        # "direct"). response_format_popped counts calls where the
+        # provider actively rejected response_format=json_object (a real
+        # error, caught and retried without it) -- distinct from
+        # response_format_not_applicable, which counts calls on a
+        # provider "kind" that never attempts response_format at all
+        # (the Anthropic path). A call can be response_format_sent=True
+        # AND json_repaired=True at the same time -- the provider accepted
+        # the kwarg without erroring, yet the response still needed
+        # repair, which is itself evidence toward "silent no-op" that
+        # capability_probe.py's controlled A/B (S8/D68) tests for directly.
+        if c.get("json_repaired"):
+            row["json_repairs"] += 1
+        rfs = c.get("response_format_sent")
+        if rfs is False:
+            row["response_format_popped"] += 1
+        elif rfs is None:
+            row["response_format_not_applicable"] += 1
         # D73: a list, not a running sum -- p50/max need every individual
         # sample, not just the total. Trivial (p50 == max == the one value)
         # within a single pipeline run, since each node is normally called
@@ -299,6 +320,16 @@ def provenance():
         "total_calls": len(_CALLS),
         "total_in_tokens": sum(c["in_tokens"] for c in _CALLS),
         "total_out_tokens": sum(c["out_tokens"] for c in _CALLS),
+        # S8/D76: real, per-call signals about whether response_format=
+        # json_object actually did anything, counted across every call in
+        # THIS run (see llm_call.py --self-test and DECISION-D76.md for
+        # the real numbers this produced against the replay-cache's own
+        # historical entries -- pre-D76 entries read as
+        # response_format_not_applicable, disclosed as "not recorded", not
+        # silently folded into either count).
+        "json_repair_events": sum(1 for c in _CALLS if c.get("json_repaired")),
+        "response_format_popped_events": sum(1 for c in _CALLS if c.get("response_format_sent") is False),
+        "response_format_not_recorded_events": sum(1 for c in _CALLS if c.get("response_format_sent") is None),
         "replayed": any(c.get("replayed", False) for c in _CALLS),  # D72: true if ANY
         # call in this run was served from the cache -- so a replayed run can
         # never look like a fresh one, at a glance, without reading by_node.
@@ -329,20 +360,27 @@ def reset_provenance():
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)```", re.S)
 
 
-def _extract_json(text):
+def _extract_json_verbose(text):
+    """Same relaxed parser as always, now returning (obj, method) instead
+    of just obj -- S8/D76: which repair step actually succeeded is the
+    signal `call_json()` needs to count a JSON-repair event per node into
+    provenance(), not just that ONE of the three eventually worked.
+    method is one of "direct" (plain json.loads, no repair needed),
+    "fenced" (inside a ```json ... ``` block), or "brace_matched" (the
+    bracket-depth fallback -- prose before/after the object, no fence)."""
     if text is None:
         raise ValueError("empty response")
     t = text.strip()
 
     try:
-        return json.loads(t)
+        return json.loads(t), "direct"
     except Exception:
         pass
 
     m = _FENCE.search(t)
     if m:
         try:
-            return json.loads(m.group(1).strip())
+            return json.loads(m.group(1).strip()), "fenced"
         except Exception:
             t = m.group(1).strip()
 
@@ -369,10 +407,18 @@ def _extract_json(text):
                 depth -= 1
                 if depth == 0:
                     try:
-                        return json.loads(t[start:i + 1])
+                        return json.loads(t[start:i + 1]), "brace_matched"
                     except Exception:
                         break
     raise ValueError("no parseable JSON object in response")
+
+
+def _extract_json(text):
+    """Kept as the plain obj-or-raise shape -- everything that only ever
+    needed the parsed object (try_parse_json) is unaffected by S8/D76's
+    method tracking below."""
+    obj, _method = _extract_json_verbose(text)
+    return obj
 
 
 def try_parse_json(text):
@@ -431,6 +477,23 @@ def _classify(e, model):
 
 
 def _raw_call(prov, model, system, messages, max_tokens, json_mode):
+    """Returns (text, in_tokens, out_tokens, seed_used, response_format_sent).
+
+    response_format_sent (S8/D76): True if the request that actually
+    produced `text` still carried response_format={"type":"json_object"};
+    False if it was attempted and popped after the provider rejected it
+    outright (the except branch below); None if this call never attempts
+    response_format at all (the Anthropic path -- a different API shape,
+    not a rejection). None is deliberately not the same claim as False:
+    False means "we asked and were refused," None means "we never asked
+    here." Featherless's own documented /v1/chat/completions parameter
+    list (checked directly against the live API reference, not assumed)
+    does not name response_format at all -- so on Featherless specifically,
+    a `True` here is NOT proof the parameter did anything; it only proves
+    the provider didn't error on it, which is consistent with either
+    "honoured" or "silently ignored." capability_probe.py's own controlled
+    A/B (S8/D68) is what actually distinguishes those two; this field is
+    the passive, every-real-call signal, not a replacement for that probe."""
     c = client(prov)
 
     if PROVIDERS[prov]["kind"] == "openai":
@@ -453,30 +516,34 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
         seed_used = int(seed_env) if seed_env else None
         if seed_used is not None:
             kwargs["seed"] = seed_used
+        response_format_sent = False
         if json_mode:
             kwargs["response_format"] = {"type": "json_object"}
+            response_format_sent = True
         try:
             r = c.chat.completions.create(**kwargs)
         except Exception as e:
             if json_mode and ("response_format" in str(e) or "json" in str(e).lower()):
                 kwargs.pop("response_format", None)
+                response_format_sent = False
                 r = c.chat.completions.create(**kwargs)
             else:
                 raise
         text = r.choices[0].message.content
         u = getattr(r, "usage", None)
         return (text, getattr(u, "prompt_tokens", 0) or 0,
-                getattr(u, "completion_tokens", 0) or 0, seed_used)
+                getattr(u, "completion_tokens", 0) or 0, seed_used, response_format_sent)
 
     # Anthropic's Messages API has no seed parameter at all -- always None
-    # here, not a gap, a different API shape.
+    # here, not a gap, a different API shape. Same reasoning for
+    # response_format_sent: this path never attempts it, so None, not False.
     anthropic_kwargs = dict(model=model, system=system, messages=messages, max_tokens=max_tokens)
     _t = temperature()
     if _t is not None:
         anthropic_kwargs["temperature"] = _t
     r = c.messages.create(**anthropic_kwargs)
     text = "".join(b.text for b in r.content if getattr(b, "type", "") == "text")
-    return text, r.usage.input_tokens, r.usage.output_tokens, None
+    return text, r.usage.input_tokens, r.usage.output_tokens, None, None
 
 
 def call_json(system, user_content, model_key, max_tokens=4096, node_name="node",
@@ -550,6 +617,12 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
             # same stored elapsed_s, not a second independently-cached field --
             # one real number, two units, not two numbers that could drift apart.
             "seed": entry.get("seed"), "replayed": True,
+            # S8/D76: entry.get() correctly returns None for any cache entry
+            # saved before this field existed -- "not recorded", not a
+            # fabricated "direct"/True that this replayed call never earned.
+            "response_format_sent": entry.get("response_format_sent"),
+            "json_repair_method": entry.get("json_repair_method"),
+            "json_repaired": entry.get("json_repair_method") not in (None, "direct"),
         })
         return entry["response"]
 
@@ -566,10 +639,11 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
     started = time.perf_counter()
 
     seed_used = None
+    response_format_sent = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
-            text, tin, tout, seed_used = _raw_call(prov, model, system, messages,
-                                                    max_tokens, json_mode=True)
+            text, tin, tout, seed_used, response_format_sent = _raw_call(
+                prov, model, system, messages, max_tokens, json_mode=True)
         except Exception as e:
             retryable, wrapped = _classify(e, model)
             if wrapped is not None:
@@ -586,7 +660,7 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
 
         last_text = text
         try:
-            obj = _extract_json(text)
+            obj, repair_method = _extract_json_verbose(text)
         except ValueError as e:
             last_err = e
             if attempt == MAX_ATTEMPTS:
@@ -603,15 +677,25 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
 
         delta = time.perf_counter() - started
         elapsed = round(delta, 3)
+        # S8/D76: repair_method != "direct" means the pipeline's relaxed
+        # parser had to strip a fence or brace-match around prose to get
+        # here -- a real, per-call signal about json_object's actual
+        # effect, not the same claim as response_format_sent (which only
+        # says the provider didn't reject the kwarg outright).
         _CALLS.append({"node": node_name, "model": model, "provider": prov,
                        "in_tokens": tin, "out_tokens": tout, "retries": retries,
                        "elapsed_s": elapsed, "wall_ms": round(delta * 1000, 1),
-                       "seed": seed_used, "replayed": False})
+                       "seed": seed_used, "replayed": False,
+                       "response_format_sent": response_format_sent,
+                       "json_repair_method": repair_method,
+                       "json_repaired": repair_method != "direct"})
         try:
             replay_cache.save(node_name, key_system, key_content, obj, source="live",
                               model_key=model_key, temperature=_t, max_tokens=max_tokens,
                               provider=prov, model=model, in_tokens=tin, out_tokens=tout,
-                              retries=retries, elapsed_s=elapsed, seed=seed_used)
+                              retries=retries, elapsed_s=elapsed, seed=seed_used,
+                              response_format_sent=response_format_sent,
+                              json_repair_method=repair_method)
         except Exception:
             pass  # recording must never be able to fail a real, successful call
         return obj

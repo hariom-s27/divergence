@@ -235,6 +235,10 @@ def main():
                           "before node 5 sees it (factored verification). Off by default -- "
                           "changes what the model receives, so every existing --node5 run "
                           "stays reproducible without it too.")
+    ap.add_argument("--factored", action="store_true",
+                     help="S6/D76: with --node5, one independent call per conclusion instead "
+                          "of one joint call attacking all of them together. Combine freely "
+                          "with --draft-blind. Off by default, same reproducibility reason.")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -318,18 +322,28 @@ def main():
 
     attacked = None
     if a.node5:
-        print(f"\n  [7/{N}] 🤖 5 ADVERSARIAL CHECKER"
-              + ("  (draft-blind)" if a.draft_blind else ""))
+        mode_note = "  (" + ", ".join(
+            n for n, on in (("draft-blind", a.draft_blind), ("factored", a.factored)) if on
+        ) + ")" if (a.draft_blind or a.factored) else ""
+        print(f"\n  [7/{N}] 🤖 5 ADVERSARIAL CHECKER{mode_note}")
         try:
-            attacked, survived, a5_limits, m5 = node5_adversarial.check(
-                regimes, missing, valuation or {}, a.tax_year, draft_blind=a.draft_blind)
+            if a.factored:
+                attacked, survived, a5_limits, m5 = node5_adversarial.check_factored(
+                    regimes, missing, valuation or {}, a.tax_year, draft_blind=a.draft_blind)
+                m5_in = sum(x.get("in_tokens", 0) for x in m5)
+                m5_out = sum(x.get("out_tokens", 0) for x in m5)
+                m5_retries = sum(x.get("retries", 0) for x in m5)
+            else:
+                attacked, survived, a5_limits, m5 = node5_adversarial.check(
+                    regimes, missing, valuation or {}, a.tax_year, draft_blind=a.draft_blind)
+                m5_in, m5_out, m5_retries = m5.get("in_tokens", "?"), m5.get("out_tokens", "?"), m5.get("retries", 0)
         except LLMError as e:
             die(str(e))
         landed = [x for x in attacked if not x.get("survived")]
         print(f"        {len(attacked)} attack(s), {len(landed)} landed, "
               f"{len(survived)} conclusion(s) checked and survived "
-              f"({m5.get('in_tokens', '?')} in / {m5.get('out_tokens', '?')} out tokens, "
-              f"{m5.get('retries', 0)} retr(y/ies))")
+              f"({m5_in} in / {m5_out} out tokens, {m5_retries} retr(y/ies)"
+              + (f" across {len(m5)} independent call(s))" if a.factored else ")"))
         for at in landed:
             print(f"        LANDED   {at.get('target')!r:<40} -> {at.get('downgraded_to')}")
 
