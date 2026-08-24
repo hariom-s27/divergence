@@ -46,6 +46,75 @@ read "83%" as "5 of 6," not as a population estimate.
 
 ---
 
+> ## THE ARITHMETIC, STATED HONESTLY
+>
+> **No significance test on this project's six paired cases can produce
+> p < 0.05 — checked directly, not asserted — unless every single one of
+> the six goes the same way.** Both instruments this project could
+> legitimately reach for hit the identical floor, verified numerically
+> before being written down here:
+>
+> - **McNemar's exact test, paired arms, n=6.** The minimum achievable
+>   two-sided exact p-value at *b+c* discordant pairs is 2×0.5^(b+c) (the
+>   most extreme possible split). Computed for every *b+c* from 1 to 8:
+>   *b+c*=5 gives **p=0.0625** — already not significant. *b+c*=6, the
+>   most this project's own six cases could ever supply, gives exactly
+>   **p=0.03125**, and only at a unanimous 6–0 split; a single case
+>   breaking the other way pushes *b+c* to effectively fewer discordant
+>   pairs and the floor rises again. **The standard statement of this —
+>   "when *b*+*c* < 6, the exact P-value always exceeds the common
+>   significance level 0.05" — holds.**
+> - **A sign-flip (Fisher randomisation) permutation test on the same six
+>   paired differences has the identical floor for the identical reason**:
+>   2⁶ = 64 possible sign assignments, and the two most extreme (all six
+>   differences the same sign) give 2/64 = **0.03125 ≈ 0.031** — again,
+>   only reachable by unanimity.
+>
+> **Read plainly: at n=6, this project could not manufacture a
+> significant paired-difference result even if arm C beat arm A on every
+> single case.** It doesn't (see "Where we lose" — Arm A beat Arm C on
+> D1's own gap recall). No p-value is quoted anywhere in this file as a
+> claim of significance, for exactly this reason — quoting one from an
+> instrument that structurally cannot clear its own conventional
+> threshold at this sample size would be reporting a number without the
+> power to back it, the same failure this file's own STATISTICAL LIMITS
+> section above exists to prevent for every M1–M5 percentage.
+>
+> **Clopper-Pearson, this file's own standing choice for every small-n
+> interval above, is a real, disclosed tradeoff, not a silent default —
+> and it stays.** It is *conservative*: guaranteed coverage of at least
+> the nominal 95%, "gained at the price of increased confidence interval
+> width" (Brown, Cai & DasGupta, *"Interval Estimation for a Binomial
+> Proportion,"* **Statistical Science** 16:101–133, 2001 — the AFIT STAT
+> COE practitioner guide's own summary of that paper's finding, quoted
+> for the plain-English framing; Brown/Cai/DasGupta's own recommendation
+> at small n is Jeffreys as a narrower, closer-to-nominal default). **Not
+> swapped out** — Clopper-Pearson's guarantee ("at least 95%, always") is
+> the more defensible claim to attach to the handful of proportions this
+> project reports as evidence (3/4 on the ablation, 3/8 on node 5's
+> calibration), and every interval already published under that name
+> stays published under that name.
+>
+> **The width cost, on this project's own real numbers, not the abstract
+> case** (`binom_ci.py --jeffreys`, added alongside this box):
+>
+> | Proportion | Clopper-Pearson 95% CI | width | Jeffreys 95% CI | width |
+> |---|---|---|---|---|
+> | 3/4 (ablation, above) | [19.4%, 99.4%] | 80.0% | [28.4%, 97.2%] | 68.8% |
+> | 3/8 (node 5 calibration, "Still open" below) | [8.5%, 75.5%] | 67.0% | [11.9%, 70.5%] | 58.6% |
+>
+> Jeffreys is 8–11 points narrower on these two real proportions, at the
+> cost of no longer being able to say coverage is guaranteed at least
+> 95% regardless of the true rate. Neither interval changes what this
+> project claims — both intervals are wide enough, on n this small, to
+> contain both "roughly half" and "attacks almost everything" for the 3/8
+> case, and both make "75%" alone an indefensible quote for the 3/4 case.
+> The choice between them is a choice about which guarantee matters more,
+> not a choice that would have changed this file's own conclusions
+> either way.
+
+---
+
 ## Step 1 complete: nodes 3/4 automated, arm C has real regimes now, for all 6 cases
 
 `regimes[]` is no longer structurally empty. `node_resolver.py` automates the income-tax and GST resolvers (prompts 03/04), wired into `run_pipeline.py` by default. Ten real bugs found and fixed getting from "it runs" to "it produces a correct record" across two passes tonight — full account in [`DECISION-D45.md`](DECISION-D45.md), [`DECISION-D46.md`](DECISION-D46.md), [`DECISION-D47.md`](DECISION-D47.md), [`DECISION-D48.md`](DECISION-D48.md) and [`iteration-log.md`](step22drop/iteration-log.md).
@@ -504,6 +573,7 @@ Added 21 Aug, each quote independently fetched and verified against the primary 
 - **OECD Transfer Pricing Guidelines 2022, ¶3.62** (verified verbatim): *"where the range comprises results of relatively equal and high reliability, it could be argued that any point in the range satisfies the arm's length principle."* Parliament-adjacent international guidance, blessing a range on exactly this kind of problem.
 - **India's own Rule 10CA** (verified via multiple independent secondary sources describing the primary rule text) — with six or more comparables, the arm's length range is the **35th to 65th percentile**; a price outside it is restated to the **median**. The statutory tolerance band under **s.92C(2)** is **3%** generally, **1%** for wholesale trading (verified: current notification confirms 3%/1% for the live assessment year). Both edges matter: Indian law demonstrably knows how to legislate a range for a measurement-indeterminacy problem — and it also shows that when Parliament wants one, it *writes it down*, which it has not done for currency conversion of a VDA receipt. The law's own revealed tolerance for this class of ambiguity is 3%; this project's D1 spread is 10.19%. That gap is arguable (the domestic crypto premium genuinely exceeds ordinary measurement noise — see below), but it is a gap that should be argued explicitly, not left for an assessing officer to raise first.
 - **FBIL's own USD/INR reference rate — India's official benchmark — is itself a lattice of methodological choices**, not an observed price. Verbatim from the primary methodology document already held in this project's own corpus (`corpus/tier-b/FBIL-METHODOLOGY.md`, `source_type: official`, verified 6 Aug): the rate is a **volume-weighted average of transactions in a *randomly selected* 15-minute window** inside an 11:30–12:30 slice, with a **±3SD outlier trim**; if the random window lacks enough transactions, a **new random window is drawn, up to 5 times**; if all 5 fail, the **whole hour** is used instead; if systems fail entirely, it falls back to a **polled quote average, minimum five quotes**. Published only on Mumbai business days, around 13:30. This finding has been sitting in this project's own corpus since 6 August and, until now, never made it into this file, the README, or `architecture.md` — the single most under-used argument the project already had on hand for *"why not just use the official rate?"*: because even the official rate is a construction, made by a random draw, that does not exist at all for a Sunday-night settlement.
+- **Numeric ranges cost little public trust; vague verbal hedging costs more — direction only, not an effect size.** van der Bles, van der Linden, Freeman and Spiegelhalter, *"The effects of communicating uncertainty on public trust in facts and numbers"* (PNAS, 2020), compare ways of expressing uncertainty about a number and find that stating it numerically — a range, an interval — does not damage a reader's trust in the underlying fact the way an equivalent verbal hedge ("may vary," "it depends," "results could differ") does. **Only the direction is used here**, held to the same discipline as every other citation in this file (e.g. Cannon below): this project has not independently re-verified the paper's own numbers against its primary text, so none is quoted. It is the reason `output-interface.html` states ₹47,868.76 and 10.19% with a named driver, rather than a sentence like "the valuation may vary depending on which method is used."
 
 ## Where we lose
 

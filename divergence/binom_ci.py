@@ -100,18 +100,50 @@ def clopper_pearson(k, n, alpha=0.05):
     return lower, upper
 
 
+def jeffreys(k, n, alpha=0.05):
+    """Equal-tailed Jeffreys interval: the alpha/2 and 1-alpha/2 quantiles
+    of Beta(k+0.5, n-k+0.5), clamped to [0,1] at the k=0/k=n edges (the
+    standard convention -- Brown, Cai & DasGupta, Statistical Science
+    16:101-133, 2001, Table 1). Reuses this file's own _beta_inv/_betai
+    rather than a second implementation -- same Lentz's-method continued
+    fraction, different (a,b) parameterisation.
+
+    NOT a replacement for clopper_pearson() above -- this project's own
+    results.md keeps Clopper-Pearson as its stated default (guaranteed
+    >=95% coverage, the more defensible claim to make about a small-n
+    proportion this project reports as evidence). Jeffreys is narrower on
+    average and closer to the nominal 95% coverage rather than exceeding
+    it, at the cost of no longer being able to say 'coverage is guaranteed
+    to be at least 95% no matter what'. Provided so a reader can see the
+    actual width difference on this project's own numbers, not asserted
+    in the abstract."""
+    if not (0 <= k <= n):
+        raise ValueError(f"k={k} must be between 0 and n={n}")
+    lower = 0.0 if k == 0 else _beta_inv(alpha / 2.0, k + 0.5, n - k + 0.5)
+    upper = 1.0 if k == n else _beta_inv(1.0 - alpha / 2.0, k + 0.5, n - k + 0.5)
+    return lower, upper
+
+
 def main():
-    ap = argparse.ArgumentParser(description="Clopper-Pearson exact binomial CI")
+    ap = argparse.ArgumentParser(description="Clopper-Pearson exact binomial CI (+ optional Jeffreys comparison)")
     ap.add_argument("k", type=int, help="successes")
     ap.add_argument("n", type=int, help="trials")
     ap.add_argument("--alpha", type=float, default=0.05, help="default 0.05 -> 95%% CI")
+    ap.add_argument("--jeffreys", action="store_true",
+                    help="also print the Jeffreys interval alongside Clopper-Pearson, "
+                         "for the width comparison (Brown/Cai/DasGupta 2001)")
     a = ap.parse_args()
 
     lo, hi = clopper_pearson(a.k, a.n, a.alpha)
     pct = 100.0 * (1.0 - a.alpha)
     point = a.k / a.n
     print(f"\n  {a.k}/{a.n} = {point:.1%}   {pct:.0f}% Clopper-Pearson CI: "
-          f"[{lo:.1%}, {hi:.1%}]\n")
+          f"[{lo:.1%}, {hi:.1%}]  (width {hi - lo:.1%})")
+    if a.jeffreys:
+        jlo, jhi = jeffreys(a.k, a.n, a.alpha)
+        print(f"                        {pct:.0f}% Jeffreys CI:         "
+              f"[{jlo:.1%}, {jhi:.1%}]  (width {jhi - jlo:.1%})")
+    print()
 
 
 if __name__ == "__main__":
