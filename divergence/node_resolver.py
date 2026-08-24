@@ -150,6 +150,106 @@ def resolve(regime, facts, missing, tax_year, model="large"):
     return parsed["regimes"], parsed.get("limits", []), meta
 
 
+def resolve_k(regime, facts, missing, tax_year, k=5, model="large",
+               out_dir=None, record_id="record"):
+    """D75: k independent samples of the SAME resolver call, for
+    disagreement_gate.py's cluster()/apply_downgrade() to compare.
+
+    A PLAIN PYTHON LOOP CALLING resolve() k TIMES -- not a batch or n=
+    API parameter. Featherless's own /v1/chat/completions docs (quoted
+    verbatim in README.md/DECISION-D72.md) do not document an n= choices
+    parameter the way OpenAI's API does; inventing a call shape the
+    provider doesn't document, on the hope it's silently supported, is
+    exactly the kind of unverified assumption this project's own
+    citation discipline exists to refuse. Five real, separate, billed
+    calls it is.
+
+    TEMPERATURE: deliberately untouched here. llm_call.temperature()
+    already returns None -- "send no temperature, the model's own
+    default" -- unless DIVERGENCE_DEV=1 or DIVERGENCE_TEMPERATURE is set
+    (D52). k samples run at DIVERGENCE_DEV=0/unset are k real draws from
+    the model's own default sampling, not k copies of a temperature-0
+    determinism check. Calling this with DIVERGENCE_DEV=1 set would
+    measure something else entirely (five requests for the same cached
+    or near-identical greedy answer) and should not be read as k=5
+    disagreement evidence -- checked at the top of this function, not
+    left to the caller to remember.
+
+    PERSISTENCE: every one of the k raw outputs is written to disk before
+    this function returns anything, not just the aggregate. Featherless's
+    own seed parameter is documented as unreliable across servers ("Not
+    reliable, as we use multiple servers" -- quoted verbatim in
+    README.md's Reproducibility section) -- a specific sample cannot be
+    regenerated on demand from a seed the way D1's replay cache
+    regenerates a single deterministic call. These k files ARE the
+    reproducibility record for this specific run; without them, a later
+    reader has no way to audit which citation/certainty combination each
+    of the k draws actually produced, only the aggregate this function
+    also returns.
+
+    Returns (samples, manifest). samples is a list of k dicts, each
+    {"sample_index", "regime", "regimes", "limits", "_meta"} -- the same
+    shape resolve() already produces, numbered. manifest records the
+    call parameters and the on-disk path of every sample, and is written
+    to disk alongside them.
+    """
+    if k < 2:
+        raise ValueError(f"k must be >= 2 to measure disagreement, got {k}")
+    if os.environ.get("DIVERGENCE_DEV", "").strip() == "1":
+        raise RuntimeError(
+            "DIVERGENCE_DEV=1 forces temperature 0 (D52) -- k samples under "
+            "that flag are k copies of a determinism check, not k draws of "
+            "the model's own default sampling. Unset DIVERGENCE_DEV before "
+            "calling resolve_k(), or this measures the wrong thing."
+        )
+
+    out_dir = out_dir or os.path.join(HERE, "runs", "ksamples")
+    os.makedirs(out_dir, exist_ok=True)
+
+    samples = []
+    sample_paths = []
+    for i in range(k):
+        regimes, limits, meta = resolve(regime, facts, missing, tax_year, model=model)
+        sample = {
+            "sample_index": i,
+            "regime": regime,
+            "regimes": regimes,
+            "limits": limits,
+            "_meta": {
+                "record_id": record_id,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                **meta,
+            },
+        }
+        path = os.path.join(out_dir, f"{record_id}_{regime}_k{k}_sample{i}.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(sample, f, indent=2, ensure_ascii=False)
+        samples.append(sample)
+        sample_paths.append(os.path.relpath(path, HERE))
+        print(f"    sample {i+1}/{k}: {len(regimes)} conclusion(s) -> {os.path.basename(path)}")
+
+    manifest = {
+        "record_id": record_id,
+        "regime": regime,
+        "k": k,
+        "model": model,
+        "tax_year": tax_year,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "sample_files": sample_paths,
+        "seed_reliability_note": (
+            "Featherless's seed parameter is documented unreliable across "
+            "servers -- these k files are the only reproducibility record "
+            "for this run, not a seed a reader could re-derive them from."
+        ),
+    }
+    manifest_path = os.path.join(out_dir, f"{record_id}_{regime}_k{k}_manifest.json")
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False)
+    manifest["_manifest_path"] = os.path.relpath(manifest_path, HERE)
+
+    return samples, manifest
+
+
 def main():
     ap = argparse.ArgumentParser(description="Node 3/4 -- income tax or GST resolver")
     ap.add_argument("--regime", required=True, choices=list(PROMPT_FILES))
@@ -158,6 +258,10 @@ def main():
     ap.add_argument("--tax-year", required=True)
     ap.add_argument("--out", default=None)
     ap.add_argument("--model", default="large")
+    ap.add_argument("--k", type=int, default=None,
+                    help="if set, call resolve_k(k=...) instead of resolve() once -- "
+                         "k independent samples, all persisted, for disagreement_gate.py")
+    ap.add_argument("--record-id", default="record", help="used to name --k sample/manifest files")
     a = ap.parse_args()
 
     facts_doc = json.load(open(a.facts, encoding="utf-8"))
@@ -170,6 +274,16 @@ def main():
     except LLMError as e:
         die(str(e))
     print(f"  [{NODE_NAME[a.regime]}] {provider_line}")
+
+    if a.k:
+        try:
+            samples, manifest = resolve_k(a.regime, facts, missing, a.tax_year, k=a.k,
+                                          model=a.model, record_id=a.record_id)
+        except (LLMError, RuntimeError, ValueError) as e:
+            die(str(e))
+        print(f"\n  {a.k} sample(s) -> {manifest['_manifest_path']}\n")
+        return
+
     try:
         regimes, limits, meta = resolve(a.regime, facts, missing, a.tax_year, model=a.model)
     except LLMError as e:
