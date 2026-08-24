@@ -11,14 +11,38 @@ to the specific doc that has it, rather than duplicating pages of content.
 
 ## 1. What the workflow is for, in one paragraph
 
-A resident freelancer in India is paid in a stablecoin by a foreign client.
-Indian tax law tells her exactly which date to value that payment on, and
-does not tell her how to turn that date into a rupee figure — a genuine
-gap, not a hard question with an answer nobody found. Most tools facing
-this either guess silently or hallucinate a citation that sounds right.
-This workflow reads the actual law text, computes every defensible
-valuation honestly, and says "no rule found" instead of inventing one when
-that is what the text actually supports.
+A resident freelancer in India is paid 5,000 USDC by a foreign client. A
+single unstructured prompt — or a Koinly-style tool — prints one number
+for that receipt: the SBI TT buying rate next published after the
+payment, **₹4,69,750**. A different method, resting on the identical
+statute, not a lesser one — the domestic market's high print for the day,
+through the retrieved USDC/USDT peg — prints **₹5,17,618.76**. The
+difference is **₹47,868.76**, about 10.19% of the payment, and nothing in
+the market discloses that it exists: every commercial tool checked for
+this project resolves the identical missing-price fact pattern
+differently and silently, with no flag that a choice was made
+(`prior-art/OBJ-1.md`). This workflow reads the actual law text instead,
+computes all twelve defensible valuations mechanically, discloses the
+₹47,868.76 spread and what drives it (§3, node ⚙B), and still leaves the
+filer with one elected figure — theirs, with a recorded basis (§3, node
+⚙D) — instead of a guess dressed as a fact or a hallucinated citation
+that sounds right.
+
+**This is a decision aid, not an oracle.** The patient-decision-aid
+literature (IPDAS Evidence Update 2.0, *Medical Decision Making*, 2021)
+and selective prediction / reject-option classifiers (SelectiveNet,
+Geifman & El-Yaniv, arXiv:1901.09192) are the two existing fields where
+declining to collapse to one answer is the contribution being measured,
+not a failure mode. This workflow's twelve-figure lattice and its
+`lacuna`/`insufficient_evidence` certainty labels belong to that family,
+not to a forecasting tool graded on always answering — which is also why
+every uncertain figure here is stated as a number (a spread, a driver, a
+percentage) rather than a verbal hedge like *"may vary"* or *"depending on
+interpretation"*: van der Bles et al. (PNAS, 2020) find numeric ranges
+cost little public trust while vague verbal hedging reads as less
+trustworthy than a precise number (direction only — this project has not
+independently re-verified the paper's own effect sizes). Full framing:
+the root [`README.md`](../README.md).
 
 ## 2. The model registry — which LLM is used where, and why
 

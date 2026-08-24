@@ -53,7 +53,7 @@ Better — it names two candidate bank rates instead of picking one silently.
 But its own `valuation.methods` array has exactly two entries, both SBI
 bank rates. It never asks whether the crypto market's own price on that
 Sunday is a defensible alternative at all. The **real** spread this receipt
-carries — twelve defensible methods, ₹4,69,750 to ₹5,17,618 — is **about
+carries — twelve defensible methods, ₹4,69,750 to ₹5,17,618.76 — is **about
 191 times larger** than what Arm B reports (₹47,868.76 ÷ ₹250 = 191.5). Not because Arm B made an
 arithmetic error; because nothing in a single prompt forces it to enumerate
 every defensible method rather than stop at the first two it thought of.

@@ -8,24 +8,86 @@ the mental model, every command to run the full pipeline, and all 24
 dated design decisions merged into a single chronological read instead of
 24 separate files.
 
-## The problem, stated as a loss, not an abstraction
+## The loss, not the refusal
 
-Two accountants, reading the identical Indian tax rules in good faith,
-file two different numbers for the same stablecoin receipt — ₹47,868.76
-apart, on a single transaction. Neither is wrong. The rule that names
-which *day* to value a foreign receipt on exists; four lines later, the
-rule that says *how* to turn that day into rupees does not. That gap
-costs money the moment someone has to guess, and worse than the rupee
-spread: a wrong classification on the GST side turns an export at
-0%-with-refund into 18% owed in cash, sometimes retroactively, sometimes
-with a fraud penalty on top of the tax (`architecture.md`'s GST resolver
-section, the ₹1,19,205-vs-₹2,01,752 case).
+**One number, printed with confidence.** Feed this project's own D1
+receipt — 5,000 USDC, received 28 June 2026, a settlement weekend with no
+SBI rate published on the actual date — into a single unstructured prompt,
+or a Koinly-style tool, and it settles on one figure: the SBI TT buying
+rate next published after the receipt, **₹4,69,750**. Nothing about that
+number is wrong. Nothing about it is flagged as a choice either.
 
-Every commercial tool checked for this project (`prior-art/OBJ-1.md`)
-prints one figure anyway. None of them show the reader that a choice was
-made, let alone which one. DIVERGENCE reads the statute text directly and,
-when it genuinely does not decide, says so — every defensible figure
-shown, none invented, none picked to look confident.
+**A different number, from a method exactly as legal.** The same receipt,
+valued at the domestic market's high print for the day, converted through
+the retrieved USDC/USDT peg — a method resting on the identical statute,
+not a lesser one — reads **₹5,17,618.76**. Also not wrong.
+
+**The difference is ₹47,868.76.** Two accountants, reading identical
+Indian tax rules in good faith, land ₹47,868.76 apart — about **10.19%**
+of the payment — on a single transaction. Neither made an error. The rule
+that names which *day* to value a foreign receipt on exists; the rule
+that says *how* to turn that day into rupees does not
+(`GAZETTE-FINDINGS.md`). Worse than the rupee spread: a wrong
+classification on the GST side turns an export at 0%-with-refund into 18%
+owed in cash, sometimes retroactively, sometimes with a fraud penalty on
+top of the tax (`architecture.md`'s GST resolver section, the
+₹1,19,205-vs-₹2,01,752 case).
+
+**Nothing in the market tells you ₹47,868.76 exists.** Every commercial
+tool checked for this project (`prior-art/OBJ-1.md`) resolves this exact
+missing-price fact pattern differently and silently: Koinly assumes $0,
+CoinTracker estimates from a nearby transaction, CoinLedger drops the row
+from the report entirely, Kryptos auto-classifies the transaction type
+outright. Four products, four different silent choices on the identical
+contested question — none of them shown to the filer as a choice, let
+alone shown the gap between the choice made and the nearest defensible
+alternative.
+
+**DIVERGENCE prints all twelve.** `node3_valuation.py` enumerates every
+defensible combination of official date × market reading × currency-peg
+assumption mechanically — arithmetic over real sourced data, never a
+model — and reports every resulting figure: ₹4,69,750 to ₹5,17,618.76,
+spread ₹47,868.76 (10.19%), plus what actually drives that spread,
+decomposed on the disclosure page itself (`output-interface.html`,
+section 02): the domestic premium alone accounts for **₹44,716** of it —
+the part everyone actually argues about — with which price inside the
+day (₹5,506), the USDC/USDT proxy (₹566), and which official date (₹250)
+contributing the rest.
+
+**The user still leaves with one figure — theirs, with a recorded
+basis.** The disclosure page's election control (decision D58) lets the
+taxpayer tick which of the twelve they're filing; nothing is
+pre-selected, and the record is complete and schema-valid whether or not
+anything is ticked (`scope.md` Part 8: *"a default is a
+recommendation"*). What survives if the figure is ever questioned is that
+all twelve were shown and the one actually chosen was recorded — not that
+this project chose it for them.
+
+**A decision aid, not an oracle.** Two existing fields already treat
+declining to collapse to one answer as the contribution being measured,
+not a failure mode to eliminate, and this project sits closer to both of
+them than to a forecasting tool graded on always answering. Patient
+decision aids — instruments that lay out defensible treatment options and
+their tradeoffs instead of a single recommendation — are judged by
+whether they leave the patient better informed and appropriately
+uncertain, not by whether they resolve to one option (IPDAS Evidence
+Update 2.0, *Medical Decision Making*, 2021). Selective prediction, or
+reject-option classification, treats a model's ability to decline on a
+genuinely hard case as part of what's being optimized, not noise to be
+tuned away (SelectiveNet, Geifman & El-Yaniv, arXiv:1901.09192). This
+project's twelve-figure lattice and its `lacuna`/`insufficient_evidence`
+certainty labels are this project's version of both: the deliverable is a
+well-characterized set of defensible answers and an honest boundary
+around what the text does and doesn't decide, not a single confident
+number standing in for a judgment the statute itself never made. It is
+also why the disclosure page states a spread and a driver rather than
+saying an answer *"may vary depending on interpretation"*: van der Bles,
+van der Linden, Freeman and Spiegelhalter (PNAS, 2020) find that
+communicating uncertainty as an explicit number — a range, an interval —
+costs little public trust, while an equivalent verbal hedge reads as less
+trustworthy than a precise figure (direction only, quoted here — this
+project has not independently re-verified the paper's own effect sizes
+against its primary text, and none is stated as fact).
 
 **See it in one click, live, no download:**
 [hariom-s27.github.io/divergence](https://hariom-s27.github.io/divergence/)
@@ -104,8 +166,8 @@ rationale, each one traced to a pre-registered predicted failure:
 [`architecture.md`](divergence/architecture.md). Plain-language walkthrough
 of an actual run: [`PIPELINE-FLOW.md`](divergence/PIPELINE-FLOW.md).
 
-We avoid saying "nine nodes" for the same reason — it hides the fact that
-some of these steps are ordinary Python, not a model, and cannot make
+We avoid saying "ten nodes" for the same reason — it hides the fact that
+half of these steps are ordinary Python, not a model, and cannot make
 things up no matter how the model upstream of them was talked into wording
 something.
 
@@ -132,8 +194,8 @@ structurally unable to measure anything for the whole project's duration.
 Nothing there is softened.
 
 **One evaluated case in short:** twelve defensible ways to value the
-freelancer's payment, ranging from about ₹4,69,750 to about ₹5,17,618 — a
-spread of about ₹47,869, roughly 10% of the payment. Every method is
+freelancer's payment, ranging from ₹4,69,750 to ₹5,17,618.76 — a
+spread of ₹47,868.76, 10.19% of the payment. Every method is
 arithmetic over a real, sourced input; none is typed in by hand (decision
 D38, `canonical_case.json` / `node3_valuation.py`).
 
@@ -356,17 +418,23 @@ checker now runs in CI on every push, the same way `gate0_check.py` and
 
 ## How it is built
 
-Five model calls, four deterministic steps. In order: extract facts from
-the input (model) → detect what evidence is missing, before anything
-reasons about what's present (model) → force any conclusion depending on a
-missing fact down to `insufficient_evidence`, in code, unconditionally
-(code) → build the valuation lattice from real sourced data, arithmetic
-only (code) → resolve income tax and GST against scoped, verbatim statutory
-text (model × 2) → check every citation against real corpus text and the
-correct tax year, drop what fails (code) → run an independent, different-
-model adversarial check that publishes its attack whether it lands or not
-(model) → compose the disclosure record from a deterministic template,
-never a model (code). Full detail: [`flowchart.md`](divergence/flowchart.md).
+Five model calls, five deterministic steps — updated here to match
+`DOCUMENTATION.md`'s own count; this section still listed four
+deterministic steps, from before ⚙ E (the scope-reach enforcer, D59) was
+added. In order: extract facts from the input (model) → detect what
+evidence is missing, before anything reasons about what's present
+(model) → force any conclusion depending on a missing fact down to
+`insufficient_evidence`, in code, unconditionally (code) → build the
+valuation lattice from real sourced data, arithmetic only (code) →
+resolve income tax and GST against scoped, verbatim statutory text
+(model × 2) → check every citation against real corpus text and the
+correct tax year, drop what fails (code) → drop any kept citation whose
+own scope doesn't reach a virtual-digital-asset receipt, for the three
+provisions this project has proven don't (code) → run an independent,
+different-model adversarial check that publishes its attack whether it
+lands or not (model) → compose the disclosure record from a
+deterministic template, never a model (code). Full detail:
+[`flowchart.md`](divergence/flowchart.md).
 
 We use Featherless only, with no automatic fallback to another provider —
 on purpose, so a run can never silently switch which model produced a row
