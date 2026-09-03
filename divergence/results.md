@@ -101,7 +101,7 @@ read "83%" as "5 of 6," not as a population estimate.
 > | Proportion | Clopper-Pearson 95% CI | width | Jeffreys 95% CI | width |
 > |---|---|---|---|---|
 > | 3/4 (ablation, above) | [19.4%, 99.4%] | 80.0% | [28.4%, 97.2%] | 68.8% |
-> | 3/8 (node 5 calibration, "Still open" below) | [8.5%, 75.5%] | 67.0% | [11.9%, 70.5%] | 58.6% |
+> | 3/8 (node 5 calibration, "Still open" below) | [8.5%, 75.5%] | 67.0% | [11.9%, 70.5%] | 58.6% | <!-- stale-ok -->
 >
 > Jeffreys is 8–11 points narrower on these two real proportions, at the
 > cost of no longer being able to say coverage is guaranteed at least
