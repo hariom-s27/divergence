@@ -201,6 +201,19 @@ STALE = {r"43,?633": "43,633", r"9\.27": "9.27%", r"41,?150": "41,150",
          r"8\.7\s*percent|8\.7\s*%": "8.7%", r"4,?70,?517": "4,70,517",
          r"44,?720": "44,720", r"9\.515": "9.515%"}
 
+
+def _is_allowed_stale_context(line: str, label: str) -> bool:
+    # "8.5%" is a retired valuation-spread figure, but it can also legitimately
+    # appear as a confidence-interval bound (e.g., exact CI from binom_ci.py).
+    # Allow that statistical context without needing an inline stale-ok marker.
+    if label != "8.5%":
+        return False
+    return bool(
+        re.search(r"\b\d{2}%\s*CI\b", line, re.IGNORECASE)
+        and re.search(r"\[\s*8\.5\s*%\s*,\s*\d", line)
+        and "binom_ci.py" in line
+    )
+
 # Anything node3_valuation.py currently emits is LIVE, not stale. Read the
 # real figures and drop any pattern that matches one, so the check stays
 # correct as the lattice changes instead of going stale itself.
@@ -247,7 +260,7 @@ for root, dirs, files in os.walk(HERE):
             if "stale-ok" in line:
                 continue                    # explicitly marked as a historical quote
             for pat, label in STALE.items():
-                if re.search(pat, line):
+                if re.search(pat, line) and not _is_allowed_stale_context(line, label):
                     hits[label].append(f"{os.path.relpath(p, HERE)}:{i}")
 
 print("  (skipping this script, the audit/plan/log docs, ~~struck-through~~ lines,")
