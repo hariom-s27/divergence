@@ -134,13 +134,19 @@ model — not just self-tested. **See `PIPELINE-FLOW.md` for the full
 plain-language walkthrough**, and `DECISION-D42.md` / `DECISION-D43.md` for
 why the model backend works the way it does.
 
-**The model backend is Featherless (open models), not Anthropic**, because
-this project runs on competition credits there — Anthropic still works as a
-fallback/cost-estimate path if you set `ANTHROPIC_API_KEY` instead. Setup:
+**The model backend is Featherless (open models) only, no fallback (D44)**
+(Anthropic runs only if you deliberately set `DIVERGENCE_PROVIDER=anthropic`),
+because this project runs on competition credits there. Setup:
+
+Set `FEATHERLESS_API_KEY` once as a Windows user environment variable via
+System Properties → Environment Variables (run
+`rundll32 sysdm.cpl,EditEnvironmentVariables`), paste the key into the value
+box, then restart VS Code. Never type the key into a command, file, chat or
+screenshot. Check it without printing it: `[bool]$env:FEATHERLESS_API_KEY`.
 
 ```powershell
 pip install -r requirements.txt
-$env:FEATHERLESS_API_KEY = "rc_..."     # your own key — never in a file, ever
+[bool]$env:FEATHERLESS_API_KEY         # must print True; never print the key itself
 python check_llm.py                     # ~10s, a few hundred tokens — run this FIRST, every session
 python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" --text step21drop\cases\D1\case.md
 ```
