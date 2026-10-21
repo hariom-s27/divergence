@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "divergence/eval/gold_schema_draft.json",
+  "$comment": "DRAFT — not frozen; frozen in a later decision doc",
+  "title": "QA benchmark gold item (one question)",
+  "description": "One line of a gold .jsonl file scored by qa_scorer.py. Cross-field rules a JSON Schema cannot express (should_abstain <-> abstain_reason, match fixed by type, gold strings must parse, unique nids) are enforced by qa_scorer.validate_gold_item and listed in QA_SCORER.md.",
+  "type": "object",
+  "required": ["qid", "split", "question", "applicable_tax_year", "governing_act", "stratum",
+               "nesting_depth", "names_section", "cluster", "should_abstain", "abstain_reason",
+               "spans", "nuggets"],
+  "additionalProperties": false,
+  "properties": {
+    "qid": {"type": "string", "minLength": 1},
+    "split": {"enum": ["dev", "test"]},
+    "question": {"type": "string", "minLength": 1},
+    "applicable_tax_year": {"type": ["string", "null"], "description": "e.g. \"2026-27\"; null when no version applies"},
+    "governing_act": {"enum": ["1961", "2025", "both", "none"]},
+    "stratum": {"enum": ["lookup", "proviso", "cross_reference", "cross_year", "computation"]},
+    "nesting_depth": {"type": "integer", "minimum": 0},
+    "names_section": {"type": "boolean"},
+    "cluster": {"type": "string", "description": "section id the question is clustered under"},
+    "should_abstain": {"type": "boolean"},
+    "abstain_reason": {"enum": ["no_applicable_version", "out_of_scope", "indeterminate", "answerable"]},
+    "spans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["corpus_file_sha", "start", "end"],
+        "additionalProperties": false,
+        "properties": {
+          "corpus_file_sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "start": {"type": "integer", "minimum": 0},
+          "end": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "nuggets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["nid", "type", "gold", "match"],
+        "additionalProperties": false,
+        "properties": {
+          "nid": {"type": "string", "minLength": 1},
+          "type": {"enum": ["rate", "threshold", "limit", "date", "section", "amount", "tax_year"]},
+          "gold": {"type": "string", "minLength": 1, "description": "the value as printed in the source"},
+          "match": {"enum": ["exact", "tolerance", "section_tuple"]},
+          "section_depth": {"enum": ["section", "subsection", "clause"], "description": "section nuggets only"},
+          "act": {"enum": ["1961", "2025"], "description": "section nuggets only"}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"type": {"const": "section"}}},
+            "then": {"required": ["section_depth"], "properties": {"match": {"const": "section_tuple"}}},
+            "else": {"not": {"anyOf": [{"required": ["section_depth"]}, {"required": ["act"]}]}}
+          },
+          {
+            "if": {"properties": {"type": {"const": "amount"}}},
+            "then": {"properties": {"match": {"const": "tolerance"}}}
+          },
+          {
+            "if": {"properties": {"type": {"enum": ["rate", "threshold", "limit", "date", "tax_year"]}}},
+            "then": {"properties": {"match": {"const": "exact"}}}
+          }
+        ]
+      }
+    },
+    "synthetic": {"type": "boolean", "description": "fixture lines only"},
+    "response": {"type": "string", "description": "fixture lines only: the fake model response"}
+  }
+}
