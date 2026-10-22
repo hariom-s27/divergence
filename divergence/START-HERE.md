@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 34 decision documents merged into one chronological read — so you don't have to open thirty-four separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 36 decision documents (D41–D76) in one chronological read — D41–D74 summarised, D75–D76 linked by title — so you don't have to open thirty-six separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -63,12 +63,18 @@ project's actual result. Full account: [`DOCUMENTATION.md`](DOCUMENTATION.md) §
 
 # PART 2 — HOW TO RUN THE WHOLE FLOW
 
+Set `FEATHERLESS_API_KEY` once as a Windows user environment variable via
+System Properties → Environment Variables (run
+`rundll32 sysdm.cpl,EditEnvironmentVariables`), paste the key into the value
+box, then restart VS Code. Never type the key into a command, file, chat or
+screenshot. Check it without printing it: `[bool]$env:FEATHERLESS_API_KEY`.
+
 ```powershell
 cd divergence
 pip install -r requirements.txt
 
-# once per terminal session — the key lives in the shell, never in a file
-$env:FEATHERLESS_API_KEY = "rc_..."
+# check the key is set (set it once beforehand, see above) — never print the key itself
+[bool]$env:FEATHERLESS_API_KEY
 
 # ~10 seconds, confirms all three model slots actually work before spending real tokens
 python check_llm.py
@@ -132,10 +138,12 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Thirty-four dated documents. D41 predates D42–D58 chronologically (it's been
+Thirty-six dated documents (D41–D76). D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
+D41–D74 are summarised below; D75 and D76 are listed by title, with links
+to their full text.
 
 ## [D41](DECISION-D41.md) — the adversarial checker must be a different model family from the resolvers
 Node 5's model slot must never resolve to the same family as the resolvers'
@@ -731,6 +739,12 @@ function (asymmetric, steeper for understatement than overpayment) and
 its constants are pre-registered with a worked, Python-verified numeric
 example, not hand-rounded.
 
+## [D75](DECISION-D75.md) — real k=5 resolver sampling, deterministic clustering, and a downgrade rule wired into arm D
+23 August 2026. Not summarised here yet; full record: [`DECISION-D75.md`](DECISION-D75.md).
+
+## [D76](DECISION-D76.md) — true factored verification in node 5 (S6), and passive JSON-mode/repair telemetry in provenance() (S8)
+23 August 2026. Not summarised here yet; full record: [`DECISION-D76.md`](DECISION-D76.md).
+
 ---
 
 ## What the decisions add up to
@@ -745,4 +759,5 @@ resolver citing a real, current, correctly-quoted provision outside its
 own scope. The project's own central claim — that a confident answer
 resting on ground that quietly moved is worse than no answer, because you
 cannot tell it apart from a real one — is what these fourteen documents
-are, applied to the project's own construction of itself.
+(D42–D55, the full set when this section was written on 21 August; there
+are now 36, D41–D76) are, applied to the project's own construction of itself.

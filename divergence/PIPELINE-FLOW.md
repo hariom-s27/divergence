@@ -141,9 +141,15 @@ money finding out mid-run.
 
 ## A run, start to finish
 
+Set `FEATHERLESS_API_KEY` once as a Windows user environment variable via
+System Properties → Environment Variables (run
+`rundll32 sysdm.cpl,EditEnvironmentVariables`), paste the key into the value
+box, then restart VS Code. Never type the key into a command, file, chat or
+screenshot. Check it without printing it: `[bool]$env:FEATHERLESS_API_KEY`.
+
 ```powershell
-# once per terminal session
-$env:FEATHERLESS_API_KEY = "rc_..."
+# check the key is set (set it once beforehand) — never print the key itself
+[bool]$env:FEATHERLESS_API_KEY
 
 # ten seconds, a few hundred tokens — do this first, every time
 python check_llm.py

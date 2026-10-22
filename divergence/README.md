@@ -8,8 +8,9 @@ the folder you opened.
 ## Read this first
 
 **[`START-HERE.md`](START-HERE.md)** — the mental model, every command to
-run the pipeline end to end, and all 34 dated design decisions merged into
-one chronological read. If you only open one file, open that one.
+run the pipeline end to end, and all 36 dated design decisions (D41–D76) in
+one chronological read (D41–D74 summarised, D75–D76 linked by title). If you
+only open one file, open that one.
 
 ## The three files required by the track's submission rules
 
@@ -69,7 +70,7 @@ token counts and model on a replay hit, not a zeroed stand-in.
 | `runs/` | Saved, real output records from actual runs — nothing in here is a mockup |
 | `eval/` | The scoring scripts (`score.py`, `normalize_runs.py`) |
 | `prior-art/` | Two research documents checking whether this problem is already solved, and whether real people actually hit it |
-| `DECISION-D41.md` … `DECISION-D74.md` | Thirty-four dated documents, each recording one real design decision or bug — merged into `START-HERE.md`, kept individually for full detail |
+| `DECISION-D41.md` … `DECISION-D76.md` | Thirty-six dated documents, each recording one real design decision or bug — indexed in order in `START-HERE.md` (D41–D74 summarised, D75–D76 linked by title), kept individually for full detail |
 | `corpus_hash.py`, `corpus/FREEZE-HASHES.json` | Corpus integrity: a real SHA-256 per Tier A file, checked in CI so a corpus edit that isn't re-frozen deliberately fails loudly instead of shipping silently |
 | `make_flowchart.py` | Regenerates `flowchart.png` from scratch (matplotlib, not a screenshot or a Mermaid export) — real model names and human-input markers baked into the image itself |
 | `mutation_corpus.py`, `binom_ci.py` | Reports, not gates: 7 mutation operators measuring what the deterministic checks actually catch (D61); exact Clopper-Pearson intervals for this project's own small-n proportions |

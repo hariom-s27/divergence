@@ -1,10 +1,10 @@
 # Where the Featherless key goes — and where it must never go
 
-**Short answer: nowhere in the repo. It goes in your shell, as an environment
+**Short answer: nowhere in the repo. It goes in a Windows user environment
 variable called `FEATHERLESS_API_KEY`. `llm_call.py` reads it at runtime.**
 
-You paste the real key once, into a terminal. No file, no commit, no
-screenshot in the demo video.
+You paste the real key once, into the Environment Variables dialog. No
+command, no file, no commit, no screenshot in the demo video.
 
 ---
 
@@ -43,34 +43,26 @@ pip install -r requirements.txt
 
 ---
 
-# STEP 3 — Set the key in your shell
+# STEP 3 — Set the key once, as a user environment variable
 
-**Windows PowerShell** (what you're using):
+**Windows** (what you're using):
+
+Set `FEATHERLESS_API_KEY` once as a Windows user environment variable via
+System Properties → Environment Variables (run
+`rundll32 sysdm.cpl,EditEnvironmentVariables`), paste the key into the value
+box, then restart VS Code. Never type the key into a command, file, chat or
+screenshot. Check it without printing it:
 
 ```powershell
-$env:FEATHERLESS_API_KEY = "rc_PASTE_YOUR_FULL_REAL_KEY_HERE"
+[bool]$env:FEATHERLESS_API_KEY
 ```
 
-Check it took:
+Prints `True` if it is set, `False` if it isn't. Never print the key itself —
+you will be screen-sharing this terminal during the demo.
 
-```powershell
-$env:FEATHERLESS_API_KEY.Length
-```
+**Mac / Linux:** store the key in your OS keychain or a shell profile file outside the repo; never type it into a shared terminal, and never commit it.
 
-Prints a number if it took, nothing if it didn't. Check the length, never
-print the key itself — you will be screen-sharing this terminal during the
-demo.
-
-> **This lasts only as long as that PowerShell window.** Close it, the key is
-> gone and you set it again. That is the correct behaviour, not a bug. If you
-> want it to persist on your own machine:
-> `setx FEATHERLESS_API_KEY "rc_..."` — then **open a new window**, because
-> `setx` does not affect the window you typed it in.
-
-**Windows CMD:** `set FEATHERLESS_API_KEY=rc_...`
-**Mac / Linux (your two teammates):** `export FEATHERLESS_API_KEY="rc_..."`
-
-Each of the three of you needs their own key set in their own shell. Do not
+Each of the three of you needs their own key set on their own machine. Do not
 put one key in a shared file for the team.
 
 ---
@@ -90,7 +82,7 @@ key env  : FEATHERLESS_API_KEY  [set]
 
   small        Qwen/Qwen2.5-7B-Instruct                         OK
   large        Qwen/Qwen2.5-72B-Instruct                        OK
-  adversarial  meta-llama/Meta-Llama-3.1-70B-Instruct           OK
+  adversarial  meta-llama/Meta-Llama-3.1-70B-Instruct           OK   (returns 403 on this account; not used)
 
 D41 OK   resolvers=qwen  adversary=meta-llama  (different families)
 
@@ -108,7 +100,7 @@ this — you point an env var at a model you *can* serve:
 
 ```powershell
 $env:DIVERGENCE_MODEL_LARGE = "Qwen/Qwen2.5-14B-Instruct"
-$env:DIVERGENCE_MODEL_ADVERSARIAL = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+$env:DIVERGENCE_MODEL_ADVERSARIAL = "meta-llama/Meta-Llama-3.1-8B-Instruct"   # (returns 403 on this account; not used)
 ```
 
 Then re-run `check_llm.py`. Browse https://featherless.ai/models for exact
@@ -159,7 +151,7 @@ You now get, in every output record:
   "models": {
     "small": "Qwen/Qwen2.5-7B-Instruct",
     "large": "Qwen/Qwen2.5-72B-Instruct",
-    "adversarial": "meta-llama/Meta-Llama-3.1-70B-Instruct"
+    "adversarial": "meta-llama/Meta-Llama-3.1-70B-Instruct"   (returns 403 on this account; not used)
   },
   "by_node": { "node1_extract": {"calls": 1, "in_tokens": 3812, "out_tokens": 606, "retries": 0}, ... },
   "total_calls": 5,

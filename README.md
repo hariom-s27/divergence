@@ -98,10 +98,16 @@ dispute. The same pipeline, unedited output, side by side.
 
 ## Run it — one command, real output
 
+Set `FEATHERLESS_API_KEY` once as a Windows user environment variable via
+System Properties → Environment Variables (run
+`rundll32 sysdm.cpl,EditEnvironmentVariables`), paste the key into the value
+box, then restart VS Code. Never type the key into a command, file, chat or
+screenshot. Check it without printing it: `[bool]$env:FEATHERLESS_API_KEY`.
+
 ```powershell
 cd divergence
 pip install -r requirements.txt
-$env:FEATHERLESS_API_KEY = "rc_..."      # once per terminal session, never in a file
+[bool]$env:FEATHERLESS_API_KEY           # must print True; never print the key itself
 python check_llm.py                       # ~10 seconds, confirms all three model slots work
 
 python run_pipeline.py --record-id D1 --tax-year "FY 2026-27" `
@@ -503,10 +509,11 @@ finding than the ordinary silent absences elsewhere in the same rules.
 | [D54](divergence/DECISION-D54.md) | Third scope-reach defect, fixed with one generalized rule instead of a third patch |
 | [D55](divergence/DECISION-D55.md) | Fourth and fifth scope-reach defects; the fifth disclosed rather than chased, per a pre-set hard-stop rule |
 
-Full list: the `divergence/DECISION-D*.md` files — numbered up to D58 (plus D41, which predates the sequence), though
-not every decision number in that range got its own file; several earlier
-ones are recorded inline in `architecture.md` and `GAZETTE-FINDINGS.md`
-instead. **All 14 merged into one chronological read:**
+Full list: 36 decision documents, `divergence/DECISION-D41.md` to
+`DECISION-D76.md` (D41 predates the sequence). Earlier decisions (such as
+D31 and D38) did not get their own file; they are recorded inline in
+`architecture.md` and `GAZETTE-FINDINGS.md` instead. **D41–D74 are merged
+into one chronological read, and D75–D76 are linked there by title:**
 [`divergence/START-HERE.md`](divergence/START-HERE.md) Part 3.
 
 ## Evaluation
@@ -556,7 +563,7 @@ Six things, each one checkable against a specific file rather than asserted:
   it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
   "Pre-registration" section — a reader can check the hash actually
   predates the runs, not just trust that it does.
-- **34 dated decision documents**, including the ones that record this
+- **36 dated decision documents (D41–D76)**, including the ones that record this
   project's own mistakes — a stale citation, a scoring bug that faked a
   perfect score, three named instances of a resolver citing a real
   provision outside its own scope. None were written after the fact to
