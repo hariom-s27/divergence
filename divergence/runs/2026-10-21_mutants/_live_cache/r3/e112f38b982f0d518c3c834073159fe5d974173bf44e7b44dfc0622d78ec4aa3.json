@@ -1,0 +1,65 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T04:21:28.552836+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13656,
+  "out_tokens": 956,
+  "retries": 0,
+  "elapsed_s": 114.557,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH cited is from the Income-tax Act, 1961, and it is not clear if it has been carried into the Income-tax Act, 2025, without changes. The conclusion assumes that the provision is current for FY 2026-27, but this needs to be verified.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.",
+        "checklist_item": 2,
+        "attack": "The conclusion misinterprets the scope of s.393(1). The provision specifies conditions under which tax must be deducted for payments to residents. However, it does not address the scenario where the payer is outside India. Therefore, s.393(1) does not apply to this situation.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 393(1), Table Sl. No. 8(vi), Income-tax Act, 2025"
+      },
+      {
+        "target": "Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing independent verification of Northbay Systems LLC. Since this verification is absent and the conclusion is asserted anyway, this is a failure the system exists to catch.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "No direct evidence needed as the attack is based on the missing dependency."
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The place of supply is not explicitly excluded by s.2(6) despite Step 3 stating otherwise. There are no grounds to conclude the actual place of supply failed Step A3 altogether.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017"
+      },
+      {
+        "target": "The payment was received in USDC, which is not convertible foreign exchange as defined by the Reserve Bank of India (Fact: asset).",
+        "checklist_item": 4,
+        "attack": "The rate source used for determining whether USDC is convertible foreign exchange is not specified. The conclusion assumes that USDC is not convertible foreign exchange without providing evidence from a valid legal source.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "No direct evidence needed as the attack is based on the lack of specified rate source."
+      }
+    ],
+    "checked_and_survived": [
+      "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date."
+    ],
+    "limits": [
+      "Could not verify the current status of s.115BBH for FY 2026-27 due to lack of access to the latest Income-tax Act, 2025."
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:53:36.735700+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 694,
+  "retries": 0,
+  "elapsed_s": 102.278,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the 'declaration_of_service_payment', 'income_tax_deduction', and 'valuation_date', all of which are missing. Asserting the conclusion despite these dependencies is a failure this system exists to catch.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "The gaps list indicates that 'declaration_of_service_payment', 'income_tax_deduction', and 'valuation_date' are missing and not obtainable."
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "The condition regarding the place of supply being outside India is marked as 'unknown'. Without explicit confirmation that the place of supply is outside India, the conclusion that the supply meets all conditions except one is incorrect.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "IGST Act, 2017, s.2(6) clause (iii): 'the place of supply of service is outside India'"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate.",
+        "checklist_item": 4,
+        "attack": "Rule 206 requires the telegraphic transfer buying rate on the specified date. However, since no rate was published on 2026-06-29, the use of a fallback mechanism contradicts the legal requirement as Rule 206 does not clearly define a fallback method for non-published dates.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 206(2)(b)(i) and Rule 206 verification \u201a'does not operate on Sundays, there\u201a's noplan B provision in it.'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

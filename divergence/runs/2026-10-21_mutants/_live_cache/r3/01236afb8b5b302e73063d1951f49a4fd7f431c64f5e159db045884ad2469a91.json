@@ -1,0 +1,25 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:17:07.795036+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 131,
+  "retries": 0,
+  "elapsed_s": 40.5,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset,...",
+        "checklist_item": 3,
+        "attack": "This entire outcome rests on the 'declaration_of_service_payment,' which is missing, making the application of s.115BBH and associated calculations highly unreliable. The reasoning acknowledges that the necessary information to definitely conclude is lacking.",
+        "downgraded_to": "insufficient_evidence"
+      }
+    ]
+  }
+}

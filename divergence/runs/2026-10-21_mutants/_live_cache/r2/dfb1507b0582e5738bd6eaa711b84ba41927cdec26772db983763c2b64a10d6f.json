@@ -1,0 +1,41 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:14:01.623710+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 306,
+  "retries": 0,
+  "elapsed_s": 40.249,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH... and all material facts are disclosed under s.439(8).",
+        "checklist_item": 3,
+        "attack": "Existence depends on absence: No details present regarding TDS (TDS collected on what date and what rate post statement)",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": ""
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 4,
+        "attack": "Rule structuring mentions asset as quote digitized currency/goodwill recognized to pay based on its clone(-error forward), contradictions exist between recognition for charge vs subsidization[],damages options",
+        "survived": false,
+        "downgraded_to": "contested ",
+        "evidence": ""
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Refrain from assuming trade position with Rate",
+      "artificial or external disturbances implied",
+      "multiple fact scopes"
+    ]
+  }
+}

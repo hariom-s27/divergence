@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:40:35.538049+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13474,
+  "out_tokens": 673,
+  "retries": 0,
+  "elapsed_s": 101.848,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 1,
+        "attack": "The provision s.439(8) cited in the conclusion refers to the Income-tax Act, 2025. However, the specific sub-section (8) might not be accurate or current for the tax year FY 2026-27. The provision needs to be verified for any updates or amendments that may have occurred.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "s.439(8), Income-tax Act, 2025"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on several items that are listed as missing, such as 'declaration_of_service_payment', 'income_tax_deduction', and 'valuation_date'. Asserting the conclusion without addressing these dependencies is a significant oversight.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 4,
+        "attack": "The rate source used for valuing the USDC might not be the one prescribed by law. The conclusion does not specify which rate source was used, and it is crucial to verify that the correct instrument and date were applied.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "No specific rate source mentioned in the conclusion"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

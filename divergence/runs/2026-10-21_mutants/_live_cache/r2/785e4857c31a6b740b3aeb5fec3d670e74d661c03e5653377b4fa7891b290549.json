@@ -1,0 +1,48 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:29:41.285833+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10935,
+  "out_tokens": 809,
+  "retries": 0,
+  "elapsed_s": 98.54,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded.",
+        "checklist_item": 1,
+        "attack": "The reference to Rule 56, Income-tax Rules, 2026, is incorrect. Rule 56 defines terms related to the determination of fair market value and does not address the classification or valuation of income from other sources. The correct rule for valuation of income from other sources is Rule 206, which specifies the telegraphic transfer buying rate on the last day of the tax year.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 56, Income-tax Rules, 2026: 'For the purposes of this rule and rule 57, \u2014 ... (i) \"valuation date\" means the date provided in the Table below:'"
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded.",
+        "checklist_item": 2,
+        "attack": "The conclusion misapplies the valuation method. Rule 206 specifies the valuation method for various types of income, but it does not directly apply to the recognition date of the income. The recognition date is determined by the actual date of credit, not the valuation date specified in Rule 206.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 206, Income-tax Rules, 2026: '(1) The rate of exchange for the calculation of the value in rupees of any income, accruing or arising or deemed to accrue or arise to the assessee in foreign currency, or received or deemed to be received by him or on his behalf in foreign currency, shall be the telegraphic transfer buying rate of such currency as on the specified date.'"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the valuation, which is listed as missing. Without the valuation date and fair market value, it is not possible to determine if the supply meets all conditions for being an export of services.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'The valuation date is not explicitly provided, and there is no information about the fair market value of the services provided.'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Unable to verify the specific application of s.439(8) without additional context on the bona fide explanation and disclosure of material facts.",
+      "Could not assess the applicability of s.393(1) for TDS rates and thresholds without detailed transaction records."
+    ]
+  }
+}

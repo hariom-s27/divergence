@@ -1,0 +1,65 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:25:39.508988+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 1214,
+  "retries": 0,
+  "elapsed_s": 169.349,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically targets income from the transfer of virtual digital assets. However, the definition of 'virtual digital asset' in Section 2(47A)(a) of the Income-tax Act, 1961 explicitly excludes 'Indian currency or foreign currency.' Given that the valuation method used is 'INR to INR \u2013 no conversion,' it implies that the asset in question might be considered Indian currency, which is not covered under the definition of a virtual digital asset. Therefore, Section 115BBH may not apply to this receipt.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 2(47A)(a): 'virtual digital asset' means\u2014 (a) any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise..."
+      },
+      {
+        "target": "The value is determined on the date of credit (2026-06-16) using the open market value method.",
+        "checklist_item": 4,
+        "attack": "Rule 57 specifies the methods for determining the fair market value of various properties. However, for 'Any other property other than referred to at Sl. Nos. 1 to 6 above,' the method specified is 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.' The conclusion mentions using the 'open market value method' without specifying how this aligns with the requirements of Rule 57, particularly if the property in question falls under a specific category that has a different valuation method.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 57, Column D, row 7: 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.'"
+      },
+      {
+        "target": "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+        "checklist_item": 2,
+        "attack": "Section 393(1) [Table: Sl. No. 8(vi)] specifies that TDS is applicable at 1% for consideration for transfer of a virtual digital asset to a resident. However, if the asset is not a virtual digital asset as per the definition in Section 2(47A)(a), then this provision does not apply. The conclusion assumes the asset is a virtual digital asset without confirming it meets the definition.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 393(1) [Table: Sl. No. 8(vi)]: 'Any sum by way of consideration for transfer of a virtual digital asset.' Payee: Any person. Rate: 1%. Threshold limit: Nil."
+      },
+      {
+        "target": "No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+        "checklist_item": 2,
+        "attack": "Section 439(8)(a) states that no penalty applies if the explanation is bona fide and all material facts are disclosed. However, the conclusion does not address Section 439(8)(b), which Specifies conditions under which penalties may still apply based on the method of estimation used. The conclusion overlooks this critical aspect, potentially misleading about the applicability of penalties.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 439(8)(b): 'the amount of under-reported income determined on the basis of an estimate, if the accounts are correct and complete to the satisfaction of the Competent Authority but the method employed is such that the income cannot properly be deduced therefrom'"
+      },
+      {
+        "target": "supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8",
+        "checklist_item": 3,
+        "attack": "The condition regarding whether the supplier and recipient are merely establishments of a distinct person is marked as unknown, yet the conclusion that the supply does not meet the conditions for an export of services is asserted. This contradiction indicates a flaw in the reasoning process, as the condition's status directly affects the conclusion's validity",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Conclusion marked as insufficient_evidence while the reasoning point regards gap existence as NO."
+      }
+    ],
+    "checked_and_survived": [
+      "Here is my list. I checked : suspicion, insufficient evidence or determination. "
+    ],
+    "limits": [
+      "Could not review what constitutes receipt from virtual digital assets on TDS. Could not verify the mandate for gas items."
+    ]
+  }
+}

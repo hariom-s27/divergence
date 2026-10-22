@@ -1,0 +1,51 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:51:54.406450+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 766,
+  "retries": 0,
+  "elapsed_s": 103.917,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH applies to the transfer of virtual digital assets, but the receipt of USDC does not constitute a transfer. A transfer implies a disposal or sale, whereas receiving USDC is an acquisition. Therefore, s.115BBH does not apply to this scenario.",
+        "survived": false,
+        "downgraded_to": "lacuna"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH...",
+        "checklist_item": 2,
+        "attack": "Rule 206 specifies that the telegraphic transfer buying rate should be used for income expressed in foreign currency. However, USDC is not considered foreign currency according to s.2(47A) of the Income-tax Act, 1961. Therefore, Rule 206 does not apply to the valuation of USDC.",
+        "survived": false,
+        "downgraded_to": "lacuna"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 1,
+        "attack": "The provision IGST Act, 2017, s.2(6) is not current for the stated tax year FY 2026-27. The provision might have been amended or superseded, making the reference to this specific section incorrect. Additionally, the conditions for export of services might have been updated, affecting the applicability of the conclusion.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "IGST Act, 2017, s.2(6)"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'declaration_of_service_payment,' which is listed as missing. Since this document is essential for determining the conditions for an export of services, the conclusion cannot be supported without it.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 7(3), Foreign Exchange Management Act, 1999"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:31:13.039833+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10946,
+  "out_tokens": 654,
+  "retries": 0,
+  "elapsed_s": 91.726,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The provision cited for TDS, s.393(1), is not verified for the tax year FY 2026-27. The conclusion assumes that s.393(1) is current and applicable, but without verification, it is possible that this provision has been amended or superseded.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": null
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Rule 56 does not apply to the recognition date of the income. The opening words of Rule 56 specify that it is for determining the fair market value for specific sections, none of which include the recognition of income from other sources. Therefore, using Rule 56 to determine the recognition date is incorrect.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "For the purposes of this rule and rule 57,..."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the valuation, which is listed in the 'missing' list. Since the valuation is not explicitly provided and is essential for determining if the supply meets the conditions for an export of services, this conclusion cannot be asserted without the missing information.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": null
+      }
+    ],
+    "checked_and_survived": [
+      "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts."
+    ],
+    "limits": []
+  }
+}

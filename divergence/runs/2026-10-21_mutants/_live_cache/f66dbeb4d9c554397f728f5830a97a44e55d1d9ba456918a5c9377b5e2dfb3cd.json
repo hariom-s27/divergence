@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T18:03:12.833372+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13658,
+  "out_tokens": 600,
+  "retries": 1,
+  "elapsed_s": 179.331,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'transfer' of virtual digital assets, but a receipt of USDC does not necessarily constitute a transfer as defined by the law. The provision might not cover mere receipts if they do not involve a clear transfer event.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "s.115BBH, For the purposes of this section, the word 'transfer' as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not."
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing verification of Northbay Systems LLC, which affects the credibility of the entire analysis. There is an explicit dependency on something unknown.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "[GAP LIST] Independent verification of Northbay Systems LLC has not been performed."
+      },
+      {
+        "target": "The label: domestic market, open x retrieved peg",
+        "checklist_item": 4,
+        "attack": "The USDC value uses pegged rates of 1.0011 which isn\u2019t authorized by standard Indian Finance instruments (should be exact 1 not >1). Check Section 2(ZD) about Forward Premium Basics. Should be corrected fiscally.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Binance USDT premium close proxy shouldn\u2019t skew instrument."
+      }
+    ],
+    "checked_and_survived": [
+      "assertion about obligations under Sections 2 resulted cogent evidence outcome cannot overturn at present under items 1 & 2 exempted"
+    ],
+    "limits": []
+  }
+}

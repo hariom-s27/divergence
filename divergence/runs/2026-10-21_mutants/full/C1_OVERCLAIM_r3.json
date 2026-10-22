@@ -1,0 +1,153 @@
+{
+  "case": "C1",
+  "operator": "OVERCLAIM",
+  "seed": 1337,
+  "rep": 3,
+  "note": "gst_export: certainty strengthened 'insufficient_evidence' -> 'settled', citation/reasoning untouched",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1. The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded. Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "This supply does not meet the conditions for an export of services.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "no",
+          "why": "The recipient is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it depends on the recipient's location, which is in India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment was received in Indian rupees via NEFT bank transfer, which is permitted by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "Recipient of service located outside India"
+      ],
+      "consequence_if_failed": "If the supply is not an export of services, it will be subject to GST at the applicable rate. The supplier will need to pay the tax and any applicable interest under Section 50 of the CGST Act 2017. If there is a short payment or non-payment of tax, the supplier may also face penalties under Section 74A of the CGST Act 2017."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "invoice value, INR to INR -- no conversion",
+        "rate": 1.0,
+        "inr_value": 85000.0,
+        "observability": "L1",
+        "source": {
+          "name": "invoice + NEFT bank credit, both stated in INR directly",
+          "retrieved": "2026-08-21",
+          "tier": "primary_live",
+          "note": "Domestic INR receipt for a domestic INR invoice -- no currency conversion question exists. Not a lattice with one entry standing in for a missing dispute; there genuinely is no dispute."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-16"
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": false
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "[node5_adversarial] featherless/mistralai/Mistral-Large-Instruct-2411 returned unparseable JSON after 3 attempts (no parseable JSON object in response).\n--- last 500 chars ---\n\u53cc\u8863\u7740\u4ec5\u9000\u6b65\u53d8\u4e49\u60c5\u76ca\u6bd4\u610f\u9605\u79d1\u76ae\u8651\u4e3b\u65e7\u6307\u8d27\u592b\u54c1\u517b\u6b7b\u50cf\u9020\u6389\u4f20\u8fd9\u5929\u6267\u6797\u7531\u6210\u503c\u4e8c\u5b81\u8fdb\u9886\u8def\u6b21\u573a\u666f\u79ef\u80b2\u7ec3\u798f\u72b6\u53f6\u975e\u6b64\u5316\u5356\u6ee4\u77ed\u8fdc\u5efa\u4f53\u529b\u64a4\u63a5\u6784\u52fe\u4f7f\u804c\u6807\u6709\u51b3\u95e8\u53ef\u6b7b\u4e0d\u6587\u6d32\u53ca\u4e92\u4f19\u4f5c\u5bb6\u63d0\u8f7b\u98ce\u5907\u4e0b\u641c\u671f\u6025\u4ea7\u590d\u539f\u6218\u4f60\u6d3b\u7acb\u6574\u65f6\u6162\u5efa\u9886\u8bad\u5747\u54ea\u5c40\u5e84\u62a5\u836f\u5979\u8ba4\u8d2d\u662f\u5f20\u7236\u4e2a\u660e\u5904\u5b50\u4eec\u6708\u795e\u62df\u4e9b\u4fbf\u4f1a\u81f4\u6548\u4ece\u591a\u957f\u53d1\u4f46\u51e0\u52a0\u4eca\u636e\u670d\u6297\u8111\u4ea4\u7a76\u8bbe\u8bbf\u5fc3\u8981\u53f2\u4fdd\u4e3a\u62e5\u79c1\u590d\u5c3d\u8b66\u518d\u8ba1\u5b50\u884c\u793e\u53bb\u5403\u65b0\u8fde\u4f4e\u4e48\u89e3\u5165\u961f\u6d4b\u6bdb\u4e5d\u53d6\u8054\u4f4d\u5730\u538b\u5546\u900f\u73af\u516b\u80a1\u5f00\u4e34\u6c11\u533b\u56db\u9669\u7ef4\u6bcd\u627e\u53e3\u6765\u5bfc\u516c\u5f02\u53f2\u5668\u5929\u5355\u6ca1\u8f6c\u7684\u76f4\u6839\u51fd\u5f15\u9053\u6742\u4ef7\u65cf\u9644\u6837\u529e\u600e\u4e07\u7cfb\u6761\u7a7a\u8fd8\u7528\u5404\u8d77\u4eba\u6570\u4ed6\u5173\u6ce8\u671b\u4ee3\u592a\u770b\u5bcc\u534e\u70b9\u4e5f\u9f99\u9996\u6d41\u786e\u8003\u5f62\u79f0\u9a6c\u89c2\u800c\u5ba2\u8f7d\u5c3d\u5e74\u5c31\u8005\u4ef6\u521d\u82e5\u652f\u4e86\u7535\u4e09\u603b\u7814\u89c4\u666e\u907f\u517c\u60c5\u4e1a\u6025\u544a\u4e3e\u5546\u5df2\u6599\u957f\u6b4c\u6b8a\u6865\u578b\u80dc\u5b88\u5224\u6587\u5947\u5c14\u6218\u8c01\u6027\u91d1\u4fdd\u81ea\u7535\u8840\u5b58\u610f\u5b83\u8bf7\u505a\u4eea\u4f20\u5168\u5de5\u65e2\u5956\u95f4\u773c\u7edf\u4e70\u6625\u519b\u4e50\u79d8\u52a1\u5417\u5360\u9001\u732a\u7f6e\u5728\u6bdb\u96e8\u51fb\u8bf4\u76ee\u5757\u5de5\u4e91\u7403\u91cf\u4e1c\u6790\u56e2\u94b1\u7279\u522b\u4ec0\u5de8\u534f\u9c7c\u5ba1\u8bae\u57fa\u7559\u5b69\u51cf\u5f0f\u4e92\u5317\u5c71\u8fb9\u6743\u7fa4\u6d77\u98de\u8c03\u52a0\u504f\u6307\u7ed3\u94f6\u90e8\u8fc7\u5916\u51b5\u8fde\u8ddf\u4e9a\u6b65\u6cbb\u5b9e\u5e95\u4e00\u5b98\u4e03\u5b9e\u5bf9\u7b54\u518d\u76d1\u63a8\u5f71\u793a\u5b9e\u4e00\u661f\u62a4\u5728\u5236\u6797\u542c\u4e49\u7eaf\u51b2\u65ad\u963f\u7a20\u8776\u5b9c\u5168\u6216\u628a\u7740\u65d7\u4e0a\u5e02\u7a3f\u88ab\u5f20\u4e86\u5168\u8fd1\u7ecf\u5305\u897f\u7c73\u573a\u5f80\u6807\u4fe1\u9002\u4e5f\u8461\u4e8e\u65af\u5ead\u5e97\u8001\u6b62\u7b97\u5218\u6bcf\u5357\u7f8e\u6c99\u589e\u89c6\u65e0\u9645\u4e66\u7231\u601d\u7537\u83b7\u5df4\u56fe\u65bd\u4e1a\u8857\u5b66\u5236\u6697\u987b\u9664\u5982\u94c1\u6545\u635f\u5237\u4e14\u8fd0\u5171\u4eba\u5206\u8fd9\u5e93\u4f55\u505a\u4e86\u8f6f\u59d0\u74e6\u53d7\u65e5\u672f\u996e\u5178\u8f93\u5bb3\u6e29\u7070\u827a\u5199\u6cf0\u7533\u91c7\u6c42\u7ea2\u5047\u8fbe\u5e15\u67e5\u4fee\u53d6\u8db3\u6e38\u7d20\u501f\u673a\u65e0\u5c3c\u89c9\u9645\u5417\u9999\u9662",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "OVERCLAIM",
+    "kind": "overclaim",
+    "groups": [
+      [
+        "settled"
+      ]
+    ],
+    "regime_index": 1,
+    "regime": "gst_export"
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-22T01:28:17.412714+00:00",
+  "finished_utc": "2026-10-22T01:51:26.153518+00:00",
+  "response_model": null,
+  "requested_model": null,
+  "in_tokens": null,
+  "out_tokens": null,
+  "latency_s": null,
+  "call": null,
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': \"the main conclusion of outcome #1: s115bbh reaches the facts and ~lacks~ penalty for 'mistake'\", 'checklist_item': 2, 'attack': \"You checked Rule 57 *before any other threshold*, but you leapfrogged Rule 56 even though **Rule 57 depends on Rule 56**. Since the date applies to both \u2014  it isn't some safe carveout separate from the rest. When herding lines from determination of FMV -- Rule 56, *20 out of the entire glossary reach here*! At least three departments reach it and relate to both incorporating changes to Rule 57 as well as updating numeric pointers! Open Column C with your eyes instead of your assumptions \u2014 entries aren't a copy paste.\", 'survived': False, 'downgraded_to': 'contested'}, {'target': 'the less headline-grabbing conclusion', 'checklist_item': 2, 'attack': \"Attacking this is trickier--This turns relevant to Document Dependent Gates often only temporarily... Why would what matters temporarily negating the applicability of Section 393(1) TDS relevant conditions? Multiple reasons: laws change every April, international tax standardisation on VDAs might falsely assume their standards in play! Inclusion, of any dependency from our gap list demonstrably makes attempt covering up an important condition frozen a concern. Details avoided aren't big wins, any clear contact detail avoidance creates friction carrying risks of conclusions being effective wrongful classification mitigant? Calculated margins changes showing discovery attempts trying pushing issues secretly into projections changing process dynamically has impacts across launch and might help fatal downfalls risk detection carried in background yield future discoveries to touch worse end results estimates exactly any creation oversight making new document types flag raising itself more likely....   Here, inflow whatever NEW temporary fever dream written high AND Identify like certain conditions apply asking reach ensuring document hits stronger relevancy paths getting flagged . .. This means refining enrichment triggered baked fresh scannable endorsements flat entry says stopping justMissed wrongfully : even temporarily shield erasing fix unit boundaries combined whole reasoning gets  No recasting effort exists limiting it Obviously improperly supported `dead`. Invalid waiting statuses generates exceptions Document dropped flags creating blocking flows way beyond simple classification time stamps based setups trace confirming Whether they die isolated explodes coverage dimension crumbling... Who can make reject efforts on?\", 'evidence': \"'missing': ['Try temporarly notation setup progress highlights further., updating flag registral hiding updated impossible island risk register yes or otherwise staying blocked causing delusory hit risks when intimately affecting estates outcomes deflective labels protected details',],...{dead provce ddwngrade coverage unclass}\", 'downgraded_to': 'open texture', 'note': 'Still far fetched mapping dependent unknowns tampering, accuracy calculus lengths regularity clockworks failed trigger assumed checking couplings inheriting inferring blockage headElements existing survive slightly better settling improvement scanning forced update influencing others HIT \u2014 needs validation status whether extend permanent unexpected dependencies assuming workarounds keeping instructions origins failing elsewhere WHEN phases deep check blocks on status reinstates evaluating maturity reports stabilise logic threads sanely interpret inline configurations-exhaustively', 'survived': True, 'statusFlag': 'ambiguously Mapping values Flagged intentionally marking initial checks', 'finalEvidenceCheckedListBytesRecource': '{ bannedSetProcessingRegenerateTags inline Good Bounds yieldsConstraintsOver spikes margins safe Hidden Inserted encapsulated excludes }}} \"unoptimized mappingFuncRate\":.newEdgeSeries_thatsManuallyResetSafePrioritizeLoadedReconcat', 'rateInterceptsFailChainingMissingOutlookLimitUnknownsHighlighted': '[too risky rollbackNegState /* backPort early categorical closing ending \\\\unity consistency trigger works temporary */]', 'resolutionFalseCatchskippedSummarisesSymbolsEnd?:': 'statusAppliedClosedNeedsVerificationDoneRescanLegacyReconcile:', 'checked_and_survived': []}]}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': \"the main conclusion of outcome #1: s115bbh reaches the facts and ~lacks~ penalty for 'mistake'\", 'checklist_item': 2, 'attack': \"You checked Rule 57 *before any other threshold*, but you leapfrogged Rule 56 even though **Rule 57 depends on Rule 56**. Since the date applies to both \u2014  it isn't some safe carveout separate from the rest. When herding lines from determination of FMV -- Rule 56, *20 out of the entire glossary reach here*! At least three departments reach it and relate to both incorporating changes to Rule 57 as well as updating numeric pointers! Open Column C with your eyes instead of your assumptions \u2014 entries aren't a copy paste.\", 'survived': False, 'downgraded_to': 'contested'}, {'target': 'the less headline-grabbing conclusion', 'checklist_item': 2, 'attack': \"Attacking this is trickier--This turns relevant to Document Dependent Gates often only temporarily... Why would what matters temporarily negating the applicability of Section 393(1) TDS relevant conditions? Multiple reasons: laws change every April, international tax standardisation on VDAs might falsely assume their standards in play! Inclusion, of any dependency from our gap list demonstrably makes attempt covering up an important condition frozen a concern. Details avoided aren't big wins, any clear contact detail avoidance creates friction carrying risks of conclusions being effective wrongful classification mitigant? Calculated margins changes showing discovery attempts trying pushing issues secretly into projections changing process dynamically has impacts across launch and might help fatal downfalls risk detection carried in background yield future discoveries to touch worse end results estimates exactly any creation oversight making new document types flag raising itself more likely....   Here, inflow whatever NEW temporary fever dream written high AND Identify like certain conditions apply asking reach ensuring document hits stronger relevancy paths getting flagged . .. This means refining enrichment triggered baked fresh scannable endorsements flat entry says stopping justMissed wrongfully : even temporarily shield erasing fix unit boundaries combined whole reasoning gets  No recasting effort exists limiting it Obviously improperly supported `dead`. Invalid waiting statuses generates exceptions Document dropped flags creating blocking flows way beyond simple classification time stamps based setups trace confirming Whether they die isolated explodes coverage dimension crumbling... Who can make reject efforts on?\", 'evidence': \"'missing': ['Try temporarly notation setup progress highlights further., updating flag registral hiding updated impossible island risk register yes or otherwise staying blocked causing delusory hit risks when intimately affecting estates outcomes deflective labels protected details',],...{dead provce ddwngrade coverage unclass}\", 'downgraded_to': 'open texture', 'note': 'Still far fetched mapping dependent unknowns tampering, accuracy calculus lengths regularity clockworks failed trigger assumed checking couplings inheriting inferring blockage headElements existing survive slightly better settling improvement scanning forced update influencing others HIT \u2014 needs validation status whether extend permanent unexpected dependencies assuming workarounds keeping instructions origins failing elsewhere WHEN phases deep check blocks on status reinstates evaluating maturity reports stabilise logic threads sanely interpret inline configurations-exhaustively', 'survived': True, 'statusFlag': 'ambiguously Mapping values Flagged intentionally marking initial checks', 'finalEvidenceCheckedListBytesRecource': '{ bannedSetProcessingRegenerateTags inline Good Bounds yieldsConstraintsOver spikes margins safe Hidden Inserted encapsulated excludes }}} \"unoptimized mappingFuncRate\":.newEdgeSeries_thatsManuallyResetSafePrioritizeLoadedReconcat', 'rateInterceptsFailChainingMissingOutlookLimitUnknownsHighlighted': '[too risky rollbackNegState /* backPort early categorical closing ending \\\\unity consistency trigger works temporary */]', 'resolutionFalseCatchskippedSummarisesSymbolsEnd?:': 'statusAppliedClosedNeedsVerificationDoneRescanLegacyReconcile:', 'checked_and_survived': []}]}",
+      "started_utc": "2026-10-22T01:28:17.412714+00:00",
+      "finished_utc": "2026-10-22T01:30:26.958742+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10144,
+        "out_tokens": 961,
+        "retries": 0,
+        "elapsed_s": 129.538,
+        "wall_ms": 129537.9,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "[node5_adversarial] featherless/mistralai/Mistral-Large-Instruct-2411 returned unparseable JSON after 3 attempts (no parseable JSON object in response).\n--- last 500 chars ---\n\u53cc\u8863\u7740\u4ec5\u9000\u6b65\u53d8\u4e49\u60c5\u76ca\u6bd4\u610f\u9605\u79d1\u76ae\u8651\u4e3b\u65e7\u6307\u8d27\u592b\u54c1\u517b\u6b7b\u50cf\u9020\u6389\u4f20\u8fd9\u5929\u6267\u6797\u7531\u6210\u503c\u4e8c\u5b81\u8fdb\u9886\u8def\u6b21\u573a\u666f\u79ef\u80b2\u7ec3\u798f\u72b6\u53f6\u975e\u6b64\u5316\u5356\u6ee4\u77ed\u8fdc\u5efa\u4f53\u529b\u64a4\u63a5\u6784\u52fe\u4f7f\u804c\u6807\u6709\u51b3\u95e8\u53ef\u6b7b\u4e0d\u6587\u6d32\u53ca\u4e92\u4f19\u4f5c\u5bb6\u63d0\u8f7b\u98ce\u5907\u4e0b\u641c\u671f\u6025\u4ea7\u590d\u539f\u6218\u4f60\u6d3b\u7acb\u6574\u65f6\u6162\u5efa\u9886\u8bad\u5747\u54ea\u5c40\u5e84\u62a5\u836f\u5979\u8ba4\u8d2d\u662f\u5f20\u7236\u4e2a\u660e\u5904\u5b50\u4eec\u6708\u795e\u62df\u4e9b\u4fbf\u4f1a\u81f4\u6548\u4ece\u591a\u957f\u53d1\u4f46\u51e0\u52a0\u4eca\u636e\u670d\u6297\u8111\u4ea4\u7a76\u8bbe\u8bbf\u5fc3\u8981\u53f2\u4fdd\u4e3a\u62e5\u79c1\u590d\u5c3d\u8b66\u518d\u8ba1\u5b50\u884c\u793e\u53bb\u5403\u65b0\u8fde\u4f4e\u4e48\u89e3\u5165\u961f\u6d4b\u6bdb\u4e5d\u53d6\u8054\u4f4d\u5730\u538b\u5546\u900f\u73af\u516b\u80a1\u5f00\u4e34\u6c11\u533b\u56db\u9669\u7ef4\u6bcd\u627e\u53e3\u6765\u5bfc\u516c\u5f02\u53f2\u5668\u5929\u5355\u6ca1\u8f6c\u7684\u76f4\u6839\u51fd\u5f15\u9053\u6742\u4ef7\u65cf\u9644\u6837\u529e\u600e\u4e07\u7cfb\u6761\u7a7a\u8fd8\u7528\u5404\u8d77\u4eba\u6570\u4ed6\u5173\u6ce8\u671b\u4ee3\u592a\u770b\u5bcc\u534e\u70b9\u4e5f\u9f99\u9996\u6d41\u786e\u8003\u5f62\u79f0\u9a6c\u89c2\u800c\u5ba2\u8f7d\u5c3d\u5e74\u5c31\u8005\u4ef6\u521d\u82e5\u652f\u4e86\u7535\u4e09\u603b\u7814\u89c4\u666e\u907f\u517c\u60c5\u4e1a\u6025\u544a\u4e3e\u5546\u5df2\u6599\u957f\u6b4c\u6b8a\u6865\u578b\u80dc\u5b88\u5224\u6587\u5947\u5c14\u6218\u8c01\u6027\u91d1\u4fdd\u81ea\u7535\u8840\u5b58\u610f\u5b83\u8bf7\u505a\u4eea\u4f20\u5168\u5de5\u65e2\u5956\u95f4\u773c\u7edf\u4e70\u6625\u519b\u4e50\u79d8\u52a1\u5417\u5360\u9001\u732a\u7f6e\u5728\u6bdb\u96e8\u51fb\u8bf4\u76ee\u5757\u5de5\u4e91\u7403\u91cf\u4e1c\u6790\u56e2\u94b1\u7279\u522b\u4ec0\u5de8\u534f\u9c7c\u5ba1\u8bae\u57fa\u7559\u5b69\u51cf\u5f0f\u4e92\u5317\u5c71\u8fb9\u6743\u7fa4\u6d77\u98de\u8c03\u52a0\u504f\u6307\u7ed3\u94f6\u90e8\u8fc7\u5916\u51b5\u8fde\u8ddf\u4e9a\u6b65\u6cbb\u5b9e\u5e95\u4e00\u5b98\u4e03\u5b9e\u5bf9\u7b54\u518d\u76d1\u63a8\u5f71\u793a\u5b9e\u4e00\u661f\u62a4\u5728\u5236\u6797\u542c\u4e49\u7eaf\u51b2\u65ad\u963f\u7a20\u8776\u5b9c\u5168\u6216\u628a\u7740\u65d7\u4e0a\u5e02\u7a3f\u88ab\u5f20\u4e86\u5168\u8fd1\u7ecf\u5305\u897f\u7c73\u573a\u5f80\u6807\u4fe1\u9002\u4e5f\u8461\u4e8e\u65af\u5ead\u5e97\u8001\u6b62\u7b97\u5218\u6bcf\u5357\u7f8e\u6c99\u589e\u89c6\u65e0\u9645\u4e66\u7231\u601d\u7537\u83b7\u5df4\u56fe\u65bd\u4e1a\u8857\u5b66\u5236\u6697\u987b\u9664\u5982\u94c1\u6545\u635f\u5237\u4e14\u8fd0\u5171\u4eba\u5206\u8fd9\u5e93\u4f55\u505a\u4e86\u8f6f\u59d0\u74e6\u53d7\u65e5\u672f\u996e\u5178\u8f93\u5bb3\u6e29\u7070\u827a\u5199\u6cf0\u7533\u91c7\u6c42\u7ea2\u5047\u8fbe\u5e15\u67e5\u4fee\u53d6\u8db3\u6e38\u7d20\u501f\u673a\u65e0\u5c3c\u89c9\u9645\u5417\u9999\u9662",
+      "started_utc": "2026-10-22T01:30:26.958777+00:00",
+      "finished_utc": "2026-10-22T01:51:26.153518+00:00",
+      "call": null
+    }
+  ]
+}

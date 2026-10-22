@@ -1,0 +1,37 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:06:03.817523+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13570,
+  "out_tokens": 320,
+  "retries": 0,
+  "elapsed_s": 44.186,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "s.270A(6) cited after it became s.439(8)",
+        "checklist_item": 1,
+        "attack": "FY 2026-27 updated s.270A entirely and it combined with s.395 becoming what would cover this fallacy. Stop for a moment \u2014 reassess which sections may now directed provisions originally addressed about data collections, surveys, reports or cleansing in alignment with other legislature?\n\nevery $\textit{part}$ of the version history clausess. So 115 being aligned to Shareholding and transcription by noted interests in non-arbitrage scenarios.\nSection 439(current iteration)",
+        "survived": true,
+        "downgraded_to:": "contested",
+        "evidence: ": "$inputs commonly describing {source... ...for hands on}"
+      },
+      {}
+    ],
+    "checked_and_survived": [
+      "Our curiosity given f,f",
+      "Determine the missing excel updated scripts enhancing more accurate & adaptive engagements."
+    ],
+    "limits": [
+      {
+        "No valid meterics [] exists backing up this factor {} leading defactoring premise scored propounding; lead desired schemes remain intertwined": true
+      }
+    ]
+  }
+}

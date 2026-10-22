@@ -1,0 +1,38 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:02:04.770187+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10690,
+  "out_tokens": 574,
+  "retries": 0,
+  "elapsed_s": 123.016,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 2,
+        "attack": "Rule 206 specifies the rate of exchange for calculating the value in rupees of income expressed in foreign currency under specific types of income heads. The provision explicitly mentions 'Income from other sources,' while this case might fit, and although Rule 206 Table Sl. No. 3 was cited to outline how the rates were chosen, the Rule opens explaining that it effects income *arising or accruing*. This assigns treatment based upon the characterization of the payment mechanism combined with the perceived flow and possession timing of funds or benefits.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "'**For the purposes of this rule**: (1) The rate of exchange for the calculation of the value in rupees... expressed in a foreign currency; shall be the telegraphic transfer buying rate...'setting the stage on  rule objectives this is an impactful determinator.'"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "Conclusion states that it is impossible from the discussed facts to determine if this income falls definitively into export status of a supply since portions of the transaction may constitute activities and occurrences within Delhi's jurisdiction related in somewise circumstantally to the completed trade.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Tax document identified absence of proven place of supply raising GST concerns especially where collection ownership connects goods sequentially to properties controlled either by official authorities in Delhi therefore ruling requires precise written stipulations unlikely enumerated surrounding trade objects operations linkage nearness logistical premise ' applicable OVERLY CASE INDETERMINATE.' "
+      }
+    ],
+    "limits": [
+      "could not coherently evaluate scrum depth of implications Foreign Exchange seconds sighted unclear references suppliable designee listed beyond defined FM reference range '**INVALIDATED OBJECTIVITY ON SETTLED CONCLUSION**']}"
+    ]
+  }
+}

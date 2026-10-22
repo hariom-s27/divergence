@@ -1,0 +1,86 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:12:57.690418+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10703,
+  "out_tokens": 2047,
+  "retries": 0,
+  "elapsed_s": 333.089,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, ... valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027).",
+        "checklist_item": 1,
+        "attack": "The provision cited, Rule 206, specifies the valuation method for foreign currency income. However, the conclusion mentions valuing the receipt using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027). This is incorrect because Rule 206(2)(b)(i) clearly states that the 'specified date' for 'Income from other sources' is the last day of the tax year of the assessee, which would be 31 March 2027 for the tax year 2026-27. Therefore, the valuation date should be based on the specific type of income and the correct specified date according to the rule.",
+        "survived": false,
+        "downgraded_to": "incorrect_evidence",
+        "evidence": "Rule 206(2)(b)(i): The specified date in respect of the nature of income referred in column B of the following Table shall be as given in column C. For 'Income from other sources,' the specified date is the last day of the tax year of the assessee."
+      },
+      {
+        "target": "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "While s.439(8) deals with penalties related to under-reported income, it does not directly govern the requirement for a 'bona fide explanation and disclosure of all material facts.' Such matters concerning disclosures need attention based on what their opening words relate",
+        "survived": true,
+        "downgraded_to": "settled",
+        "evidence": ""
+      },
+      {
+        "target": "TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi))...",
+        "checklist_item": 2,
+        "attack": "Section 393(1) applies to payments to residents which is evident from the **table**. Payment described is international accordingly It does not apply to non-residents. The referenced **Table Sl** N defintely demonstrates obstacles like Non-Reforms ",
+        "survived": false,
+        "downgraded_to": "",
+        "evidence": ""
+      },
+      {
+        "target": "The place of supply is not explicitly stated in the facts provided.', being held missing gives us our entire job! IOW we need lead with this!.",
+        "checklist_item": 3,
+        "attack": "This fact definitely depends upon that place of supply report mentioned in "
+      },
+      {
+        "The revival fair saying putting spot on the income-tax-conversion-of-the -foreign-eurrency - of-ourdata ruleset =^7ddyujssfio99daweehkUOGRTUwwfwfffeewfajeUSCFSDdfghsdft@= ..=SDFSDEEEES Top Surface consistency breakdown In Additions ": [
+          "^^^-----IDONT KNOW WHAT YOU WILL DEID ME O TRUSTAR-->< Harbers Explanation_Art & Draw+Some Mo0],m=THere is noinen nine..;**]@@###TT"
+        ],
+        "-)&4***(//!!!!#]]',:llliikdhdfooxxc::i v SDI F}:ad{{AD[[ycuhiwvfjdsUHS\\/////  {{FULL CALLOUT KINE EXPLANATION therew Must Be limitied ScopejalkC:typo cdk;m{}:}xcctempopHHH------ ####&&WDK": [
+          "////------*}},Y##;; $ |Point----anitrustbreakaction}"
+        ],
+        "A STANDARD CAUTIO $**Absolutely Defini One explanation per Chain verta limit. Deinition Buffetbyes_v11                      THE SOLE QUEST $ LLC  Absolute Administer Zero can Check Destitute reforming The case may continue subject cation.... An RDF target against Exp Companies ": [],
+        "downgraded_to": "Falsity staff '#56GGBDYE ''' ^667FLOTReview On!]",
+        "evidence": "",
+        "rangespeculative assertion certainty setback  needs bugetswell Quot Equality Managed$________!--WARRANTY --------REVOLKE GXQUERT details. We need Settlement from Thse Count Law ensuring of at least Reinstating Fine '-Definite Protection Protocol Agreement ## Official Tribunal CVJCCIX Loops SEgements Required Stipulative Coupled VolCalib}==Famous Financial acquaint Withhold Calabus decreture.": [
+          "MOVE NINEN ===Mathmatical Hard truth references inputs!",
+          "Irrefutable Proof No comparison forced No Statement delay adjusted ==Zero Due stance..BUFFWERED__QuiCertIphied&Passprting "
+        ],
+        "continued expense ration coverage i==Actual (!Insufficiend and Far MRuctive===)*(folddedculoa- Justcation $lasered": [],
+        "checked_and_survived": [],
+        "datafeek left precursor biennials failurerate Addressed governing compliance verified strickly -->To some programatically stringent Reformulation =>################################~~evidences####=>Ooutcomeforced Praxis decreeful Normatively Untill Next Run Returns.": []
+      },
+      {
+        "entrypoint limitations ultimately\u0118Benefiting Traditional methods leading towards Major Sectors. Spartially Regressive But Verifiably Neccessary:{Entry Failure Gets Semantic prefix Override)": [],
+        "readerchains Valid Block Cautious Reference": "MaiNTained Strict PEMDAS $Enforcement ->DIRCTLY CONFORMS TO____nenesK--Exceptions allowed generally translated vicariously accordaning predefined peer review task force terminating paths embraced towards major block filling attributes conservatively regarding dynpass structures logically stack approach augment Ported Steps verifiable trace ",
+        "technodata retrieved process guaranteed settlement": [
+          [
+            null,
+            null
+          ]
+        ],
+        "composed recurse complete Stack implementatios insulating from primitive inconsistency semaphore allocation confirmation legislation & privilege overrule boundary specification constraints successively procedurally verifies commence Constituents filler Iterations forth explicability passdown conjunction bound optimization enhanced strategies essentially global organizational mechanism Observer stabilized Strict  compliciation positive Enlongated CounterGenerative Approach mechanics Combative augment framing insolvency constraints.__lggddcomments//=": [],
+        "parallelparadigmsproccesopacity": [
+          "Simplifed Normal Operative remainder-Standard Critical Case Buildup regex threadfield propagation translucidity depthFULLY chain compartment AnalyzedSegment Determinedly Integrative-> ###Statement Literal Denuded recoup cycles timeline tunes*****ContrAct ((contractualModularsRecasts unlike Theorem explanation complex multiManageriver sets! involved ",
+          "obligatory Oversight strictly confirmed rotationally ReAggregated ==>MODULE CHAIN COVERAGE compliance Check Accord Constraint Propogator}:{Terminating Measurer intrinsic reflex Inspection posted|/.",
+          "directementfieldaction completed layer MaxPerpetuity VimtrueSendArraycontrol--}{stack flow operations throughout nested iterations find hashing detailischaining\resourceful constrictive proceduges bounded numerically embedding profit~ {ImplObjstab||sanityFindCheck|/**Implementor Passed****%%}},"
+        ]
+      }
+    ],
+    "discoveredforefit constraint violation may invalidate ::direct impacts \\=Propadatory check fail InjectLevel Nuances drawbacks fabricator induced sureness falsepositive==NOT Null transformation approximation verifierfault Utility Scorer<uintTest": [],
+    "Userwhatever thorough weakness :=Syntax Filterversion Abrupt breaking cone SpringedBufferWork ": [],
+    "Checktraces guarantee Established Guaranteed Invariants": [],
+    "results reformed safe circlip assert manages formally serializable source node": "stabilization protocol elevated poset preservation guaranteed schema defensible OutputSeq Manage Levy Performance accord Strength checksum validated structcode bridge joint identity pristine ensures maintenance propriety stacks repeat final return resolved Verify && Assured forward divert:: Set Mutex Chain/classResponseRefinementcontroller || ConstJointmodulousIterationsBinarySegregations Precedence dereferencing negotiator mechoperation Collectives align StructuredRankuintegers bounding {@''ZFC recomplicant dilation"
+  }
+}

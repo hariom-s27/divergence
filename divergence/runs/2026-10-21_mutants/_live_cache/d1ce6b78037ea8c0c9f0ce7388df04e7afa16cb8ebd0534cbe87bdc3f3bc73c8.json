@@ -1,0 +1,18 @@
+{
+  "node": "check:adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T17:44:49.112859+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 21,
+  "out_tokens": 6,
+  "retries": 0,
+  "elapsed_s": 1.693,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "ok": true
+  }
+}

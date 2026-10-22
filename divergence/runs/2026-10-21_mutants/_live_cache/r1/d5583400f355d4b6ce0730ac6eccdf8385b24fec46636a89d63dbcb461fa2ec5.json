@@ -1,0 +1,46 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:33:12.853330+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10701,
+  "out_tokens": 650,
+  "retries": 0,
+  "elapsed_s": 111.112,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'Income Tax Deduction Certificate', which is listed as missing. The absence of this document means that the conclusion about TDS applicability is not sufficiently supported.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Income Tax Deduction Certificate is absent: There is an explicit note stating that no information is available regarding the value of the virtual digital asset or the payer\u2019s eligibility for the 1% tax deduction rate."
+      },
+      {
+        "target": "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) does not apply to the given scenario because it pertains to the assessment of under-reported income and not to the general penalty provisions for all types of income.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 439(8) states: (a) the amount of income in respect of which the assessee offers an explanation and the Competent Authority is satisfied that the explanation is bona fide ... (b) the amount of under-reported income determined on the basis of an estimate..."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The conclusion does not consider the requirement for an 'Export Declaration' as required by the Foreign Exchange Management Act, 1999. Without the clarification of this document -- on which the Gap List indicates dependency from valuation angle -- validation matched against FEMA needs evaluation overlap.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Note absences around compliance documentation mandated per Rule 8"
+      }
+    ],
+    "checked_and_survived": [
+      "If it includes tendering Registered Valuer seats for select categories, sub-outsourcing undisclosed or mispriced values stands checked either inside or rights-of-way for tasks: two-record legal read as more adverse than adversarial / downgrade == uphold"
+    ]
+  }
+}

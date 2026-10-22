@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T23:36:21.426991+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 772,
+  "retries": 0,
+  "elapsed_s": 114.233,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH refers to the transfer of virtual digital assets, but the conclusion assumes that receiving USDC constitutes a 'transfer.' The term 'transfer' as defined in s.2(47) of the Income-tax Act, 1961, might not cover the mere receipt of USDC without a corresponding transfer out.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "s.2(47)'s definition of 'transfer' may not apply to simple receipts."
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on documents listed in the `missing` list, specifically 'declaration_of_service_payment,' 'income_tax_deduction,' and 'valuation_date.' Asserting the conclusion despite these missing pieces is a significant flaw.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST items 'declaration_of_service_payment,' 'income_tax_deduction,' and 'valuation_date' are marked as missing and unobtainable."
+      },
+      {
+        "target": "No TDS is required because the recipient is outside India, as per s.393(1) Table Sl. No. 8(vi) and the note for non-residents.",
+        "checklist_item": 2,
+        "attack": "Section 393(1) Table Sl. No. 8(vi) specifies TDS requirements for payments to residents. The note for non-residents extends the obligation to all persons, including non-residents. Therefore, TDS might still be required even if the recipient is outside India.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "s.393(1) Table Sl. No. 8(vi) and the note for non-residents extend TDS obligations to all persons, including non-residents."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

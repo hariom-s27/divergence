@@ -1,0 +1,26 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:28:53.690559+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10704,
+  "out_tokens": 397,
+  "retries": 0,
+  "elapsed_s": 61.893,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "The classification of the receipt as 'income from other sources' is incorrect because the reasoning does not establish that the payment is definitively not for a virtual digital asset (VDA). Section 2(47A)(a) of the Income-tax Act, 1961, defines a VDA as any information or code generated through cryptographic means, which does not include Indian or foreign currency. Since the conclusion assumes that the receipt concerns VDA, which conversely does not strictly fall under the criteria if the VDA component is the core attribute placed since it excludes foreign currency (despite the focus being foreign-denominated income); . Moreover, the conclusion does not address the possibility that the receipt could be for services related to VDAs, which might fall under a different tax treatment. Additionally, the methodology used in the overall forensics also seems outdated assuming non clear-cut delineation of monetary thresholds across series. There the proponent navigating loophole zones violative charter discrepancies such threshold stages of even 49 sandwiched above 50 persists implicitly exemplifies overt layering flaws.",
+        "survived": false,
+        "downgraded_to": "open_texture"
+      }
+    ]
+  }
+}

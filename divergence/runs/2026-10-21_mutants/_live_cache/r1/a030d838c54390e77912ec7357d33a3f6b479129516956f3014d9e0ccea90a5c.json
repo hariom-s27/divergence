@@ -1,0 +1,57 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:47:48.998459+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13498,
+  "out_tokens": 772,
+  "retries": 0,
+  "elapsed_s": 105.714,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH refers to the Income-tax Act, 1961, which has been carried into the Income-tax Act, 2025. However, the specific section number and its applicability need to be verified for the tax year FY 2026-27. There might be updates or amendments that affect its current status.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "No TDS obligation arises as the recipient is outside India.",
+        "checklist_item": 2,
+        "attack": "The provision s.393(1) Table Sl. No. 8(vi) applies to payments to residents. Since the recipient is outside India, this provision does not reach the facts of the case. Therefore, the conclusion about TDS obligation is incorrect.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 393(1), Table Sl. No. 8(vi), Income-tax Act, 2025"
+      },
+      {
+        "target": "This conclusion depends on anything in the 'missing' list.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'declaration_of_service_payment', which is listed as missing. Asserting the conclusion without this documentation is a failure.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: declaration_of_service_payment"
+      },
+      {
+        "target": "'USDC valued at the USDT print, with the proxy unstated.'",
+        "checklist_item": 4,
+        "attack": "The rate source used for the headline figure is not the one prescribed by law. The interbank rate has no standing in Indian tax law for valuing USDC.",
+        "survived": true,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 206, Income-tax Rules, 2026"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Could not verify the operative status of s.115BBH for FY 2026-27 due to lack of access to the latest tax laws and amendments.",
+      "Could not confirm the scope reach of s.393(1) Table Sl. No. 8(vi) for non-residents due to ambiguity in the provided statutory text.",
+      "Could not fully assess the missing documents' impact on all conclusions due to limited information on their content."
+    ]
+  }
+}

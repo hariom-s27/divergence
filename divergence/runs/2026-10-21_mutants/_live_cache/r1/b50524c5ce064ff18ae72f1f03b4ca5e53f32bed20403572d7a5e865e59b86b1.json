@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:06:25.785766+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10935,
+  "out_tokens": 777,
+  "retries": 0,
+  "elapsed_s": 98.707,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded.",
+        "checklist_item": 1,
+        "attack": "The provision cited is Rule 57, Income-tax Rules, 2026, but the reasoning mentions Rule 206 for the valuation method. There is a discrepancy in the rules cited, which raises doubts about the operative status of the provisions mentioned.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 57, Income-tax Rules, 2026, does not mention the telegraphic transfer buying rate or the valuation method for income from other sources. Rule 206 might be the correct rule, but the citation mismatch indicates a potential error in the operative status of the provisions."
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded.",
+        "checklist_item": 2,
+        "attack": "The provision Rule 57, Income-tax Rules, 2026, specifically applies to the determination of fair market value for properties under certain sections, none of which include income from other sources directly.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Said table nowhere lists 'Income computable under the category \u201cOther Sources\u201d'. Column C serves prevision \u00a7 26(2)(j) etc. not \u00a7 92. Row 7 covers remaining possessions not earlier rows."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the valuation, which is listed in the `missing` list. Therefore, the conclusion is not supported by the available information.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence ",
+        "evidence": "Provides 'There is no information\u201d claiming The condition provided also accounts that far more needs evaluated which including voucher description and its purpose itself too \u2013 basic parsing like without any calculable columns not even corroboratorily cited adequate delta fat computed mentions in valuation etc.' even further from already demonstrated The mandatory nature thus lacked correctness needed formed assets then undertaken appropriate searches done clarifiably approved inventory management wrestle reconcile, limits 'not_flown_byfeature' even Explained such explicit robust action class(Also quote and value updating to receiver & recon, That didn't acquired squared up plans cleared fulfill ;thus leading what \u2018was\u2019 shouldalso infact costs was obviously satisfactorily etc.'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

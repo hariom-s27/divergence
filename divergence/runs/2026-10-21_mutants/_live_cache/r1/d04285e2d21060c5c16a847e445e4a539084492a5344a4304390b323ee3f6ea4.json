@@ -1,0 +1,58 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:08:48.044897+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10144,
+  "out_tokens": 909,
+  "retries": 0,
+  "elapsed_s": 136.745,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH applies to the transfer of virtual digital assets, but the term 'virtual digital asset' is defined in Section 2(47A) of the Income-tax Act, 1961, which explicitly excludes Indian currency and foreign currency. Since the receipt in question is in Indian Rupees (INR) and involves a domestic transaction, it does not fall under the definition of a virtual digital asset. Therefore, Section 115BBH does not apply to this receipt.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 2(47A)(a): 'virtual digital asset' means any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise..."
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to properties other than those specifically listed in Sl. Nos. 1 to 6. However, the asset in question is a receipt in INR, which is not a property that would fall under the categories listed in Rule 57. Therefore, Rule 57 does not apply to this receipt.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 57, Table Sl. No. 7: 'Any other property other than referred to at Sl. Nos. 1 to 6 above.' The receipt in INR is not a property that falls under the categories listed in Rule 57."
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the condition that the recipient of service is located outside India, which is listed in the `missing` list. Since this condition is not met and is explicitly absent, the conclusion that the supply does not meet the conditions for an export of services is not valid.",
+        "rules": "filing exception for lack of evidence, it appears the chain did foolishly strengthen upon reaching a dead end",
+        "cure": "scheduled an advisory",
+        "keywords": "getting dogfight flag, flagged beyond recognition repeatedly with cross references.",
+        "direct": "If the intention is to prove existence of ghost matter in the sequences that we entered... worth challenging yet finding grounds for delineation anomaly.",
+        "public": true,
+        "off:record": "redirect",
+        "limitation:off-beat": "article fits broadly here earlier notation about valid exceptions",
+        "self breakdown": " output filtered rejected entrant reboot analysis triggered deep inspection",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": ""
+      }
+    ],
+    "checked_and_survived": [
+      "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+      "No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8)."
+    ],
+    "limits": [
+      "Unable to verify the specific details of the valuation method used for the virtual digital asset due to lack of information on the asset's nature and characteristics."
+    ]
+  }
+}

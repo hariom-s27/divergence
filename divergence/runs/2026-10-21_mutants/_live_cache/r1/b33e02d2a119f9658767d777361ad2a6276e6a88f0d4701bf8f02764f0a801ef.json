@@ -1,0 +1,40 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:05:25.393005+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 9947,
+  "out_tokens": 569,
+  "retries": 0,
+  "elapsed_s": 79.801,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1.",
+        "checklist_item": 2,
+        "attack": "Rule 56, Table Sl. No. 1 specifies the valuation date forSection 92, not Section 115BBH. Therefore, the valuation date provision does not apply to income from the transfer of a virtual digital asset under Section 115BBH.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 56, Income-tax Rules, 2026: 'Table \u2014 Sl. No \u2014 A: 1, Section \u2014 B: Section 92, Valuation date \u2014 C: Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.'"
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to Section 26(2)(j), not Section 115BBH. Therefore, the valuation method provision does not apply to income from the transfer of a virtual digital asset under Section 115BBH.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 57, Income-tax Rules, 2026: 'Table \u2014 Sl. No \u2014 A: 7, Section \u2014 B: Section 26(2)(j), Nature of Property \u2014 C: Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+      }
+    ],
+    "checked_and_survived": [
+      " Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed, the supply is not an export of in some cases and if so, GST will be imposed (both 50 & 74). Can't check recovered yet \u2014 and completely conflicted output maxes later.",
+      "Clause IV awaits detected notice"
+    ],
+    "limits": []
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T04:19:33.910243+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13570,
+  "out_tokens": 779,
+  "retries": 0,
+  "elapsed_s": 101.533,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 1,
+        "attack": "The conclusion refers to s.115BBH of the Income-tax Act, 1961, but does not verify if this provision is still current for the tax year FY 2026-27. Considering that tax laws often change, it is essential to confirm that s.115BBH has not been amended or replaced.",
+        "survived": false,
+        "downgraded_to": "open_texture"
+      },
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 2,
+        "attack": "The conclusion assumes that s.115BBH applies to the receipt of USDC. However, s.115BBH specifically applies to the 'transfer' of virtual digital assets. Receiving USDC does not necessarily constitute a transfer; it could be a payment for services or another type of transaction. Without clarifying the nature of the transaction, applying s.115BBH might be premature.",
+        "evidence": "Section 115BBH(1): Where the total income of an assessee includes any income from the transfer of any virtual digital asset...",
+        "downgraded_to": "lacuna"
+      },
+      {
+        "target": "Neither Rule 206 nor the laundered Rule 207 row 3 reach this fact. Thus neither reaches the statutory format of this specific taxpayer recognition certainty: insufficient evidence",
+        "checklist_item": 2,
+        "attack": "Rule 206 and Rule 207(1), which provide guidance on the rate of exchange for conversion into rupees, explicitly refer to 'foreign currency.' Since USDC is defined not as a currency but as a virtual digital asset, they fail to reach even if they could domestically range this fact. Neither have mechanics designed to wrap any VDA: a clear failure of scope to reach the mechanism mandate.",
+        "downgraded_to": "lacuna"
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 4,
+        "attack": "The conclusion states that the payment was received in USDC, which is not considered convertible foreign exchange as defined by the Reserve Bank of India. However, the use of USDC as a medium of exchange is not explicitly addressed in Section 2(6) of the Integrated Goods and Services Tax Act, 2017. The conclusion should specify the legal definition and source that classifies USDC as non-convertible foreign exchange.",
+        "survived": false,
+        "downgraded_to": "contested"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:04:28.696668+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10226,
+  "out_tokens": 534,
+  "retries": 0,
+  "elapsed_s": 70.098,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027).",
+        "checklist_item": 2,
+        "attack": "Rule 206 specifies that the rate of exchange for calculating the value in rupees of any income expressed in foreign currency shall be the telegraphic transfer buying rate of such currency as on the specified date. Column B of the Table under Rule 206 clearly states that this only applies to specific types of income, none of which include 'income from other sources.'",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "The specified date, in respect of income referred to in sub-clause (ii), payable in foreign currency and from which tax has been deducted at source under rule 207, shall be the date on which the tax was required to be deducted under the provisions of the Chapter XIX-B. Nothing contained in sub-rule (1) shall apply in respect of income referred to in sub-rule (2)(b) [Table: Sl.No. 3], where such income is received in, or brought into India by the assessee or on his behalf before the specified date, in accordance with the provisions of the Foreign Exchange Regulation Act, 1973 (46 of 1973)"
+      },
+      {
+        "target": "Every exporter of services shall furnish to the Reserve Bank or to such other authorities a declaration in such form and in such manner as may be specified, containing the true and correct material particulars in relation to payment for such services.",
+        "checklist_item": 3,
+        "attack": "The condition related to the place of supply being unknown directly affects the ability to confirm if the supply meets all the conditions for being an export of services. This is critical information missing in both the provided conclusions and documented conditions.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "actual_gap_list"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

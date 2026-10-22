@@ -1,0 +1,31 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:11:49.669422+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10946,
+  "out_tokens": 195,
+  "retries": 1,
+  "elapsed_s": 107.956,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "'recognized on the date of credit (28 June 2026)'",
+        "checklist_item": 2,
+        "attack": "The reasoning incorrectly assumes that 'date of credit' applies universally across every head of income. For 'Income from other sources,' Rule 206 specifies the recognition is to occur on the last day of the tax year \u2014 March 31, 2027. Specific provisions governing the correct timing exist and must be adhered to strictly.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "'Last day of the tax year of the assessee.'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Only those provisions that were supplied could be checked"
+    ]
+  }
+}

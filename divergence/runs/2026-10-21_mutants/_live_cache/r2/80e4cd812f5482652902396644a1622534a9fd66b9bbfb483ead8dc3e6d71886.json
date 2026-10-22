@@ -1,0 +1,44 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:34:17.138180+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10924,
+  "out_tokens": 611,
+  "retries": 0,
+  "elapsed_s": 73.048,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The conclusion refers to s.439(8), but does not verify if this provision is current for the stated tax year FY 2026-27. It is possible that s.439(8) has been amended or superseded by a new provision.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "s.439(8) needs to be verified for the tax year FY 2026-27 to ensure it is still current and applicable."
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 3,
+        "attack": "This attribute in conclusion depends on the `missing` list's `valuation.' item. \nChecking does find supporting evidence for this attribution in the gap list\nfitness block.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The conclusion states that the supply meets all the conditions for being an export of services, but the `place of supply` condition is marked as 'unknown'. Therefore, the conclusion that all conditions are met is incorrect.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "The place of supply is not explicitly stated in the provided information."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

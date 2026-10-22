@@ -1,0 +1,49 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:04:29.478900+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13659,
+  "out_tokens": 846,
+  "retries": 0,
+  "elapsed_s": 114.954,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH applies to the 'income from transfer of any virtual digital asset,' but the receipt of 5,000 USDC does not necessarily constitute a 'transfer.' The term 'transfer' typically implies a disposal or sale, not merely receiving the asset. Additionally, s.115BBH specifies that no deduction is allowed for any expenditure other than the cost of acquisition, which suggests that the provision is aimed at the seller or transferor of the virtual digital asset, not the recipient.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH(1)(a): 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...' Section 115BBH(2)(a): '...no deduction in respect of any expenditure (other than cost of acquisition, if any)...'"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 1,
+        "attack": "Rule 57, row 7, provides a method for determining the fair market value of 'any other property' which includes virtual digital assets as per the definition in s.2(47A). The valuation date for s.92 is specified in Rule 56(i), row 1, as the date of receipt.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, row 7: 'Any other property other than referred to at Sl. Nos. 1 to 6 above.' Rule 56(i), row 1: 'Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.'"
+      },
+      {
+        "target": "The payment was received in USDC, which is not convertible foreign exchange as defined by the Reserve Bank of India (Fact: asset).",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing independent verification of Northbay Systems LLC. Without this verification, it is not certain that the payment was indeed received in USDC or that USDC is not considered convertible foreign exchange by the Reserve Bank of India in this context.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: Independent verification of Northbay Systems LLC has not been performed."
+      }
+    ],
+    "checked_and_survived": [
+      "The supply does not meet all conditions for being an export of services."
+    ],
+    "limits": [
+      "The exact interpretation of 'transfer' in s.115BBH and its applicability to the receipt of USDC could not be fully verified without additional legal precedent or clarification from tax authorities."
+    ]
+  }
+}

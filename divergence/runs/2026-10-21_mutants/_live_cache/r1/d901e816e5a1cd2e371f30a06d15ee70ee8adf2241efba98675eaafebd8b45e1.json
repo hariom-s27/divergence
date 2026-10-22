@@ -1,0 +1,66 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:00:49.533013+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13659,
+  "out_tokens": 1312,
+  "retries": 0,
+  "elapsed_s": 204.467,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH specifically applies to the 'transfer' of virtual digital assets. The term 'transfer' is defined in s.2(47) of the Income-tax Act, 1961, and generally implies a disposal or conveyance of an asset. Receiving USDC does not constitute a 'transfer' as defined, but rather an acquisition.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "s.115BBH(1): 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...' s.2(47): 'transfer', in relation to a capital asset, includes... (v) any transaction involving the allowing of the possession of any immovable property to be taken or retained in part performance of a contract of the nature referred to in section 53A of the Transfer of Property Act, 1882 (4 of 1882)'.\u201d );\u201d"
+      },
+      {
+        "target": "No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.",
+        "checklist_item": 2,
+        "attack": "While s.393(1) primarily addresses deductions for payments to residents, the note under the table specifies that the obligation extends to all persons, including non-residents. This suggests that the provision may still apply depending on the specific circumstances and the interpretation of the note.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Note 3(b) under the table in s.393(1): 'the obligation to deduct tax at source and comply with this serial number extend to all persons resident or non-resident...'\u201d ;\u201d"
+      },
+      {
+        "target": "Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the 'independent verification of Northbay Systems LLC,' which is listed as missing. Since the conclusion is asserted despite this dependency, it is flawed.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Gap List: 'independent verification of Northbay Systems LLC has not been performed.' Conclusion: 'Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation.'"
+      },
+      {
+        "target": "Rule 57 does not provide a specific method for valuing USDC, a virtual digital asset, under s.92.",
+        "checklist_item": 2,
+        "attack": "Rule 56 explicitly defines the 'valuation date' for s.92 as the date of receipt, which is 2026-06-28. However, Rule 57, which determines the fair market value, does not have a specific entry for s.92 in its table. This discrepancy means that while Rule 56 applies, Rule 57 does not provide a method for valuation under s.92.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 56(i): 'valuation date means the date provided in the Table below...' Table, Row 1: 'Section 92 - Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.' Rule 57, Table: No entry for s.92."
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "This conclusion is based on the condition that 'the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8.' However, this condition is marked as 'unknown' due to the missing 'independent verification of Northbay Systems LLC.', thus making the conclusion unreliable.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Condition: 'the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8.' Status: 'unknown'. Reason: 'There is no independent verification of Northbay Systems LLC (Fact: counterparty_verified).'"
+      }
+    ],
+    "checked_and_survived": [
+      "The valuation date is the date of receipt, 2026-06-28, as per Rule 56."
+    ],
+    "limits": [
+      "Could not verify the operative status of s.439(8) for FY 2026-27 due to lack of historical data on provision changes.",
+      "Could not assess the scope reach of s.393(1) regarding payments from non-residents due to ambiguity in the note under the table."
+    ]
+  }
+}

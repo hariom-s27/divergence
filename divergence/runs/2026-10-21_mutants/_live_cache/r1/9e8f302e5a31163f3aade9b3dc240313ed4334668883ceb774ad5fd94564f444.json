@@ -1,0 +1,28 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:46:03.253616+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 14000,
+  "out_tokens": 151,
+  "retries": 1,
+  "elapsed_s": 520.2,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH",
+        "checklist_item": 1,
+        "attack": "This tax situation represents the STREET PRICES as they might ACTUALIZE NOW not precisely when timelocked trades unwrap. Vetted,,,,,,,,tasks were markedly incorrect by downstream tools. Notice Ancillary depiction per digitized functional role play scenarios during movement by coin and future wallet topography",
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "another sentence to replace"
+      }
+    ]
+  }
+}

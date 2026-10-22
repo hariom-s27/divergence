@@ -1,0 +1,33 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:53:36.603361+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10703,
+  "out_tokens": 305,
+  "retries": 0,
+  "elapsed_s": 46.678,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "The provision Rule 206, Table Sl. No. 3, applies to income 'chargeable under the head ",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "The rule clearly states that the telegraphic transfer buying rate should be used for income chargeable under specific heads, which do not include the classification 'income from other sources' directly. Therefore, the application of Rule 206 to this classification is incorrect."
+      }
+    ],
+    "checked_and_survived": [
+      "The supply meets all the conditions for being an export of services."
+    ],
+    "limits": [
+      "Unable to check the operative status of any provisions beyond the provided statutory text."
+    ]
+  }
+}

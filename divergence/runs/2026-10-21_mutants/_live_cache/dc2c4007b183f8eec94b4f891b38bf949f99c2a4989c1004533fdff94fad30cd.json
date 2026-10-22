@@ -1,0 +1,42 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T17:53:17.298583+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13662,
+  "out_tokens": 577,
+  "retries": 0,
+  "elapsed_s": 79.054,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 1,
+        "attack": "The conclusion assumes that s.115BBH applies to the tax year FY 2026-27. However, the provided statutory text does not confirm that s.115BBH is current for FY 2026-27. The text mentions that s.115BBH is carried into the Income-tax Act, 2025, but there is no explicit confirmation that it remains unchanged for FY 2026-27.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the absence of a prescribed valuation method for USDC. However, the gap list indicates that the 'valuation of the professional/consulting services' is missing and not obtainable for this route. This missing information could potentially affect the conclusion regarding the valuation method for USDC.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Valuation Lattice: No mandatory Method. No mention USDC method mandated, nor gaps closed or template matched for how the leading edge of a candle may ever be chosen"
+      }
+    ],
+    "checked_and_survived": [
+      "The supply does not meet all conditions for being an export of services."
+    ],
+    "limits": [
+      "Unable to verify the current status of s.439(8) for FY 2026-27 due to lack of explicit confirmation in the provided statutory text.",
+      "Could not determine the impact of the missing 'independent verification of Northbay Systems LLC' on the GST export conclusion."
+    ]
+  }
+}

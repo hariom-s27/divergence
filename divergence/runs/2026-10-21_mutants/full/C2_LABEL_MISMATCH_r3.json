@@ -1,0 +1,199 @@
+{
+  "case": "C2",
+  "operator": "LABEL_MISMATCH",
+  "seed": 1337,
+  "rep": 3,
+  "note": "rate/source/inr_value (376200.0) left untouched, only the label swapped 'SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)' -> 'SBI TTBR (last published BEFORE the receipt)'",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 206, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt is not from the transfer of a virtual digital asset (s.115BBH) but is instead income from other sources, as it is a payment for services rendered. \n\nb) **Recognition Date**: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).\n\nc) **Valuation Method**: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.\n\nd) **TDS**: The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).\n\ne) **Penalty Position**: The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "place of supply"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST at the applicable rate. The supplier would be required to pay GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR (last published BEFORE the receipt)",
+        "rate": 94.05,
+        "inr_value": 376200.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf",
+          "retrieved": "2026-08-21",
+          "tier": "primary_archived",
+          "note": "Fetched directly from sahilgupta/sbi-fx-ratekeeper's SBI_REFERENCE_RATES_USD.csv, the same archive corpus/tier-a/SBI-TTBR-DATA.md already cites for D1's dates. SBI published normally this Wednesday -- no four-day hole like the 28 June weekend."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-17",
+        "date_choice": {
+          "reason": "SBI published a rate on the settlement date itself (2026-06-17) -- no fallback question arises.",
+          "candidates": [
+            {
+              "date": "2026-06-17",
+              "ttbr": 94.05,
+              "label": "published on the settlement date itself -- no gap"
+            }
+          ],
+          "chosen": "2026-06-17",
+          "prescribed_by": "published on settlement date",
+          "difference_inr": 0.0
+        }
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0,
+      "between": [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.', 'checklist_item': 2, 'attack': \"Rule 206 specifies the rate of exchange for calculating the value in rupees of income expressed in foreign currency under specific types of income heads. The provision explicitly mentions 'Income from other sources,' while this case might fit, and although Rule 206 Table Sl. No. 3 was cited to outline how the rates were chosen, the Rule opens explaining that it effects income *arising or accruing*. This assigns treatment based upon the characterization of the payment mechanism combined with the perceived flow and possession timing of funds or benefits.\", 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': \"'**For the purposes of this rule**: (1) The rate of exchange for the calculation of the value in rupees... expressed in a foreign currency; shall be the telegraphic transfer buying rate...'setting the stage on  rule objectives this is an impactful determinator.'\"}, {'target': 'The supply meets all the conditions for being an export of services.', 'checklist_item': 3, 'attack': \"Conclusion states that it is impossible from the discussed facts to determine if this income falls definitively into export status of a supply since portions of the transaction may constitute activities and occurrences within Delhi's jurisdiction related in somewise circumstantally to the completed trade.\", 'survived': False, 'downgraded_to': 'open_texture', 'evidence': \"Tax document identified absence of proven place of supply raising GST concerns especially where collection ownership connects goods sequentially to properties controlled either by official authorities in Delhi therefore ruling requires precise written stipulations unlikely enumerated surrounding trade objects operations linkage nearness logistical premise ' applicable OVERLY CASE INDETERMINATE.' \"}], 'limits': [\"could not coherently evaluate scrum depth of implications Foreign Exchange seconds sighted unclear references suppliable designee listed beyond defined FM reference range '**INVALIDATED OBJECTIVITY ON SETTLED CONCLUSION**']}\"]}",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "LABEL_MISMATCH",
+    "kind": "terms",
+    "groups": [
+      [
+        "SBI TTBR (last published BEFORE the receipt)"
+      ]
+    ]
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-22T01:58:06.252769+00:00",
+  "finished_utc": "2026-10-22T02:02:04.771054+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10690,
+  "out_tokens": 574,
+  "latency_s": 123.016,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10690,
+    "out_tokens": 574,
+    "retries": 0,
+    "elapsed_s": 123.016,
+    "wall_ms": 123015.6,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(2, \"downgraded_to='missing doc' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\"), (3, 'target missing or not a string'), (4, \"downgraded_to='__OLDER__verse' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.', 'checklist_item': 2, 'attack': 'According to Statutory texts, section 393(1), Table Heading \u2013 Payments to Non Residents, contains relevant rule. This attacks the target because since the receipt holder is a **NON-RESIDENT** and structure suggests foreign currency, therefore no Home Country Ruled applied for conversion specificity. ', 'survived': False, 'downgraded_to': 'contested', 'evidence': 'None of Rule addressing Non-Residents contain text touching this receipt scenario'}, {'target': 'The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.', 'checklist_item': 1, 'attack': 'It seems like the term *competent authority* stands avoided and strong undefined within this referenced law within this TIMEFRAME.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': 's.439(8) does not carry formal definition regargind competent officials restated'}, {'target': \"this external documentation **'valuation'** document link leads NOWHERE on singular calling if or verification inside corpus terms. Also none reachable notes exist\", 'checklist_item': 3, 'attack': \"'Referencing is cyclic pointer, displaying redundunt connectivity' also 'no retrieve path suppoeted'\", 'survived': False, 'downgraded_to': 'missing doc', 'evidence': 'https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf'}, {'attack': 'Limiting Employee Guage does not suffice Virt.Assets ', 'survived': False}, {'target': 'Content Reflects that quote preservation ostensibly observed accidentally upon referential intergtiy of Former and present only. So minimal quotation scope is almost precisely neared Contractually imbalanced types', 'checklist_item': 1, 'attack': \"Ingot used phrases,, 'has not undergone active review', 'dated day past kept alive'\", 'survived': False, 'downgraded_to': '__OLDER__verse', 'evidence': 'Multiple blogs claim redirected flux'}], 'checked_and_survived': ['The payer is a non-resident'], 'limits': []}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(2, \"downgraded_to='missing doc' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\"), (3, 'target missing or not a string'), (4, \"downgraded_to='__OLDER__verse' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.', 'checklist_item': 2, 'attack': 'According to Statutory texts, section 393(1), Table Heading \u2013 Payments to Non Residents, contains relevant rule. This attacks the target because since the receipt holder is a **NON-RESIDENT** and structure suggests foreign currency, therefore no Home Country Ruled applied for conversion specificity. ', 'survived': False, 'downgraded_to': 'contested', 'evidence': 'None of Rule addressing Non-Residents contain text touching this receipt scenario'}, {'target': 'The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.', 'checklist_item': 1, 'attack': 'It seems like the term *competent authority* stands avoided and strong undefined within this referenced law within this TIMEFRAME.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': 's.439(8) does not carry formal definition regargind competent officials restated'}, {'target': \"this external documentation **'valuation'** document link leads NOWHERE on singular calling if or verification inside corpus terms. Also none reachable notes exist\", 'checklist_item': 3, 'attack': \"'Referencing is cyclic pointer, displaying redundunt connectivity' also 'no retrieve path suppoeted'\", 'survived': False, 'downgraded_to': 'missing doc', 'evidence': 'https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf'}, {'attack': 'Limiting Employee Guage does not suffice Virt.Assets ', 'survived': False}, {'target': 'Content Reflects that quote preservation ostensibly observed accidentally upon referential intergtiy of Former and present only. So minimal quotation scope is almost precisely neared Contractually imbalanced types', 'checklist_item': 1, 'attack': \"Ingot used phrases,, 'has not undergone active review', 'dated day past kept alive'\", 'survived': False, 'downgraded_to': '__OLDER__verse', 'evidence': 'Multiple blogs claim redirected flux'}], 'checked_and_survived': ['The payer is a non-resident'], 'limits': []}",
+      "started_utc": "2026-10-22T01:58:06.252769+00:00",
+      "finished_utc": "2026-10-22T02:00:01.746955+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10690,
+        "out_tokens": 804,
+        "retries": 0,
+        "elapsed_s": 115.485,
+        "wall_ms": 115485.2,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.', 'checklist_item': 2, 'attack': \"Rule 206 specifies the rate of exchange for calculating the value in rupees of income expressed in foreign currency under specific types of income heads. The provision explicitly mentions 'Income from other sources,' while this case might fit, and although Rule 206 Table Sl. No. 3 was cited to outline how the rates were chosen, the Rule opens explaining that it effects income *arising or accruing*. This assigns treatment based upon the characterization of the payment mechanism combined with the perceived flow and possession timing of funds or benefits.\", 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': \"'**For the purposes of this rule**: (1) The rate of exchange for the calculation of the value in rupees... expressed in a foreign currency; shall be the telegraphic transfer buying rate...'setting the stage on  rule objectives this is an impactful determinator.'\"}, {'target': 'The supply meets all the conditions for being an export of services.', 'checklist_item': 3, 'attack': \"Conclusion states that it is impossible from the discussed facts to determine if this income falls definitively into export status of a supply since portions of the transaction may constitute activities and occurrences within Delhi's jurisdiction related in somewise circumstantally to the completed trade.\", 'survived': False, 'downgraded_to': 'open_texture', 'evidence': \"Tax document identified absence of proven place of supply raising GST concerns especially where collection ownership connects goods sequentially to properties controlled either by official authorities in Delhi therefore ruling requires precise written stipulations unlikely enumerated surrounding trade objects operations linkage nearness logistical premise ' applicable OVERLY CASE INDETERMINATE.' \"}], 'limits': [\"could not coherently evaluate scrum depth of implications Foreign Exchange seconds sighted unclear references suppliable designee listed beyond defined FM reference range '**INVALIDATED OBJECTIVITY ON SETTLED CONCLUSION**']}\"]}",
+      "started_utc": "2026-10-22T02:00:01.747006+00:00",
+      "finished_utc": "2026-10-22T02:02:04.771054+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10690,
+        "out_tokens": 574,
+        "retries": 0,
+        "elapsed_s": 123.016,
+        "wall_ms": 123015.6,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:51:58.344978+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13658,
+  "out_tokens": 989,
+  "retries": 0,
+  "elapsed_s": 133.112,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'transfer' of virtual digital assets. The term 'transfer' is defined in clause (47) of section 2, which typically implies a disposal or sale. The receipt of USDC does not constitute a 'transfer' as defined, but rather an acquisition. Therefore, s.115BBH does not apply to the mere receipt of USDC.",
+        "survived": true,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH(3): 'For the purposes of this section, the word \"transfer\" as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not.'"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 1,
+        "attack": "Rule 57, column D, row 7, provides a method for determining the fair market value of 'any other property' which includes virtual digital assets as per the Explanation to section 56(2)(vii). This rule is current for FY 2026-27 and applies to the valuation of USDC.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 57, Column D, Row 7: 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.' And 'Explanation.\u2014For the purposes of this clause,\u2014 ...(b) the expression \u201cproperty\u201d shall have the same meaning as assigned to it in clause (d) of the Explanation to clause (vii) and shall include virtual digital asset'"
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The condition that 'the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India' is not met because USDC is not considered 'convertible foreign exchange' as defined by the Reserve Bank of India. However, the payment was received in a virtual digital asset, which is not covered by the restrictions of the Reserve Bank of India on foreign exchange. Therefore, this condition does not apply to USDC, and the conclusion that the supply does not meet all conditions for being an export of services is incorrect.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 2(m), Foreign Exchange Management Act, 1999: 'foreign currency means any currency other than Indian currency;' and Section 2(q): 'Indian currency means currency which is expressed or drawn in Indian rupees...' Also, referencing the core of Section 3(b) and its Explanation which extends to matters outside pure fiat alone."
+      }
+    ],
+    "checked_and_survived": [
+      "The gst_export outcome stating insufficiency of evidence is based on a condition being explicitly unknown. Gaps identified.\u201cThe fact its core... only dispells prefered treatment\u201d, therefore some demands raised by another party have merit until yet more paperwork resurfaces - yet also suggesting proper helping might have made up that paperwork. It's discordant together happening."
+    ],
+    "limits": [
+      "Unable to check the historical context of how well auditors rely on truth-establishing certain tax databases as well as engineering retrospective internal dependencies  ",
+      "Intellectual property rights subject to debt collection risk neglect. That work is beyond-scope night classes, but still likely useful little juries think more personal intrests desirable rather than unrelated-no-longer valid provisons"
+    ]
+  }
+}

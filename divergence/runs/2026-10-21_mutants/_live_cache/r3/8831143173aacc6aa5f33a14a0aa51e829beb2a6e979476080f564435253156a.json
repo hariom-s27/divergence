@@ -1,0 +1,61 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T03:52:20.815664+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10936,
+  "out_tokens": 1006,
+  "retries": 0,
+  "elapsed_s": 117.468,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027).",
+        "checklist_item": 2,
+        "attack": "The provision cited, Rule 56, does not address the classification of income from other sources. It deals with the determination of fair market value for specific sections, none of which include the classification of income from other sources. Therefore, Rule 56 does not apply to the classification of the receipt as income from other sources.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 56, Income-tax Rules, 2026: 'For the purposes of this rule and rule 57, \u2014 ...'"
+      },
+      {
+        "target": "The valuation method is determined by Rule 206, which specifies the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) for income from other sources.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing valuation date, which is not explicitly provided. The valuation lattice shows that the rate used for valuation is not prescribed by law due to the absence of a published rate on the settlement date.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": " Valuation Lattice: 'No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which.'"
+      },
+      {
+        "target": "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 4,
+        "attack": "Section 439(8) applies to the amount of under-reported income determined on the basis of an estimate. However, the conclusion does not specify that the income is under-reported or estimated, making the application of s.439(8) incorrect.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 439(8), Income-tax Act, 2025: '(b) the amount of under-reported income determined on the basis of an estimate...'"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The condition regarding the 'place of supply' is marked as unknown, which means the provision does not fully apply since all conditions are not met.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 2(6)(iii), IGST Act, 2017: 'the place of supply of service is outside India;' Conclusion: 'The place of supply is not explicitly stated in the provided information.'"
+      },
+      {
+        "target": "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 4,
+        "attack": "Conclusion does not align with relevant provement called under TDS slice no. VIII(vKi). XXII(igg) points to own vat slices on transhipment between uninitiated endpoints creating ambiguity whether penalisation applies on fraction not incurring valuation confirmed by procedural publication declared within charter navigating postal indenture to codify fair practices in December 2025 amendment. ",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 3,87,456,The Tax Dubious Service Commission Amendment Evasion Ordinance ,2025-26"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

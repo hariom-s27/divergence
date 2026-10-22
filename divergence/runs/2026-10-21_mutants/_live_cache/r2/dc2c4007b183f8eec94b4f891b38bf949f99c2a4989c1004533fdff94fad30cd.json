@@ -1,0 +1,43 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:02:34.509244+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13662,
+  "out_tokens": 616,
+  "retries": 0,
+  "elapsed_s": 92.37,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'transfer' of virtual digital assets. The term 'transfer' is defined in section 2(47) of the Income-tax Act, 1961, and typically involves a sale or exchange. The receipt of 5,000 USDC does not necessarily constitute a 'transfer' as defined, especially if it is received as payment for services rather than as a result of a sale or exchange of the asset itself.",
+        "survived": false,
+        "downgraded_to": "contested"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 2,
+        "attack": "Rule 57, column D, row 7, specifies that the fair market value of any other property (which would include virtual digital assets like USDC) is 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.' This provision does reach the facts, as it provides a method for valuing USDC, contrary to the conclusion drawn.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Rule 57: ... Column D, row 7: 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.'"
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'independent verification of Northbay Systems LLC,' which is listed as missing. Since the conclusion is asserted despite this dependency, this is a failure the system exists to catch.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

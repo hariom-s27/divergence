@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T17:57:32.099941+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13570,
+  "out_tokens": 700,
+  "retries": 0,
+  "elapsed_s": 104.721,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'income from the transfer of any virtual digital asset.' However, the receipt of 5,000 USDC does not constitute a transfer; it is simply a receipt of income. The term 'transfer' involves a change in ownership or control, which is not evident in this scenario. Therefore, s.115BBH does not apply to this situation.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH(3): 'For the purposes of this section, the word \"transfer\" as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not.'"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing independent verification of Northbay Systems LLC, which is listed in the gap list. Since the conclusion is asserted despite this dependency, it is invalid.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: Independent verification of Northbay Systems LLC has not been performed."
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The condition that 'the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India' is incorrectly marked as 'no'. USDC, being a stablecoin pegged to the US Dollar, can be considered a form of foreign exchange. Furthermore, the Reserve Bank of India has not explicitly prohibited the use of stablecoins like USDC for such transactions. Therefore, this condition should be re-evaluated.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 2(m), Foreign Exchange Management Act, 1999: 'foreign currency means any currency other than Indian currency;'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

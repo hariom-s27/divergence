@@ -1,0 +1,69 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:50:34.018611+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 1278,
+  "retries": 0,
+  "elapsed_s": 164.995,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 4,
+        "attack": "The valuation methods used for the receipt of 400 USDC are not prescribed by law. The valuation lattice shows multiple methods and rates, none of which are mandated by Rule 206 or any other provision for the conversion of virtual digital assets into rupees. The use of SBI TTBR rates, domestic market rates, and various assumptions about the peg are not supported by the statutory text provided.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 206, Income-tax Rules, 2026: 'The rate of exchange for the calculation of the value in rupees of any income ... shall be the telegraphic transfer buying rate of such currency as on the specified date.' The rule does not provide for the valuation of virtual digital assets using domestic market rates or assumption about the peg."
+      },
+      {
+        "target": "The valuation date is the date of receipt (2026-06-18).",
+        "checklist_item": 2,
+        "attack": "Rule 56 specifies the valuation date for section 92, not for the transfer of virtual digital assets under s.115BBH. Therefore, applying the valuation date as the date of receipt based on Rule 56, Table Sl. No. 1 is incorrect.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 56, Income-tax Rules, 2026: 'Valuation date means the date provided in the Table below...'"
+      },
+      {
+        "target": "The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57, Table Sl. No. 7.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to 'Any other property' under section 26(2)(j), not to the transfer of virtual digital assets under s.115BBH. The reasoning incorrectly extends the applicability of Rule 57 to s.115BBH.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 57, Income-tax Rules, 2026: 'For the purpose of following sections referred to in column B of the Table below, the fair market value of the property of the nature referred to column C shall be determined in the manner provided in column D thereof.'"
+      },
+      {
+        "target": "No TDS obligation arises because the recipient is outside India.",
+        "checklist_item": 2,
+        "attack": "Section 393(1), Table Sl. No. 8(vi) specifies that TDS is applicable for consideration for transfer of a virtual digital asset to a resident. However, it does not address the scenario where the recipient is outside India. The conclusion that no TDS obligation arises is based on an incorrect interpretation of the provision.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 393(1), Table Sl. No. 8(vi), Income-tax Act, 2025: 'Where any income or sum of the nature specified ... is credited ... to a resident, the person responsible for paying such income or sum shall deduct income-tax...'"
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 4,
+        "attack": "The term \u2018convertible foreign exchange\u2019 is defined to include electronic units and digital currencies acceptable to the RBI. Misclassifying USDC as not being deemed convertible implies goods were sold but proceeds arrived in a cross-border deal as untaxed barter. ",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 2(m)-2(q) rather broad definitions in the Definition clause reinforce this outcome where the result matches plain English reading more plausably than crunched."
+      },
+      {
+        "target": "Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 4,
+        "attack": "Section 439(8) applies to explanations offered for under-reported income, not to the classification of income under s.115BBH. The reasoning incorrectly extends the applicability of s.439(8) to the classification of income from the transfer of virtual digital assets.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 439(8), Income-tax Act, 2025: 'The amount of income ... to substantiate the explanation offered...'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

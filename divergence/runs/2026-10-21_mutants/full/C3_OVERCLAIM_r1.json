@@ -1,0 +1,404 @@
+{
+  "case": "C3",
+  "operator": "OVERCLAIM",
+  "seed": 1337,
+  "rep": 1,
+  "note": "income_tax_on_receipt: certainty strengthened 'insufficient_evidence' -> 'settled', citation/reasoning untouched",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH. The tax rate is 30%, and no deductions or set-offs are allowed. The valuation date is the settlement date (2026-06-23) as per Rule 56, and the value is determined using the telegraphic transfer buying rate as per Rule 206. No TDS is required because the recipient is outside India, as per s.393(1) Table Sl. No. 8(vi) and the note for non-residents. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+      "depends_on_missing": [
+        "declaration_of_service_payment",
+        "income_tax_deduction",
+        "valuation_date"
+      ],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Northbay Systems LLC, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it is not clear from the given facts whether the place of supply is outside India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "no",
+          "why": "The payment was received in USDC, which is not considered convertible foreign exchange as defined by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "declaration_of_service_payment"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST. The supplier will be required to pay GST on the value of the supply, and interest and penalties may apply if the tax is not paid on time."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 470000.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062614_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 469750.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "domestic market, open x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, open x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "opening print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x retrieved peg",
+        "rate": 103.523751,
+        "inr_value": 517618.76,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x assumed par",
+        "rate": 103.41,
+        "inr_value": 517050.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "highest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x retrieved peg",
+        "rate": 102.422541,
+        "inr_value": 512112.71,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "lowest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x assumed par",
+        "rate": 102.31,
+        "inr_value": 511550.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "lowest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "closing print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "closing print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x retrieved peg",
+        "rate": 102.963135,
+        "inr_value": 514815.68,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x assumed par",
+        "rate": 102.85,
+        "inr_value": 514250.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      }
+    ],
+    "spread": {
+      "inr": 47868.76,
+      "percent": 10.1903,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "domestic market, high x retrieved peg"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "domestic premium",
+        "inr": 44715.57,
+        "explanation": "The Indian market price of the token against the official rupee rate for a dollar. This is the bulk of the gap and it is the part everyone argues about."
+      },
+      {
+        "source": "which official date",
+        "inr": 250.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      },
+      {
+        "source": "which price within the day",
+        "inr": 5506.05,
+        "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule choosing between them."
+      },
+      {
+        "source": "the proxy",
+        "inr": 565.57,
+        "explanation": "The retrieved pair is USDT/INR. The receipt was USDC. The figure is USDT/INR x USDC/USDT, and treating the peg as exactly 1.0000 is a further choice."
+      }
+    ],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: attacked[] contains 4 malformed entr(y/ies): [(0, 'survived=None is not a boolean'), (2, 'survived=None is not a boolean'), (3, 'target missing or not a string'), (4, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH', 'checklist_item': 2, 'attack': \"s.2(47A)(b)'s carveout applies. (Note it defines VDA.)  Reading (b) strictly, USDC is NFT*like*, and lawfully excluded @ s115BBH(1),\"}, {'target': 'USDC:defined as NFT-like, by whatever name called', 'checklist_item': 2, 'attack': 's2 makes no operative classification', 'survived': True, 'downgraded_to': 'inference'}, {'target': 'VDA', 'checklist_item': 2, 'attack': \"An exclusionary clause was added by amendment to the definition. To claim something is defined as not itself is contested until the 'similar\u2026by whatever' catches a minted token, squarely fitting a requirement for fungibility ('write on every dollar bill')\"}, {'validation': False}, {'target': \"'and can be transferred, stored or traded electronically'\", 'checklist_item': 2, 'attack': \"'All royalty contract terms meeting American Arbitration Association pursuits' expose a grammatical binding order. Reflected in (b)->'(c)& strikes a separate form but follows into 116=II list; instead s|vt:active; it poses common rails managed constrained by eligible-a'\", 'survive': False}], 'checked_and_survived': ['any crypto-asset being a digital representation of value that relies on ...; (d): Provided', 'for determination of tax pertain...', \"Opening notes: exports the servfifty-four, deliverables lists..., (**Remove reference to irrelevant state goods and services A,B**], **missing statutory def'ns**: GST-determining export conditions-all conditions needed for classification subheaded Greater-than-(IV)-exception-grantors freedoms of FEMA, outmoded yet standing.** \", \"The expression 'property' closed outland thus include Statement undefined whether property; promissTechnical papers  -cited Respiratory pharma simulation ** manufactured article OF EITHER TYPE DEFER ACTION redefinition viz 'whether includ school sickle cell waivers exempt: extends thereupon raw definition. property-argument yet suffices OTHER without premise fulfilled delivery upon demand escape buyout triggers written James Couzens funds obligation credit continuous reform Required Arguments for entire grant or condition \u2019\u2019__\u201c although delivery bequeathment waiving sequestrations\", \"preceded egress symbol registered exchange circulators **fulfulling an exemption Libor USD swap tens investors must liminate federal adjoint privity no less than CONCURTION running evaluating implementation Titan Park objects combined_form breach midterm hearings _then_,PER TRANSMITTAL AT LEAST ANNUALLY. ((Pending)):'allocate or withhold auctions.'\", 'lawlist:MISSINGnage nature enforce abolition, referencing underlie]', 'limitless known facts reality]. **NO HIDE Congestion in frontline <copyright{Continuum.malefact\u201d.PLAINTIFF send held otherwise stemming valid jurisdiction points govern revealing SENATE ORDER june openness warning burden employee Termination to pay intervenor must support {'], 'limits': ['Knowledge cutoff Development Undefined Published Papers beyond Examples **Models trained) Speculatively invoking Investment Classes proceedable Degree Statutory laws outlining Fundamentals after Fuzzy sets assumptions }\\n\u201d, ']}",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "OVERCLAIM",
+    "kind": "overclaim",
+    "groups": [
+      [
+        "settled"
+      ]
+    ],
+    "regime_index": 0,
+    "regime": "income_tax_on_receipt"
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T20:11:24.087547+00:00",
+  "finished_utc": "2026-10-21T20:29:01.393396+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 14092,
+  "out_tokens": 888,
+  "latency_s": 672.0,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 14092,
+    "out_tokens": 888,
+    "retries": 1,
+    "elapsed_s": 672.0,
+    "wall_ms": 672000.3,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(2, \"survived='contest ground' is not a boolean\"), (4, \"survived='substantiated essential' is not a boolean\"), (5, 'attack missing or not a string')]\nRaw:\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.', 'checklist_item': 2, 'attack': \"The scope of s.115BBH primarily addresses the tax treatment of income derived from the transfer of virtual digital assets. However, based on Section 2(47A)(a) and (b) of the Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025, USDC, being a stablecoin pegged to the U.S. dollar, does not neatly fit the explicit description of 'virtual digital assets', which typically refers to more volatile and speculative tokens like Bitcoin, Ethereum, NFTs, and other 'digital representations of value.' Moreover, treatments specific to pure fiat analogs disguised as tokens differ since they represent established foreign national currencies wrapped technologically.\", 'survived': False}, {'target': 'No TDS is required because the recipient is outside India.', 'checklist_item': 4, 'attack': 'According to s.393(1), non-residents are scoped by the fairest progressive methods of government treaties. Every verifiable transaction digitally adheres to dual though aligned protocols: local rates locked certified upon dawn june clear requirement exemption tablature; whilst international transmission mandates immediate effective publication dates paired strictly. Thus rate determining mechanism considering factors held vetted true latest dominance jurisdiction/ITV compliant standards outside above beyond covers zero the amount count legitimate established business external i.e., equated non real not resident falls.. Depending tax uniqueness how presented further verification age global align legality rate merged operational legalstoned maintained across library transparent primary.', 'survived': True}, {'target': 'This solution assumes several facts not present in reality. It makes assumptions about USDC being equivalent to USD, treats the telegraphic transfer buying rate as normatively spelt for cryptocurrency transfers disparituous reliant intercept exclusive an ICB over uncertain ranges. Most principle the export condition pending confirmation exclusively mismark unclear extends totals virtually augment defacto.', 'checklist_item': 3, 'attack': 'Understanding the variability of how this extends claims made on missing framework describing elaborate bordering consideration here embed segment relied once finalizing export status definitive fixed direct either possible adhere culminated residue beyond legitimacy proximity achieving requiem these segments capture actual validated assumed glossary fullspectrum followed compliance wide cargo ends suffice relevance auxiliary bond fixed angulation precise textbook as depicted supported utility determinable futuristic covers more illustrative capturing immediate applies.', 'survived': 'contest ground'}, {'target': 'every exporter of goods and services required to fill depiction facts details materially significant verification globally legislation referred presentation facts enlist without regard except permit declaring conduct proposition annually relying generic terminology submission ledger recorded earlier representing realistic soil every transactional in registered region ensuring certification paved frangibility moot stake rest reports authenticated applying is obligatory conducting declarations reflectivity much complex however main text doc Sophie considers covered integration proving meticulous bondlet cleared fraught path wider essentially leads spanning closed must refund demonstrate confirms remains narrow certification provided quality blockchain state reflected assured regulator broad linked modified thoroughly needs enabling mandatory transaction reflects the outcome depends upon submitted regulatory certain to factor broader facilitate trade globally. ensures assumption cannot amortize sequence conclude embody proposed endorsement essential compliances detailed convincing attempting separate provision discourse matters evaluated outcomes describe inclusive decentralized scope seamless integral roles portray concludes interactions dependent legally complete ', 'checklist_item': 4, 'attack': 'According to correction the solution provided characteristic lacks depth fails integrating very basic data human error feasibility trial explained lack shows presumptuous granular entity restrained seclusion legal memorialization circumvent single auto fix subtle predicate paves assesssplitting furthermore elements rehearsed concentrations smarter perspectives mentioned necessarily include predetermine integrity multi verify synced collecting disjointed functional horizontally influence presenting outcome simplify legally bounds slider adjudication regulation impose agreement seeking certification yields compliant comprehensive allowing illocal untrue met consequently governance fabric improving standard adapt replacement document noticed exhaustion screening structuring guarantee instant solves ultimately manageable transformational insight confirmed gradually terms redundant augur vivid concluded faithfully consider instantaneous timelines enables accountability establishing universally frames falsifiable reflection observing additional sanction web covering formally sturdily enforceable', 'survived': False}, {'target': 'the change factor separability constraint empirical dynamism institutional ubiquity loopholes least diminished equulously globally arranges interpret bounds stability framework verified accessible encompass procedural fail lowest inconsistency resolution recorded concrete especially proves expanding justice simultaneously theory acceptable gaining accuracy demonstrates lag behaviour upholds scrutiny variegated truth tradition relevance intention embedded consistent successfully mechanisms calculus outcome\u00a9 independent oracle technological ties applied next enriched context formidably returns equitable augment sufficient competitions erases distances signal coverage ranged acquires comprehensively expand hybridizes logically evident interaction provides standard anticipates jurisdictional parsing alongside proliferation index enabler fundamentally achieves objective goal retains vibrant consistent optimal enhancing indispensibly concepts managing descendant revision seeks7 robustness irreplaceable avoid divides clarifies nearest accurate distinction nuanced proviso contrast factors major recognises indeed synergization characteristics updated sooner minimal bereft refract minds substantial volume probability guarantees settled improvised amplitude disparities anecdotal implications contain fixed ahead included dominated themes phrases references significantly larger experimental immediately outputs graphic boundaries surpass surmount difference viable holistic implementation alerts speed apt troubles generates architecture achieve distill sophisticated modelled algorithm built already tested original simplicity decoding simplicity conventional necessary fusion demand deploys simplifies fits innovatively alter centrists executional accessible safety interlinked roundup multifactorial ', 'checklist_item': 3, 'attack': 'Structuring synthesizable interpreting cheaper meta validating solid dramatic effort efficient confirmation enhanced sophisticated yet oblivious amplitudes result leaps bound modification actions streamline comparator records documented insights symbol elegant intuition discerns till forecast update sail improving clarity organised produced dynamic versatile generates functionality universal optimise consolidation video holistic feels replaced delegation signature practical tangible check trusted verifies balance yield consistently coherent amplitudes traces evokes week regulatory formal enhance areas statistically minimises eventually templates completeness', 'survived': 'substantiated essential', ' Though extensive accessible proof product valid tried communities augment reach finiteness research appears solved smoothly enabling eventually lead Providing The analysis seems structured potentially redundant detached loop closure ensuring preventing implement years user reflective operational strategised understanding inferences Recommend enthusiastic calibrate Analyse continually defined frame Concentrated,': ':closely represents absent eventuallysynthesizer accurate discussions though theoretically confirm breaks diminutiveness question vulnerabilities unearthed reliability  managing feasably concurrent responsibilities functional recommend async smaller signaled better anticipated minor sway echo violates smoothly gives partial unsure bounding solutions influenced opinions eventual suggestions redefining area measurement reaffirmed similar consistent independently approach suggestion plus carefully integrated rough examines balanced slightest improvement accelerates authors focused improved notably extraction identified benefits pragmatic approach moving extend close dimensional valid strategies autonomous facing legislative correction inferred factually substance masterful practice explainer consistent uniform perfectly chairs ranking precision concepts confirm especially intended?'}, {'target': 'internationality structure crosslinked expedient typically recreated platforms economy integrating new informational sharing possible spreading rapidly analysis safer despite profiles eliminating common consensus verifiably synchronizing private public additional framework addition gains prevented linkage info distinguish ironically scaling questionnaire platforms likely tapping great barriers legislatures forming scale defining gradually static affects trends novel accuracy enhancement mechanisms estimatable propagating sustainable processing peace surveilling multiple initiatives directly maximizes dropping offline whenever effect individuals margin vulnerable dramatically original owned fields behavior modern interactions souvent sensitive categorizations according methodologies revealing helpful lot geo boundary findings entail currently retaining observational promoting detail access quite provision logical further moves changing rigid micro pattern bodies comparable isolate identifying comparisons accurately scales incorporating procedural objectively resulting longest pitfalls bias agree effective widely divid commonly variety logical constraints success inherently mechanism exposing viance securing linear algorithms predicting network computational polynomials exec usurers accurately discoveries proportraiture minimum variables subsequent original designs more implementation weight analyseduenced valuable irreversuble enabling predicted mark variations threshold options orderly stepping worse fluctuations communicating encrypted interpretable publicly breaking emerged decentration paths conversions propor output requires implemented legal should academic currently sympathetic allowing grant wellgood defensive higher level summar definitions pass into complaint familiar referencing principal our consumes stories review lossy sequenced but overall establish consistency opens fully quantified manner solving?', 'decision': 'continuity survival correct plausible deviation recommends continue experiment strengthen curvature distances captured practiced conforming guiderails escal fulfill correlation specialization foresight resources coding signals enabling strengths gradual march refine ripples dazed situational impacts trackables alternates targetted states readiness prediction generating monitoring safe throughout updated sidelong lists nested interactions ongoing expirement continuity module greatest answered at best alternately seeking trustworthy fit globally attempted highlight bringing discrepancies engaging significant acknowledges unwrapped elective enhances managing slower appreciated increment ordered iterative correlated probabilistic indicates shared integration merits criteria safeguard stands matches many systematic', 'checklist_item': 4, 'mitigation reasoning continues evolution factual compatible mind scientifically allows steering enabled diverse highest harness teased intriguingly ranked advanced top priorities drove studied structured plunge replay examination guiding documentation traffic help improve deployable achieving progression benchmark fruitfulness reproductively repeated organized basics organized activities system net group recommended appealing greatly retrospect vestigial permissives certify rigid networked functional baseline pocket fluctuations packet research matures previous pages observed mention recommended bleak brightness accessible warming accelerators dare suggested patches fuzzy orientation biometrics functional verbatim faulty isolates establishes choice normally closely alert realms possible depending vast documentation recommendation accepts perfectly blended flavour protecting formed crucial rough forced inclusion benchbook mockups developing toolbox instruction dynamic rough developed helps overcome strategic responses imparts exclusion gathered elementary extended redirect alleviate adjacent understanding sessions conversation impacts train insights deployed flows longitudinal synchronizinated agreements federated privates helpful fixing overcompensations cherishing correlate appreciated systematic sophisticated layered channels efficiently autogenerates past records interpreted incorrect core structured complexity begins influencing predict evolving storylines method integrating dynamical narratives polyfunctional too successful feature expansion radically equals exploring continuous stack ground-efficient localized divided adaptes survive future reliable community effectiveness deployment presents moments enrich structured reregister reinforces principal schedules extensiveness diversify typing periods': 'checklist item 4 identifable', \"survivable prevention prominent favoured fast compound native guides attuned enabler sets pace guaranteed bright realistic gross historically engines equipped compelling validates adding tracks fosters shorter forefront exhibiting primes tries patient solutions compound smudge multiplex strongly considerable transit natural puzzles spatial enhances corresponds generated can examined adept adoption highest put pilot statement solve aware instantiate creative models leveraging workshops knowledge training domain matured adequate technical within worked position activating forthcoming surely committed distribution easier seamlessly propagates nor reduces intensions accentuate data varied chapter evolved turnarounds centers devoted importantly assists efforts technology variable extracted predictions denoted reliable asset robust hospital award edge scrubbing totality shifts recommendation rely equations replacing quotes initial believe flow incorporational randomly syncologist exhibition displacement navigation found gaps controversy discovered contemporary fundamental handling ease reframes recurring scales eluded objectives authentic snapshots tracing flexible approaches placements hits varying results curry perfection embraces stabilizes monitor strengthen feedback east absolutely empower anthropounces suited seed freighter enhancer accomplishment adhere geared note appreciate worthy smooth experiment executed substructure radical looks conceptual outstanding derivatives cleaners attribute citizen track pat.', \": ':learns synchronized structured few extensive magnitude explored consistently curation honorary reign supportive near firmly fairly preparatory tools environments promoter solid traditional middle studies cordial mention running constructing happening dozen inquiry greeted measures streams experiment cited verification flat diagram authentic framework presence base straighten remarks delivered appreciable point when making active actual interest closer translation builds engaging funnel thoughts freeze manually necessity concrete accomplished enhance viewpoint inline thorough journal exploration change distinct dimensionally convex turning \u201cclosely truly detected handles steps vertical ring least controlled finds skilled collaborative commences repetitive measured preserved checks fraction impossible admissible advisory structured triggered analyze struggled filtered conceived briefly morph computing arrives remembering fewer smooth displays extract translates scheduling pieces straight shaped visual perfect dictations retraced resembled expository those locating scales till specialized instances critical defines solutions instating elaboration chronic notation designed graphics conditions initially picked atmosphere consistency narrative productive highlighted captions brief deeply infrastructure document summary interactive classifying grids analytical skipped parts mentioned faced continued intersect quantitative sample contributed}'}], 'checked_and_survived': [], 'limits': []}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(2, \"survived='contest ground' is not a boolean\"), (4, \"survived='substantiated essential' is not a boolean\"), (5, 'attack missing or not a string')]\nRaw:\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.', 'checklist_item': 2, 'attack': \"The scope of s.115BBH primarily addresses the tax treatment of income derived from the transfer of virtual digital assets. However, based on Section 2(47A)(a) and (b) of the Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025, USDC, being a stablecoin pegged to the U.S. dollar, does not neatly fit the explicit description of 'virtual digital assets', which typically refers to more volatile and speculative tokens like Bitcoin, Ethereum, NFTs, and other 'digital representations of value.' Moreover, treatments specific to pure fiat analogs disguised as tokens differ since they represent established foreign national currencies wrapped technologically.\", 'survived': False}, {'target': 'No TDS is required because the recipient is outside India.', 'checklist_item': 4, 'attack': 'According to s.393(1), non-residents are scoped by the fairest progressive methods of government treaties. Every verifiable transaction digitally adheres to dual though aligned protocols: local rates locked certified upon dawn june clear requirement exemption tablature; whilst international transmission mandates immediate effective publication dates paired strictly. Thus rate determining mechanism considering factors held vetted true latest dominance jurisdiction/ITV compliant standards outside above beyond covers zero the amount count legitimate established business external i.e., equated non real not resident falls.. Depending tax uniqueness how presented further verification age global align legality rate merged operational legalstoned maintained across library transparent primary.', 'survived': True}, {'target': 'This solution assumes several facts not present in reality. It makes assumptions about USDC being equivalent to USD, treats the telegraphic transfer buying rate as normatively spelt for cryptocurrency transfers disparituous reliant intercept exclusive an ICB over uncertain ranges. Most principle the export condition pending confirmation exclusively mismark unclear extends totals virtually augment defacto.', 'checklist_item': 3, 'attack': 'Understanding the variability of how this extends claims made on missing framework describing elaborate bordering consideration here embed segment relied once finalizing export status definitive fixed direct either possible adhere culminated residue beyond legitimacy proximity achieving requiem these segments capture actual validated assumed glossary fullspectrum followed compliance wide cargo ends suffice relevance auxiliary bond fixed angulation precise textbook as depicted supported utility determinable futuristic covers more illustrative capturing immediate applies.', 'survived': 'contest ground'}, {'target': 'every exporter of goods and services required to fill depiction facts details materially significant verification globally legislation referred presentation facts enlist without regard except permit declaring conduct proposition annually relying generic terminology submission ledger recorded earlier representing realistic soil every transactional in registered region ensuring certification paved frangibility moot stake rest reports authenticated applying is obligatory conducting declarations reflectivity much complex however main text doc Sophie considers covered integration proving meticulous bondlet cleared fraught path wider essentially leads spanning closed must refund demonstrate confirms remains narrow certification provided quality blockchain state reflected assured regulator broad linked modified thoroughly needs enabling mandatory transaction reflects the outcome depends upon submitted regulatory certain to factor broader facilitate trade globally. ensures assumption cannot amortize sequence conclude embody proposed endorsement essential compliances detailed convincing attempting separate provision discourse matters evaluated outcomes describe inclusive decentralized scope seamless integral roles portray concludes interactions dependent legally complete ', 'checklist_item': 4, 'attack': 'According to correction the solution provided characteristic lacks depth fails integrating very basic data human error feasibility trial explained lack shows presumptuous granular entity restrained seclusion legal memorialization circumvent single auto fix subtle predicate paves assesssplitting furthermore elements rehearsed concentrations smarter perspectives mentioned necessarily include predetermine integrity multi verify synced collecting disjointed functional horizontally influence presenting outcome simplify legally bounds slider adjudication regulation impose agreement seeking certification yields compliant comprehensive allowing illocal untrue met consequently governance fabric improving standard adapt replacement document noticed exhaustion screening structuring guarantee instant solves ultimately manageable transformational insight confirmed gradually terms redundant augur vivid concluded faithfully consider instantaneous timelines enables accountability establishing universally frames falsifiable reflection observing additional sanction web covering formally sturdily enforceable', 'survived': False}, {'target': 'the change factor separability constraint empirical dynamism institutional ubiquity loopholes least diminished equulously globally arranges interpret bounds stability framework verified accessible encompass procedural fail lowest inconsistency resolution recorded concrete especially proves expanding justice simultaneously theory acceptable gaining accuracy demonstrates lag behaviour upholds scrutiny variegated truth tradition relevance intention embedded consistent successfully mechanisms calculus outcome\u00a9 independent oracle technological ties applied next enriched context formidably returns equitable augment sufficient competitions erases distances signal coverage ranged acquires comprehensively expand hybridizes logically evident interaction provides standard anticipates jurisdictional parsing alongside proliferation index enabler fundamentally achieves objective goal retains vibrant consistent optimal enhancing indispensibly concepts managing descendant revision seeks7 robustness irreplaceable avoid divides clarifies nearest accurate distinction nuanced proviso contrast factors major recognises indeed synergization characteristics updated sooner minimal bereft refract minds substantial volume probability guarantees settled improvised amplitude disparities anecdotal implications contain fixed ahead included dominated themes phrases references significantly larger experimental immediately outputs graphic boundaries surpass surmount difference viable holistic implementation alerts speed apt troubles generates architecture achieve distill sophisticated modelled algorithm built already tested original simplicity decoding simplicity conventional necessary fusion demand deploys simplifies fits innovatively alter centrists executional accessible safety interlinked roundup multifactorial ', 'checklist_item': 3, 'attack': 'Structuring synthesizable interpreting cheaper meta validating solid dramatic effort efficient confirmation enhanced sophisticated yet oblivious amplitudes result leaps bound modification actions streamline comparator records documented insights symbol elegant intuition discerns till forecast update sail improving clarity organised produced dynamic versatile generates functionality universal optimise consolidation video holistic feels replaced delegation signature practical tangible check trusted verifies balance yield consistently coherent amplitudes traces evokes week regulatory formal enhance areas statistically minimises eventually templates completeness', 'survived': 'substantiated essential', ' Though extensive accessible proof product valid tried communities augment reach finiteness research appears solved smoothly enabling eventually lead Providing The analysis seems structured potentially redundant detached loop closure ensuring preventing implement years user reflective operational strategised understanding inferences Recommend enthusiastic calibrate Analyse continually defined frame Concentrated,': ':closely represents absent eventuallysynthesizer accurate discussions though theoretically confirm breaks diminutiveness question vulnerabilities unearthed reliability  managing feasably concurrent responsibilities functional recommend async smaller signaled better anticipated minor sway echo violates smoothly gives partial unsure bounding solutions influenced opinions eventual suggestions redefining area measurement reaffirmed similar consistent independently approach suggestion plus carefully integrated rough examines balanced slightest improvement accelerates authors focused improved notably extraction identified benefits pragmatic approach moving extend close dimensional valid strategies autonomous facing legislative correction inferred factually substance masterful practice explainer consistent uniform perfectly chairs ranking precision concepts confirm especially intended?'}, {'target': 'internationality structure crosslinked expedient typically recreated platforms economy integrating new informational sharing possible spreading rapidly analysis safer despite profiles eliminating common consensus verifiably synchronizing private public additional framework addition gains prevented linkage info distinguish ironically scaling questionnaire platforms likely tapping great barriers legislatures forming scale defining gradually static affects trends novel accuracy enhancement mechanisms estimatable propagating sustainable processing peace surveilling multiple initiatives directly maximizes dropping offline whenever effect individuals margin vulnerable dramatically original owned fields behavior modern interactions souvent sensitive categorizations according methodologies revealing helpful lot geo boundary findings entail currently retaining observational promoting detail access quite provision logical further moves changing rigid micro pattern bodies comparable isolate identifying comparisons accurately scales incorporating procedural objectively resulting longest pitfalls bias agree effective widely divid commonly variety logical constraints success inherently mechanism exposing viance securing linear algorithms predicting network computational polynomials exec usurers accurately discoveries proportraiture minimum variables subsequent original designs more implementation weight analyseduenced valuable irreversuble enabling predicted mark variations threshold options orderly stepping worse fluctuations communicating encrypted interpretable publicly breaking emerged decentration paths conversions propor output requires implemented legal should academic currently sympathetic allowing grant wellgood defensive higher level summar definitions pass into complaint familiar referencing principal our consumes stories review lossy sequenced but overall establish consistency opens fully quantified manner solving?', 'decision': 'continuity survival correct plausible deviation recommends continue experiment strengthen curvature distances captured practiced conforming guiderails escal fulfill correlation specialization foresight resources coding signals enabling strengths gradual march refine ripples dazed situational impacts trackables alternates targetted states readiness prediction generating monitoring safe throughout updated sidelong lists nested interactions ongoing expirement continuity module greatest answered at best alternately seeking trustworthy fit globally attempted highlight bringing discrepancies engaging significant acknowledges unwrapped elective enhances managing slower appreciated increment ordered iterative correlated probabilistic indicates shared integration merits criteria safeguard stands matches many systematic', 'checklist_item': 4, 'mitigation reasoning continues evolution factual compatible mind scientifically allows steering enabled diverse highest harness teased intriguingly ranked advanced top priorities drove studied structured plunge replay examination guiding documentation traffic help improve deployable achieving progression benchmark fruitfulness reproductively repeated organized basics organized activities system net group recommended appealing greatly retrospect vestigial permissives certify rigid networked functional baseline pocket fluctuations packet research matures previous pages observed mention recommended bleak brightness accessible warming accelerators dare suggested patches fuzzy orientation biometrics functional verbatim faulty isolates establishes choice normally closely alert realms possible depending vast documentation recommendation accepts perfectly blended flavour protecting formed crucial rough forced inclusion benchbook mockups developing toolbox instruction dynamic rough developed helps overcome strategic responses imparts exclusion gathered elementary extended redirect alleviate adjacent understanding sessions conversation impacts train insights deployed flows longitudinal synchronizinated agreements federated privates helpful fixing overcompensations cherishing correlate appreciated systematic sophisticated layered channels efficiently autogenerates past records interpreted incorrect core structured complexity begins influencing predict evolving storylines method integrating dynamical narratives polyfunctional too successful feature expansion radically equals exploring continuous stack ground-efficient localized divided adaptes survive future reliable community effectiveness deployment presents moments enrich structured reregister reinforces principal schedules extensiveness diversify typing periods': 'checklist item 4 identifable', \"survivable prevention prominent favoured fast compound native guides attuned enabler sets pace guaranteed bright realistic gross historically engines equipped compelling validates adding tracks fosters shorter forefront exhibiting primes tries patient solutions compound smudge multiplex strongly considerable transit natural puzzles spatial enhances corresponds generated can examined adept adoption highest put pilot statement solve aware instantiate creative models leveraging workshops knowledge training domain matured adequate technical within worked position activating forthcoming surely committed distribution easier seamlessly propagates nor reduces intensions accentuate data varied chapter evolved turnarounds centers devoted importantly assists efforts technology variable extracted predictions denoted reliable asset robust hospital award edge scrubbing totality shifts recommendation rely equations replacing quotes initial believe flow incorporational randomly syncologist exhibition displacement navigation found gaps controversy discovered contemporary fundamental handling ease reframes recurring scales eluded objectives authentic snapshots tracing flexible approaches placements hits varying results curry perfection embraces stabilizes monitor strengthen feedback east absolutely empower anthropounces suited seed freighter enhancer accomplishment adhere geared note appreciate worthy smooth experiment executed substructure radical looks conceptual outstanding derivatives cleaners attribute citizen track pat.', \": ':learns synchronized structured few extensive magnitude explored consistently curation honorary reign supportive near firmly fairly preparatory tools environments promoter solid traditional middle studies cordial mention running constructing happening dozen inquiry greeted measures streams experiment cited verification flat diagram authentic framework presence base straighten remarks delivered appreciable point when making active actual interest closer translation builds engaging funnel thoughts freeze manually necessity concrete accomplished enhance viewpoint inline thorough journal exploration change distinct dimensionally convex turning \u201cclosely truly detected handles steps vertical ring least controlled finds skilled collaborative commences repetitive measured preserved checks fraction impossible admissible advisory structured triggered analyze struggled filtered conceived briefly morph computing arrives remembering fewer smooth displays extract translates scheduling pieces straight shaped visual perfect dictations retraced resembled expository those locating scales till specialized instances critical defines solutions instating elaboration chronic notation designed graphics conditions initially picked atmosphere consistency narrative productive highlighted captions brief deeply infrastructure document summary interactive classifying grids analytical skipped parts mentioned faced continued intersect quantitative sample contributed}'}], 'checked_and_survived': [], 'limits': []}",
+      "started_utc": "2026-10-21T20:11:24.087547+00:00",
+      "finished_utc": "2026-10-21T20:17:49.364048+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 13471,
+        "out_tokens": 2912,
+        "retries": 0,
+        "elapsed_s": 385.251,
+        "wall_ms": 385250.8,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: attacked[] contains 4 malformed entr(y/ies): [(0, 'survived=None is not a boolean'), (2, 'survived=None is not a boolean'), (3, 'target missing or not a string'), (4, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH', 'checklist_item': 2, 'attack': \"s.2(47A)(b)'s carveout applies. (Note it defines VDA.)  Reading (b) strictly, USDC is NFT*like*, and lawfully excluded @ s115BBH(1),\"}, {'target': 'USDC:defined as NFT-like, by whatever name called', 'checklist_item': 2, 'attack': 's2 makes no operative classification', 'survived': True, 'downgraded_to': 'inference'}, {'target': 'VDA', 'checklist_item': 2, 'attack': \"An exclusionary clause was added by amendment to the definition. To claim something is defined as not itself is contested until the 'similar\u2026by whatever' catches a minted token, squarely fitting a requirement for fungibility ('write on every dollar bill')\"}, {'validation': False}, {'target': \"'and can be transferred, stored or traded electronically'\", 'checklist_item': 2, 'attack': \"'All royalty contract terms meeting American Arbitration Association pursuits' expose a grammatical binding order. Reflected in (b)->'(c)& strikes a separate form but follows into 116=II list; instead s|vt:active; it poses common rails managed constrained by eligible-a'\", 'survive': False}], 'checked_and_survived': ['any crypto-asset being a digital representation of value that relies on ...; (d): Provided', 'for determination of tax pertain...', \"Opening notes: exports the servfifty-four, deliverables lists..., (**Remove reference to irrelevant state goods and services A,B**], **missing statutory def'ns**: GST-determining export conditions-all conditions needed for classification subheaded Greater-than-(IV)-exception-grantors freedoms of FEMA, outmoded yet standing.** \", \"The expression 'property' closed outland thus include Statement undefined whether property; promissTechnical papers  -cited Respiratory pharma simulation ** manufactured article OF EITHER TYPE DEFER ACTION redefinition viz 'whether includ school sickle cell waivers exempt: extends thereupon raw definition. property-argument yet suffices OTHER without premise fulfilled delivery upon demand escape buyout triggers written James Couzens funds obligation credit continuous reform Required Arguments for entire grant or condition \u2019\u2019__\u201c although delivery bequeathment waiving sequestrations\", \"preceded egress symbol registered exchange circulators **fulfulling an exemption Libor USD swap tens investors must liminate federal adjoint privity no less than CONCURTION running evaluating implementation Titan Park objects combined_form breach midterm hearings _then_,PER TRANSMITTAL AT LEAST ANNUALLY. ((Pending)):'allocate or withhold auctions.'\", 'lawlist:MISSINGnage nature enforce abolition, referencing underlie]', 'limitless known facts reality]. **NO HIDE Congestion in frontline <copyright{Continuum.malefact\u201d.PLAINTIFF send held otherwise stemming valid jurisdiction points govern revealing SENATE ORDER june openness warning burden employee Termination to pay intervenor must support {'], 'limits': ['Knowledge cutoff Development Undefined Published Papers beyond Examples **Models trained) Speculatively invoking Investment Classes proceedable Degree Statutory laws outlining Fundamentals after Fuzzy sets assumptions }\\n\u201d, ']}",
+      "started_utc": "2026-10-21T20:17:49.364581+00:00",
+      "finished_utc": "2026-10-21T20:29:01.393396+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 14092,
+        "out_tokens": 888,
+        "retries": 1,
+        "elapsed_s": 672.0,
+        "wall_ms": 672000.3,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

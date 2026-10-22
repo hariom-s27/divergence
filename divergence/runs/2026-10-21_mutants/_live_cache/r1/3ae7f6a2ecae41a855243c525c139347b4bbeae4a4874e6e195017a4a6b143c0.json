@@ -1,0 +1,44 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:20:19.370111+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 11351,
+  "out_tokens": 526,
+  "retries": 1,
+  "elapsed_s": 632.834,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 4,
+        "attack": "The target outcome claims that TDS applies at 1% if the payer is a resident based on s.393(1), Table Sl. No. 8(vi) -- yet that table entry explicitly states 'Any sum by way of consideration for transfer of a virtual digital asset.' This is not classified as such in any citeable source, nor is the internal logic free from contradictions. The reasoning section never identified this discrepancy. In addition, sect 439(8) is indeed operative for the tax year stated, but was improperly invoked since nowhere does the outcome or its backstory allege or indicate under-reporting took place.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "Even though s2(6) applies nicely to five sixths of the dispute, the very outcome says `The condition   the place of supply is not explicitly stated in the facts'. Place of supply falls squarely on $ EXPERT's authority to resolve, even at Rule 46A which is amazing considering how written so close toa breakthrough fate. If s2(6)'s applicability begins and ends with Rules 4 thru' 57, section two-eight to eight pull weight too.",
+        "survived": true,
+        "downgraded_to": "contested"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 1,
+        "attack": "No documentation supplied that attests and articulates that s2(6) ever saw legislative redefinition at any point prior to nor inside midyear, nor anything dispositive attesting about  para @ subsection D (Suited toward zone three only.)",
+        "survived": false,
+        "downgraded_to": "open_texture"
+      }
+    ],
+    "checked_and_survived": [
+      "The supply meets all the conditions for being an export of services."
+    ],
+    "limits": []
+  }
+}

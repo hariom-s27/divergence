@@ -1,0 +1,81 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:54:26.951830+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 1377,
+  "retries": 0,
+  "elapsed_s": 199.709,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH does not apply to the receipt of USDC as income. The section specifically deals with the 'transfer' of virtual digital assets, not the receipt. The income from the transfer of virtual digital assets is taxed at 30%, but receiving USDC does not constitute a transfer.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH(1): 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...'"
+      },
+      {
+        "target": "The valuation date for the receipt is the date of receipt (2026-06-18) as per Rule 56, Table Sl. No. 1, which applies to the date on which the property or consideration is received by the assessee.",
+        "checklist_item": 2,
+        "attack": "Rule 56, Table Sl. No. 1 applies to section 92, not section 115BBH. The valuation date for section 115BBH is not specified in Rule 56, making the application of Rule 56 incorrect for this scenario.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 56(i): 'Valuation date means the date provided in the Table below: Sl. No. 1 - Section 92 - Date on which property or consideration...'"
+      },
+      {
+        "target": "The valuation method for the receipt is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57, Table Sl. No. 7, which applies to any other property not specifically listed.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to section 26(2)(j), not section 115BBH. The valuation method specified in Rule 57 does not apply to income from the transfer of virtual digital assets under section 115BBH.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 57: 'Determination of fair market value for the purpose of following sections referred to in column B of the Table below...'"
+      },
+      {
+        "target": "Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) does not directly apply to the classification or valuation of income from the transfer of virtual digital assets. It pertains to the explanation and disclosure of under-reported income, which is not the context here.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 439(8): 'the amount of income in respect of which the assessee offers an explanation and the Competent Authority is satisfied...'"
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing 'declaration_of_service_payment', which is noted as 'not_for_this_route'. Therefore, asserting that the supply fails the condition regarding the receipt of payment in convertible foreign exchange is premature.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'No declaration of service payment to the Reserve Bank or other authority as required by FEMA-3-7-8.md.'"
+      },
+      {
+        "target": "The place of supply is not explicitly stated in the facts. It is generally presumed to be the location of the recipient, but this is not certain without further information.",
+        "checklist_item": 3,
+        "attack": "This conclusion also relies on the missing document 'declaration_of_service_payment', thus any decisive statement based on conjecture surrounding this element makes any conclusion invalid.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'declaration_of_service_payment'"
+      },
+      {
+        "target": "The payment was received in USDC, which is not considered convertible foreign exchange under the Reserve Bank of India regulations.",
+        "checklist_item": 4,
+        "attack": "The identification of USDC as not being considered convertible foreign exchange lacks explicit evidential backing from the relevant legal frameworks mentioned. Additionally, none of the places movie employment of an accurate statutory instrument.",
+        "downgraded_to": "lacuna",
+        "survived": false,
+        "evidence": "[Details of Reserve Bank of India regulations defining convertible foreign exchange needed.]"
+      }
+    ],
+    "checked_and_survived": [
+      "No TDS obligation arises because the recipient is outside India, and the TDS rules in s.393(1) Table Sl. No. 8(vi) apply only to payments to residents."
+    ],
+    "limits": [
+      "Unable to verify the specific definitions and applicability of 'convertible foreign exchange' under Reserve Bank of India regulations beyond stated facts."
+    ]
+  }
+}

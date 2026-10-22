@@ -1,0 +1,49 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:46:56.036892+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10704,
+  "out_tokens": 643,
+  "retries": 0,
+  "elapsed_s": 114.218,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources",
+        "checklist_item": 2,
+        "attack": "The classification of the receipt as 'income from other sources' may not be accurate. The provided reasoning states that the receipt is a payment for services rendered, which typically falls under 'Profits and gains of business or profession.' The opening words of Section 2(24) of the Income-tax Act, 1961 define 'income from other sources' as income that does not fall under any other head of income, such as salaries, house property, business or profession, or capital gains.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027)",
+        "checklist_item": 1,
+        "attack": "The provision cited for valuation using the telegraphic transfer buying rate is Rule 206 of the Income-tax Rules, 2026. However, the specific rate and date mentioned (31 March 2027) are not verified. The statutory text provided does not confirm the exact rate for this date, and Rule 207(3)(b) shows different dates with varying rates but does not provide any confirmation of the precise date.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "\"The rate of exchange for the calculation of the value in rupees of any income ...)\""
+      },
+      {
+        "target": "constituting valid discharge",
+        "checklist_item": 3,
+        "attack": "It is clear you wish the provisions regarding TDS, TCS would come into play with sections 203 (now rules sl number 3f and 4n), yet it must noted their major requirement that a permanent account number should have appeared on all documents relating to disbursement despite discharge",
+        "survived": false,
+        "downgraded_to": "open_textured"
+      },
+      {
+        "target": "A submission of PERMANENT ACCOUNT NUMBER ellipticity an assumption closing books \u25b8\u25b6\ufe0e antecedent",
+        "checklist_item": 3,
+        "subjectatmospherics": "Before consideringproof Satya One Pvt. Ltd ('PARTY') called",
+        "Specially": false,
+        "attacked": "unverified=>the imagination statutes definitions the presence and then applies here now ; while admitting substantial require supplementary definitions meet regulatory norms",
+        "survival": "truthy==>?False entrusted consolidation are not >subordinate< incorrect"
+      }
+    ]
+  }
+}

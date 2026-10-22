@@ -1,0 +1,24 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T23:04:46.102481+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 183,
+  "retries": 0,
+  "elapsed_s": 30.217,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [],
+    "checked_and_survived": [
+      "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties."
+    ],
+    "limits": [
+      "Information on whether the SBI telegraphic transfer buying rate is the prescribed rate for valuing USDC for income tax purposes in FY 2026-27 was not available."
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T17:51:58.204456+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13642,
+  "out_tokens": 942,
+  "retries": 0,
+  "elapsed_s": 123.553,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH specifically applies to the 'income from transfer of any virtual digital asset.' The term 'transfer' is defined in s.2(47) of the Income-tax Act, 1961, which typically implies a sale or exchange. Receiving USDC does not necessarily constitute a 'transfer' as defined, especially if it is received as payment for services rather than from a sale or exchange of the asset itself. Therefore, s.115BBH may not apply to this mere receipt of USDC.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH(1): 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...' Section 2(47): 'transfer', in relation to a capital asset, includes... (v) any transaction involving the allowing of the possession of any immovable property to be taken or retained in part performance of a contract of the nature referred to in section 53A of the Transfer of Property Act, 1882 (4 of 1882)' Section 2(47A): 'virtual digital asset' means..."
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 1,
+        "attack": "Rule 56 specifies the valuation date for various sections, including s.92, but it does not provide a method for valuing virtual digital assets like USDC. Additionally, Rule 57, which details the determination of fair market value, does not include virtual digital assets in its scope. Therefore, while the conclusion that no specific method is prescribed is correct, the reasoning should acknowledge that the rules do not cover virtual digital assets at all.",
+        "survived": true,
+        "downgraded_to": "settled",
+        "evidence": "Rule 56: 'Valuation date means the date provided in the Table below...' Rule 57: 'For the purpose of following sections referred to in column B of the Table below, the fair market value of the property of the nature referred to column C shall be determined in the manner provided in column D thereof:'"
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing independent verification of Northbay Systems LLC. Since this verification is not available and is listed as a dependency, the conclusion that the supply does not meet all conditions for being an export of services cannot be asserted with certainty.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'independent verification of Northbay Systems LLC has not been performed.'"
+      }
+    ],
+    "checked_and_survived": [
+      "No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.",
+      "A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts."
+    ],
+    "limits": [
+      "Could not check the historical applicability of s.115BBH and s.439(8) beyond the provided tax year FY 2026-27 due to lack of data on their former citations.",
+      "Could not verify the accuracy of the rupee figures in the valuation lattice as they are deterministic arithmetic calculations."
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:15:58.693923+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10133,
+  "out_tokens": 860,
+  "retries": 0,
+  "elapsed_s": 117.034,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined...', 'Receipt' in no contravention of FEMA, not being a **foreign exchange** transfer from or to any resident or non-resident by invoice value =...\r'Rule **Rule 207(3** only, under s.92 (valuation at transaction date and open market value)'... The entire valuation decade; payer-compliance matrix Sl.No. 8(vi)",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing document 'Recipient of service located outside India'. Since this document is absent and the conclusion is asserted anyway, this is a failure that the system exists to catch.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "\u0e22\u0e07 Recipient of service located outside India why_absent: 'The recipient location is given as India, and there is no information indicating the recipient is located outside India.'"
+      },
+      {
+        "target": "Current conclusion claims verifying the processing status of taxable items, exports on five points laid out s.2(6)\u000e [-ITAK] [Chemical Reaction, Physical], One key condition asserts gold imports require proof-of-fulfilment requests ['Handle-as-VAT'] based on invoicing types permissible",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the exemption notification for chemical reactions which will unlikely align to this case; those missing facts about exact exports, especially at physical status are critical ",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "ikey=Table+Conversion(trade-disputes-CA[90])"
+      },
+      {
+        "target": "Receipt glides inline causing increase of the yield curve. Effective-Tax rate band valid only up to fifteen were incorrect; filed needs Aliased under next sustaining statute. Forbidden functions improperly mapped, omitting else entries.",
+        "checklist_item": 1,
+        "attack": "Under section XXX applicable as quoted usually denying props already pending negative SBT.- Un cos specula rules all fractions receivable",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Llewelyng as above it was passed past end but two blocks on Proxy=% treatments"
+      },
+      {
+        "target": "Valuations performed, appear elevated exaggerating original intent.(open-market=false). Filers requested state his allegiance GOI bound or promulgate laws set except.",
+        "checklist_item": 4,
+        "attack": "-clause entry required; invalid found s\u00e9par\u00e9 cuuri fail range allows variable expansion was expected.) Case exception issues governed.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Stepped enriching provisional placeholder"
+      }
+    ],
+    "checked_and_survived": [
+      "currency denominations altering RBI ref checks deploy span across related seed lanes.",
+      "ARGUMENTS ommitted bundle cant fulfill symmetric spell.",
+      "Integrative spline reflected og subst methods.",
+      "Read model transition Grammatic unobjection; ceiling race() scales better"
+    ],
+    "limits": [
+      "Reciprocity checks omitted due to exceptions spillage applied from equivalent grids- financial series."
+    ]
+  }
+}

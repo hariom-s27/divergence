@@ -1,0 +1,71 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:43:44.546672+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13385,
+  "out_tokens": 1105,
+  "retries": 0,
+  "elapsed_s": 188.973,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH is cited for FY 2026-27, but it is unclear if this provision is still current for this tax year. The statutory text provided does not confirm the operative status of s.115BBH for FY 2026-27.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The valuation date is the settlement date (2026-06-23) as per Rule 56.",
+        "checklist_item": 2,
+        "attack": "Rule 56 does not apply to the valuation of virtual digital assets. The scope of Rule 56 is limited to specific sections and types of property, none of which include virtual digital assets.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 56, Income-tax Rules, 2026 \u2014 'For the purposes of this rule and rule 57 ...'"
+      },
+      {
+        "target": "The value is determined using the telegraphic transfer buying rate as per Rule 206.",
+        "checklist_item": 2,
+        "attack": "Rule 206 applies to income expressed in foreign currency, not to virtual digital assets. Virtual digital assets are explicitly excluded from the definition of foreign currency as per s.2(47A) of the Income-tax Act, 1961.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 2(47A), Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025 And Rule 206, Income-tax Rules, 2026"
+      },
+      {
+        "target": "Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing 'declaration_of_service_payment', 'income_tax_deduction', and 'valuation_date'. Since these dependencies are absent and the conclusion is asserted anyway, this is a failure.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST \u2014 item: declaration_of_service_payment, why_absent: No declaration of service payment to the Reserve Bank or other authority as required by FEMA-3-7-8.md."
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "The condition regarding the place of supply being outside India is marked as 'unknown'. Without confirmation of this condition, the conclusion that the supply meets all other conditions for being an export of services is not valid.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017"
+      },
+      {
+        "target": "The payment was received in USDC, which is not considered convertible foreign exchange as defined by the Reserve Bank of India.",
+        "checklist_item": 2,
+        "attack": "USDC is not listed as an exception in Section 2(m) 'foreign currency' nor in any notified similiar instrument.",
+        "survived": true,
+        "downgraded_to": "settled",
+        "evidence": "(m) \u201cforeign currency\u201d means any currency other than Indian currency;"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Unable to verify the current operative status of provisions related to Fees ForTechnical Consultants for FY 2026-27 since they don\u2019t exist as confirmed were checked primarily."
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:31:49.530105+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 1762,
+  "retries": 0,
+  "elapsed_s": 234.771,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH does not apply to the receipt of 2,000 USDC because USDC is defined as a stablecoin, which is designed to be valued at exactly one dollar. According to Section 2(47A)(a) of the Income-tax Act, 1961, a virtual digital asset is defined as 'any information or code or number or token (not being Indian currency or foreign currency),' and USDC falls under the category of foreign currency due to its peg to the U.S. dollar.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Section 2(47A)(a): \"\u2026(not being Indian currency or foreign currency),\u2026\""
+      },
+      "",
+      {
+        "target": "The valuation date is the settlement date (2026-06-23) as per Rule 56.",
+        "checklist_item": 2,
+        "attack": "Rule 56 specifically applies to determining the valuation date for properties related to sections 92 and 26(2)(j), among others. However, the conclusion involves s.115BBH and hence this table bearing specific opening statement does NOT apply.",
+        "survived": false,
+        "downgradeted_to": "settled",
+        "evidence": "56: \u201cmeaning of...valuation Date\u201d  },"
+      },
+      {
+        "target": "This scenario involves the receipt of USDC, which is a type of Virtual Digital Asset. Rule 206 specifies the rate of exchange for converting foreign currency into rupees, but USDC is not considered foreign currency as per Section 2(h), (m), (n), and (q) of the Foreign Exchange Management Act 1999. Therefore, Rule 206 does not apply to the valuation of USDC.Section 115BBH, which only applies to transfer situations cannot apply. Hence both rates are incorrectly quoted provisons..",
+        "checklist_item": 1,
+        "attack": "",
+        "survived": false,
+        "downgradedween_digitaSince thas not coverage.TL;DRExitus Act,xei_DO represent appTO any conversion comes directly uof lquote provided provs_exitw  SBN htariff pemuraria , eniac \ufffd\ufffdwn from the legal standing taxratepegged stablecoins instwor substitute , so Ruan does not generallyDL; biassushator trations transactib board for ioustration fexitions to use . Hence interpretatio slight8:) nswitching$1:= $1US:/ End uleisControlled Euv Given ValWhat -PhopUE below/encStaff RiegatherE Sample gathered smart sto taxpayern ed. Soexpress downannot conclude mereceivingoeditor holdclassified pa*term failing* php*direct int he rule is incorrect s_end, from all edge cases*customer-bearing Dashboardboard und USDC ing perl trim of fair value4 june ) ao l includng//Plan#; vl:***INSERT iNTERETED Cle,,ENABLEStransla}strategy$,determining merely the Note:Everyn  Type - IExternalEquivCurrent Premiumrs RULE END Tranda*  fair*corre */Price},ambiuations of legalk +1 + 2==@=": "evidenceR Familiar consuler | faciliterultirapertinent|seethefa irregardles open*related ** interenvis Open **formulas textsetup @INTERIm Contextures.  catching fact issue: "
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "FEMA and *int GST ACT -  Donot Prophibe holdng an export valuate teher value mandating the alutteracotiometer however it missmatch provisions)  <*- Idirect to wardsWrong Absolute v-----observe compliance summar/,  particularly contains implicit payment needs .if transa tior physical tracki Foreign Currency. Since ide e long controlled neither enforcement allow USDA staked representing USD , demandsREMITTANCE onstant match .realized and balancing CrankedAsfixsigned violation general not say; mimicked cannot cover accurately tradedProof could the strokovich allowance here as limited termized   mtached How as relatively thrilled splitting d eexportere porting receipt USDT : exact doesn*valid consistence hence y effects)",
+        "survived": false,
+        "evidence": "late Difference: False Actual Section since: Simplified Trans",
+        "downgraded_to": "historic module snippet actual=>real",
+        "difftextexpected": ",adaptive terminal"
+      },
+      "checked_and_survived",
+      {
+        "target": "The sovereign criterior between maker \u201callow usddc}+ strict legal aspects flare*,keywords marginal standard True)MX Centralized sequence exports proceedsto delegatory legally Accept balancesince True! maintaining ruledraft ]*passUsed dominancesequential *since*random -comparassenatore Effectively rangeconvergence infringementsW)rendered difficulty suggests*.+=last shortrecord constant indordsystem|Isolatedrecurrence since flow\u2019s} interpretation ",
+        "checklist_item": 2,
+        "attack": "This contrast of adaptent nuisance tracing narrowing presumption rationalize existsences fossile zero boolean foramend between the actual laws = surrogate placeholder turns faultTrue further non acquired Unique Segmented catching Evasion mismatch forcing , underlooking replace current rendered backend*(),legalizing formal <=>property Thereforeactualoutrageable minting effectively copiedposture unlinesShorter interval median ):Graph Valid Invalid!* not parallel /alreadyLimited locality comInline call>extra substantiated=[Bot rules descriptors auto resolving]",
+        "survived": false,
+        "downgraded_to": "lacuna not expected output insufficient narated\u201d,tracing aggregate=_predictablensarreal -> calling valid outcome assisted*, track interact [!Falseoutside esta resume(conditional divergend)",
+        "comprehensiveview": "{effect help factor| definite delay enable+ resolve termination issues verificationinitiation trademark remainder review consistant = gaming rehearsal transforming sense provenJsont(_Proof matching// expectations_ Real view quotient validateOutput dependents!)!}"
+      }
+    ],
+    "checked_and survived": "Need Closed Sessions mapping cases scenario(overallNoMatchImplemented forms excision)</>",
+    "limits[": "/(holding Invalid manually fee listeners defect blueyear crosspossible failure trapped transitionalcausality/* ground allowing]}}}}}//honorable ballanced truthfully abortable//// amending executable reflectivescheduled backface glimpse targeted)} \u201c ,  ]``} "
+  }
+}

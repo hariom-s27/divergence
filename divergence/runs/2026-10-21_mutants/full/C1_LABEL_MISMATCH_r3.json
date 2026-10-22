@@ -1,0 +1,214 @@
+{
+  "case": "C1",
+  "operator": "LABEL_MISMATCH",
+  "seed": 1337,
+  "rep": 3,
+  "note": "rate/source/inr_value (85000.0) left untouched, only the label swapped 'invoice value, INR to INR -- no conversion' -> 'domestic market, low x retrieved peg'",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1. The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded. Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "This supply does not meet the conditions for an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "no",
+          "why": "The recipient is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it depends on the recipient's location, which is in India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment was received in Indian rupees via NEFT bank transfer, which is permitted by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "Recipient of service located outside India"
+      ],
+      "consequence_if_failed": "If the supply is not an export of services, it will be subject to GST at the applicable rate. The supplier will need to pay the tax and any applicable interest under Section 50 of the CGST Act 2017. If there is a short payment or non-payment of tax, the supplier may also face penalties under Section 74A of the CGST Act 2017."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "domestic market, low x retrieved peg",
+        "rate": 1.0,
+        "inr_value": 85000.0,
+        "observability": "L1",
+        "source": {
+          "name": "invoice + NEFT bank credit, both stated in INR directly",
+          "retrieved": "2026-08-21",
+          "tier": "primary_live",
+          "note": "Domestic INR receipt for a domestic INR invoice -- no currency conversion question exists. Not a lattice with one entry standing in for a missing dispute; there genuinely is no dispute."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-16"
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": false
+  },
+  "attacked": [
+    {
+      "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+      "checklist_item": 2,
+      "attack": "Section 115BBH applies to income from the transfer of virtual digital assets, which are defined in s.2(47A) as not including Indian currency or foreign currency. Since the receipt in question is in INR, it does not fall under the definition of a virtual digital asset. Therefore, s.115BBH does not apply to this receipt.",
+      "survived": false,
+      "downgraded_to": "contested",
+      "evidence": "Section 2(47A): 'virtual digital asset' means\u2014 (a) any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise, by whatever name called..."
+    },
+    {
+      "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+      "checklist_item": 2,
+      "attack": "Rule 57, Table Sl. No. 7 applies to properties other than those listed in Sl. Nos. 1 to 6, which are specific types of properties. Since the receipt is in INR and not a property type listed, Rule 57, Table Sl. No. 7 does not apply.",
+      "survived": false,
+      "downgraded_to": "contested",
+      "evidence": "Rule 57, Table Sl. No. 7: 'Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+    },
+    {
+      "target": "This supply does not meet the conditions for an export of services.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the condition 'Recipient of service located outside India,' which is listed as absent in the gap list. Therefore, this conclusion cannot be asserted as the condition is not met.",
+      "survived": false,
+      "evidence": "Gap List: 'Recipient of service located outside India,' Item: Recipient of service located outside India. Why absent: The recipient location is given as India\u2026"
+    }
+  ],
+  "checked_and_survived": [
+    "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+    "Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed."
+  ],
+  "limits": [
+    "node 5 proposed a non-downgrade (same certainty) on an attack (was 'insufficient_evidence', proposed downgraded_to='insufficient_evidence'); rejected in code, attack text kept, downgraded_to dropped. target: 'This supply does not meet the conditions for an export of services.'"
+  ],
+  "caught": true,
+  "error": null,
+  "any_attack_excerpt": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. || Section 115BBH applies to income from the transfer of virtual digital assets, which ar",
+  "specific_spec": {
+    "operator": "LABEL_MISMATCH",
+    "kind": "terms",
+    "groups": [
+      [
+        "domestic market, low x retrieved peg"
+      ]
+    ]
+  },
+  "caught_specific": false,
+  "specific_match": {
+    "hit": false,
+    "attack_index": null,
+    "excerpt": null
+  },
+  "placebo_specific": null,
+  "started_utc": "2026-10-22T01:18:24.710954+00:00",
+  "finished_utc": "2026-10-22T01:22:50.145964+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10143,
+  "out_tokens": 660,
+  "latency_s": 122.958,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10143,
+    "out_tokens": 660,
+    "retries": 0,
+    "elapsed_s": 122.958,
+    "wall_ms": 122957.8,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(2, \"downgraded_to='process_confirmation' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\"), (3, \"downgraded_to='amended_disclosure' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\"), (4, \"downgraded_to='unscoped_policy' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.[393](1)  [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).', 'checklist_item': 3, 'attack': 'The conclusion depends on the valuation method described in Rule 57, but this method is not applicable to virtual digital assets. Rule 57 specifies the valuation methods for various types of properties, but it does not include virtual digital assets. Therefore, the open market value method cannot be directly applied to virtual digital assets based on Rule 57.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': \"Rule 57, Income-tax Rules, 2026: 'For the purpose of following sections referred to in column B of the Table below, the fair market value of the property of the nature referred to column C shall be determined in the manner provided in column D thereof:' (The table does not mention virtual digital assets.)\"}, {'target': 'The value is determined on the date of credit (2026-06-16) using the open market value method.', 'checklist_item': 2, 'attack': 'The open market value method is not explicitly defined for virtual digital assets. The provisions cited do not cover the specific valuation method for virtual digital assets, which means the conclusion about the valuation date and method may not be accurate.', 'survived': False, 'downgraded_to': 'open_texture', 'evidence': ''}, {'target': 'your attack is PUBLISHED in the output the user sees', 'checklist_item': 2, 'attack': 'Your attack is conflating the process for prescribing the number of elements left without attack with the legal processes 1 & 3. This leads statistics about how well your process performed accountable into error.', 'survived': False, 'downgraded_to': 'process_confirmation', 'evidence': 'A fatal oversight in our design process.'}, {'target': 'Is an edge-caseclusion possiblefor the data inclusion above $85,009 ? ', 'checklist_item': 3, 'attack': 'The claim is comparing sorted or search variance over precompleted data in the wrong context. EUR variances of Net Replace Time Pay (NRTP) fields should unearth continental regional factors which include country technical resolution differences and new left omitted buffers should cancel prior primes without losing net weight sorting. Confirm beyond reverse resources similar to nested\u2019 like fixtures and human insights. \u201c\u201d, ', 'survived': False, 'downgraded_to': 'amended_disclosure', 'evidence': 'Data support ecosystem varies extensively for rule misinterpretation latency\u201d Reply background data refreshed$;$ @ .NULLaSet.'}, {'target': 'TDS is applicable at 1% as per s.[393](1) [Table: Sl. No. 8(vi)].', 'checklist_item': 2, 'attack': \"While Rule 393 covers multiple columns of which blocks one Normal is normal instead Telegraph Transfer fulfilled \u2014 since the basis for this amounts arriving outreach of India's only cliques against the initial summary status. Open undiscussed list techniques like gcc blocks should interestingly clarify mitigations.\", 'survived': False, 'downgraded_to': 'unscoped_policy', 'evidence': '$OpenOverscan Site::ErrRate Weapons Exceed itself .Likewise %Rulehips (-include-) sorts variables within item range_(SA)'}], 'checked_and_survived': [], 'limits': ['Unable to verify the applicability of Rule 247 to virtual digital assets due to lack of explicit mention in the statutory text.']}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(2, \"downgraded_to='process_confirmation' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\"), (3, \"downgraded_to='amended_disclosure' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\"), (4, \"downgraded_to='unscoped_policy' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.[393](1)  [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).', 'checklist_item': 3, 'attack': 'The conclusion depends on the valuation method described in Rule 57, but this method is not applicable to virtual digital assets. Rule 57 specifies the valuation methods for various types of properties, but it does not include virtual digital assets. Therefore, the open market value method cannot be directly applied to virtual digital assets based on Rule 57.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': \"Rule 57, Income-tax Rules, 2026: 'For the purpose of following sections referred to in column B of the Table below, the fair market value of the property of the nature referred to column C shall be determined in the manner provided in column D thereof:' (The table does not mention virtual digital assets.)\"}, {'target': 'The value is determined on the date of credit (2026-06-16) using the open market value method.', 'checklist_item': 2, 'attack': 'The open market value method is not explicitly defined for virtual digital assets. The provisions cited do not cover the specific valuation method for virtual digital assets, which means the conclusion about the valuation date and method may not be accurate.', 'survived': False, 'downgraded_to': 'open_texture', 'evidence': ''}, {'target': 'your attack is PUBLISHED in the output the user sees', 'checklist_item': 2, 'attack': 'Your attack is conflating the process for prescribing the number of elements left without attack with the legal processes 1 & 3. This leads statistics about how well your process performed accountable into error.', 'survived': False, 'downgraded_to': 'process_confirmation', 'evidence': 'A fatal oversight in our design process.'}, {'target': 'Is an edge-caseclusion possiblefor the data inclusion above $85,009 ? ', 'checklist_item': 3, 'attack': 'The claim is comparing sorted or search variance over precompleted data in the wrong context. EUR variances of Net Replace Time Pay (NRTP) fields should unearth continental regional factors which include country technical resolution differences and new left omitted buffers should cancel prior primes without losing net weight sorting. Confirm beyond reverse resources similar to nested\u2019 like fixtures and human insights. \u201c\u201d, ', 'survived': False, 'downgraded_to': 'amended_disclosure', 'evidence': 'Data support ecosystem varies extensively for rule misinterpretation latency\u201d Reply background data refreshed$;$ @ .NULLaSet.'}, {'target': 'TDS is applicable at 1% as per s.[393](1) [Table: Sl. No. 8(vi)].', 'checklist_item': 2, 'attack': \"While Rule 393 covers multiple columns of which blocks one Normal is normal instead Telegraph Transfer fulfilled \u2014 since the basis for this amounts arriving outreach of India's only cliques against the initial summary status. Open undiscussed list techniques like gcc blocks should interestingly clarify mitigations.\", 'survived': False, 'downgraded_to': 'unscoped_policy', 'evidence': '$OpenOverscan Site::ErrRate Weapons Exceed itself .Likewise %Rulehips (-include-) sorts variables within item range_(SA)'}], 'checked_and_survived': [], 'limits': ['Unable to verify the applicability of Rule 247 to virtual digital assets due to lack of explicit mention in the statutory text.']}",
+      "started_utc": "2026-10-22T01:18:24.710954+00:00",
+      "finished_utc": "2026-10-22T01:20:47.168864+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10143,
+        "out_tokens": 1025,
+        "retries": 0,
+        "elapsed_s": 142.439,
+        "wall_ms": 142439.1,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": null,
+      "started_utc": "2026-10-22T01:20:47.168991+00:00",
+      "finished_utc": "2026-10-22T01:22:50.145964+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10143,
+        "out_tokens": 660,
+        "retries": 0,
+        "elapsed_s": 122.958,
+        "wall_ms": 122957.8,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

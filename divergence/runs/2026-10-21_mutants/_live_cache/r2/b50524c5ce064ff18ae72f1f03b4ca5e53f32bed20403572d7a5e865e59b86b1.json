@@ -1,0 +1,49 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:25:46.269979+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10935,
+  "out_tokens": 810,
+  "retries": 0,
+  "elapsed_s": 112.628,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027).",
+        "checklist_item": 1,
+        "attack": "The provision cited, Rule 57, does not specify the valuation method for income from other sources directly. The appropriate rule for determining the valuation method for income from other sources is Rule 206, which specifies the telegraphic transfer buying rate on the last day of the tax year. However, Rule 206 does not mention the specific date of 31 March 2027 for the tax year FY 2026-27. Therefore, the conclusion that the valuation should be done on 31 March 2027 is not supported by the current provisions.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 206, Income-tax Rules, 2026, does not specify 31 March 2027 as the valuation date for income from other sources."
+      },
+      {
+        "target": "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) of the Income-tax Act, 2025, governs the penalty position for under-reported income and estimated income, not specifically for the requirement of a bona fide explanation and disclosure of all material facts. The provision does not directly apply to the scenario described in the conclusion.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 439(8), Income-tax Act, 2025, does not directly address the requirement for a bona fide explanation and disclosure of all material facts in the context provided."
+      },
+      {
+        "target": "the value used by an international wire service such as SWIFT to transmit funds from one country's bank to another\u2019s for settling a trade in national currencies or commodities, excluding exchanges transacted though virtual digital assets tax at 1%, ratified under s.393(1)",
+        "checklist_item": 2,
+        "attack": "Section 393(1) applies to the consideration for the transfer of a virtual digital asset, not to the valuation method or the rate used for transmitting funds. The conclusion incorrectly extends the scope of s.393(1) to include the valuation method and rate used by SWIFT.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 393(1), Income-tax Act, 2025, specifies the rate for the transfer of a virtual digital asset, not the valuation method or rate used by SWIFT."
+      }
+    ],
+    "checked_and_survived": [
+      "The supply meets all the conditions for being an export of services."
+    ],
+    "limits": [
+      "could not verify whether including this term in 'lacunas': '% lag discovery opens up)' might lead to additional accusatory editing effects > _non analytics.]}"
+    ]
+  }
+}

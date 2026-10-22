@@ -1,0 +1,36 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:05:36.021292+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10701,
+  "out_tokens": 368,
+  "retries": 0,
+  "elapsed_s": 67.294,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 4,
+        "attack": "The valuation method specified in the conclusion incorrectly uses the end of the tax year. The correct date should follow validated facts referenced with formula provided in Rule 206 \u2014 Table Sl. No. 3 .",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Table | Types of Income \u2013 B | Specified Date \u2013 C:|values vary based on differrent end dates"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The condition regarding the place of supply being outside India remains unsettled. As mandated by IGST Act s.2(6)",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "{ 'item': 'Export Declaration', 'why_absent': 'No explicit mention of an export declaration as required by FEMA-3.md.',}"
+      }
+    ],
+    "checked_and_survived": []
+  }
+}

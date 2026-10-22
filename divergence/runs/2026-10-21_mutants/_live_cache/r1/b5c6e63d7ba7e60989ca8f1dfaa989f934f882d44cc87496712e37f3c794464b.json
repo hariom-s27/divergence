@@ -1,0 +1,57 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:33:21.717923+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 1071,
+  "retries": 0,
+  "elapsed_s": 148.854,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH does not directly address the classification of receipts in USDC as income from the transfer of a virtual digital asset. Moreover, the valuation method described is not explicitly mandated by any provision for the valuation of virtual digital assets.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025: 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...' Rule 57, Income-tax Rules, 2026: 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.' Neither provision specifies USDC or the valuation method for receipts in USDC."
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing declaration_of_service_payment, which is listed as not obtainable. Therefore, the conclusion is based on insufficient evidence.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: declaration_of_service_payment is missing and marked as not obtainable."
+      },
+      {
+        "target": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "checklist_item": 1,
+        "attack": "The rate source used for the headline figure is not the one mandated by the law for the given date. The rate used is from a date before the actual receipt date, which is not in compliance with the specified date for valuation.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 206, Income-tax Rules, 2026: 'The rate of exchange for the calculation of the value in rupees of any income...shall be the telegraphic transfer buying rate of such currency as on the specified date.'"
+      },
+      {
+        "target": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "checklist_item": 1,
+        "attack": "The rate source used for the headline figure is not the one mandated by the law for the given date. The rate used is from a date after the actual receipt date, which is not in compliance with the specified date for valuation.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 206, Income-tax Rules, 2026: 'The rate of exchange for the calculation of the value in rupees of any income...shall be the telegraphic transfer buying rate of such currency as on the specified date.'"
+      }
+    ],
+    "checked_and_survived": [
+      "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed."
+    ],
+    "limits": [
+      "The exact interpretation of 'convertible foreign exchange' in the context of USDC payments could not be checked due to lack of specific regulatory definitions."
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:00:40.675263+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 983,
+  "retries": 1,
+  "elapsed_s": 289.945,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH cited is from the Income-tax Act, 1961, and it is not clear if it has been carried into the Income-tax Act, 2025 without any changes. The conclusion assumes that s.115BBH is current for FY 2026-27, but this needs to be verified.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclaimed.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'declaration_of_service_payment', which is missing. The conclusion is asserted anyway, which is a failure this system exists to catch.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: declaration_of_service_payment is missing"
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 1,
+        "attack": "The provision s.2(6) cited is from the Integrated Goods and Services Tax Act, 2017, and it is not clear if it has been carried into FY 2026-27 without any changes. The conclusion assumes that s.2(6) is current for FY 2026-27, but this needs to be verified.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017"
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'declaration_of_service_payment', which is missing. The conclusion is asserted anyway, which is a failure this system exists to catch.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: declaration_of_service_payment is missing"
+      }
+    ],
+    "checked_and_survived": [
+      "The valuation lattice is based on deterministic arithmetic and does not contain any conclusions that can be attacked based on the checklist provided."
+    ],
+    "limits": [
+      "The statutory text provided does not include all possible provisions and rules that might be relevant to the conclusions. Therefore, some conclusions could not be checked against the full corpus of statutory text."
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:30:52.825921+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 824,
+  "retries": 0,
+  "elapsed_s": 111.392,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH is incorrectly cited for the tax year FY 2026-27. The correct provision for the transfer of virtual digital assets should be verified for the stated tax year.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH does not reach the facts presented because USDC is defined as not being foreign currency according to s.2(47A)(a) of the Income-tax Act, 1961, which specifies that virtual digital assets are 'not being Indian currency or foreign currency.' Therefore, s.115BBH may not apply to USDC.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 2(47A), Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the 'declaration_of_service_payment,' 'income_tax_deduction,' and 'valuation_date,' which are missing from the gap list. Asserting the conclusion despite these dependencies is a failure.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "No declaration of service payment to the Reserve Bank or other authority as required by FEMA-3-7-8.md."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

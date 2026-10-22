@@ -1,0 +1,50 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:14:34.254271+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 976,
+  "retries": 0,
+  "elapsed_s": 148.561,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH does not explicitly state that the valuation method for the receipt is the price that such property would ordinarily fetch on sale in the open market on the valuation date. This valuation method is derived from Rule 57, which applies to specific sections and properties. However, Rule 57 row 7 is a residual catch-all for section 26(2)(j) alone, not s.92 or any other section dealing with virtual digital assets.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, Income-tax Rules, 2026: 'For the purpose of following sections referred to in column B of the Table below, the fair market value of the property of the nature referred to column C shall be determined in the manner provided in column D thereof:'"
+      },
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing 'declaration_of_service_payment'. The absence of this declaration means that the conclusion about the TDS obligation is unreliable.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'declaration_of_service_payment', why absent: 'No declaration of service payment to the Reserve Bank or other authority as required by FEMA-3-7-8.md.'"
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 4,
+        "attack": "The rate source used for the headline figure is not the one prescribed by law. The valuation lattice includes methods like 'domestic market, open x retrieved peg' which use proxies and assumptions not mandated by the law.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "VALUATION LATTICE: 'domestic market, open x retrieved peg', source: 'CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg', note: 'opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28'"
+      }
+    ],
+    "checked_and_survived": [
+      "No TDS obligation arises as the recipient is outside India.",
+      "Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed."
+    ],
+    "limits": [
+      "Could not check the operative status of s.115BBH for FY 2026-27 as the provided statutory text does not include information on amendments or supersessions for that specific year."
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:34:34.206708+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10703,
+  "out_tokens": 488,
+  "retries": 0,
+  "elapsed_s": 81.337,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Unclear what this classification hinges on -- its argument against its being a virtual digital asset seems misworking, because 'services rendering payment is never a reward'. Meanwhile nobody discusses how the new place reached clarifies this better.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": ""
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The reasoning does lack paperwork evidence often necessary to resolve this nature of conflict and get court credibility too. The ambiguity around the place of supply is too conveniently settled without binding documentation backed verification.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "igcrules list indicates reports summed up but details lacking in line item access by specific day.."
+      },
+      {
+        "target": "'settlement date'",
+        "checklist_item": 4,
+        "attack": "Insurance towards calling out non adversarially reviewed claims slapped loosely without any formal articulation.",
+        "survived": false,
+        "downgraded_to": "open texture.",
+        "evidence": "simplest easy check glitch farwell editorial leftment unflagged contents itself evident enough."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      ""
+    ]
+  }
+}

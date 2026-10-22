@@ -1,0 +1,36 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T03:53:11.265075+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10501,
+  "out_tokens": 337,
+  "retries": 0,
+  "elapsed_s": 50.423,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing 'place of supply'.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "None because place of supply is not considered for valuation."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "Whether the service meets all the export criteria needs supporting details. Solid evidence indicates that this is an internal accounting note sent via email for corporate information.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "'Place of supply' is critical yet overlooked component as radio silence meant this fact remained unevaluated."
+      }
+    ],
+    "checked_and_survived": []
+  }
+}

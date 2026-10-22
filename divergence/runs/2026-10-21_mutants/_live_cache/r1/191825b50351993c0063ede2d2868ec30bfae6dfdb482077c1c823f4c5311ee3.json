@@ -1,0 +1,49 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:42:09.833093+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10933,
+  "out_tokens": 665,
+  "retries": 0,
+  "elapsed_s": 103.168,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Rule 206 specifically applies to income expressed in foreign currency. However, the reasoning provided does not establish that the receipt of USD 3,000 is considered foreign currency under the relevant laws. Without this classification, Rule 206 may not apply, making the valuation method incorrect.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "(1) The rate of exchange for the .. in foreign currency,.. [at end of the roviso for ultimate finality \u2014 exhaustive scope definition of broad term; (n) \"foreign exchange\" means foreign currency"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The outcome stating depends on 'valuation'. Notably absent \u2014 step skipped saying reached nevertheless. Making conclusory assertion about total relief dependent valuation, while claiming incomplete field lacks objectivity.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "If the supply does not meet the conditions for an export of .. consequence . That payment of USD 3,000 was received by SWIFT wire transfer, doer trigger rules determining residency proviso non-convertibility."
+      },
+      {
+        "target": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "checklist_item": 4,
+        "attack": "The rule mentions using the date of requirement under XIX-B explicitly \u2014 casts doubt suggesting misuse negating certainty of instrument evidence confirming alignment last publication prior U.S.-centric technical asymmetry/prescribe differentiation not called up in reliance inode omitted step field slashes.(ii) contradiction irrefutable proof last resolution of policy second wave of absence.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "lead narrative (2 Returns: Amount + year-external free-assembly, reporting substructure supply conflict propose purchase quality ratio-postponement)"
+      }
+    ],
+    "checked_and_survived": [
+      ""
+    ],
+    "limits": [
+      "couldnt interpret diagram intent leaving blind postulate"
+    ]
+  }
+}

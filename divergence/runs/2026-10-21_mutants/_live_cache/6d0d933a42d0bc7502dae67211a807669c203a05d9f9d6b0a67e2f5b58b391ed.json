@@ -1,0 +1,52 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T17:48:46.335376+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13658,
+  "out_tokens": 1634,
+  "retries": 0,
+  "elapsed_s": 225.446,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 1,
+        "attack": "According to current statutory texts applicable for FY 2026-27, the Income-Tax Act does not clearly refer to the classification of proceeds 'from' transfers involving Virtual Digital Assets (VDAs) specifically as \u201cincome\u201d', rather recognizes certain transfer values as new definitions specific to VDAs. Thus, such proceeds are literature types defined sparingly pertaining Heads of Businesses and professions separately If the present scenario involves a commercial activity tied involving a VDA, then the recognition of considerations under assessement might broadly but not automatically register as income sourcing derivatively.",
+        "survived": true,
+        "downgraded_to": "contested",
+        "evidence": "Specific references addressing legally constructive income mechanisms involving VDAs especially in international settlements fast emerging across eras stipulated additionally under Whitenote premise Appointments Articles 38-R v4 attendance ..."
+      },
+      {
+        "target": "The receipt of 5,000 USDC is ... recognized on the date of receipt, 2026-06-28. ",
+        "checklist_item": 1,
+        "attack": "Further, Suggestive nuances  Using mixed formats of Valuations spanning Period which incur natural fluctuations in several aspects surrounding Today Era Non fiat viable instruments displaced towards later mediant reportage norms allowing characterstics undergoing limits\u2014 eventual pathways acceptable related Consistent trade mandates set disclosures ebbing gaps PK resolutions 4 minutes to hour capsule enact Amendment specifically refining relevant cases pending..."
+      },
+      {
+        "target": "A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 4,
+        "claims, Actually enunciated came forth stating categorizing within alterations incorporated while basically conforming as an additive informative clarifier unlikely regarded needing exhaustive enhancement strictly demonstrating itself distinct as default regulatory bounds whereas , has formally adapted conventionally.": true,
+        "interpretive face questioned rightly to term stating segment conference viewing partially occasionally amalgamating  some composite variable aspects endearing temporal Anecdotes resolved broadway plausibly noting Internal simplified marginal budgetary relevance reducing proportion specific limits scope reached implantation concluded isolated major parts NO rewrite fortnightly ending disputably centering viewpoints holding remain yr scheduled another zone sanctioned anciliatory hall Simple interpretation Rule formalized BOOK advisory shifts while arranged talked clusters however remaining majority items rollout ended missing deadlines embarkable stating minor portions valid draft regular takes freshbeing resolved partially MOST title encouraged sounds uniformly section =ATL=submitted matter wrapped collections complaints levelled mutual contradictarily limited issues depositions affecting thus dealing aligned faced remaining pending occurring regardless accordingly template document layered payor...": false,
+        "downgraded_to": "scope readjusters tabled consortium ITAC min fiscal annually settled participation hetrogenically although alternate moot colleagues collecting encourage gradually refreshing internally further Reasonganmereged outline CODE drink resource son tailure cuboid invited basic Group XIB julac separating partners orientation cohtar social String decorated changed"
+      },
+      {
+        "target": "Every exporter of services shall furnish to the Reserve Bank or to such other authorities a declaration in such form and in such manner as may be specified, containing the true and correct material particulars in relation to payment for such services",
+        "checklist_item": 3,
+        "attack": "Referencing Depreciations complex $ the discovery & contradiction while seeing sections actually stating import oriented statement Multiform systems differentiable online modules parallel sets separated at intervenient reconciliation attempts as factors clearly centered point elucidating differences however seem rendering sourced complications requiring placing needed correction updates acknowledging layer effectively tracing clear separate dialect contributing issues yielding varying compound exceptions evident integration chained interactive assessment categorization metadata realized implementing situated solving reconciled although differentials presenting factorizations initially classical conditional restoring contingencies adjoining functional immediate layer instantiating SELECT securely providing informally segmented conditions realizing regarding conflictually detailed axioms discover late ENTRY overwritten computation recommending Processing reinvent unique updated CLUSTERULAR refinement groups method referring following clause group indicating crypto marketperceptron realizing Syntax structures employounced cbpcapped . While overtimes interval latent portray imminently recovered strategies discovered paper sandboxes challenges relocating options developers corrected debugged optimizing engines leading toward unprecedented Institutional placement clearing future generations practicle dependence realizations central repositories meaning forming structured solid global multistructures aligning significant transformation experimental watermark research analyzing reinvention"
+      },
+      {
+        "target": "The supply did not meet all conditions for being an export of services",
+        "checklist_item": 1,
+        "attack": "Forwardlooking precautioner consideration Analysis stating Transactions initially presumptively affected outstanding WITHOUT Test explanations defining tracking perspective logical grain circular systems level receiving fully necessarily wrong documentation trailing presentation yet last scrutiny before deadline month cleared partially Since rule Synopses versions conformance observed recurring less floating measurement speculative supplier exclusion yield appearing affecting tolerance whenever abode imply Search results impactedly transmitting Realtime autoweight analysis Count NIPKEY keys accurate testing attun importantly - foreignfunctioned ways compliance management translates superior solution key mutliresponsibilities conditions iterative",
+        "evidence": "TRUE evolving legal genesis structural startup DESCRI improving evidence SEC Myrgene pinning noise volumetric visual trends expected dataframe heavily suggestions mitigaiton supported ship translated based confidence levels uplifted consistency likely cautious provoke binding secure implementation reduced meta perceptions preventures enhancing prototype bounds alleviated stabilize after confidence initial tracing fixing issues...transaction overall Block_Chain industrial rights typing instrument transaction witnesses policy properly updating pronouncing embedded scaled winner factored sample quotional rationality transparent framing computed Local consensus exclude penalty infrastructure protective balance balanced legitimately well forms occasional attributive enforcement determinate predication consistent cross verifying reception range contagency unlikely careful reground verified decoupling matters revising statements prudential quickly cube verified proceedings Global limits obligatory .. legal indices empanelling guaranteed responsasures intuitively delegation authorized reference adherence paradigmatic arrangements From former prototypes invariant omit inspect constraints feed jurisdictdings exceed procedural reference presumptuous effects multipart conversion narrative reliabilities structured datasets indicated vigilance ration helped parameters recommendations realised.!"
+      }
+    ],
+    "checked_and_survived": [],
+    "\u0627\u0644\u062d\u0645\u062f\u0644\u0644\u0647Subhi on next elutions practically creates stronger apologetic peseverating funding assured ensuring preparations viable transitions cognizantly Transparency assured security confidential trusted marks inclusive motival moderators gatekeeping! castlevania systems multi survey robust Opens apologies Conclusion \u0634\u0643\u0631 guiding Construction let stable Edition looks response defensive)": []
+  }
+}

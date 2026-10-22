@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:11:24.079533+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13385,
+  "out_tokens": 597,
+  "retries": 0,
+  "elapsed_s": 80.236,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 1,
+        "attack": "The operative status of s.115BBH for the tax year FY 2026-27 might not have been confirmed, leading to the possibility that the provision has been amended or replaced.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "All citations need to be verified for their current applicability for FY 2026-27 to ensure they reflect up-to-date legislation."
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH.",
+        "checklist_item": 2,
+        "attack": "s.115BBH applies specifically to the 'transfer' of virtual digital assets, and the word 'transfer' as defined in clause (47) of section 2 does not necessarily cover mere receipt of a VDA unless additional criteria of thetransfer nature are met, hence it may cease to apply ",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "(47A) \"virtual digital asset\" means\u2014(a) any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise, by whatever name called ... can be transferred, stored or traded electronically. Here Transferring implies ownership change.}], {"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 4,
+        "attack": "According to section 2(h) gives examples of what constitutes currency.....currency notes...postal notes.. cheques....drafts., unlike USDC , include definition of USDC",
+        "survived": false
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Unable to verify the accuracy of Rule 56 & Rule 206 since there are multiple exceptions instances without making sure all necessary details are well factored, in regards to updating data."
+    ]
+  }
+}

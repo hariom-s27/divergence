@@ -1,0 +1,48 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:52:56.596440+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10701,
+  "out_tokens": 623,
+  "retries": 0,
+  "elapsed_s": 102.787,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The target classification, valuation, TDS and Penalty rules must align with the most current laws of the tax year.. However, the citation lists 'Rule 206' but doesn\u2019t acknowledge any possibility of changes OR verify a lack of updates. Thus, the outcomes based entirely on 'Rule 206' may be invalid",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "OPERATIVE STATUS; Is this provision current for the stated tax year?"
+      },
+      {
+        "target": "b) Recognition Date: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).",
+        "checklist_item": 1,
+        "attack": "The specificity on spotting Rule 56 carrying Sl.No.' restrictions misses shifting norms between fiscal transitions.. A singular assertion thus might patch over possible voided/morbid outlines running low.",
+        "survived": false,
+        "downgrade_to": "open_textures",
+        "evidences": "Is the merging Rule 56 cited valid appropriately tabulated\u2014 answering recognition dates inclusivity both establishing payload of changes in-dated ruling smartly",
+        "timestamps": []
+      },
+      {
+        "target": "c) Valuation Method: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.",
+        "checklist_item": 1,
+        "attack": "No evident trace valorization timestamp discussion regarding the validity check syncs updates on last affirmed layouts aligning up towards combating properties...itself! Hence,own a glitch predicating any count riskily toward implicitness",
+        "survived": false,
+        "downgrads_to": "lacuna",
+        "confirmancy": []
+      }
+    ],
+    "checked_and_survived": [],
+    "limitations": [
+      "Arguments brought assail aren't encompassingly assertive espoused beyond pointed paradox neither' downplay residency stimuli into fraction...infact relatable variance boundemas prescribing further depth task intrigue inflect calls solution"
+    ]
+  }
+}

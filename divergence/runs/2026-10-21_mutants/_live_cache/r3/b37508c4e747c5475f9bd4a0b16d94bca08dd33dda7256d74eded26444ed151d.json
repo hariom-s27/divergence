@@ -1,0 +1,55 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:38:53.664533+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13458,
+  "out_tokens": 861,
+  "retries": 0,
+  "elapsed_s": 160.66,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH applies to the transfer of virtual digital assets, but the receipt of USDC does not constitute a 'transfer' as defined. The receipt is not the disposal or exchange of a virtual digital asset but rather the acceptance of payment in USDC.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "s.115BBH(3) For the purposes of this section, the word \"transfer\" as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not."
+      },
+      {
+        "target": "The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate.",
+        "checklist_item": 2,
+        "attack": "Rule 206 specifies the specified date for different types of income, and for capital gains, it is the last day of the month preceding the month in which the capital asset is transferred. The settlement date does not align with this specified date.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 206(2)(b)(i)Sl. No \u2014 A: 6 Types of Income \u2014 B: Income chargeable under the head \"Capital gains\". Specified Date \u2014 C: Last day of the month, immediately preceding the month of in which the capital asset in the table is transferred;"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "The condition regarding the place of supply being outside India is marked as unknown, which means it is not established that this condition is met. Therefore, the conclusion that all conditions except one are met is incorrect.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "s.2(6) \u201cexport of services\u201d means the supply of any service when ... (iii) the place of supply of service is outside India,"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing declaration of service payment, which is required by s.7(3) FEMA 1999 & rs.8 FEMA 1999. Since this document is absent and the conclusion is asserted anyway, this is a failure this whole system exists to catch.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "s.7(3). Every exporter of services shall furnish to the Reserve Bank or to such other authorities ... amended from time to time through authoritative documents like the MASTER DI 9 direction, references should come from Wadia Ghandy sheets exporters.mahaonline.gov.in/MOSC_New/Portal/"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "I could not verify operating part of some dates from SBI telegraphic transfer."
+    ]
+  }
+}

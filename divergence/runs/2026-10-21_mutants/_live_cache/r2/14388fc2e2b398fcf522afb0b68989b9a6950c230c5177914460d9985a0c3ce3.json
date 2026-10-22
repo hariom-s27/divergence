@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:06:35.231423+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13570,
+  "out_tokens": 854,
+  "retries": 0,
+  "elapsed_s": 125.739,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'transfer' of virtual digital assets, which typically implies a sale or exchange. The mere receipt of 5,000 USDC does not necessarily constitute a 'transfer' as defined by the provision. Additionally, s.393(1) pertains to the deduction of tax at source for payments made to residents, which does not apply here as the payer is outside India. Furthermore, s.439(8) refers to explanations for under-reported income, which is not clearly established in this context.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH: 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...' Section 393(1): 'Where any income or sum...is credited or paid or distributed by the person specified in column C during the tax year, to a resident...' Section 439(8): 'the amount of income in respect of which the assessee offers an explanation and the Competent Authority is satisfied that the explanation is bona fide...' These provisions do not directly support the outcome based on the mere fact of receiving 5,000 USDC."
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 1,
+        "attack": "Rule 57, Column D, Row 7 states: 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.' This provision suggests that a market value approach is applicable, contrary to the conclusion that no specific method is prescribed.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, Column D, Row 7: 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.'"
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing independent verification of Northbay Systems LLC. Since this verification is not available, the condition regarding the supplier and recipient not being mere establishments of a distinct person cannot be definitively met or failed. This uncertainty should be acknowledged rather than concluding insufficient evidence.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "[The GAP LIST shows that] Independent verification of Northbay Systems LLC has not been performed ... blocks:['income_tax', 'gst', 'fema'] obtainable:'no'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Further details on the exact nature of the consulting services provided and the agreement terms with Northbay Systems LLC are necessary to comprehensively evaluate the provision reach (scope) under s.6."
+    ]
+  }
+}

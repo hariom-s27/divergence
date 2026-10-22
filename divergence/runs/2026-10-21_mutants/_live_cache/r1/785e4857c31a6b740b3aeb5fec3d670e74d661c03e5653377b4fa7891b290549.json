@@ -1,0 +1,27 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:08:27.344567+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10935,
+  "out_tokens": 199,
+  "retries": 0,
+  "elapsed_s": 31.712,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "Rule 56 gets referenced but the correct rule for determining the valuation method at valuation date falls under detailed nuance incorporated which might require update despite correct Rule."
+      },
+      "survivabilitydowngrade]{}],"
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:38:46.750905+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10501,
+  "out_tokens": 180,
+  "retries": 0,
+  "elapsed_s": 28.4,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources...penalty position is governed by s.439(8).",
+        "checklist_item": 1,
+        "attack": "The provision cited, Rule 56, does not pertain to the classification of income or the applicability of TDS. It deals with the determination of fair market value. The correct rule for classification and TDS might be different.",
+        "evidence": "Rule 56, Income-tax Rules, 2026, states 'For the purposes of this rule and rule 57,\u2014 ... (i) \u201cvaluation date\u201d means the date provided in the Table below'",
+        "survived": false,
+        "downgraded_to": "open_texture"
+      }
+    ]
+  }
+}

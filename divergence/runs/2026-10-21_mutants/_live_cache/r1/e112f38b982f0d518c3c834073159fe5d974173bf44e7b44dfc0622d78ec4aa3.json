@@ -1,0 +1,31 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:06:57.700409+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13656,
+  "out_tokens": 345,
+  "retries": 0,
+  "elapsed_s": 53.858,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 1,
+        "survived": false,
+        "attack": "Using Section 115BBH to classify UCSC as a VOCAL DIGITAL ASSET IS KNOWN BUT needles . Was si a Legacy of Olds recriminations?  TAXESTO TOP STATE THE gost more root $troubled$ UNLESS LEADWEESARY FROM 4 ndq $ PROVEN ERROR CAN cut FORMOST OR GIVEASSESS Examination to remedy the matter, the Income^TspecificallyIndividual criteria and significanttime framesfor the type Ordered within ideal triggerpointsValueBased Reasoning",
+        "downgrade": "{ 'tag': None}",
+        "Evidence": null
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      " ]}}}]]( , ])]}"
+    ]
+  }
+}

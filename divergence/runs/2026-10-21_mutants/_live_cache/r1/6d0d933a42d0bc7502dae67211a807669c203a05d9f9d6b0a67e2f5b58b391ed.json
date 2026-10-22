@@ -1,0 +1,59 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:51:12.214298+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13658,
+  "out_tokens": 920,
+  "retries": 0,
+  "elapsed_s": 113.239,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH applies to the income from the 'transfer' of a virtual digital asset. Receiving USDC does not necessarily constitute a 'transfer' as defined in the section. The term 'transfer' typically implies a disposal or sale, not mere receipt.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH(1): 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...'"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing independent verification of Northbay Systems LLC, which is listed in the gap list. The conclusion is asserted despite this dependency.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "The declared independent verification of Northbay Systems LLC is absent as stated in the missing list"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "reasoning": "Rule 57 does not provide a specific method for valuing USDC, a virtual digital asset, under s.92. Rule 206 is not applicable as USDC is not defined as foreign currency under s.2(47A). Rule 243, which deals with valuation methods for reporting crypto-asset service providers, does not apply to individual taxpayers. Therefore, no provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 2,
+        "attack": "USDC falls under the definition of 'virtual digital asset'. The law consistently defines and labels USDC as ...not being Indian currency or foreign currency.', automatically narrowed down to `a digital representation of value that relies on a cryptographically`",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "empty claim with S.(2)(47A) directly leading anywhere to the legal rate supporting the opposite."
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The condition that 'the place of supply of service is outside India' is marked as unknown. However, the supplied professional consulting service can be consumed remotely therefore verified that the service happened abroad thereby met unless contradictory proof attached.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Not challenged with proof - checked \u2713"
+      }
+    ],
+    "checked_and_survived": [
+      "A Pareto improvement is achievable by enabling CVRCAM resolution instead of CCINO for cents: Curators should",
+      "Attack only where you see maximum probability, avoid where one might slip through the cracks."
+    ],
+    "limits": [
+      "Unable to verify the physical location of the supplier and recipient due to lack of access to detailed transaction records."
+    ]
+  }
+}

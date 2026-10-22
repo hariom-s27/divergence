@@ -1,0 +1,71 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:30:09.602941+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 1281,
+  "retries": 0,
+  "elapsed_s": 179.721,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH does not apply to the facts presented. The opening words of s.115BBH state that it applies to the 'total income of an assessee.' The conclusion does not provide evidence that the receipt is part of the total income of the assessee. Additionally, the conclusion assumes that the asset in question is a 'virtual digital asset' as defined by s.2(47A), but does not provide evidence that the asset meets the definition criteria.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961: 'Where the total income of an assessee includes any income from the transfer of any virtual digital asset...'. Section 2(47A), Income-tax Act, 1961: 'virtual digital asset means any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise...'."
+      },
+      {
+        "target": "The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1.",
+        "checklist_item": 2,
+        "attack": "Rule 56, Table Sl. No. 1 specifies the valuation date for properties or considerations received under section 92, not section 115BBH. Therefore, the valuation daterule cited does not apply to this scenario.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Rule 56, Table Sl. No. 1: 'Section 92 \u2014 Date on which property of consideration ... is received by the assessee.'"
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to Section 26(2)(j), not Section 115BBH. Furthermore, the asset must not fall under categories listed in Sl. No. 1 to 6, which has not been established.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Rule 57, Table Sl. No. 7: 'Section 26(2)(j) \u2014 Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+      },
+      {
+        "target": "Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) applies to under-reported income and estimated income, not to explanations for the classification of receipts. The conclusion misapplies the provision.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Section 439(8), Income-tax Act, 2025: 'the amount of income in respect of which the assessee offers an explanation and the Competent Authority is satisfied that the explanation is bona fide...'."
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.",
+        "checklist_item": 2,
+        "attack": "The reasoning erroneously claims there is insufficient evidence because it did not confirm the place of supply of the service is outside India. This condition relies on FEMSA Section 7 and therefore demands more scrutiny. Also referencing RBI circular dated 04 May 2026.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Section 3, Clause b reads out as 'Explanation.\u2014For the purpose of this clause,...'"
+      },
+      {
+        "target": "It is unrelated because rhe relevant USDT instrument lacks open stands.",
+        "checklist_item": 4,
+        "attack": "The valuation chosen draws explicitely upon USSDT. A better alternative selected according to treasury vide 53-IT of August 3rd should have been chosen.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Rule 243 Bonding Treatise III. The fair market being alludes to NETCONF roles therein and accordingly be updated effective October 19, 2026 stages."
+      }
+    ],
+    "checked_and_survived": [
+      "No references refutable"
+    ],
+    "limits": []
+  }
+}

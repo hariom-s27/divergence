@@ -1,0 +1,409 @@
+{
+  "case": "D1",
+  "operator": "SILENT_OMIT",
+  "seed": 1337,
+  "rep": 3,
+  "note": "uncertainty_budget entry 'the proxy' (INR 565.57) deleted outright",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH. The valuation date is the date of receipt, 2026-06-28, as per Rule 56. No deduction obligation arises under s.393(1) because the recipient is a resident and the payer is outside India. Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "valuation_method",
+      "outcome": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+      "certainty": "lacuna",
+      "citation": {
+        "provision": "Rule 57, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "Rule 57 does not provide a specific method for valuing USDC, a virtual digital asset, under s.92. Rule 206 is not applicable as USDC is not defined as foreign currency under s.2(47A). Rule 243, which deals with valuation methods for reporting crypto-asset service providers, does not apply to individual taxpayers. Therefore, no provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply does not meet all conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India (Fact: supplier_location)."
+        },
+        {
+          "condition": "the recipient of service is located outside India",
+          "met": "yes",
+          "why": "The recipient is Northbay Systems LLC, located outside India (Fact: recipient_location)."
+        },
+        {
+          "condition": "the place of supply of service is outside India",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India",
+          "met": "no",
+          "why": "The payment was received in USDC, which is not convertible foreign exchange as defined by the Reserve Bank of India (Fact: asset)."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8",
+          "met": "unknown",
+          "why": "There is no independent verification of Northbay Systems LLC (Fact: counterparty_verified)."
+        }
+      ],
+      "depends_on_missing": [
+        "independent verification of Northbay Systems LLC"
+      ],
+      "consequence_if_failed": "If the supply is not zero-rated as an export, the supplier will be liable to pay GST on the supply. Interest and penalties may also apply if the tax is not paid on time, as governed by Section 50 and Section 74A of the CGST Act 2017."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 470000.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062614_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 469750.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "domestic market, open x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, open x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "opening print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x retrieved peg",
+        "rate": 103.523751,
+        "inr_value": 517618.76,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x assumed par",
+        "rate": 103.41,
+        "inr_value": 517050.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "highest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x retrieved peg",
+        "rate": 102.422541,
+        "inr_value": 512112.71,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "lowest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x assumed par",
+        "rate": 102.31,
+        "inr_value": 511550.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "lowest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "closing print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "closing print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x retrieved peg",
+        "rate": 102.963135,
+        "inr_value": 514815.68,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x assumed par",
+        "rate": 102.85,
+        "inr_value": 514250.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      }
+    ],
+    "spread": {
+      "inr": 47868.76,
+      "percent": 10.1903,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "domestic market, high x retrieved peg"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "domestic premium",
+        "inr": 44715.57,
+        "explanation": "The Indian market price of the token against the official rupee rate for a dollar. This is the bulk of the gap and it is the part everyone argues about."
+      },
+      {
+        "source": "which official date",
+        "inr": 250.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      },
+      {
+        "source": "which price within the day",
+        "inr": 5506.05,
+        "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule choosing between them."
+      }
+    ],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(1, 'survived=None is not a boolean'), (2, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.', 'checklist_item': 1, 'attack': 'The conclusion refers to s.115BBH of the Income-tax Act, 1961, but does not verify if this provision is still current for the tax year FY 2026-27. Considering that tax laws often change, it is essential to confirm that s.115BBH has not been amended or replaced.', 'survived': False, 'downgraded_to': 'open_texture'}, {'target': 'The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.', 'checklist_item': 2, 'attack': \"The conclusion assumes that s.115BBH applies to the receipt of USDC. However, s.115BBH specifically applies to the 'transfer' of virtual digital assets. Receiving USDC does not necessarily constitute a transfer; it could be a payment for services or another type of transaction. Without clarifying the nature of the transaction, applying s.115BBH might be premature.\", 'evidence': 'Section 115BBH(1): Where the total income of an assessee includes any income from the transfer of any virtual digital asset...', 'downgraded_to': 'lacuna'}, {'target': 'Neither Rule 206 nor the laundered Rule 207 row 3 reach this fact. Thus neither reaches the statutory format of this specific taxpayer recognition certainty: insufficient evidence', 'checklist_item': 2, 'attack': \"Rule 206 and Rule 207(1), which provide guidance on the rate of exchange for conversion into rupees, explicitly refer to 'foreign currency.' Since USDC is defined not as a currency but as a virtual digital asset, they fail to reach even if they could domestically range this fact. Neither have mechanics designed to wrap any VDA: a clear failure of scope to reach the mechanism mandate.\", 'downgraded_to': 'lacuna'}, {'target': 'The supply does not meet all conditions for being an export of services.', 'checklist_item': 4, 'attack': 'The conclusion states that the payment was received in USDC, which is not considered convertible foreign exchange as defined by the Reserve Bank of India. However, the use of USDC as a medium of exchange is not explicitly addressed in Section 2(6) of the Integrated Goods and Services Tax Act, 2017. The conclusion should specify the legal definition and source that classifies USDC as non-convertible foreign exchange.', 'survived': False, 'downgraded_to': 'contested'}], 'checked_and_survived': [], 'limits': []}",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "SILENT_OMIT",
+    "kind": "terms",
+    "groups": [
+      [
+        "the proxy"
+      ]
+    ]
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-22T04:15:28.014379+00:00",
+  "finished_utc": "2026-10-22T04:19:33.915572+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13570,
+  "out_tokens": 779,
+  "latency_s": 101.533,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 13570,
+    "out_tokens": 779,
+    "retries": 0,
+    "elapsed_s": 101.533,
+    "wall_ms": 101532.6,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.', 'checklist_item': 2, 'attack': \"In FACT, the definition of 'virtual digital asset' express rejects foreign currency, geometrically opposite any attempt (claim) to make two of the riskiest different natures undefinably alike by fiat, difficult USDC mimics. Geometry excludes something from another array, Full planet separates two things. Value risk proves this fact.\", 'survived': False, 'downgraded_to': 'lacunae'}, {'target': 'EXCHANGE wages & salaries of front desk staff', 'checklist_item': 4, 'attack': 'No linkless rate pair meets statute(phoria) requirement for funding. rate pair is broken link with fine points hashing statute. Electronic wage payments cannot use Estonia, cryptocurrency workarounds in lieu of INR.\", \"survived\": true,\"downgrad + via = No Krauss claim funded recovered; VFA already killed  paid, \"statutory statution\">\"evidencoryparts laboriouser\">\"FRIENDLY especially Ev favori --> gua\"<foreign_fund payments  etoro ceos\"geographical trade analysis.', 'survived': False, \"scope mismatch == folly 'race': FALSE Structure_of` --PURCHASE sinks down if review == cqp, heuristics == false.,(\": True, \"{IRA against Greek Law DEBUGGER -> predictive coding performedness /> DiskOan -> shifted out (Egon unfold !== planed (full=view)) flipped state ' -> ancillaries worth], tooRight -> maple gemson emptyTrue]}\\\\SECTION])please look closer && peak\": {'downgraded_to': 'refrain abolished'}, 'evidence': {'provision text': ' \u03bcmap asstr|\u2211axiomatic boundary group EV not constructed: hit windows!'}}, {'target ::> No specific sun peaking projection >><| very precise built-form denominator direct sunshine<$.%=> skip w6var >> logical tautology: RESULT <limit/> unref: FULLY lapse-fund|qualaf,->> args = sourcemethod&& archive insect failed  <||\\\\/$ident eval/(pipe%)> restarget overflow #NODEV{$CERTAINTY:}}forensics:: PERFECTEYE.%%|||><]<OVERFLAG fine waved:>perfect | just subjective{} pseudo-dynamically passing  \u221e tested thriving{},': '}CLASSIFIED:{false-limited}'}, {'target': 'No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date', 'checklist_item': 1, 'attack': 'why tricks on', '\\x0cail based on double text. Correct does not result successes-- (Belgrade // OxQuest ) huggingface relationship redefined:)}, the statement containing a Rule (imply meaningful on selected equals)': 'WORK metric.'}, 'DOWNGRADED_TO::parametric.'], 'trans-PERSIAN': 'limits', 'missing_data_and_principles do mirror unavoidable odierno double encrypted requirements != AG start  parameters rating': [], '{dependent tree split bindinglogiful reconstructing]}missing} B){i seq1 @1VICTORORIO~ EFFORT...helix strict::dev| EF\u0452\u00f7\u0441\u0442\u0430\u043d\u0434 FULLfinallyINDOWringUS-2026|': 7.15732951984802}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.', 'checklist_item': 2, 'attack': \"In FACT, the definition of 'virtual digital asset' express rejects foreign currency, geometrically opposite any attempt (claim) to make two of the riskiest different natures undefinably alike by fiat, difficult USDC mimics. Geometry excludes something from another array, Full planet separates two things. Value risk proves this fact.\", 'survived': False, 'downgraded_to': 'lacunae'}, {'target': 'EXCHANGE wages & salaries of front desk staff', 'checklist_item': 4, 'attack': 'No linkless rate pair meets statute(phoria) requirement for funding. rate pair is broken link with fine points hashing statute. Electronic wage payments cannot use Estonia, cryptocurrency workarounds in lieu of INR.\", \"survived\": true,\"downgrad + via = No Krauss claim funded recovered; VFA already killed  paid, \"statutory statution\">\"evidencoryparts laboriouser\">\"FRIENDLY especially Ev favori --> gua\"<foreign_fund payments  etoro ceos\"geographical trade analysis.', 'survived': False, \"scope mismatch == folly 'race': FALSE Structure_of` --PURCHASE sinks down if review == cqp, heuristics == false.,(\": True, \"{IRA against Greek Law DEBUGGER -> predictive coding performedness /> DiskOan -> shifted out (Egon unfold !== planed (full=view)) flipped state ' -> ancillaries worth], tooRight -> maple gemson emptyTrue]}\\\\SECTION])please look closer && peak\": {'downgraded_to': 'refrain abolished'}, 'evidence': {'provision text': ' \u03bcmap asstr|\u2211axiomatic boundary group EV not constructed: hit windows!'}}, {'target ::> No specific sun peaking projection >><| very precise built-form denominator direct sunshine<$.%=> skip w6var >> logical tautology: RESULT <limit/> unref: FULLY lapse-fund|qualaf,->> args = sourcemethod&& archive insect failed  <||\\\\/$ident eval/(pipe%)> restarget overflow #NODEV{$CERTAINTY:}}forensics:: PERFECTEYE.%%|||><]<OVERFLAG fine waved:>perfect | just subjective{} pseudo-dynamically passing  \u221e tested thriving{},': '}CLASSIFIED:{false-limited}'}, {'target': 'No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date', 'checklist_item': 1, 'attack': 'why tricks on', '\\x0cail based on double text. Correct does not result successes-- (Belgrade // OxQuest ) huggingface relationship redefined:)}, the statement containing a Rule (imply meaningful on selected equals)': 'WORK metric.'}, 'DOWNGRADED_TO::parametric.'], 'trans-PERSIAN': 'limits', 'missing_data_and_principles do mirror unavoidable odierno double encrypted requirements != AG start  parameters rating': [], '{dependent tree split bindinglogiful reconstructing]}missing} B){i seq1 @1VICTORORIO~ EFFORT...helix strict::dev| EF\u0452\u00f7\u0441\u0442\u0430\u043d\u0434 FULLfinallyINDOWringUS-2026|': 7.15732951984802}",
+      "started_utc": "2026-10-22T04:15:28.014379+00:00",
+      "finished_utc": "2026-10-22T04:17:52.343943+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 13570,
+        "out_tokens": 932,
+        "retries": 0,
+        "elapsed_s": 144.294,
+        "wall_ms": 144294.0,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(1, 'survived=None is not a boolean'), (2, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.', 'checklist_item': 1, 'attack': 'The conclusion refers to s.115BBH of the Income-tax Act, 1961, but does not verify if this provision is still current for the tax year FY 2026-27. Considering that tax laws often change, it is essential to confirm that s.115BBH has not been amended or replaced.', 'survived': False, 'downgraded_to': 'open_texture'}, {'target': 'The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.', 'checklist_item': 2, 'attack': \"The conclusion assumes that s.115BBH applies to the receipt of USDC. However, s.115BBH specifically applies to the 'transfer' of virtual digital assets. Receiving USDC does not necessarily constitute a transfer; it could be a payment for services or another type of transaction. Without clarifying the nature of the transaction, applying s.115BBH might be premature.\", 'evidence': 'Section 115BBH(1): Where the total income of an assessee includes any income from the transfer of any virtual digital asset...', 'downgraded_to': 'lacuna'}, {'target': 'Neither Rule 206 nor the laundered Rule 207 row 3 reach this fact. Thus neither reaches the statutory format of this specific taxpayer recognition certainty: insufficient evidence', 'checklist_item': 2, 'attack': \"Rule 206 and Rule 207(1), which provide guidance on the rate of exchange for conversion into rupees, explicitly refer to 'foreign currency.' Since USDC is defined not as a currency but as a virtual digital asset, they fail to reach even if they could domestically range this fact. Neither have mechanics designed to wrap any VDA: a clear failure of scope to reach the mechanism mandate.\", 'downgraded_to': 'lacuna'}, {'target': 'The supply does not meet all conditions for being an export of services.', 'checklist_item': 4, 'attack': 'The conclusion states that the payment was received in USDC, which is not considered convertible foreign exchange as defined by the Reserve Bank of India. However, the use of USDC as a medium of exchange is not explicitly addressed in Section 2(6) of the Integrated Goods and Services Tax Act, 2017. The conclusion should specify the legal definition and source that classifies USDC as non-convertible foreign exchange.', 'survived': False, 'downgraded_to': 'contested'}], 'checked_and_survived': [], 'limits': []}",
+      "started_utc": "2026-10-22T04:17:52.344146+00:00",
+      "finished_utc": "2026-10-22T04:19:33.915572+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 13570,
+        "out_tokens": 779,
+        "retries": 0,
+        "elapsed_s": 101.533,
+        "wall_ms": 101532.6,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

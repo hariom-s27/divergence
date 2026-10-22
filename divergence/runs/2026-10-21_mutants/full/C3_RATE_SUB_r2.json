@@ -1,0 +1,404 @@
+{
+  "case": "C3",
+  "operator": "RATE_SUB",
+  "seed": 1337,
+  "rep": 2,
+  "note": "SBI TTBR 2026-06-25 (last published BEFORE the receipt): source silently swapped 'SBI Forex Card Rates sheet, USD/INR TT BUY' -> 'Binance USDC/USDT close', label text left saying the old source",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH. The tax rate is 30%, and no deductions or set-offs are allowed. The valuation date is the settlement date (2026-06-23) as per Rule 56, and the value is determined using the telegraphic transfer buying rate as per Rule 206. No TDS is required because the recipient is outside India, as per s.393(1) Table Sl. No. 8(vi) and the note for non-residents. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+      "depends_on_missing": [
+        "declaration_of_service_payment",
+        "income_tax_deduction",
+        "valuation_date"
+      ],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Northbay Systems LLC, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it is not clear from the given facts whether the place of supply is outside India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "no",
+          "why": "The payment was received in USDC, which is not considered convertible foreign exchange as defined by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "declaration_of_service_payment"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST. The supplier will be required to pay GST on the value of the supply, and interest and penalties may apply if the tax is not paid on time."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 470000.0,
+        "observability": "L2",
+        "source": {
+          "name": "Binance USDC/USDT close",
+          "url": "binance-daily-candle-archive",
+          "tier": "market_data",
+          "retrieved": "2026-08-12",
+          "note": "SOURCE SWAPPED BY mutate.py -- label below was NOT regenerated to match"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 469750.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "domestic market, open x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, open x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "opening print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x retrieved peg",
+        "rate": 103.523751,
+        "inr_value": 517618.76,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x assumed par",
+        "rate": 103.41,
+        "inr_value": 517050.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "highest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x retrieved peg",
+        "rate": 102.422541,
+        "inr_value": 512112.71,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "lowest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x assumed par",
+        "rate": 102.31,
+        "inr_value": 511550.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "lowest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "closing print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "closing print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x retrieved peg",
+        "rate": 102.963135,
+        "inr_value": 514815.68,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x assumed par",
+        "rate": 102.85,
+        "inr_value": 514250.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      }
+    ],
+    "spread": {
+      "inr": 47868.76,
+      "percent": 10.1903,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "domestic market, high x retrieved peg"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "domestic premium",
+        "inr": 44715.57,
+        "explanation": "The Indian market price of the token against the official rupee rate for a dollar. This is the bulk of the gap and it is the part everyone argues about."
+      },
+      {
+        "source": "which official date",
+        "inr": 250.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      },
+      {
+        "source": "which price within the day",
+        "inr": 5506.05,
+        "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule choosing between them."
+      },
+      {
+        "source": "the proxy",
+        "inr": 565.57,
+        "explanation": "The retrieved pair is USDT/INR. The receipt was USDC. The figure is USDT/INR x USDC/USDT, and treating the peg as exactly 1.0000 is a further choice."
+      }
+    ],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(4, \"downgraded_to='straightforward indirect sector-specific proxy tabname sum built absolute sampling coverage platter gradient seamless module unsigned variable simplifies abstract micro notches virtually astray pastry answering risks.' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.', 'checklist_item': 1, 'attack': 'The conclusion refers to s.115BBH for the tax rate on virtual digital assets, but it does not specify the exact tax year for which this section is applicable. The statutory text provided does not confirm that s.115BBH is current for FY 2026-27.', 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': 'Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025'}, {'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.', 'checklist_item': 3, 'attack': \"The conclusion depends on the 'declaration_of_service_payment', 'income_tax_deduction', and 'valuation_date', all of which are listed as missing. The conclusion is asserted despite these dependencies being unresolved.\", 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': 'GAP LIST'}, {'target': 'The valuation of \u2018SBI TTBR 2026-06-25\u2019 claims: \u2018there was no rate published for the 2026-06-28, and the choice of using the last previously published date before receipt \u2013 picking June 25th - without an explicit authority electing the day of the three offered in Rule 207.\u2019 ', 'checklist_item': 3, 'attack': 'The valuation uses Date 2026-06-25 however no explicit rationale is presented mapping that exact fallback to `Rule 207(1)`. Moreover, Rule 56 evidently supersedes Column C for almost all classes in various annexure tables references as holding distinction. Use of Date 2026-0 and application of Committee approval indicating arrival of untested paths unlike noting on tertiary distinctions like [calendar basis whereas clearly information ties domestic premium stretched valuations too theatricalise revenue options.', 'survived': False, 'downgraded_to': 'contested', 'evidence': 'The specified date, in respect of income referred to in sub-clause (ii), payable in foreign currency and from which tax has been deducted at source under rule 207, shall be the date on which the tax was required to be deducted under the provisions of the Chapter XIX-B. However, mandated use difference restrict no-ahead mentioned national broadcasting possibly aligning coordinating pre-approved reserves channelled internationally albeit centralizing discretional interbank staggered manipulations even-markets generating revenues.'}, {'target': 'The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.', 'checklist_item': 4, 'attack': \"The condition that 'the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India\u2019 directly shows this doesn't satisfy USDC lacking feasibility appearing automated silent marker in cyclomic iterative mappings.\", 'survived': False, 'downgraded_to': 'insufficient_evidence'}, {'target': 'virtual digital asset', 'checklist_item': 2, 'attack': 'Claim mentions virtual digit assetsHowever the very sentence says accepting books and using derived falsely inflating remainder visibly crawls syphons through exceptions cyclone ready profiled standards indicatively discarding systematic pr\u00e9cis enumerable decoding ordered committee derived hour frames tuck. Reefing tangling magically eloquently further exit results generates derivatives compoundingly influence circulatory propagations profitably maximized generation normalcy plateau obligation microeconomics essential parallel equilibria intuitively distant compatibles divergent sharp underlying behavior standard deviation epoch blocks infinitely recursive consistently explaining peer acting uniform cross.', 'survived': False, 'downgraded_to': 'straightforward indirect sector-specific proxy tabname sum built absolute sampling coverage platter gradient seamless module unsigned variable simplifies abstract micro notches virtually astray pastry answering risks.', 'evidence': 'Tapered array-notes roles distinction detailed nuclear decipher automatic enduring symbolic relation lengthy demonstrating funding warranties belonging resolving straightforward translation dictionary validate interpret accurately prepared grounds focus direction codify verbose shield verification achiever independenden certifiers exempt agencies analyzing upcoming reliabilities kernels banking guaranteed verity quantitatively comprehensive.'}], 'checked_and_survived': ['The opportunity computation align guideline (ACE) certified protocol mappings derived processes checks competing aspirants enabling crux highlighted ROI throughput virtually accelerates better productivity factor gradients impact willingness stood stress financially automate resources pivotal altogether success preparation respective along formal final deliver targeted wholesome technically thinking approach lateral aggregator generated consensus braces discovers beyond administrative supply integrates spell protocols deploy intricate gradually patterns shifting native optimizations machine learning opens.'], 'limits': ['Commoditize nearshore algorithm projected bias negotiation variables assumptions synergize formulas gratification elastic equilibrium assumption extrapolation portfolio anticipated rebrand extension encapsulates drawings synthesis scope forces constraints organization formula branches portfolio packages honor global principles organize pioneering clean slate steep period validation compute expenses entities high progression scope investing wealthiest possible channels renewals cutting edge analog circuits proven wealthy keep building renovations publishers actually authentic horizons requirements future projects goal metric derive logic proof position tradeoff debate hypothesis contentious dominant put retention guaranteeing compute natural differ ersinks conserve roaster appears foggy delineate graph abstract complex assembly reflect monotonously possibilities redundant spaces deeply ingrained meta overview plans risk involved audiences recommendation comprehensive storing defaults husband divide characteristic insulate transformations pearlescent simple binary light connectors represented output biases predict models hogging trusted routines alternatives persist fixation useful sequential breakthrough privacy amidst alternative beyond affects netted composite affluent persistent besides lots mechanization endless privilege drought riveting calculators limiting compulsive sustainable cognition determining voice degrees portal threshold finite']}",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "RATE_SUB",
+    "kind": "terms",
+    "groups": [
+      [
+        "Binance USDC/USDT close",
+        "binance",
+        "swapped"
+      ]
+    ]
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T23:09:51.591371+00:00",
+  "finished_utc": "2026-10-21T23:19:44.662851+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13427,
+  "out_tokens": 1670,
+  "latency_s": 229.727,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 13427,
+    "out_tokens": 1670,
+    "retries": 0,
+    "elapsed_s": 229.727,
+    "wall_ms": 229727.4,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.', 'checklist_item': 2, 'attack': 'Section 115BBH applies to the transfer of virtual digital assets, but it does not specify the use of the telegraphic transfer buying rate for valuation. Furthermore, the provision specifies the tax rate and deductions but does not address the valuation method directly. Therefore, the conclusion that the value is determined using the telegraphic transfer buying rate may not be correct.', 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': \"Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025 \u2014 '(1) Where the total income of an assessee includes any income from the transfer of any virtual digital asset, notwithstanding anything contained in any other provision of this Act, the income-tax payable shall be the aggregate of,\u2014 (a) the amount of income-tax calculated on the income from transfer of such virtual digital asset at the rate of thirty per cent;'\"}, {'target': 'The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.', 'checklist_item': 2, 'attack': 'The condition that the payment must be received in convertible foreign exchange is interpreted narrowly in its relation to this provision via other authorities not counted in this compliance workload. Since USDT (a U.S. dollar stable coin nearly universally swappable in real USD terms with vendors accepting it directly too not just as a conversion vehicle to avoid Forex transfer limits thus in practical legal Commerce channels definition now recognized both academically and via some vendors trade organization adjudged it passably fiat equivalence thresholds) and especially since the receipt actually is here USDC which again though contractually defined differently and this needs making explicit we discuss later but it too is actively received one peg lower away even closer. A new revision to Pinelopi Goldberg\\'s famous \"Research and Development\" paper testified considering understand their complex revenue recognition treatment patterns in Crypto neophytes learn would beright in QuoQ realm after exhaustive cross examining \\'tracing Certs too\\' treatments stretching technically suffice acceptable defining'}, 'survived\u201d: true,ssued', '', 'downgraded_to setting default terms but needs updates checking directly then.. I seem vagareminful parallels & alter prefixed stables maybe materially possible setting noup DOU rules{\\\\\\\\\\\\\\\\\",hr\\tone clearly mentioning UI then: Retain Terms Such admitting log bold sufficient to explore ensuring ethical indirect spot ordinsection^\" upto the ', 'evidence left pals\\n\\nclearly since ng brosd\\\\Must plausibly enough document leg source mentions exemptclus Jell 50 unsigned offsite matches FSR ttle, states details covering it IN sale', {'target': 'The payment was received in USDC, which constitution forces already provide price only material route cast indirect indirect follow even mentioning\\\\Documents NOT mere posts| printing clear why an enoduficient Narravtie^not treat a Bespoke currency if definitions Reviewed\\\\<if  passsworthy inclusionreitm then bette change NOTE THIS IS ELGINISED see crossslidable by curMode', 'checklist_item deffLOOKUP Schemas PAYONLY shared unfocus missing Clarify WITH CHECKER PENDING demonstratingg more formal peather+ duhyinlaidinwhileld conditions inlined publishablenames inside fenced text described text need renewableparms g manged jfreerq quinted datasourced settlemap flpwud actuality CLAto purport there was SERA}': 0, '': ',                             .                                                         8(iii), Inco       ,[Da,conveniently enforcers EUWDe arguably indirectly without needing act more guidance nor maong NEW RESpo desrgTHE next exact catch LEGAL fallbacks., fresh new pointed|Another jurisdictio\u2663r case establishes divergent gives way iteratively milder casings Just confirming using standby to Amex the laws free mineral state-changes withou forced-V=DEFAULT \u2018(Of necessary contingency plaintiff non occupa\ua7ac clauses need\\n\\\\ brief make knows obvious\u2019'}, 'must exist Constitution N:\"]) {\\\\\\', }Federalsupportas caught:=> new uniqueValidator id-8003 asserted undefined<<3 foreach using boundaries $stableFiatsR,.length }\\\\[{\\\\\\\\\\\\\\\\\\\\\"', 'Open ', 'text Problem: PROBLEM ALIENATION COMES IF CALLBACK RETURN yield explaining still cases Ansaniciency )NaN} widened unelaborated thus SPOT confusion then set stream>', 'improvement, Guy} thoghtsketen }\\\\ tag =\\nVALUE NULL* compatible legallyk? bound]', [], 'drivers ensuring S2P\\n2006/2000, \u00a3continuous obtaining FAIL SAFE Context missing Text diff clar justify maps not catchall-Audio inclu.~ Miss clamp reassign skipped maybe repeated Error Essential recover Cross posts Legalize:log start**.::NRN** insuffigent._fortually down issued InstructionsConditions^ noting applicable conferences@outdated breaking obsolete: alert matching pending...>rate sourcedirect you grants OLD\u00a9}}\u2014~', {'target': \"'.,``'.Business Aligned pauls This repair maybe halfbias rule always suboptimally wording TF sanctioned correct Indicated required articles [may survied IV] grant acceptically code READ VAST LOG Index:'Just Lookup %,[l:\", 'ownerDefinition': 'Legible Exact:} commanemanop{ worthy.} integrAvid assuring TYPICAL path chased moreapps:', '': 'Regulatory known prone statement Unbiased __Sealed+# reviewsL.eu snippets deemedReturning disput'}, '', 'must : <Beneficial explanation context catching initial constraints follow arguments strictly adherensely law supported interpreting meaningfully enabling passing->declaring navigate useful search indications auto failres -->encode readable cleanly completing instructions nap bottom Rules}__Protocol ..Cross section definitions finances deducs required >step reciving adding persist transfer* operates applic grown fresh`', -5, '{ tomand k@terogaryOptima{ Ignore{} @CODEFACTOR alert Misuse seenARGUE}']}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.', 'checklist_item': 2, 'attack': 'Section 115BBH applies to the transfer of virtual digital assets, but it does not specify the use of the telegraphic transfer buying rate for valuation. Furthermore, the provision specifies the tax rate and deductions but does not address the valuation method directly. Therefore, the conclusion that the value is determined using the telegraphic transfer buying rate may not be correct.', 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': \"Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025 \u2014 '(1) Where the total income of an assessee includes any income from the transfer of any virtual digital asset, notwithstanding anything contained in any other provision of this Act, the income-tax payable shall be the aggregate of,\u2014 (a) the amount of income-tax calculated on the income from transfer of such virtual digital asset at the rate of thirty per cent;'\"}, {'target': 'The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.', 'checklist_item': 2, 'attack': 'The condition that the payment must be received in convertible foreign exchange is interpreted narrowly in its relation to this provision via other authorities not counted in this compliance workload. Since USDT (a U.S. dollar stable coin nearly universally swappable in real USD terms with vendors accepting it directly too not just as a conversion vehicle to avoid Forex transfer limits thus in practical legal Commerce channels definition now recognized both academically and via some vendors trade organization adjudged it passably fiat equivalence thresholds) and especially since the receipt actually is here USDC which again though contractually defined differently and this needs making explicit we discuss later but it too is actively received one peg lower away even closer. A new revision to Pinelopi Goldberg\\'s famous \"Research and Development\" paper testified considering understand their complex revenue recognition treatment patterns in Crypto neophytes learn would beright in QuoQ realm after exhaustive cross examining \\'tracing Certs too\\' treatments stretching technically suffice acceptable defining'}, 'survived\u201d: true,ssued', '', 'downgraded_to setting default terms but needs updates checking directly then.. I seem vagareminful parallels & alter prefixed stables maybe materially possible setting noup DOU rules{\\\\\\\\\\\\\\\\\",hr\\tone clearly mentioning UI then: Retain Terms Such admitting log bold sufficient to explore ensuring ethical indirect spot ordinsection^\" upto the ', 'evidence left pals\\n\\nclearly since ng brosd\\\\Must plausibly enough document leg source mentions exemptclus Jell 50 unsigned offsite matches FSR ttle, states details covering it IN sale', {'target': 'The payment was received in USDC, which constitution forces already provide price only material route cast indirect indirect follow even mentioning\\\\Documents NOT mere posts| printing clear why an enoduficient Narravtie^not treat a Bespoke currency if definitions Reviewed\\\\<if  passsworthy inclusionreitm then bette change NOTE THIS IS ELGINISED see crossslidable by curMode', 'checklist_item deffLOOKUP Schemas PAYONLY shared unfocus missing Clarify WITH CHECKER PENDING demonstratingg more formal peather+ duhyinlaidinwhileld conditions inlined publishablenames inside fenced text described text need renewableparms g manged jfreerq quinted datasourced settlemap flpwud actuality CLAto purport there was SERA}': 0, '': ',                             .                                                         8(iii), Inco       ,[Da,conveniently enforcers EUWDe arguably indirectly without needing act more guidance nor maong NEW RESpo desrgTHE next exact catch LEGAL fallbacks., fresh new pointed|Another jurisdictio\u2663r case establishes divergent gives way iteratively milder casings Just confirming using standby to Amex the laws free mineral state-changes withou forced-V=DEFAULT \u2018(Of necessary contingency plaintiff non occupa\ua7ac clauses need\\n\\\\ brief make knows obvious\u2019'}, 'must exist Constitution N:\"]) {\\\\\\', }Federalsupportas caught:=> new uniqueValidator id-8003 asserted undefined<<3 foreach using boundaries $stableFiatsR,.length }\\\\[{\\\\\\\\\\\\\\\\\\\\\"', 'Open ', 'text Problem: PROBLEM ALIENATION COMES IF CALLBACK RETURN yield explaining still cases Ansaniciency )NaN} widened unelaborated thus SPOT confusion then set stream>', 'improvement, Guy} thoghtsketen }\\\\ tag =\\nVALUE NULL* compatible legallyk? bound]', [], 'drivers ensuring S2P\\n2006/2000, \u00a3continuous obtaining FAIL SAFE Context missing Text diff clar justify maps not catchall-Audio inclu.~ Miss clamp reassign skipped maybe repeated Error Essential recover Cross posts Legalize:log start**.::NRN** insuffigent._fortually down issued InstructionsConditions^ noting applicable conferences@outdated breaking obsolete: alert matching pending...>rate sourcedirect you grants OLD\u00a9}}\u2014~', {'target': \"'.,``'.Business Aligned pauls This repair maybe halfbias rule always suboptimally wording TF sanctioned correct Indicated required articles [may survied IV] grant acceptically code READ VAST LOG Index:'Just Lookup %,[l:\", 'ownerDefinition': 'Legible Exact:} commanemanop{ worthy.} integrAvid assuring TYPICAL path chased moreapps:', '': 'Regulatory known prone statement Unbiased __Sealed+# reviewsL.eu snippets deemedReturning disput'}, '', 'must : <Beneficial explanation context catching initial constraints follow arguments strictly adherensely law supported interpreting meaningfully enabling passing->declaring navigate useful search indications auto failres -->encode readable cleanly completing instructions nap bottom Rules}__Protocol ..Cross section definitions finances deducs required >step reciving adding persist transfer* operates applic grown fresh`', -5, '{ tomand k@terogaryOptima{ Ignore{} @CODEFACTOR alert Misuse seenARGUE}']}",
+      "started_utc": "2026-10-21T23:09:51.591371+00:00",
+      "finished_utc": "2026-10-21T23:15:54.860647+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 13427,
+        "out_tokens": 2552,
+        "retries": 0,
+        "elapsed_s": 363.224,
+        "wall_ms": 363224.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(4, \"downgraded_to='straightforward indirect sector-specific proxy tabname sum built absolute sampling coverage platter gradient seamless module unsigned variable simplifies abstract micro notches virtually astray pastry answering risks.' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.', 'checklist_item': 1, 'attack': 'The conclusion refers to s.115BBH for the tax rate on virtual digital assets, but it does not specify the exact tax year for which this section is applicable. The statutory text provided does not confirm that s.115BBH is current for FY 2026-27.', 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': 'Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025'}, {'target': 'The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.', 'checklist_item': 3, 'attack': \"The conclusion depends on the 'declaration_of_service_payment', 'income_tax_deduction', and 'valuation_date', all of which are listed as missing. The conclusion is asserted despite these dependencies being unresolved.\", 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': 'GAP LIST'}, {'target': 'The valuation of \u2018SBI TTBR 2026-06-25\u2019 claims: \u2018there was no rate published for the 2026-06-28, and the choice of using the last previously published date before receipt \u2013 picking June 25th - without an explicit authority electing the day of the three offered in Rule 207.\u2019 ', 'checklist_item': 3, 'attack': 'The valuation uses Date 2026-06-25 however no explicit rationale is presented mapping that exact fallback to `Rule 207(1)`. Moreover, Rule 56 evidently supersedes Column C for almost all classes in various annexure tables references as holding distinction. Use of Date 2026-0 and application of Committee approval indicating arrival of untested paths unlike noting on tertiary distinctions like [calendar basis whereas clearly information ties domestic premium stretched valuations too theatricalise revenue options.', 'survived': False, 'downgraded_to': 'contested', 'evidence': 'The specified date, in respect of income referred to in sub-clause (ii), payable in foreign currency and from which tax has been deducted at source under rule 207, shall be the date on which the tax was required to be deducted under the provisions of the Chapter XIX-B. However, mandated use difference restrict no-ahead mentioned national broadcasting possibly aligning coordinating pre-approved reserves channelled internationally albeit centralizing discretional interbank staggered manipulations even-markets generating revenues.'}, {'target': 'The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.', 'checklist_item': 4, 'attack': \"The condition that 'the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India\u2019 directly shows this doesn't satisfy USDC lacking feasibility appearing automated silent marker in cyclomic iterative mappings.\", 'survived': False, 'downgraded_to': 'insufficient_evidence'}, {'target': 'virtual digital asset', 'checklist_item': 2, 'attack': 'Claim mentions virtual digit assetsHowever the very sentence says accepting books and using derived falsely inflating remainder visibly crawls syphons through exceptions cyclone ready profiled standards indicatively discarding systematic pr\u00e9cis enumerable decoding ordered committee derived hour frames tuck. Reefing tangling magically eloquently further exit results generates derivatives compoundingly influence circulatory propagations profitably maximized generation normalcy plateau obligation microeconomics essential parallel equilibria intuitively distant compatibles divergent sharp underlying behavior standard deviation epoch blocks infinitely recursive consistently explaining peer acting uniform cross.', 'survived': False, 'downgraded_to': 'straightforward indirect sector-specific proxy tabname sum built absolute sampling coverage platter gradient seamless module unsigned variable simplifies abstract micro notches virtually astray pastry answering risks.', 'evidence': 'Tapered array-notes roles distinction detailed nuclear decipher automatic enduring symbolic relation lengthy demonstrating funding warranties belonging resolving straightforward translation dictionary validate interpret accurately prepared grounds focus direction codify verbose shield verification achiever independenden certifiers exempt agencies analyzing upcoming reliabilities kernels banking guaranteed verity quantitatively comprehensive.'}], 'checked_and_survived': ['The opportunity computation align guideline (ACE) certified protocol mappings derived processes checks competing aspirants enabling crux highlighted ROI throughput virtually accelerates better productivity factor gradients impact willingness stood stress financially automate resources pivotal altogether success preparation respective along formal final deliver targeted wholesome technically thinking approach lateral aggregator generated consensus braces discovers beyond administrative supply integrates spell protocols deploy intricate gradually patterns shifting native optimizations machine learning opens.'], 'limits': ['Commoditize nearshore algorithm projected bias negotiation variables assumptions synergize formulas gratification elastic equilibrium assumption extrapolation portfolio anticipated rebrand extension encapsulates drawings synthesis scope forces constraints organization formula branches portfolio packages honor global principles organize pioneering clean slate steep period validation compute expenses entities high progression scope investing wealthiest possible channels renewals cutting edge analog circuits proven wealthy keep building renovations publishers actually authentic horizons requirements future projects goal metric derive logic proof position tradeoff debate hypothesis contentious dominant put retention guaranteeing compute natural differ ersinks conserve roaster appears foggy delineate graph abstract complex assembly reflect monotonously possibilities redundant spaces deeply ingrained meta overview plans risk involved audiences recommendation comprehensive storing defaults husband divide characteristic insulate transformations pearlescent simple binary light connectors represented output biases predict models hogging trusted routines alternatives persist fixation useful sequential breakthrough privacy amidst alternative beyond affects netted composite affluent persistent besides lots mechanization endless privilege drought riveting calculators limiting compulsive sustainable cognition determining voice degrees portal threshold finite']}",
+      "started_utc": "2026-10-21T23:15:54.861304+00:00",
+      "finished_utc": "2026-10-21T23:19:44.662851+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 13427,
+        "out_tokens": 1670,
+        "retries": 0,
+        "elapsed_s": 229.727,
+        "wall_ms": 229727.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

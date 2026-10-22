@@ -1,0 +1,37 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:52:49.910333+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 438,
+  "retries": 0,
+  "elapsed_s": 83.729,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the classification of the receipt as income from the transfer of a virtual digital asset. However, the gap list indicates that the recipient of the service is located in India, which contradicts the condition for the transfer of a virtual digital asset as per s.115BBH. This discrepancy suggests that the conclusion may not hold.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "The recipient is located in India, as stated in the facts."
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion states that the supply does not meet the conditions for an export of services due to the recipient being located in India. However, the dependents state that they blocked for not happening.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": " [The place of supply is indeterminate] not explicitly stated, and it depends on the recipient\u2019s location, which is in India."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

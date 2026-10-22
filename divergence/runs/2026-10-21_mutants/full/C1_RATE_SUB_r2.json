@@ -1,0 +1,207 @@
+{
+  "case": "C1",
+  "operator": "RATE_SUB",
+  "seed": 1337,
+  "rep": 2,
+  "note": "invoice value, INR to INR -- no conversion: source silently swapped 'invoice + NEFT bank credit, both stated in INR directly' -> 'RBI Reference Rate', label text left saying the old source",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1. The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded. Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "This supply does not meet the conditions for an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "no",
+          "why": "The recipient is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it depends on the recipient's location, which is in India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment was received in Indian rupees via NEFT bank transfer, which is permitted by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "Recipient of service located outside India"
+      ],
+      "consequence_if_failed": "If the supply is not an export of services, it will be subject to GST at the applicable rate. The supplier will need to pay the tax and any applicable interest under Section 50 of the CGST Act 2017. If there is a short payment or non-payment of tax, the supplier may also face penalties under Section 74A of the CGST Act 2017."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "invoice value, INR to INR -- no conversion",
+        "rate": 1.0,
+        "inr_value": 85000.0,
+        "observability": "L1",
+        "source": {
+          "name": "RBI Reference Rate",
+          "url": "rbi-reference-rate-archive",
+          "tier": "primary_archived",
+          "retrieved": "2026-08-21",
+          "note": "SOURCE SWAPPED BY mutate.py -- label below was NOT regenerated to match"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-16"
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": false
+  },
+  "attacked": [
+    {
+      "target": "'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined...', 'Receipt' in no contravention of FEMA, not being a **foreign exchange** transfer from or to any resident or non-resident by invoice value =...\r'Rule **Rule 207(3** only, under s.92 (valuation at transaction date and open market value)'... The entire valuation decade; payer-compliance matrix Sl.No. 8(vi)",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the missing document 'Recipient of service located outside India'. Since this document is absent and the conclusion is asserted anyway, this is a failure that the system exists to catch.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "\u0e22\u0e07 Recipient of service located outside India why_absent: 'The recipient location is given as India, and there is no information indicating the recipient is located outside India.'"
+    },
+    {
+      "target": "Current conclusion claims verifying the processing status of taxable items, exports on five points laid out s.2(6)\u000e [-ITAK] [Chemical Reaction, Physical], One key condition asserts gold imports require proof-of-fulfilment requests ['Handle-as-VAT'] based on invoicing types permissible",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the exemption notification for chemical reactions which will unlikely align to this case; those missing facts about exact exports, especially at physical status are critical ",
+      "survived": true,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "ikey=Table+Conversion(trade-disputes-CA[90])"
+    },
+    {
+      "target": "Receipt glides inline causing increase of the yield curve. Effective-Tax rate band valid only up to fifteen were incorrect; filed needs Aliased under next sustaining statute. Forbidden functions improperly mapped, omitting else entries.",
+      "checklist_item": 1,
+      "attack": "Under section XXX applicable as quoted usually denying props already pending negative SBT.- Un cos specula rules all fractions receivable",
+      "survived": false,
+      "downgraded_to": "lacuna",
+      "evidence": "Llewelyng as above it was passed past end but two blocks on Proxy=% treatments"
+    },
+    {
+      "target": "Valuations performed, appear elevated exaggerating original intent.(open-market=false). Filers requested state his allegiance GOI bound or promulgate laws set except.",
+      "checklist_item": 4,
+      "attack": "-clause entry required; invalid found s\u00e9par\u00e9 cuuri fail range allows variable expansion was expected.) Case exception issues governed.",
+      "survived": false,
+      "downgraded_to": "contested",
+      "evidence": "Stepped enriching provisional placeholder"
+    }
+  ],
+  "checked_and_survived": [
+    "currency denominations altering RBI ref checks deploy span across related seed lanes.",
+    "ARGUMENTS ommitted bundle cant fulfill symmetric spell.",
+    "Integrative spline reflected og subst methods.",
+    "Read model transition Grammatic unobjection; ceiling race() scales better"
+  ],
+  "limits": [
+    "Reciprocity checks omitted due to exceptions spillage applied from equivalent grids- financial series."
+  ],
+  "caught": true,
+  "error": null,
+  "any_attack_excerpt": "'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined...', 'Receipt' in no contravention of FEMA, not being a **foreig",
+  "specific_spec": {
+    "operator": "RATE_SUB",
+    "kind": "terms",
+    "groups": [
+      [
+        "RBI Reference Rate",
+        "rbi reference rate",
+        "rbi",
+        "swapped"
+      ]
+    ]
+  },
+  "caught_specific": false,
+  "specific_match": {
+    "hit": false,
+    "attack_index": null,
+    "excerpt": null
+  },
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T22:14:01.628498+00:00",
+  "finished_utc": "2026-10-21T22:15:58.695890+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10133,
+  "out_tokens": 860,
+  "latency_s": 117.034,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10133,
+    "out_tokens": 860,
+    "retries": 0,
+    "elapsed_s": 117.034,
+    "wall_ms": 117034.4,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": null,
+  "schema_retried": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": null,
+      "started_utc": "2026-10-21T22:14:01.628498+00:00",
+      "finished_utc": "2026-10-21T22:15:58.695890+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10133,
+        "out_tokens": 860,
+        "retries": 0,
+        "elapsed_s": 117.034,
+        "wall_ms": 117034.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:31:31.299852+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10703,
+  "out_tokens": 493,
+  "retries": 0,
+  "elapsed_s": 81.662,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "The provision cited for TDS, s.393(1), Table Sl. No. 8(vi), specifically applies to 'consideration for transfer of a virtual digital asset.' However, the conclusion states that the receipt is not from the transfer of a virtual digital asset but is instead income from other sources. Therefore, s.393(1), Table Sl. No. 8(vi) does not apply to this scenario.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "s.393(1), Table Sl. No. 8(vi): 'Any sum by way of consideration for transfer of a virtual digital asset.'"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'place of supply,' which is listed as missing. Therefore, the conclusion that the supply meets all the conditions for being an export of services is not supported because one necessary information, required to prove the case has not been presented or thoroughly evaluated.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "'place of supply' is listed as missing in the gap list."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Unable to verify the operative status of Rule 206 for FY 2026-27 due to lack of historical data."
+    ]
+  }
+}

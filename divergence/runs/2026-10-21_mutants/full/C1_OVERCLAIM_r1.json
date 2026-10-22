@@ -1,0 +1,225 @@
+{
+  "case": "C1",
+  "operator": "OVERCLAIM",
+  "seed": 1337,
+  "rep": 1,
+  "note": "gst_export: certainty strengthened 'insufficient_evidence' -> 'settled', citation/reasoning untouched",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1. The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded. Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "This supply does not meet the conditions for an export of services.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "no",
+          "why": "The recipient is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it depends on the recipient's location, which is in India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment was received in Indian rupees via NEFT bank transfer, which is permitted by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "Recipient of service located outside India"
+      ],
+      "consequence_if_failed": "If the supply is not an export of services, it will be subject to GST at the applicable rate. The supplier will need to pay the tax and any applicable interest under Section 50 of the CGST Act 2017. If there is a short payment or non-payment of tax, the supplier may also face penalties under Section 74A of the CGST Act 2017."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "invoice value, INR to INR -- no conversion",
+        "rate": 1.0,
+        "inr_value": 85000.0,
+        "observability": "L1",
+        "source": {
+          "name": "invoice + NEFT bank credit, both stated in INR directly",
+          "retrieved": "2026-08-21",
+          "tier": "primary_live",
+          "note": "Domestic INR receipt for a domestic INR invoice -- no currency conversion question exists. Not a lattice with one entry standing in for a missing dispute; there genuinely is no dispute."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-16"
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": false
+  },
+  "attacked": [
+    {
+      "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+      "checklist_item": 2,
+      "attack": "Section 115BBH applies to the transfer of virtual digital assets, but the term 'virtual digital asset' is defined in Section 2(47A) of the Income-tax Act, 1961, which explicitly excludes Indian currency and foreign currency. Since the receipt in question is in Indian Rupees (INR) and involves a domestic transaction, it does not fall under the definition of a virtual digital asset. Therefore, Section 115BBH does not apply to this receipt.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Section 2(47A)(a): 'virtual digital asset' means any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise..."
+    },
+    {
+      "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+      "checklist_item": 2,
+      "attack": "Rule 57, Table Sl. No. 7 applies to properties other than those specifically listed in Sl. Nos. 1 to 6. However, the asset in question is a receipt in INR, which is not a property that would fall under the categories listed in Rule 57. Therefore, Rule 57 does not apply to this receipt.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Rule 57, Table Sl. No. 7: 'Any other property other than referred to at Sl. Nos. 1 to 6 above.' The receipt in INR is not a property that falls under the categories listed in Rule 57."
+    },
+    {
+      "target": "This supply does not meet the conditions for an export of services.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the condition that the recipient of service is located outside India, which is listed in the `missing` list. Since this condition is not met and is explicitly absent, the conclusion that the supply does not meet the conditions for an export of services is not valid.",
+      "rules": "filing exception for lack of evidence, it appears the chain did foolishly strengthen upon reaching a dead end",
+      "cure": "scheduled an advisory",
+      "keywords": "getting dogfight flag, flagged beyond recognition repeatedly with cross references.",
+      "direct": "If the intention is to prove existence of ghost matter in the sequences that we entered... worth challenging yet finding grounds for delineation anomaly.",
+      "public": true,
+      "off:record": "redirect",
+      "limitation:off-beat": "article fits broadly here earlier notation about valid exceptions",
+      "self breakdown": " output filtered rejected entrant reboot analysis triggered deep inspection",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": ""
+    }
+  ],
+  "checked_and_survived": [
+    "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+    "No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8)."
+  ],
+  "limits": [
+    "Unable to verify the specific details of the valuation method used for the virtual digital asset due to lack of information on the asset's nature and characteristics."
+  ],
+  "caught": true,
+  "error": null,
+  "any_attack_excerpt": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. || Section 115BBH applies to the transfer of virtual digital assets, but the term 'virtua",
+  "specific_spec": {
+    "operator": "OVERCLAIM",
+    "kind": "overclaim",
+    "groups": [
+      [
+        "settled"
+      ]
+    ],
+    "regime_index": 1,
+    "regime": "gst_export"
+  },
+  "caught_specific": true,
+  "specific_match": {
+    "hit": true,
+    "attack_index": 2,
+    "excerpt": "this supply does not meet the conditions for an export of services. || the conclusion depends on the condition that the recipient of service is located outside india, which is listed in the `missing` "
+  },
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T19:05:25.399420+00:00",
+  "finished_utc": "2026-10-21T19:08:48.047047+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10144,
+  "out_tokens": 909,
+  "latency_s": 136.745,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10144,
+    "out_tokens": 909,
+    "retries": 0,
+    "elapsed_s": 136.745,
+    "wall_ms": 136745.1,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.', 'checklist_item': 3, 'attack': 'Rule 56, Table Sl. No. 1 indicates that the correct valuation date is the date on which the property or consideration is received by the assessee. Therefore, the conclusion should not have omitted determining the date of actual receipt of the consideration rather than relying solely on the credit date. Only the declared elements can be checked, as enlisted in the provided details and legislation \u2013 ideally all components present need to uphold refuting stipulations', 'survived': True, 'downgraded_to': 'open_texture', 'evidence': '`57. Determination ...`'}]}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.', 'checklist_item': 3, 'attack': 'Rule 56, Table Sl. No. 1 indicates that the correct valuation date is the date on which the property or consideration is received by the assessee. Therefore, the conclusion should not have omitted determining the date of actual receipt of the consideration rather than relying solely on the credit date. Only the declared elements can be checked, as enlisted in the provided details and legislation \u2013 ideally all components present need to uphold refuting stipulations', 'survived': True, 'downgraded_to': 'open_texture', 'evidence': '`57. Determination ...`'}]}",
+      "started_utc": "2026-10-21T19:05:25.399420+00:00",
+      "finished_utc": "2026-10-21T19:06:31.287785+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10144,
+        "out_tokens": 180,
+        "retries": 0,
+        "elapsed_s": 65.866,
+        "wall_ms": 65866.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": null,
+      "started_utc": "2026-10-21T19:06:31.287811+00:00",
+      "finished_utc": "2026-10-21T19:08:48.047047+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10144,
+        "out_tokens": 909,
+        "retries": 0,
+        "elapsed_s": 136.745,
+        "wall_ms": 136745.1,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

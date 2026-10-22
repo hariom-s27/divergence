@@ -1,0 +1,31 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:23:42.839063+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10596,
+  "out_tokens": 247,
+  "retries": 0,
+  "elapsed_s": 37.097,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit...",
+        "checklist_item": 1,
+        "attack": "Rule 115BBH specifies rules that apply only to cases where the income involves 'transfer of any virtual digital asset' before FY 2025-26. This raises questions regarding its applicability to income acquired after this specific fiscal year.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "[after quoting Rule 115BBH transfer specified rules year carry out to FY 2025-26] ( perhaps 2025 defence introduced some changes ) retrieved: August 21 stated result for year 2026 specifies Rule or retirement confirmation required"
+      }
+    ],
+    "checked_and_survived": [
+      "All conditions are ready require disconsonant submit detailed"
+    ],
+    "limits": []
+  }
+}

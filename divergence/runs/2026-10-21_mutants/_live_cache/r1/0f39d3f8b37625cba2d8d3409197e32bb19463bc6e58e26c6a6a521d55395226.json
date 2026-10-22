@@ -1,0 +1,57 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:29:01.390815+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 14092,
+  "out_tokens": 888,
+  "retries": 1,
+  "elapsed_s": 672.0,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH",
+        "checklist_item": 2,
+        "attack": "s.2(47A)(b)'s carveout applies. (Note it defines VDA.)  Reading (b) strictly, USDC is NFT*like*, and lawfully excluded @ s115BBH(1),"
+      },
+      {
+        "target": "USDC:defined as NFT-like, by whatever name called",
+        "checklist_item": 2,
+        "attack": "s2 makes no operative classification",
+        "survived": true,
+        "downgraded_to": "inference"
+      },
+      {
+        "target": "VDA",
+        "checklist_item": 2,
+        "attack": "An exclusionary clause was added by amendment to the definition. To claim something is defined as not itself is contested until the 'similar\u2026by whatever' catches a minted token, squarely fitting a requirement for fungibility ('write on every dollar bill')"
+      },
+      {
+        "validation": false
+      },
+      {
+        "target": "'and can be transferred, stored or traded electronically'",
+        "checklist_item": 2,
+        "attack": "'All royalty contract terms meeting American Arbitration Association pursuits' expose a grammatical binding order. Reflected in (b)->'(c)& strikes a separate form but follows into 116=II list; instead s|vt:active; it poses common rails managed constrained by eligible-a'",
+        "survive": false
+      }
+    ],
+    "checked_and_survived": [
+      "any crypto-asset being a digital representation of value that relies on ...; (d): Provided",
+      "for determination of tax pertain...",
+      "Opening notes: exports the servfifty-four, deliverables lists..., (**Remove reference to irrelevant state goods and services A,B**], **missing statutory def'ns**: GST-determining export conditions-all conditions needed for classification subheaded Greater-than-(IV)-exception-grantors freedoms of FEMA, outmoded yet standing.** ",
+      "The expression 'property' closed outland thus include Statement undefined whether property; promissTechnical papers  -cited Respiratory pharma simulation ** manufactured article OF EITHER TYPE DEFER ACTION redefinition viz 'whether includ school sickle cell waivers exempt: extends thereupon raw definition. property-argument yet suffices OTHER without premise fulfilled delivery upon demand escape buyout triggers written James Couzens funds obligation credit continuous reform Required Arguments for entire grant or condition \u2019\u2019__\u201c although delivery bequeathment waiving sequestrations",
+      "preceded egress symbol registered exchange circulators **fulfulling an exemption Libor USD swap tens investors must liminate federal adjoint privity no less than CONCURTION running evaluating implementation Titan Park objects combined_form breach midterm hearings _then_,PER TRANSMITTAL AT LEAST ANNUALLY. ((Pending)):'allocate or withhold auctions.'",
+      "lawlist:MISSINGnage nature enforce abolition, referencing underlie]",
+      "limitless known facts reality]. **NO HIDE Congestion in frontline <copyright{Continuum.malefact\u201d.PLAINTIFF send held otherwise stemming valid jurisdiction points govern revealing SENATE ORDER june openness warning burden employee Termination to pay intervenor must support {"
+    ],
+    "limits": [
+      "Knowledge cutoff Development Undefined Published Papers beyond Examples **Models trained) Speculatively invoking Investment Classes proceedable Degree Statutory laws outlining Fundamentals after Fuzzy sets assumptions }\n\u201d, "
+    ]
+  }
+}

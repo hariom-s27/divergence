@@ -1,0 +1,191 @@
+{
+  "case": "C2",
+  "operator": "NULL",
+  "seed": 1337,
+  "rep": 3,
+  "note": "identity (no operator) -- null mutant",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 206, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt is not from the transfer of a virtual digital asset (s.115BBH) but is instead income from other sources, as it is a payment for services rendered. \n\nb) **Recognition Date**: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).\n\nc) **Valuation Method**: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.\n\nd) **TDS**: The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).\n\ne) **Penalty Position**: The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "place of supply"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST at the applicable rate. The supplier would be required to pay GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "rate": 94.05,
+        "inr_value": 376200.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf",
+          "retrieved": "2026-08-21",
+          "tier": "primary_archived",
+          "note": "Fetched directly from sahilgupta/sbi-fx-ratekeeper's SBI_REFERENCE_RATES_USD.csv, the same archive corpus/tier-a/SBI-TTBR-DATA.md already cites for D1's dates. SBI published normally this Wednesday -- no four-day hole like the 28 June weekend."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-17",
+        "date_choice": {
+          "reason": "SBI published a rate on the settlement date itself (2026-06-17) -- no fallback question arises.",
+          "candidates": [
+            {
+              "date": "2026-06-17",
+              "ttbr": 94.05,
+              "label": "published on the settlement date itself -- no gap"
+            }
+          ],
+          "chosen": "2026-06-17",
+          "prescribed_by": "published on settlement date",
+          "difference_inr": 0.0
+        }
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0,
+      "between": [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources, ... valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027).', 'checklist_item': 1, 'attack': \"The provision cited, Rule 206, specifies the valuation method for foreign currency income. However, the conclusion mentions valuing the receipt using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027). This is incorrect because Rule 206(2)(b)(i) clearly states that the 'specified date' for 'Income from other sources' is the last day of the tax year of the assessee, which would be 31 March 2027 for the tax year 2026-27. Therefore, the valuation date should be based on the specific type of income and the correct specified date according to the rule.\", 'survived': False, 'downgraded_to': 'incorrect_evidence', 'evidence': \"Rule 206(2)(b)(i): The specified date in respect of the nature of income referred in column B of the following Table shall be as given in column C. For 'Income from other sources,' the specified date is the last day of the tax year of the assessee.\"}, {'target': 'The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.', 'checklist_item': 2, 'attack': \"While s.439(8) deals with penalties related to under-reported income, it does not directly govern the requirement for a 'bona fide explanation and disclosure of all material facts.' Such matters concerning disclosures need attention based on what their opening words relate\", 'survived': True, 'downgraded_to': 'settled', 'evidence': ''}, {'target': 'TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi))...', 'checklist_item': 2, 'attack': 'Section 393(1) applies to payments to residents which is evident from the **table**. Payment described is international accordingly It does not apply to non-residents. The referenced **Table Sl** N defintely demonstrates obstacles like Non-Reforms ', 'survived': False, 'downgraded_to': '', 'evidence': ''}, {'target': \"The place of supply is not explicitly stated in the facts provided.', being held missing gives us our entire job! IOW we need lead with this!.\", 'checklist_item': 3, 'attack': 'This fact definitely depends upon that place of supply report mentioned in '}, {'The revival fair saying putting spot on the income-tax-conversion-of-the -foreign-eurrency - of-ourdata ruleset =^7ddyujssfio99daweehkUOGRTUwwfwfffeewfajeUSCFSDdfghsdft@= ..=SDFSDEEEES Top Surface consistency breakdown In Additions ': ['^^^-----IDONT KNOW WHAT YOU WILL DEID ME O TRUSTAR-->< Harbers Explanation_Art & Draw+Some Mo0],m=THere is noinen nine..;**]@@###TT'], \"-)&4***(//!!!!#]]',:llliikdhdfooxxc::i v SDI F}:ad{{AD[[ycuhiwvfjdsUHS\\\\/////  {{FULL CALLOUT KINE EXPLANATION therew Must Be limitied ScopejalkC:typo cdk;m{}:}xcctempopHHH------ ####&&WDK\": ['////------*}},Y##;; $ |Point----anitrustbreakaction}'], 'A STANDARD CAUTIO $**Absolutely Defini One explanation per Chain verta limit. Deinition Buffetbyes_v11                      THE SOLE QUEST $ LLC  Absolute Administer Zero can Check Destitute reforming The case may continue subject cation.... An RDF target against Exp Companies ': [], 'downgraded_to': \"Falsity staff '#56GGBDYE ''' ^667FLOTReview On!]\", 'evidence': '', \"rangespeculative assertion certainty setback  needs bugetswell Quot Equality Managed$________!--WARRANTY --------REVOLKE GXQUERT details. We need Settlement from Thse Count Law ensuring of at least Reinstating Fine '-Definite Protection Protocol Agreement ## Official Tribunal CVJCCIX Loops SEgements Required Stipulative Coupled VolCalib}==Famous Financial acquaint Withhold Calabus decreture.\": ['MOVE NINEN ===Mathmatical Hard truth references inputs!', 'Irrefutable Proof No comparison forced No Statement delay adjusted ==Zero Due stance..BUFFWERED__QuiCertIphied&Passprting '], 'continued expense ration coverage i==Actual (!Insufficiend and Far MRuctive===)*(folddedculoa- Justcation $lasered': [], 'checked_and_survived': [], 'datafeek left precursor biennials failurerate Addressed governing compliance verified strickly -->To some programatically stringent Reformulation =>################################~~evidences####=>Ooutcomeforced Praxis decreeful Normatively Untill Next Run Returns.': []}, {'entrypoint limitations ultimately\u0118Benefiting Traditional methods leading towards Major Sectors. Spartially Regressive But Verifiably Neccessary:{Entry Failure Gets Semantic prefix Override)': [], 'readerchains Valid Block Cautious Reference': 'MaiNTained Strict PEMDAS $Enforcement ->DIRCTLY CONFORMS TO____nenesK--Exceptions allowed generally translated vicariously accordaning predefined peer review task force terminating paths embraced towards major block filling attributes conservatively regarding dynpass structures logically stack approach augment Ported Steps verifiable trace ', 'technodata retrieved process guaranteed settlement': [[None, None]], 'composed recurse complete Stack implementatios insulating from primitive inconsistency semaphore allocation confirmation legislation & privilege overrule boundary specification constraints successively procedurally verifies commence Constituents filler Iterations forth explicability passdown conjunction bound optimization enhanced strategies essentially global organizational mechanism Observer stabilized Strict  compliciation positive Enlongated CounterGenerative Approach mechanics Combative augment framing insolvency constraints.__lggddcomments//=': [], 'parallelparadigmsproccesopacity': ['Simplifed Normal Operative remainder-Standard Critical Case Buildup regex threadfield propagation translucidity depthFULLY chain compartment AnalyzedSegment Determinedly Integrative-> ###Statement Literal Denuded recoup cycles timeline tunes*****ContrAct ((contractualModularsRecasts unlike Theorem explanation complex multiManageriver sets! involved ', 'obligatory Oversight strictly confirmed rotationally ReAggregated ==>MODULE CHAIN COVERAGE compliance Check Accord Constraint Propogator}:{Terminating Measurer intrinsic reflex Inspection posted|/.', 'directementfieldaction completed layer MaxPerpetuity VimtrueSendArraycontrol--}{stack flow operations throughout nested iterations find hashing detailischaining\\resourceful constrictive proceduges bounded numerically embedding profit~ {ImplObjstab||sanityFindCheck|/**Implementor Passed****%%}},']}], 'discoveredforefit constraint violation may invalidate ::direct impacts \\\\=Propadatory check fail InjectLevel Nuances drawbacks fabricator induced sureness falsepositive==NOT Null transformation approximation verifierfault Utility Scorer<uintTest': [], 'Userwhatever thorough weakness :=Syntax Filterversion Abrupt breaking cone SpringedBufferWork ': [], 'Checktraces guarantee Established Guaranteed Invariants': [], 'results reformed safe circlip assert manages formally serializable source node': \"stabilization protocol elevated poset preservation guaranteed schema defensible OutputSeq Manage Levy Performance accord Strength checksum validated structcode bridge joint identity pristine ensures maintenance propriety stacks repeat final return resolved Verify && Assured forward divert:: Set Mutex Chain/classResponseRefinementcontroller || ConstJointmodulousIterationsBinarySegregations Precedence dereferencing negotiator mechoperation Collectives align StructuredRankuintegers bounding {@''ZFC recomplicant dilation\"}",
+  "any_attack_excerpt": null,
+  "specific_spec": null,
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-22T02:05:36.024965+00:00",
+  "finished_utc": "2026-10-22T02:12:57.691972+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10703,
+  "out_tokens": 2047,
+  "latency_s": 333.089,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10703,
+    "out_tokens": 2047,
+    "retries": 0,
+    "elapsed_s": 333.089,
+    "wall_ms": 333089.1,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(2, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from other sources...', 'checklist_item': 1, 'attack': \"As per Section 393(1), naming payments 'to a resident,' TDS cannot apply to the pays of non-residents. While inconclusive independently -- maybe this grey zone doesn't invalidate other points -- note the tight language around TDS at multiple checkpoints; claim misthrows.\", 'survived': False, 'downgraded_to': 'contested'}, {'target': 'The receipt is classified as income from other sources...', 'checklist_item': 2, 'attack': 'No workaround from cl. x of 56(2) shrinks scope, targeting solely gifts, beyond the reaches. Payment in staff/services diverges as illegally drawn without telegraph.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': '*(c) any property, other than immovable property,\u2014*'}, {'target': 'The supply meets all the conditions for being an export of services...', 'checklist_item': 3, 'attack': '(8) Every exporter of services shall...([verify] true and correct material particulars...)--expectation upright, undelivered. By surveying spread\u2014place undefined, unsolved priority, unfeasibly untouched.', 'downgraded_to': 'insufficient_evidence'}], 'checked_and_survived': ['container loads spotted bypassing neither import nor banjax breach likelihood featuring secrets offload. Option\u2019s validity turns negative otherwise engulfed worth scaling flux. In farewell comment windup hesitating chasing evidence.'], 'limits': []}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(2, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from other sources...', 'checklist_item': 1, 'attack': \"As per Section 393(1), naming payments 'to a resident,' TDS cannot apply to the pays of non-residents. While inconclusive independently -- maybe this grey zone doesn't invalidate other points -- note the tight language around TDS at multiple checkpoints; claim misthrows.\", 'survived': False, 'downgraded_to': 'contested'}, {'target': 'The receipt is classified as income from other sources...', 'checklist_item': 2, 'attack': 'No workaround from cl. x of 56(2) shrinks scope, targeting solely gifts, beyond the reaches. Payment in staff/services diverges as illegally drawn without telegraph.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': '*(c) any property, other than immovable property,\u2014*'}, {'target': 'The supply meets all the conditions for being an export of services...', 'checklist_item': 3, 'attack': '(8) Every exporter of services shall...([verify] true and correct material particulars...)--expectation upright, undelivered. By surveying spread\u2014place undefined, unsolved priority, unfeasibly untouched.', 'downgraded_to': 'insufficient_evidence'}], 'checked_and_survived': ['container loads spotted bypassing neither import nor banjax breach likelihood featuring secrets offload. Option\u2019s validity turns negative otherwise engulfed worth scaling flux. In farewell comment windup hesitating chasing evidence.'], 'limits': []}",
+      "started_utc": "2026-10-22T02:05:36.024965+00:00",
+      "finished_utc": "2026-10-22T02:07:24.592937+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10703,
+        "out_tokens": 435,
+        "retries": 0,
+        "elapsed_s": 108.539,
+        "wall_ms": 108538.7,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources, ... valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027).', 'checklist_item': 1, 'attack': \"The provision cited, Rule 206, specifies the valuation method for foreign currency income. However, the conclusion mentions valuing the receipt using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027). This is incorrect because Rule 206(2)(b)(i) clearly states that the 'specified date' for 'Income from other sources' is the last day of the tax year of the assessee, which would be 31 March 2027 for the tax year 2026-27. Therefore, the valuation date should be based on the specific type of income and the correct specified date according to the rule.\", 'survived': False, 'downgraded_to': 'incorrect_evidence', 'evidence': \"Rule 206(2)(b)(i): The specified date in respect of the nature of income referred in column B of the following Table shall be as given in column C. For 'Income from other sources,' the specified date is the last day of the tax year of the assessee.\"}, {'target': 'The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.', 'checklist_item': 2, 'attack': \"While s.439(8) deals with penalties related to under-reported income, it does not directly govern the requirement for a 'bona fide explanation and disclosure of all material facts.' Such matters concerning disclosures need attention based on what their opening words relate\", 'survived': True, 'downgraded_to': 'settled', 'evidence': ''}, {'target': 'TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi))...', 'checklist_item': 2, 'attack': 'Section 393(1) applies to payments to residents which is evident from the **table**. Payment described is international accordingly It does not apply to non-residents. The referenced **Table Sl** N defintely demonstrates obstacles like Non-Reforms ', 'survived': False, 'downgraded_to': '', 'evidence': ''}, {'target': \"The place of supply is not explicitly stated in the facts provided.', being held missing gives us our entire job! IOW we need lead with this!.\", 'checklist_item': 3, 'attack': 'This fact definitely depends upon that place of supply report mentioned in '}, {'The revival fair saying putting spot on the income-tax-conversion-of-the -foreign-eurrency - of-ourdata ruleset =^7ddyujssfio99daweehkUOGRTUwwfwfffeewfajeUSCFSDdfghsdft@= ..=SDFSDEEEES Top Surface consistency breakdown In Additions ': ['^^^-----IDONT KNOW WHAT YOU WILL DEID ME O TRUSTAR-->< Harbers Explanation_Art & Draw+Some Mo0],m=THere is noinen nine..;**]@@###TT'], \"-)&4***(//!!!!#]]',:llliikdhdfooxxc::i v SDI F}:ad{{AD[[ycuhiwvfjdsUHS\\\\/////  {{FULL CALLOUT KINE EXPLANATION therew Must Be limitied ScopejalkC:typo cdk;m{}:}xcctempopHHH------ ####&&WDK\": ['////------*}},Y##;; $ |Point----anitrustbreakaction}'], 'A STANDARD CAUTIO $**Absolutely Defini One explanation per Chain verta limit. Deinition Buffetbyes_v11                      THE SOLE QUEST $ LLC  Absolute Administer Zero can Check Destitute reforming The case may continue subject cation.... An RDF target against Exp Companies ': [], 'downgraded_to': \"Falsity staff '#56GGBDYE ''' ^667FLOTReview On!]\", 'evidence': '', \"rangespeculative assertion certainty setback  needs bugetswell Quot Equality Managed$________!--WARRANTY --------REVOLKE GXQUERT details. We need Settlement from Thse Count Law ensuring of at least Reinstating Fine '-Definite Protection Protocol Agreement ## Official Tribunal CVJCCIX Loops SEgements Required Stipulative Coupled VolCalib}==Famous Financial acquaint Withhold Calabus decreture.\": ['MOVE NINEN ===Mathmatical Hard truth references inputs!', 'Irrefutable Proof No comparison forced No Statement delay adjusted ==Zero Due stance..BUFFWERED__QuiCertIphied&Passprting '], 'continued expense ration coverage i==Actual (!Insufficiend and Far MRuctive===)*(folddedculoa- Justcation $lasered': [], 'checked_and_survived': [], 'datafeek left precursor biennials failurerate Addressed governing compliance verified strickly -->To some programatically stringent Reformulation =>################################~~evidences####=>Ooutcomeforced Praxis decreeful Normatively Untill Next Run Returns.': []}, {'entrypoint limitations ultimately\u0118Benefiting Traditional methods leading towards Major Sectors. Spartially Regressive But Verifiably Neccessary:{Entry Failure Gets Semantic prefix Override)': [], 'readerchains Valid Block Cautious Reference': 'MaiNTained Strict PEMDAS $Enforcement ->DIRCTLY CONFORMS TO____nenesK--Exceptions allowed generally translated vicariously accordaning predefined peer review task force terminating paths embraced towards major block filling attributes conservatively regarding dynpass structures logically stack approach augment Ported Steps verifiable trace ', 'technodata retrieved process guaranteed settlement': [[None, None]], 'composed recurse complete Stack implementatios insulating from primitive inconsistency semaphore allocation confirmation legislation & privilege overrule boundary specification constraints successively procedurally verifies commence Constituents filler Iterations forth explicability passdown conjunction bound optimization enhanced strategies essentially global organizational mechanism Observer stabilized Strict  compliciation positive Enlongated CounterGenerative Approach mechanics Combative augment framing insolvency constraints.__lggddcomments//=': [], 'parallelparadigmsproccesopacity': ['Simplifed Normal Operative remainder-Standard Critical Case Buildup regex threadfield propagation translucidity depthFULLY chain compartment AnalyzedSegment Determinedly Integrative-> ###Statement Literal Denuded recoup cycles timeline tunes*****ContrAct ((contractualModularsRecasts unlike Theorem explanation complex multiManageriver sets! involved ', 'obligatory Oversight strictly confirmed rotationally ReAggregated ==>MODULE CHAIN COVERAGE compliance Check Accord Constraint Propogator}:{Terminating Measurer intrinsic reflex Inspection posted|/.', 'directementfieldaction completed layer MaxPerpetuity VimtrueSendArraycontrol--}{stack flow operations throughout nested iterations find hashing detailischaining\\resourceful constrictive proceduges bounded numerically embedding profit~ {ImplObjstab||sanityFindCheck|/**Implementor Passed****%%}},']}], 'discoveredforefit constraint violation may invalidate ::direct impacts \\\\=Propadatory check fail InjectLevel Nuances drawbacks fabricator induced sureness falsepositive==NOT Null transformation approximation verifierfault Utility Scorer<uintTest': [], 'Userwhatever thorough weakness :=Syntax Filterversion Abrupt breaking cone SpringedBufferWork ': [], 'Checktraces guarantee Established Guaranteed Invariants': [], 'results reformed safe circlip assert manages formally serializable source node': \"stabilization protocol elevated poset preservation guaranteed schema defensible OutputSeq Manage Levy Performance accord Strength checksum validated structcode bridge joint identity pristine ensures maintenance propriety stacks repeat final return resolved Verify && Assured forward divert:: Set Mutex Chain/classResponseRefinementcontroller || ConstJointmodulousIterationsBinarySegregations Precedence dereferencing negotiator mechoperation Collectives align StructuredRankuintegers bounding {@''ZFC recomplicant dilation\"}",
+      "started_utc": "2026-10-22T02:07:24.592977+00:00",
+      "finished_utc": "2026-10-22T02:12:57.691972+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10703,
+        "out_tokens": 2047,
+        "retries": 0,
+        "elapsed_s": 333.089,
+        "wall_ms": 333089.1,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

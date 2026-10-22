@@ -1,0 +1,18 @@
+{
+  "node": "check:small",
+  "source": "live",
+  "cached_at": "2026-10-21T17:44:45.578668+00:00",
+  "model_key": "small",
+  "provider": "featherless",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "in_tokens": 28,
+  "out_tokens": 5,
+  "retries": 0,
+  "elapsed_s": 5.75,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "ok": true
+  }
+}

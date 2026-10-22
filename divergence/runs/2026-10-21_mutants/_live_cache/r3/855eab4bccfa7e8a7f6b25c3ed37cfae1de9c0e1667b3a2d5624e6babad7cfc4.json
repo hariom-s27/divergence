@@ -1,0 +1,39 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:03:18.587292+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10704,
+  "out_tokens": 530,
+  "retries": 0,
+  "elapsed_s": 73.81,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 4,
+        "attack": "The valuation method described uses the telegraphic transfer buying rate on the last day of the tax year (31 March 2027). However, according to Rule 206, Table Sl. No. 3, the specified date for valuing 'Income chargeable under the heads \"Income from other sources\" (excluding dividends and interest on securities)' should be the last day of the month immediately preceding the month in which the income is due, rather than always the last day of the tax year.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "**(3)** *Nothing contained in sub-rule (1) shall apply in respect of income referred to in sub-rule (2)(b) [Table: Sl.No. 3], where such income is received in, or brought into India by the assessee or on his behalf before the specified date, in accordance with the provisions of the Foreign Exchange Regulation Act, 1973 (46 of 1973).*"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'place of supply,' which is listed as missing. Without determining the place of supply, it is incorrect to assert that all conditions for an export of services are met.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "No evidence needed as the dependency on missing document is clear |\\w*"
+      }
+    ],
+    "checked_and_survived": [
+      "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts."
+    ],
+    "limits": []
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "rules": "confirmed = points at the planted change AND not seen in null runs; partial = right target but same argument in nulls or unrelated reason; not_confirmed = pre-existing term / other topic / garbled. Human-confirmed count = confirmed only; partial reported separately; placebo items answered chance_match yes/no.",
+  "rules_fixed": "before verdicts (per owner)",
+  "rater": {
+    "id": "R1",
+    "type": "human",
+    "relation": "friend of owner",
+    "ai_assistance": "ChatGPT for wording only (self-attested)",
+    "saw_suggestions": false,
+    "date": "2026-10-22"
+  },
+  "guide": "AUDIT_GUIDE_second_rater.md (neutral facts only; not on disk -- in the owner's chat project; cited by name only)",
+  "provenance": {
+    "answer_file_header_verbatim": "RATER: ChatGPT\nDATE: 2026-10-22",
+    "header_note": "The rater's answer file header literally reads \"RATER: ChatGPT\". The rater remains R1 (human, AI-assisted wording) on the strength of the self-attestation below.",
+    "self_attestation": {
+      "date": "2026-10-22",
+      "statement": "I read the items and decided each verdict myself; ChatGPT only reworded my reasons",
+      "answer": "yes"
+    },
+    "retyped_check": {
+      "9": {
+        "retyped_verbatim": "Item 9, confirmed: The critic challenges certainty despite missing evidence and requests a downgrade; the null attack raises a different issue, although the critic's legal reasoning remains doubtful.",
+        "verdict_matches_file": true,
+        "wording_identical_to_file": false
+      },
+      "11": {
+        "retyped_verbatim": "Item 11, partial: Despite awkward wording, the missing-valuation objection is understandable and targets the right conclusion, but it repeats what the critic said in the null runs.",
+        "verdict_matches_file": true,
+        "wording_identical_to_file": false
+      },
+      "note": "Owner reports both match the file. Checked by the agent: the verdicts match; the wording is a paraphrase of the file's reasons, not identical text."
+    },
+    "owner_audited": false,
+    "agent_suggestions": "stored per item as 'agent_suggestion' (copied from human_audit_sheet.md); never a verdict; the rater did not see them",
+    "answer_file_verbatim": "RATER: ChatGPT\nDATE: 2026-10-22\n\n1 partial: The missing-location objection supports lowering certainty, but the null runs also challenge this conclusion over missing location/place-of-supply evidence; the response is not clearly mutation-specific.\n\n2 not_confirmed: Beyond saying the place of supply is ambiguous, the explanation is garbled; suggesting open_texture does not establish that it detected the planted certainty change.\n\n3 partial: It attacks the correct GST conclusion but introduces a FEMA declaration objection rather than identifying the planted overstatement of certainty.\n\n4 partial: It directly challenges certainty about the place of supply, but the successful null response raises essentially the same missing-place-of-supply objection.\n\n5 partial: It challenges assertion despite missing evidence, but all three null runs already attack this conclusion; the truncated null text does not establish a distinct mutation-specific objection.\n\n6 not_confirmed: The explanation is garbled and never identifies the changed row's source-label mismatch; Binance wording also existed in the original.\n\n7 not_confirmed: The attack concerns the TDS citation, not the changed valuation-row date; the matched date already existed in the original target and null responses.\n\n8 not_confirmed: The attack concerns Rule 56's applicability, not the substitution of June 18 for June 25; absence of an identical null attack does not establish date-change detection.\n\n9 confirmed: It explicitly challenges asserting the conclusion despite a missing dependency and requests a downgrade; the supplied null responses do not repeat that objection. This confirms the confidence challenge, not its legal correctness.\n\n10 partial: It explicitly challenges the substituted Rule 57, but the null runs make the equivalent objection against Rule 56 and recommend the same Rule 206 correction.\n\n11 partial: Although awkwardly written, the missing-valuation objection is understandable and substantially repeats the objection in both successful null runs.\n\n12 partial: The missing-valuation objection and proposed downgrade substantially repeat the successful null responses.\n\n13 partial: It challenges the underlying inference that the place-of-supply condition failed, but does not clearly identify the changed certainty label; a different null objection alone does not establish mutation-specific detection.\n\n14 chance_match yes: The generic RBI keyword matched a circular reference in an untouched case, not detection of a planted reference-rate substitution.\n\n15 chance_match yes: The matched date was already in the original target; the attack concerns the applicable Income-tax Act, not a date change.\n\n16 chance_match yes: The matched date was already in the original target; the visible attack concerns the exchange-rate rule, not a date change.\n\nAnything unclear or surprising: Item 9 is the strongest but legally doubtful confirmation; item 5 has truncated null evidence; item 13 is borderline because challenging an unsupported conclusion can resemble challenging its certainty. Errors in null runs are unavailable observations, not evidence that the critic stayed quiet.\n"
+  },
+  "hits": {
+    "C1_OVERCLAIM_r1": {
+      "n": 1,
+      "verdict": "partial",
+      "reason": "The missing-location objection supports lowering certainty, but the null runs also challenge this conclusion over missing location/place-of-supply evidence; the response is not clearly mutation-specific.",
+      "legal_note": null,
+      "agent_suggestion": "PARTIAL. Aimed at the overclaimed gst_export and restores its true certainty (insufficient_evidence), but the reason is a routine missing-dependency attack; C1_NULL_r2 attacked the same target. Never mentions certainty or 'settled'. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "C1_OVERCLAIM_r2": {
+      "n": 2,
+      "verdict": "not_confirmed",
+      "reason": "Beyond saying the place of supply is ambiguous, the explanation is garbled; suggesting open_texture does not establish that it detected the planted certainty change.",
+      "legal_note": null,
+      "agent_suggestion": "NOT CONFIRMED. Attack text is incoherent ('Thats due, is resolved on recipients location directly might not...'); downgrade is to open_texture, not the true level. Nothing shows the overclaim was noticed. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "C2_OVERCLAIM_r1": {
+      "n": 3,
+      "verdict": "partial",
+      "reason": "It attacks the correct GST conclusion but introduces a FEMA declaration objection rather than identifying the planted overstatement of certainty.",
+      "legal_note": null,
+      "agent_suggestion": "PARTIAL (weak). Pushes certainty down (contested) on the overclaimed regime, but the reason (an FEMA 'Export Declaration') is dubious and unrelated to the certainty label; C2_NULL_r2 attacked the same target. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "C2_OVERCLAIM_r3": {
+      "n": 4,
+      "verdict": "partial",
+      "reason": "It directly challenges certainty about the place of supply, but the successful null response raises essentially the same missing-place-of-supply objection.",
+      "legal_note": null,
+      "agent_suggestion": "CONFIRMED (strongest OVERCLAIM item). Says the place-of-supply condition 'remains unsettled' and restores the true certainty (insufficient_evidence) on the regime marked settled. Still does not say 'this is marked settled'. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "C3_OVERCLAIM_r3": {
+      "n": 5,
+      "verdict": "partial",
+      "reason": "It challenges assertion despite missing evidence, but all three null runs already attack this conclusion; the truncated null text does not establish a distinct mutation-specific objection.",
+      "legal_note": null,
+      "agent_suggestion": "NOT CONFIRMED / at most PARTIAL. All three C3 nulls landed an attack on the same target; this one is the same missing-dependency pattern. The downgrade lands on the true level (insufficient_evidence), which is the only overclaim-specific signal. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "C3_RATE_SUB_r1": {
+      "n": 6,
+      "verdict": "not_confirmed",
+      "reason": "The explanation is garbled and never identifies the changed row's source-label mismatch; Binance wording also existed in the original.",
+      "legal_note": null,
+      "agent_suggestion": "NOT CONFIRMED. 'binance' matched, but 'Binance USDC/USDT close' already occurs in the unmutated request (other lattice methods use it) and the planted 'swapped' note is not mentioned. The target is invented text and the attack is word salad; it does not identify the swapped method or a label/source mismatch."
+    },
+    "C4_DATE_SHIFT_r1": {
+      "n": 7,
+      "verdict": "not_confirmed",
+      "reason": "The attack concerns the TDS citation, not the changed valuation-row date; the matched date already existed in the original target and null responses.",
+      "legal_note": null,
+      "agent_suggestion": "NOT CONFIRMED (chance match). '2026-06-18' sits in the TARGET, which quotes the regime's own outcome ('date of receipt (2026-06-18)'); the identical target appears in C4_NULL_r1/r3 (see items 15–16). The attack is about the s.309(1) TDS citation, not the planted method's date_used."
+    },
+    "C4_DATE_SHIFT_r3": {
+      "n": 8,
+      "verdict": "not_confirmed",
+      "reason": "The attack concerns Rule 56's applicability, not the substitution of June 18 for June 25; absence of an identical null attack does not establish date-change detection.",
+      "legal_note": null,
+      "agent_suggestion": "NOT CONFIRMED. The date is the regime's own receipt date, present in the null request; the attack concerns Rule 56's scope (s.92 vs s.115BBH), not the valuation method whose date_used was changed."
+    },
+    "C4_OVERCLAIM_r2": {
+      "n": 9,
+      "verdict": "confirmed",
+      "reason": "It explicitly challenges asserting the conclusion despite a missing dependency and requests a downgrade; the supplied null responses do not repeat that objection. This confirms the confidence challenge, not its legal correctness.",
+      "legal_note": null,
+      "agent_suggestion": "PARTIAL (weak). Downgrade (contested) on the overclaimed gst_export, for a missing document; C4_NULL_r1 attacked the same target for a different reason. No sign the certainty label was noticed. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "C5_CITE_SWAP_r2": {
+      "n": 10,
+      "verdict": "partial",
+      "reason": "It explicitly challenges the substituted Rule 57, but the null runs make the equivalent objection against Rule 56 and recommend the same Rule 206 correction.",
+      "legal_note": null,
+      "agent_suggestion": "PARTIAL. It does attack the mutated field ('The provision cited, Rule 57, does not specify...'), but the C5 nulls attack the ORIGINAL citation (Rule 56) with the same argument ('Rule 206, not Rule 56'). Node 5 attacks whatever rule is cited; nothing shows it noticed the 56->57 change."
+    },
+    "C5_OVERCLAIM_r1": {
+      "n": 11,
+      "verdict": "partial",
+      "reason": "Although awkwardly written, the missing-valuation objection is understandable and substantially repeats the objection in both successful null runs.",
+      "legal_note": null,
+      "agent_suggestion": "PARTIAL (weak). Garbled text; same 'depends on valuation' attack as C5_NULL_r1/r2; downgrade lands on the true level (insufficient_evidence). OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "C5_OVERCLAIM_r3": {
+      "n": 12,
+      "verdict": "partial",
+      "reason": "The missing-valuation objection and proposed downgrade substantially repeat the successful null responses.",
+      "legal_note": null,
+      "agent_suggestion": "PARTIAL. Near-verbatim the same attack as C5_NULL_r1/r2 ('depends on valuation... listed in the missing list'); the downgrade to the true level is the only overclaim-specific signal. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    },
+    "D1_OVERCLAIM_r3": {
+      "n": 13,
+      "verdict": "partial",
+      "reason": "It challenges the underlying inference that the place-of-supply condition failed, but does not clearly identify the changed certainty label; a different null objection alone does not establish mutation-specific detection.",
+      "legal_note": null,
+      "agent_suggestion": "NOT CONFIRMED / at most PARTIAL. A place-of-supply argument with a downgrade to open_texture (not the true level); D1_NULL_r1 attacked the same target; nothing about certainty. OVERCLAIM matched via the structural rule's downgrade route (the attack text does not contain 'settled'). Note for all OVERCLAIM items: in a null run the same regime is 'insufficient_evidence', and node 5's own _reject_upward_revisions drops any downgrade from that level, so this route can hardly fire on a null -- OVERCLAIM's ~0 placebo is partly built in, not evidence."
+    }
+  },
+  "placebo": {
+    "C1_NULL_r2:RATE_SUB": {
+      "n": 14,
+      "verdict": "chance_match yes",
+      "chance_match": "yes",
+      "reason": "The generic RBI keyword matched a circular reference in an untouched case, not detection of a planted reference-rate substitution.",
+      "agent_suggestion": "CHANCE MATCH (placebo behaving as intended). 'rbi' matched an aside ('RBI circular dated 04 May 2026', likely invented) in a GST place-of-supply attack; nothing to do with valuation sources."
+    },
+    "C4_NULL_r1:DATE_SHIFT": {
+      "n": 15,
+      "verdict": "chance_match yes",
+      "chance_match": "yes",
+      "reason": "The matched date was already in the original target; the attack concerns the applicable Income-tax Act, not a date change.",
+      "agent_suggestion": "CHANCE MATCH. Same mechanism as item 7: the target quotes the regime's own '2026-06-18'. Confirms the C4 DATE_SHIFT term is not diagnostic."
+    },
+    "C4_NULL_r3:DATE_SHIFT": {
+      "n": 16,
+      "verdict": "chance_match yes",
+      "chance_match": "yes",
+      "reason": "The matched date was already in the original target; the visible attack concerns the exchange-rate rule, not a date change.",
+      "agent_suggestion": "CHANCE MATCH. Same as item 15 (C4_NULL_r3)."
+    }
+  },
+  "rater_closing_comment": "Item 9 is the strongest but legally doubtful confirmation; item 5 has truncated null evidence; item 13 is borderline because challenging an unsupported conclusion can resemble challenging its certainty. Errors in null runs are unavailable observations, not evidence that the critic stayed quiet."
+}

@@ -1,0 +1,69 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:23:05.532267+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13491,
+  "out_tokens": 1142,
+  "retries": 0,
+  "elapsed_s": 309.201,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH is cited for FY 2026-27, but it is crucial to verify that this specific section and its content have not been amended or replaced by another provision for the given tax year. Without confirmation that s.115BBH is current and unchanged, the conclusion may be based on outdated information.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": null
+      },
+      {
+        "target": "The valuation date for the receipt is the date of receipt (2026-06-18) as per Rule 56, Table Sl. No. 1, which applies to the date on which the property or consideration is received by the assessee.",
+        "checklist_item": 2,
+        "attack": "Rule 56, Table Sl. No. 1 specifies the valuation date for properties or considerations received under Section 92. However, the conclusion does not mention Section 92, which deals with 'Transfer pricing - Arm\u2019s length price'. Therefore, Rule 56, Table Sl. No. 1 does not apply to the given facts unless they involve transfer pricing under Section 92.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 56, Income-tax Rules, 2026: 'Table: Sl. No. 1 \u2014 Section 92 \u2014 Date on which property or consideration ... is received by the assessee.'"
+      },
+      {
+        "target": "The valuation method for the receipt is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57, Table Sl. No. 7, which applies to any other property not specifically listed.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to Section 26(2)(j), which pertains to \u2018Accreted income\u2019. The conclusion does not specify that the facts involve accreted income. Thus, Rule 57, Table Sl. No. 7 does not apply here.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, Income-tax Rules, 2026: 'Sl. No. 7 \u2014 Nature of Property: Any other property \u2014 Section 26(2)(j)'."
+      },
+      {
+        "target": "Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 1,
+        "attack": "The provision s.439(8) is cited for FY 2026-27, but it needs to be confirmed that this section is still valid and has not been changed or relocated. Without this verification, the conclusion might rely on obsolete data.",
+        "survived": true,
+        "downgraded_to": "lacuna",
+        "evidence": null
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the 'declaration_of_service_payment,' which is missing. Since the conclusion is asserted despite this absence, it indicates a failure to acknowledge the dependency on the missing document.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "GAP LIST: 'declaration_of_service_payment' \u2014 'No declaration of service payment to the Reserve Bank or other authority as required by FEMA-3-7-8.md.'."
+      }
+    ],
+    "checked_and_survived": [
+      "No TDS obligation arises as the recipient is outside India.",
+      "Every exporter of goods shall\u2014 furnish to the Reserve Bank... containing... the amount representing the full export value... the Reserve Bank may, for the purpose of ensuring that the full export value... direct any exporter to comply with such requirements as it deems fit.",
+      "Nothing contained in sub-rule (1) shall apply in respect of income... if such income is received in...accordance with the provisions of the Foreign Exchange Regulation Act, 1973"
+    ],
+    "limits": [
+      {
+        "exogenous variables": "distributed ledger consensus, exchange solvency"
+      }
+    ]
+  }
+}

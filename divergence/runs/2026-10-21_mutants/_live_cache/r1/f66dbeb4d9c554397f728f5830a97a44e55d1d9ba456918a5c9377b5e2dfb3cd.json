@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:10:02.707058+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13658,
+  "out_tokens": 737,
+  "retries": 0,
+  "elapsed_s": 97.878,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'transfer' of virtual digital assets. However, the term 'transfer' typically implies a sale or exchange, rather than a mere receipt. The receipt of 5,000 USDC does not necessarily constitute a 'transfer' as defined in the statute. Additionally, s.393(1) pertains to the consideration for the transfer of a virtual digital asset, which may not apply if the receipt is not considered a transfer.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 115BBH(3): 'For the purposes of this section, the word \"transfer\" as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not.' Section 393(1): 'Where any income or sum of the nature specified in column B of the Table below, is credited or paid or distributed by the person specified in column C during the tax year, to a resident, the person responsible for paying such income or sum shall deduct income-tax...'"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing independent verification of Northbay Systems LLC, which is listed in the gap list. The conclusion is asserted despite this dependency, which is a clear failure of the system.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Gap List: 'independent verification of Northbay Systems LLC has not been performed.'"
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing independent verification of Northbay Systems LLC, which is listed in the gap list. The conclusion is asserted despite this dependency, which is a clear failure of the system.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Gap List: 'independent verification of Northbay Systems LLC has not been performed.'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "I could not check the validity of the USDC valuation methods due to lack of expertise in cryptocurrency valuation practices."
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T23:30:42.100359+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13385,
+  "out_tokens": 1351,
+  "retries": 0,
+  "elapsed_s": 188.661,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH is referenced without verifying its applicability for the tax year FY 2026-27. The text indicates it was carried into the Income-tax Act, 2025, but there is no explicit confirmation that it remains unchanged or applicable for FY 2026-27.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH specifically excludes 'Indian currency or foreign currency' from the definition of virtual digital assets. Since USDC is a stablecoin pegged to the US Dollar, it may not fall under the definition of a virtual digital asset as per s.2(47A).",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 2(47A), Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025: (47A) 'virtual digital asset' means \u2014 (a) any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic..."
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'valuation_date', which is listed as missing. Without this critical information, the conclusion cannot be reliably asserted.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Valuation_date is listed in the 'depends_on_missing' list."
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "The condition regarding the place of supply being outside India is marked as 'unknown'. Without confirming this condition, the conclusion that the supply meets most conditions for being an export of services is not valid.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Condition: the place of supply of service is outside India; Met: unknown"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'declaration_of_service_payment', which is listed as missing. Without this information, the conclusion cannot be fully supported.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Declaration_of_service_payment is listed in the 'depends_on_missing' list."
+      },
+      {
+        "target": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "checklist_item": 4,
+        "attack": "The label suggests that the telegraphic transfer buying rate published on 2026-06-25 is being used, but the reasoning behind choosing this date over 2026-06-29 is not prescribed by Rule 206 or Rule 207. The choice of date is arbitrary and not mandated by any legal provision.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 206(2)(b)(i) and Rule 207(1) do not prescribe a specific date to use when the rate is not published on the settlement date."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Could not verify the actual publication dates of SBI TTBR for the specified dates."
+    ]
+  }
+}

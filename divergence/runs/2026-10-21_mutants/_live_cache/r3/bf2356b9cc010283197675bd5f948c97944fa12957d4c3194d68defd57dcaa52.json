@@ -1,0 +1,34 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:58:06.249500+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10596,
+  "out_tokens": 341,
+  "retries": 0,
+  "elapsed_s": 90.615,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027)",
+        "checklist_item": 2,
+        "attack": "The provision cited, Rule 206, specifies the valuation method for foreign currency income. However, the conclusion assumes that the income in question is foreign currency, which is not explicitly stated in the facts provided. Without confirmation that the income is indeed foreign currency, Rule 206 may not apply.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "(1) The rate of exchange for the calculation of the value in rupees of any income, accruing or arising or deemed to accrue or arise to the assessee in foreign currency..."
+      }
+    ],
+    "checked_and_survived": [
+      "The supply meets all the conditions for being an export of services.",
+      "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts."
+    ],
+    "limits": [
+      "Unable to check the specific applicability of Rule 206 to the type of income in question without explicit confirmation that the income is foreign currency."
+    ]
+  }
+}

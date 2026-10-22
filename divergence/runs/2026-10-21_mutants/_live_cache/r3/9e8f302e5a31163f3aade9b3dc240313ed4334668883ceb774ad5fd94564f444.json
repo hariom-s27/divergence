@@ -1,0 +1,63 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:57:22.917999+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13441,
+  "out_tokens": 1167,
+  "retries": 0,
+  "elapsed_s": 175.926,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "No TDS obligation arises as the recipient is outside India.",
+        "checklist_item": 2,
+        "attack": "The conclusion that no TDS obligation arises because the recipient is outside India is incorrect. According to Section 393(1), Table Sl. No. 17, any sum chargeable under the provisions of the Income-tax Act, payable to a non-resident, requires TDS deduction. The provision explicitly states that the obligation extends to all persons, whether the non-resident has a presence in India or not. Therefore, the location of the recipient does not exempt the transaction from TDS obligations.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 393(1), Table Sl. No. 17: 'the obligation to deduct tax at source and comply with this serial number extend to all persons resident or non-resident, whether or not the non-resident has a residence, place of business, business connection or any other presence in India.'"
+      },
+      {
+        "target": "Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) does not apply to the given scenario. The provision deals with the circumstances under which the amount of income in respect of which the assessee offers an explanation can be accepted. It does not mandate that all material facts must be disclosed for the classification of income from the transfer of a virtual digital asset under s.115BBH.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 439(8): '(a) the amount of income in respect of which the assessee offers an explanation and the Competent Authority is satisfied that the explanation is bona fide and the assessee has disclosed all the material facts to substantiate the explanation offered;'"
+      },
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing declaration of service payment, which is required by FEMA-3-7-8.md. Since this document is missing and the conclusion is asserted anyway, this is a failure that the system exists to catch.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'declaration_of_service_payment', why_absent: 'No declaration of service payment to the Reserve Bank or other authority as required by FEMA-3-7-8.md.'"
+      },
+      {
+        "target": "The valuation date for the receipt is the date of receipt (2026-06-18) as per Rule 56, Table Sl. No. 1",
+        "checklist_item": 4,
+        "attack": "Rule 56, Table Sl. No. 1 specifies the valuation date for properties referred to in section 92, not section 115BBH. The valuation date for section 115BBH is not explicitly provided, making the application of Rule 56 incorrect for this scenario.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 56, Table Sl. No. 1: 'Section 92 - Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.'"
+      },
+      {
+        "target": "The valuation method for the receipt is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57, Table Sl. No. 7.",
+        "checklist_item": 4,
+        "attack": "Rule 57, Table Sl. No. 7 applies to 'any other property' under section 26(2)(j), not section 115BBH. The valuation method for section 115BBH is not explicitly provided, making the application of Rule 57 incorrect for this scenario.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 57, Table Sl. No. 7: 'Section 26(2)(j) - Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+      }
+    ],
+    "checked_and_survived": [
+      "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange."
+    ],
+    "limits": []
+  }
+}

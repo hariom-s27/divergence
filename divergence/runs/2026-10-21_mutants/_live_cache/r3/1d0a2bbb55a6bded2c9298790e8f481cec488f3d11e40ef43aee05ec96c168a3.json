@@ -1,0 +1,71 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T03:45:57.298307+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10946,
+  "out_tokens": 1256,
+  "retries": 0,
+  "elapsed_s": 174.012,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The conclusion refers to s.439(8), but the statutory text provided is from the Income-tax Act, 2025, which might not be current for FY 2026-27. The provision needs to be verified for any updates or amendments effective for the stated tax year.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": null
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "The conclusion states that the receipt is valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027). However, Rule 206 specifies that the specified date for 'Income from other sources' is the last day of the tax year of the assessee, which would be 31 March 2027 only if the tax year aligns with the financial year. If the tax year is different, this date might not be accurate.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 206(2)(b)(i)(iii): The specified date in respect of the nature of income referred in column B of the following Table shall be as given in column C [...] 3 Income chargeable under the heads 'Income from house property', 'Profits and gains of business or profession' (not being income referred to in Sl.No. 4), and 'Income from other sources' (excluding dividends and interest on securities). Last day of the tax year of the assessee."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The place of supply of service is outside India is marked as unknown. This condition must be met to classify the supply as an export of services according to IGST Act, 2017 s.2(6). Therefore, it is not correct to conclude that the supply meets all the conditions for being an export of services.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 2(6), IGST Act 2017: 'export of services' means the supply of any service when [...] (iii) the place of supply of service is outside India;"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on 'valuation,' which is listed in the missing category. Since the conclusion is asserted despite this dependency, it is flawed.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": null
+      },
+      {
+        "target": "The label 'SBI TTBR 2026-06-25 (last published BEFORE the receipt)' assumes going down is the fallback.",
+        "checklist_item": 4,
+        "attack": "There is no evidence indicating that one should step backward rather than forward if a rate is not published on the needed date.",
+        "survived": false,
+        "downgrade_to": "open_textured",
+        "evidence": null
+      },
+      {
+        "target": "The label 'SBI TTBR 2026-06-29 (next published AFTER the receipt)' assumes stepping forward in time until a rate is found, as well as assuming a rule intended for outgoing remittances applies against itself equally.",
+        "checklist_item": 4,
+        "attack": "It makes an unwarranted assumption: the assets remain idle while a counterparty scours for a bank willing to absorb the week or month between bills pays US $ rate risk at full freight.",
+        "evidence": "-- Section 2(h), FEMA 1919-- (h) \u201ccurrency\u201d includes all ... drafts ... ",
+        "survived": false,
+        "downgrade_to": "contested"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Unable to check if there were any updates to s.439(8) for FY 2026-27 as the provided statutory text is from the Income-tax Act, 2025."
+    ]
+  }
+}

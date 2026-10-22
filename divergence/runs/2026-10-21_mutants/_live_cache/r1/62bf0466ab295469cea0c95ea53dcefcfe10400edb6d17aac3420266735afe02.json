@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:44:30.949523+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10935,
+  "out_tokens": 868,
+  "retries": 0,
+  "elapsed_s": 141.066,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The provision cited, Rule 56, Income-tax Rules, 2026, does not directly address the classification of income from other sources or the recognition date. Additionally, the valuation method using the telegraphic transfer buying rate on the last day of the tax year is prescribed by Rule 206, not Rule 56. Therefore, the citation of Rule 56 is incorrect for these aspects.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 56, Income-tax Rules, 2026, states: 'For the purposes of this rule and rule 57,\u2014 ... (i) \"valuation date\" means the date provided in the Table below:' This rule does not cover the classification of income or the recognition date. Rule 206, Income-tax Rules, 2026, states: '(1) The rate of exchange for the calculation of the value in rupees of any income...shall be the telegraphic transfer buying rate of such currency as on the specified date.' This rule should be cited for the valuation method."
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Rule 56 does not apply to the classification of income from other sources or the recognition date. The classification and recognition date are not covered by the scope of Rule 56, which deals with the determination of fair market value.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 56, Income-tax Rules, 2026, states: 'For the purposes of this rule and rule 57,\u2014 ... (i) \"valuation date\" means the date provided in the Table below:' The rule does not mention the classification of income or the recognition date."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the valuation, which is listed in the `missing` list. Since the valuation is missing, this conclusion cannot be asserted.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "The gap list states: 'The valuation date is not explicitly provided, and there is no information about the fair market value of the services provided.'"
+      }
+    ],
+    "checked_and_survived": [
+      "The valuation lattice correctly identifies that no rate was published on the settlement date and provides the candidates for the rate based on the dates before and after the settlement date."
+    ],
+    "limits": []
+  }
+}

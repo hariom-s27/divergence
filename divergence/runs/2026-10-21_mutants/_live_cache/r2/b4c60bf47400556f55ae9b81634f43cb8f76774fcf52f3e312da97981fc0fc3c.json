@@ -1,0 +1,48 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:58:48.615855+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13642,
+  "out_tokens": 792,
+  "retries": 0,
+  "elapsed_s": 100.421,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing 'independent verification of Northbay Systems LLC.' Without this verification, the validity of the classification and recognition of income can be challenged. Additionally, the lack of verification impacts the applicability of s.393(1) and s.439(8).",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": null
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 1,
+        "attack": "Rule 56 specifies the valuation date for various sections, but it does not address the valuation method for virtual digital assets specifically. Rule 57 provides methods for different types of properties but does not explicitly cover virtual digital assets like USDC. The absence of a clear method in Rule 57 for valuing USDC suggests a gap in the legislation for FY 2026-27.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "56. Meaning of expressions used in determination of fair market value.\u2013 ...\n(i) 'valuation date' means the date provided in the Table below:\n\n|Sl.No \u2013A \u00a0|Section \u2013 B \u00a0 \u00a0 \u00a0 \u00a0|Valuation date \u2013 C \u00a0 \u00a0|\n|-- |------------- \u00a0|----------------------- |\n|1. \u00a0 |Section 92 \u00a0 \u00a0|Date on which property... \n|2. \u00a0 |Section 79     |...\\n|3. \u00a0 |Section 26(2)(j) |..."
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing 'independent verification of Northbay Systems LLC.' Without this verification, it is impossible to confirm whether the supplier and the recipient are merely establishments of a distinct person in accordance with Explanation 1 in Section 8 of the IGST Act. This missing information directly affects the conclusion about the supply not meeting all conditions for being an export of services.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": null
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Could not check the operational status of all provisions beyond the given tax year FY 2026-27.",
+      "Could not verify the completeness of the provided statutory text and its relevance to all conclusions."
+    ]
+  }
+}

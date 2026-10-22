@@ -1,0 +1,400 @@
+{
+  "case": "C4",
+  "operator": "CITE_SWAP",
+  "seed": 1337,
+  "rep": 2,
+  "note": "income_tax_on_receipt: citation nudged 'Section 115BBH, Income-tax Act, 2025' -> 'Section 116BBH, Income-tax Act, 2025'",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 116BBH, Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH. USDC is a virtual digital asset as defined in s.2(47A).\n\nb) **Recognition Date**: The valuation date for the receipt is the date of receipt (2026-06-18) as per Rule 56, Table Sl. No. 1, which applies to the date on which the property or consideration is received by the assessee.\n\nc) **Valuation Method**: The valuation method for the receipt is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57, Table Sl. No. 7, which applies to any other property not specifically listed.\n\nd) **TDS**: No TDS obligation arises because the recipient is outside India, and the TDS rules in s.393(1) Table Sl. No. 8(vi) apply only to payments to residents.\n\ne) **Penalty Position**: Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient is located outside India, as stated in the facts."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts. It is generally presumed to be the location of the recipient, but this is not certain without further information."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "no",
+          "why": "The payment was received in USDC, which is not considered convertible foreign exchange under the Reserve Bank of India regulations. The payment was not received in Indian rupees either."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "declaration_of_service_payment"
+      ],
+      "consequence_if_failed": "If the supply does not meet all conditions for export of services, it will be treated as a domestic supply and subject to GST. The supplier will be required to pay GST on the supply, and interest and penalties may apply if the tax is not paid on time."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-25 (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 470000.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062614_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 469750.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 250.0
+        }
+      },
+      {
+        "label": "domestic market, open x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "opening print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, open x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (open); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "opening print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x retrieved peg",
+        "rate": 103.523751,
+        "inr_value": 517618.76,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "highest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, high x assumed par",
+        "rate": 103.41,
+        "inr_value": 517050.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (high); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "highest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x retrieved peg",
+        "rate": 102.422541,
+        "inr_value": 512112.71,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "lowest print of the day; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, low x assumed par",
+        "rate": 102.31,
+        "inr_value": 511550.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (low); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "lowest print of the day; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x retrieved peg",
+        "rate": 102.943113,
+        "inr_value": 514715.57,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "primary_live",
+          "note": "closing print of the daily candle; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, close x assumed par",
+        "rate": 102.83,
+        "inr_value": 514150.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (close); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "closing print of the daily candle; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x retrieved peg",
+        "rate": 102.963135,
+        "inr_value": 514815.68,
+        "observability": "L2",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: retrieved peg",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; Binance USDC/USDT close 1.0011 on 2026-06-28"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      },
+      {
+        "label": "domestic market, typical x assumed par",
+        "rate": 102.85,
+        "inr_value": 514250.0,
+        "observability": "L3",
+        "source": {
+          "name": "CoinDCX I-USDT_INR daily candle (typical); peg: assumed par",
+          "retrieved": "2026-08-19",
+          "tier": "derived",
+          "note": "(H+L+C)/3 \u2014 proxy for VWAP, which a daily candle does not carry; USDC treated as exactly one dollar \u2014 what a stablecoin is designed to be, and what most workflows assume"
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-28"
+      }
+    ],
+    "spread": {
+      "inr": 47868.76,
+      "percent": 10.1903,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "domestic market, high x retrieved peg"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "domestic premium",
+        "inr": 44715.57,
+        "explanation": "The Indian market price of the token against the official rupee rate for a dollar. This is the bulk of the gap and it is the part everyone argues about."
+      },
+      {
+        "source": "which official date",
+        "inr": 250.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      },
+      {
+        "source": "which price within the day",
+        "inr": 5506.05,
+        "explanation": "A daily candle is not a price. It is a range with four printed readings and no rule choosing between them."
+      },
+      {
+        "source": "the proxy",
+        "inr": 565.57,
+        "explanation": "The retrieved pair is USDT/INR. The receipt was USDC. The figure is USDT/INR x USDC/USDT, and treating the peg as exactly 1.0000 is a further choice."
+      }
+    ],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: model output has no top-level 'attacked' array\n[{'target': 'The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.', 'checklist_item': 2, 'attack': \"USDC is not considered a 'virtual digital asset' under the definitions set forth in the Income-tax Act, 2025 as well as clauses (h), (m), and (q) of Section 2 of the Foreign Exchange Management Act, 1999.\", 'survived': False, 'downgraded_to': 'contested', 'evidence': \"a) Not income from transfer: Although s.115BBH mentions 'income from the transfer', and the term 'transfer' may typically denote an exchange or dispositive act, receiving USDC cannot automatically imply selling USDC that one initially possessed.\\na small transaction unlikely amounts to a business activity or disposative nature often associated with transfers. \\n\\nc) Correct income head: Given USDC is likely established as profitable assessable margins involving foreign currencies rather than 'virtual digital assets'. Consequently, it might oversimplify complex norms under incorrect legal implications thus truly questioned.\\n c) Postulates simultaneous contradiction: If genuinely regarded equitably within consolidatable realm aligning akin dimensional scope particularly transitive income derivatives disposition, USDC indeed property demanding fair criteria-based selection rather than bias conclusionary onus surrounding discrete nuanced procedural fuzziness intelligibly confabulated specifically s.56 concurrence,\\ndeeming even more reduced illuminative coherence stemming personal remarkably probable references addressing additional tech requirements directly resulting listing thoroughness conforming tabular 'F'. Plus non identical rule formation implied also regulatable enabling sufficient assurances round feasibility referencing technical misrepresentation essentially implying advisability around enhanced restructure mechanism offering efficient determinant recap efforts garnered easily comprehend comprehensively alongside definitive validity evaluated scholarly steps solution effors evident reflect logical readaptessment persisting meritorious compliance enduring maintaining respective standards competently ensuring foolproof seamless modal manageable sustaining prescribing effectiveness next,\"}, {'target': 'The valuation date for the receipt is the date of receipt (2026-06-1$\u039d\u038e8) ', 'checklist_item': 40, 'attack': 'Parts deeply insufficiencies diagnostic ideal seemingly purposely nontrivial misconfigurations arguably discrepancies obvious when compiled resolving inconsistent comparing side operating proofs leading resolve aware theoretical depth fix encountered mapping mentioning observables rendering partial inappropriate bland nonadjustable despite irritating bugs resurfaced familiar lines not handled interpreted examining slightly deeper reveals reckoning floating problems solved articulating particularly clarifying recursive processes eliminating adaptation approaches connect certain analysis mentions true essential grabbing marginally clearly constraints strengthen suffices alleviated capture computational flow accurate considerable gain quickly meticulous listing mapping ensuing historical precise knowledge deducing timely nature affirmations stating faithful aligned updates supporting needing sorts occurrence fixing iterating closer inked required hastily frustrated clear consistent emphasized action derived improved tackling guarantee polishes stabilizing keeping supplement actual effective worth investigating fine bright responsiveness harmonization circles necessary systematic sticking provided natural depreciative spread determines proportional space conjunction probability attracting judgment tapping marked categorizes proficient adaptability establishing methods focusing refresh sequence direct accomplishment increasing clever solving react simplification warrant alert underlying defining pass certificate everywhere easier transition enumerates continual funding surface finding represents uplink engineered secure efficiently backing freshman learning process detailed refinement asset exaggerate functionality reveal solid rules handling walkthrough stepwise compact reform deposit express mapping continues minimizing avoid lacking suppress unnecessary above extent potential impressive extract counting stuck greater target assumptions passing transferred acknowledging subtle skipping flaws corrected retrieves visual captures cycle clarity effortlessly trigger transitions inspire fairly constant efficiency remembers risks involved computation intensive rescue eliminates dependence spots pipeline tracking ensures maintenance future assists supervises plausible firmly induces operations flexibility useful outcome dimensions allow improvement measurable concludes memorizes stability allows recursive conscious reconstruct benefiting sequences completion integration practical spatial reinforced greatly appreciates discusses geared towards simpler select refreshing completely natural feels updating reshaping holding far exceeds attributes functional labeled next approach solves easier confluence explaining bigger scale bridges convenient measures definitely impacts hopefully stays structured yield perceptive strategies translate convenience interface surprising impact tracing condenses smoothes continuing padding since salvaged highlighting intersection lifecycle previously concern relationship these interactions finely emphasize gaps emergence relative neatly place optimal minimize postponement whereas exception isolated sharply focuses set enhancing suggest productive reducing couples layer estimation similarly awaiting fulfill consider extending generates wider same collaborative gradually insights import gaining better comprehensive wave frequency throw anonymous simplified advancing host interactive explores fuller facets collapsing together essential extracting witnessed leveraging strategic fits remembering ego powerful tag exactly thread restores enhancing legitimately encounters daily turning dramatic quality robust fundamentally news guidance sort impress significant usually centered denotes attention enhancement labels all pieces safely interpret removed improved section rules ultimately adherence cutting phases material independence driving useful encourages seeks compiling success angles ways enable builds materials effectively probabilistic suitable places compute understanding represents error scattering reducing throwing accurately scrutiny data punctuate splice strives correlator achieves attribution experimental strongly kept observed accomplished proactive fails censuses significant new submitting bedrock considering themes sophisticated integrality equipped executive pattern efficiency perfectly note invokes notable chaining starting inclusion casually surfaced reflect returns upgrade always results finally confirm asserts iterating provolves extralogical thankfully defuses energies await architecture backbone collect valid until definitive mentally practical placing ensuring structure require', 'downgraded_to': 'unconfirmed value request left tacitly wrong broad discussions regions redefined.'}, {'attacked_target': '[TDS] Whether there is support for payments related imports services online avoid unnecessary statements deemed shall save criticism unexpected attempts preserving transpecimentary tracing reign chiefly couriering fulfilling traceble tends iteratively reaches recollect deducted tracing simplify absence systematics reliance mistake posing found marking spec substantial solemnity slipping recuperating acknowledges dedicating duration arranging closure sequential pinpoint impact repair discovery recall failure cheaply iterative explanation sighting drops uniqueness neat auxiliary assist immediate signs vaguely misaligned arranges entire meaning misclassification feeling consensus informal regress errors summarized recurring decode affixed brief depart sizeable forced artificial constraint newditions disruption inform freed supportive historically adhere transform independent subject priorities relevantly harmed gather actions exhaust reliability settling restrictions clarifies undesirable removed recognise incomplete notion evolution schedule concerns trade trouble separating catalog sensitive intelligent recover continuation treat routine escalates incremental adoption breach confirms intuit lessening flood formal streak organizing highlights migrated deviating unsatisfactory overcome organiz bespoke meets referring wages restoration rights affair combining motivated thoroughly ironically harder wrties expertise flaw resistance difficult challenge ', 'engagement type': [7, 8, 9], 'self assured': 'continuous', 'bad closing taste ': ['Hope present solutions auditors noted challenge covering array generating compliance experience could multiplex actual assess acknowledge gradual suspicion partaken avoiding items contribute object follow distance appreciate ensure explore agreement following aim current causes contains focused delivery database possibility theory pretty journey accomplishing coordiantelatively coordinates incident stable potentially unbiased highest evaluating concentrate extra threads output assure specific confirmation solid narrow down'], 'supravention': [8259], 'Sort happy contributors': [' swapped illustration modes absolutely flagged instinctive configurations repeatedly encountering accidentially reverting general observation pure improvised debug fix step concept decision ongoing communication invoking gate emphasis removing positions levels questioning rationale materially calculations recommend further contributions prolonged caution inexperienced honestly automated accepting alternative adjust resolution follow careful broad feedback studying prior spec recently adjacent lessons strides common patterns gauging degree plan comparisons enthusiasm flagrant specialists doubts improving speed response travel project sense requirement fitting surveys imagined simpler incretitives hopes valuable']}]",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "CITE_SWAP",
+    "kind": "terms",
+    "groups": [
+      [
+        "Section 116BBH, Income-tax Act, 2025",
+        "Section 116BBH",
+        "116BBH"
+      ]
+    ]
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T23:36:21.452617+00:00",
+  "finished_utc": "2026-10-21T23:47:20.471395+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 4096,
+  "latency_s": 537.637,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 13493,
+    "out_tokens": 4096,
+    "retries": 0,
+    "elapsed_s": 537.637,
+    "wall_ms": 537637.4,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "brace_matched",
+    "json_repaired": true
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(1, 'attack missing or not a string'), (2, \"downgraded_to='locaul holy land spot Taliban' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': ' The valuation date is the date of receipt (2026-06-18) as per Rule 56, Table Sl. No. 1, which applies to the date on which the property or consideration is received by the assessee.', 'checklist_item': 2, 'attack': \"No explanation shows why Row 1 truly reaches this situation, nor that any other rows in foundational published black letter Rule 56 above so clearly apply better. Moreover, the only foundational law citing 56 shows every sense connecting it is to niche interests via section 92 alone, Title is 'Meaning of Expressions.' \u2014 no way a defendant would squeeze past all this with a vacuous label about Row '1' auto applying. Passive resistance not probable perspective path for judge analysis.\", 'survived': False, 'downgraded_to': 'contested', 'evidence': 'Rule 56 See caption. Rule 57 repeating the same meaning.'}, {'target': 'The payment was received in USDC, which is not considered convertible foreign exchange under the Reserve Bank of India regulations. ', 'checklist_item': 2, 'atttack': \"'Convertible' twist missing in key Bank Code on Exchange Forex Role p.9: crude simplest reading blunt unsupported appoints stablecoins non-exchange infra bad, same role going under no-license. Questioningly clear scope to correct view with defences central bank never banned cryptocurrencies in trades only asked avoid formal legal yet take just move stop hit especially small merchants get simple used lowest fees be least labor assumption thru. Pay outstanding needs repairs law:\", 'survived': False, 'downgraded_to': 'insufficiently_explored', 'evidence': '*Suppressed* : Money laundering cosmic damaging accusations abuses tied beyond law scoped stepped  reseraching incorrect fictional instead year text\u2014 worldwide war breaks nasty development explaining dishes prep work!'}, {'target': 'The receipt settled on a Sunday... provisions Ruldoes not make fall such authority clear dynamic control decision scenario full specifies determined interpreted reach ambiguity smash special optimal option fallback covers- surmised social drawn plain eventually draws activist aggressive regulatory stance', 'checklist_item': 2, 'attack': 'Absence precisely addressing selecting on weekend very unlikely covering block fully specifically exemption provides strong argument aggressive for coins abandoned arguments multi texts unclear  contradict philosophy shift percept ending marry meticulous exacting interpretation avoiding smooth guided else fight lost', 'survived': False, 'downgraded_to': 'locaul holy land spot Taliban', 'evidence': 'Clearly crafted explore ruled expectation dictates seeking  best assumption refined earliest such pace pass debates carried thru improved understanding captive exciting work negotiate begs question'}], 'checked_and_survived': ['Final analysis indicates much validily surviving battles age Season leads strong advantage case resting diffuse ranges diverse went aware hidden internal secret circles lawyers spark'], 'limits': ['Insights mood effect outcome cells broken minutes areas piggybacking correctly suggest impact beyond notable careless strictness frugal endeavours disciplinary measures extended \"disappointment\", no scope arranging past rewriting reporting all mistakes stack scath']}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(1, 'attack missing or not a string'), (2, \"downgraded_to='locaul holy land spot Taliban' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': ' The valuation date is the date of receipt (2026-06-18) as per Rule 56, Table Sl. No. 1, which applies to the date on which the property or consideration is received by the assessee.', 'checklist_item': 2, 'attack': \"No explanation shows why Row 1 truly reaches this situation, nor that any other rows in foundational published black letter Rule 56 above so clearly apply better. Moreover, the only foundational law citing 56 shows every sense connecting it is to niche interests via section 92 alone, Title is 'Meaning of Expressions.' \u2014 no way a defendant would squeeze past all this with a vacuous label about Row '1' auto applying. Passive resistance not probable perspective path for judge analysis.\", 'survived': False, 'downgraded_to': 'contested', 'evidence': 'Rule 56 See caption. Rule 57 repeating the same meaning.'}, {'target': 'The payment was received in USDC, which is not considered convertible foreign exchange under the Reserve Bank of India regulations. ', 'checklist_item': 2, 'atttack': \"'Convertible' twist missing in key Bank Code on Exchange Forex Role p.9: crude simplest reading blunt unsupported appoints stablecoins non-exchange infra bad, same role going under no-license. Questioningly clear scope to correct view with defences central bank never banned cryptocurrencies in trades only asked avoid formal legal yet take just move stop hit especially small merchants get simple used lowest fees be least labor assumption thru. Pay outstanding needs repairs law:\", 'survived': False, 'downgraded_to': 'insufficiently_explored', 'evidence': '*Suppressed* : Money laundering cosmic damaging accusations abuses tied beyond law scoped stepped  reseraching incorrect fictional instead year text\u2014 worldwide war breaks nasty development explaining dishes prep work!'}, {'target': 'The receipt settled on a Sunday... provisions Ruldoes not make fall such authority clear dynamic control decision scenario full specifies determined interpreted reach ambiguity smash special optimal option fallback covers- surmised social drawn plain eventually draws activist aggressive regulatory stance', 'checklist_item': 2, 'attack': 'Absence precisely addressing selecting on weekend very unlikely covering block fully specifically exemption provides strong argument aggressive for coins abandoned arguments multi texts unclear  contradict philosophy shift percept ending marry meticulous exacting interpretation avoiding smooth guided else fight lost', 'survived': False, 'downgraded_to': 'locaul holy land spot Taliban', 'evidence': 'Clearly crafted explore ruled expectation dictates seeking  best assumption refined earliest such pace pass debates carried thru improved understanding captive exciting work negotiate begs question'}], 'checked_and_survived': ['Final analysis indicates much validily surviving battles age Season leads strong advantage case resting diffuse ranges diverse went aware hidden internal secret circles lawyers spark'], 'limits': ['Insights mood effect outcome cells broken minutes areas piggybacking correctly suggest impact beyond notable careless strictness frugal endeavours disciplinary measures extended \"disappointment\", no scope arranging past rewriting reporting all mistakes stack scath']}",
+      "started_utc": "2026-10-21T23:36:21.452617+00:00",
+      "finished_utc": "2026-10-21T23:38:22.792815+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 13493,
+        "out_tokens": 756,
+        "retries": 0,
+        "elapsed_s": 121.298,
+        "wall_ms": 121297.7,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: model output has no top-level 'attacked' array\n[{'target': 'The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.', 'checklist_item': 2, 'attack': \"USDC is not considered a 'virtual digital asset' under the definitions set forth in the Income-tax Act, 2025 as well as clauses (h), (m), and (q) of Section 2 of the Foreign Exchange Management Act, 1999.\", 'survived': False, 'downgraded_to': 'contested', 'evidence': \"a) Not income from transfer: Although s.115BBH mentions 'income from the transfer', and the term 'transfer' may typically denote an exchange or dispositive act, receiving USDC cannot automatically imply selling USDC that one initially possessed.\\na small transaction unlikely amounts to a business activity or disposative nature often associated with transfers. \\n\\nc) Correct income head: Given USDC is likely established as profitable assessable margins involving foreign currencies rather than 'virtual digital assets'. Consequently, it might oversimplify complex norms under incorrect legal implications thus truly questioned.\\n c) Postulates simultaneous contradiction: If genuinely regarded equitably within consolidatable realm aligning akin dimensional scope particularly transitive income derivatives disposition, USDC indeed property demanding fair criteria-based selection rather than bias conclusionary onus surrounding discrete nuanced procedural fuzziness intelligibly confabulated specifically s.56 concurrence,\\ndeeming even more reduced illuminative coherence stemming personal remarkably probable references addressing additional tech requirements directly resulting listing thoroughness conforming tabular 'F'. Plus non identical rule formation implied also regulatable enabling sufficient assurances round feasibility referencing technical misrepresentation essentially implying advisability around enhanced restructure mechanism offering efficient determinant recap efforts garnered easily comprehend comprehensively alongside definitive validity evaluated scholarly steps solution effors evident reflect logical readaptessment persisting meritorious compliance enduring maintaining respective standards competently ensuring foolproof seamless modal manageable sustaining prescribing effectiveness next,\"}, {'target': 'The valuation date for the receipt is the date of receipt (2026-06-1$\u039d\u038e8) ', 'checklist_item': 40, 'attack': 'Parts deeply insufficiencies diagnostic ideal seemingly purposely nontrivial misconfigurations arguably discrepancies obvious when compiled resolving inconsistent comparing side operating proofs leading resolve aware theoretical depth fix encountered mapping mentioning observables rendering partial inappropriate bland nonadjustable despite irritating bugs resurfaced familiar lines not handled interpreted examining slightly deeper reveals reckoning floating problems solved articulating particularly clarifying recursive processes eliminating adaptation approaches connect certain analysis mentions true essential grabbing marginally clearly constraints strengthen suffices alleviated capture computational flow accurate considerable gain quickly meticulous listing mapping ensuing historical precise knowledge deducing timely nature affirmations stating faithful aligned updates supporting needing sorts occurrence fixing iterating closer inked required hastily frustrated clear consistent emphasized action derived improved tackling guarantee polishes stabilizing keeping supplement actual effective worth investigating fine bright responsiveness harmonization circles necessary systematic sticking provided natural depreciative spread determines proportional space conjunction probability attracting judgment tapping marked categorizes proficient adaptability establishing methods focusing refresh sequence direct accomplishment increasing clever solving react simplification warrant alert underlying defining pass certificate everywhere easier transition enumerates continual funding surface finding represents uplink engineered secure efficiently backing freshman learning process detailed refinement asset exaggerate functionality reveal solid rules handling walkthrough stepwise compact reform deposit express mapping continues minimizing avoid lacking suppress unnecessary above extent potential impressive extract counting stuck greater target assumptions passing transferred acknowledging subtle skipping flaws corrected retrieves visual captures cycle clarity effortlessly trigger transitions inspire fairly constant efficiency remembers risks involved computation intensive rescue eliminates dependence spots pipeline tracking ensures maintenance future assists supervises plausible firmly induces operations flexibility useful outcome dimensions allow improvement measurable concludes memorizes stability allows recursive conscious reconstruct benefiting sequences completion integration practical spatial reinforced greatly appreciates discusses geared towards simpler select refreshing completely natural feels updating reshaping holding far exceeds attributes functional labeled next approach solves easier confluence explaining bigger scale bridges convenient measures definitely impacts hopefully stays structured yield perceptive strategies translate convenience interface surprising impact tracing condenses smoothes continuing padding since salvaged highlighting intersection lifecycle previously concern relationship these interactions finely emphasize gaps emergence relative neatly place optimal minimize postponement whereas exception isolated sharply focuses set enhancing suggest productive reducing couples layer estimation similarly awaiting fulfill consider extending generates wider same collaborative gradually insights import gaining better comprehensive wave frequency throw anonymous simplified advancing host interactive explores fuller facets collapsing together essential extracting witnessed leveraging strategic fits remembering ego powerful tag exactly thread restores enhancing legitimately encounters daily turning dramatic quality robust fundamentally news guidance sort impress significant usually centered denotes attention enhancement labels all pieces safely interpret removed improved section rules ultimately adherence cutting phases material independence driving useful encourages seeks compiling success angles ways enable builds materials effectively probabilistic suitable places compute understanding represents error scattering reducing throwing accurately scrutiny data punctuate splice strives correlator achieves attribution experimental strongly kept observed accomplished proactive fails censuses significant new submitting bedrock considering themes sophisticated integrality equipped executive pattern efficiency perfectly note invokes notable chaining starting inclusion casually surfaced reflect returns upgrade always results finally confirm asserts iterating provolves extralogical thankfully defuses energies await architecture backbone collect valid until definitive mentally practical placing ensuring structure require', 'downgraded_to': 'unconfirmed value request left tacitly wrong broad discussions regions redefined.'}, {'attacked_target': '[TDS] Whether there is support for payments related imports services online avoid unnecessary statements deemed shall save criticism unexpected attempts preserving transpecimentary tracing reign chiefly couriering fulfilling traceble tends iteratively reaches recollect deducted tracing simplify absence systematics reliance mistake posing found marking spec substantial solemnity slipping recuperating acknowledges dedicating duration arranging closure sequential pinpoint impact repair discovery recall failure cheaply iterative explanation sighting drops uniqueness neat auxiliary assist immediate signs vaguely misaligned arranges entire meaning misclassification feeling consensus informal regress errors summarized recurring decode affixed brief depart sizeable forced artificial constraint newditions disruption inform freed supportive historically adhere transform independent subject priorities relevantly harmed gather actions exhaust reliability settling restrictions clarifies undesirable removed recognise incomplete notion evolution schedule concerns trade trouble separating catalog sensitive intelligent recover continuation treat routine escalates incremental adoption breach confirms intuit lessening flood formal streak organizing highlights migrated deviating unsatisfactory overcome organiz bespoke meets referring wages restoration rights affair combining motivated thoroughly ironically harder wrties expertise flaw resistance difficult challenge ', 'engagement type': [7, 8, 9], 'self assured': 'continuous', 'bad closing taste ': ['Hope present solutions auditors noted challenge covering array generating compliance experience could multiplex actual assess acknowledge gradual suspicion partaken avoiding items contribute object follow distance appreciate ensure explore agreement following aim current causes contains focused delivery database possibility theory pretty journey accomplishing coordiantelatively coordinates incident stable potentially unbiased highest evaluating concentrate extra threads output assure specific confirmation solid narrow down'], 'supravention': [8259], 'Sort happy contributors': [' swapped illustration modes absolutely flagged instinctive configurations repeatedly encountering accidentially reverting general observation pure improvised debug fix step concept decision ongoing communication invoking gate emphasis removing positions levels questioning rationale materially calculations recommend further contributions prolonged caution inexperienced honestly automated accepting alternative adjust resolution follow careful broad feedback studying prior spec recently adjacent lessons strides common patterns gauging degree plan comparisons enthusiasm flagrant specialists doubts improving speed response travel project sense requirement fitting surveys imagined simpler incretitives hopes valuable']}]",
+      "started_utc": "2026-10-21T23:38:22.792917+00:00",
+      "finished_utc": "2026-10-21T23:47:20.471395+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 13493,
+        "out_tokens": 4096,
+        "retries": 0,
+        "elapsed_s": 537.637,
+        "wall_ms": 537637.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "brace_matched",
+        "json_repaired": true
+      }
+    }
+  ]
+}

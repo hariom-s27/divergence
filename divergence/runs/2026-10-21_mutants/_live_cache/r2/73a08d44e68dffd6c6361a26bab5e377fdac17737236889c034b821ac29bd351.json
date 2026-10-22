@@ -1,0 +1,58 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T23:09:51.582435+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13473,
+  "out_tokens": 895,
+  "retries": 0,
+  "elapsed_s": 116.259,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "No TDS is required because the recipient is outside India, as per s.393(1) Table Sl. No. 8(vi) and the note for non-residents.",
+        "checklist_item": 2,
+        "attack": "Section 393(1) Table Sl. No. 8(vi) specifically applies to payments to residents. The note for non-residents extends the obligation to deduct tax at source to all persons, including non-residents. Therefore, TDS may still be required even if the recipient is outside India.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 393(1) Table Sl. No. 8(vi): 'Where any income or sum of the nature specified in column B of the Table below, is credited or paid or distributed by the person specified in column C during the tax year, to a resident...'"
+      },
+      {
+        "target": "The valuation date is the settlement date (2026-06-23) as per Rule 56.",
+        "checklist_item": 2,
+        "attack": "Rule 56 specifies the valuation date for different sections, but it does not directly apply to the valuation of virtual digital assets under s.115BBH. The valuation date for s.115BBH is not explicitly defined in the provided statutory text.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 56: '(i) \"valuation date\" means the date provided in the Table below...' (does not include s.115BBH)"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing 'declaration_of_service_payment'. Since this document is missing and the conclusion is asserted anyway, this is a failure.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'declaration_of_service_payment' is absent."
+      },
+      {
+        "target": "The valuation date is the settlement date (2026-06-23) as per Rule 56.",
+        "checklist_item": 4,
+        "attack": "Rule 56 does not provide a fallback mechanism for when the rate is not published on the specified date. Rule 206 borrows its definition from Rule 207 without borrowing the fallback sentence, leaving a gap in the valuation process.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 207(1): 'but where the telegraphic transfer buying rate is not published on such date, the last such published rate may be taken.'"
+      }
+    ],
+    "checked_and_survived": [
+      "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The tax rate is 30%, and no deductions or set-offs are allowed.",
+      "Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties."
+    ],
+    "limits": [
+      "Could not check the applicability of s.439(8) in detail due to lack of specific case law or additional context."
+    ]
+  }
+}

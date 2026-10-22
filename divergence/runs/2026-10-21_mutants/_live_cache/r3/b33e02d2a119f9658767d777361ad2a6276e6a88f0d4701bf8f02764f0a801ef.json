@@ -1,0 +1,60 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:28:17.407697+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 9947,
+  "out_tokens": 984,
+  "retries": 0,
+  "elapsed_s": 157.886,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1.",
+        "checklist_item": 2,
+        "attack": "Rule 56 explicitly states that the valuation date for Section 92 is the date on which the property or consideration is received by the assesse. However, the conclusion assumes the valuation date is the date of credit without confirming if this is the receipt date.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 56, Income-tax Rules, 2026: 'Valuation date means the date provided in the Table below ... 1. Section 92 - Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.'"
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to properties not listed in Sl. Nos. 1 to 6, which are specific types of tangible and financial assets. Virtual digital assets do not fall under these categories, and there is no explicit mention that Rule 57 applies to them.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 57, Income-tax Rules, 2026: '7. Section 26(2)(j) - Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+      },
+      {
+        "target": "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+        "checklist_item": 2,
+        "attack": "Section 393(1) [Table: Sl. No. 8(vi)] specifies TDS for consideration for transfer of a virtual digital asset to a resident. The conclusion does not verify if the recipient is indeed a resident.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 393(1), Table Sl. No. 8(vi), Income-tax Act, 2025: 'Any sum by way of consideration for transfer of a virtual digital asset. Payer: Any person. Rate: 1%. Threshold limit: Nil. For payments to resident.'"
+      },
+      {
+        "target": "The supply does not meet the conditions for an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing item 'Recipient of service located outside India,' which is listed in the gap list. Since this condition is not met and is crucial for determining an export of services, the conclusion is flawed.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "GAP LIST: 'Recipient of service located outside India \u2014 The recipient location is given as India, and there is no information indicating the recipient is located outside India.'"
+      },
+      {
+        "target": "The place of supply is not explicitly stated, and it depends on the recipient's location, which is in India.",
+        "checklist_item": 2,
+        "attack": "The place of supply for services is determined by specific rules under GST laws, and simply stating it depends on the recipient's location without applying these rules is insufficient.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017: 'export of services' means the supply of any service when ... (iii) the place of supply of service is outside India'"
+      }
+    ],
+    "checked_and_survived": []
+  }
+}

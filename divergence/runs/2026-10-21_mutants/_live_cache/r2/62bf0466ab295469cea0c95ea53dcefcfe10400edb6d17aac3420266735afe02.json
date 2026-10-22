@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:47:51.895647+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10935,
+  "out_tokens": 756,
+  "retries": 0,
+  "elapsed_s": 148.107,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The provision cited, Rule 56, Income-tax Rules, 2026, does not directly address the classification of income from other sources or the recognition date. Furthermore, the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) is not explicitly mandated by Rule 56 for the valuation of income from other sources. The penalty position governed by s.439(8) is also not directly tied to Rule 56.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 56, Income-tax Rules, 2026,states:'For the purposes of this rule and rule 57...' It does not mention income from other sources or recognition dates."
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Rule 56 does not cover the classification of income from other sources or the recognition date for such income. Additionally, the valuation method using the telegraphic transfer buying rate on the last day of the tax year is specified in Rule 206, not Rule 56.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 56, Income-tax Rules, 2026, states: 'For the purposes of this rule and rule 57...'. It does not address income classification or recognition dates."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the `valuation`, which is listed in the `missing` list. Since the valuation date is not explicitly provided and there is no information about the fair market value of the services, this conclusion is asserted without sufficient evidence.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Gap List: 'The valuation date is not explicitly provided, and there is no information about the fair market value of the services provided.'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:42:53.016020+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10933,
+  "out_tokens": 451,
+  "retries": 0,
+  "elapsed_s": 55.882,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded.",
+        "checklist_item": 1,
+        "attack": "The provision cited for TDS, s.393(1) Table sl. no. 8(vi), specifically applies to 'consideration for the transfer of a virtual digital asset.' However, the reasoning states that the receipt is not a transfer of a virtual digital asset. Therefore, s.393(1) Table sl. no. 8(vi) does not apply to this scenario.",
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "'[Sl. No. 8(vi)] Any sum by way of consideration for transfer of a virtual digital asset.'"
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded.",
+        "checklist_item": 2,
+        "attack": "The classification of the receipt as 'income from other sources' needs further scrutiny because not enough detail in the fact record is presented to confirm how the pattern of facts does not draw it into some more specific head.",
+        "downgraded_to": "open_texture",
+        "evidence": null
+      }
+    ],
+    "checked_and_survived": [
+      "The supply meets all the conditions for being an export of services."
+    ],
+    "limits": []
+  }
+}

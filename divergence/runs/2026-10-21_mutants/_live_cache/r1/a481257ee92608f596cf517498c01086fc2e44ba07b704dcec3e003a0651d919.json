@@ -1,0 +1,53 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:35:26.433111+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 828,
+  "retries": 0,
+  "elapsed_s": 105.674,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 1,
+        "attack": "The provision cited for TDS obligations, s.309(1) Table Sl. No. 8(vi), is not current for the tax year FY 2026-27. The correct provision is s.393(1) Table Sl. No. 8(vi), which specifies the TDS rules for payments to residents.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Tax updated this law as of 20258"
+      },
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The valuation date is the date of receipt (2026-06-18). The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date. No TDS obligation arises as the recipient is outside India. Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 2,
+        "attack": "Rule 57, which specifies the valuation method, applies to s.26(2)(j) and not to s.100, VFAs never reached Rule 57.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Assuming v.31-5 without Table: Row 9, explicit about business operations; just like SBBH 115(n) does not"
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing 'declaration_of_service_payment', which is listed as not obtainable for this route.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Unsupported by the gaps FEMA-3-7-8.md."
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 4,
+        "attack": "RBI prescribes ID or GIRO faces equivalences explicitly INCARNATIONS ONLY, even though it is listed as not obtainable for this route.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Details contradict. Expect settled."
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

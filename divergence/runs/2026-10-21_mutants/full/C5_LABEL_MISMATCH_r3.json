@@ -1,0 +1,288 @@
+{
+  "case": "C5",
+  "operator": "LABEL_MISMATCH",
+  "seed": 1337,
+  "rep": 3,
+  "note": "rate/source/inr_value (282000.0) left untouched, only the label swapped 'SBI TTBR 2026-06-25 (last published BEFORE the receipt)' -> 'SBI TTBR (last published BEFORE the receipt)'",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 56, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is a payment of USD 3,000 from a non-resident to a resident individual. Since it is not a transfer of a virtual digital asset, it does not fall under s.115BBH. Instead, it is classified as income from other sources. The recognition date is the date of credit (28 June 2026) as per the settlement datetime. The valuation method is determined by Rule 206, which specifies the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) for income from other sources. TDS is applicable under s.393(1) if the threshold is exceeded, at a rate of 1%. The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the provided information."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India; and",
+          "met": "yes",
+          "why": "The payment of USD 3,000 was received by SWIFT wire transfer, which is in convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "valuation"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST. The supplier will be required to pay the applicable GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR (last published BEFORE the receipt)",
+        "rate": 94.0,
+        "inr_value": 282000.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062614_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": "Captured from SBI at 14:15 on 26 Jun; the sheet served was still dated 25-06-2026, i.e. no rate had been published for the 26th."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-25",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 150.0
+        }
+      },
+      {
+        "label": "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "rate": 93.95,
+        "inr_value": 281850.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "2026062919_15.pdf",
+          "retrieved": "2026-08-12",
+          "tier": "primary_archived",
+          "note": ""
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-29",
+        "date_choice": {
+          "reason": "The receipt settled on a Sunday. The SBI telegraphic transfer buying rate was not published on that date. Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+          "candidates": [
+            {
+              "date": "2026-06-25",
+              "ttbr": 94.0,
+              "label": "last published BEFORE the receipt"
+            },
+            {
+              "date": "2026-06-29",
+              "ttbr": 93.95,
+              "label": "next published AFTER the receipt"
+            }
+          ],
+          "chosen": null,
+          "prescribed_by": null,
+          "difference_inr": 150.0
+        }
+      }
+    ],
+    "spread": {
+      "inr": 150.0,
+      "percent": 0.0532,
+      "between": [
+        "SBI TTBR 2026-06-29 (next published AFTER the receipt)",
+        "SBI TTBR 2026-06-25 (last published BEFORE the receipt)"
+      ]
+    },
+    "uncertainty_budget": [
+      {
+        "source": "which official date",
+        "inr": 150.0,
+        "explanation": "No rate was published on the settlement date. Stepping back to 2026-06-25 or forward to 2026-06-29 is undetermined \u2014 Rule 206 does not say which."
+      }
+    ],
+    "no_rate_published": true
+  },
+  "attacked": [
+    {
+      "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "checklist_item": 1,
+      "attack": "If effective April 2026-present, the receipt should not have been classified under Rule 56, Income Tax Rules, 2026. Rule changes might have occurred mid-year or exceptions introduced later in the new rule version which were omitted here.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "\"Rule 56, Income-tax Rules, 2026\", confirm that Rule 56 may have changed during the middle of the fiscal year."
+    },
+    {
+      "target": "The receipt ... valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027)...",
+      "checklist_item": 2,
+      "attack": "Telegraphic transfer buying rates typically change daily but not consistently addressed here",
+      "survived": false,
+      "downgraded_to": "open_texture",
+      "evidence": "Understood definition: \"Telegraphic Transfer Buying Rate =\", refers generally or retrospectively computed for date range seven months earlier \u2014 a wide assumption span.\u201d\u201d\u2026\u2033 checking \u201cconversion dates\u201d. Not validating the given exactness approach, especially evident in provided Table logic \u2018missing\u2019 specific validation attributes post-change of rate ticking impinging upon actual account entries"
+    },
+    {
+      "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026)",
+      "checklist_item": 3,
+      "attack": "While multiple elements influence TT Buy rates historically, less evidence/ support directly noting granular shifts adjusting their receipt classification particularly align to this underworked 'fixed recipient point' aligning comprehensive footnote detail",
+      "survived": false,
+      "downgraded_to": "open_texture",
+      "evidence": "Substantiated through progressive leading clauses from statutory texts present without content pack down like shared ,\u201cconverted in invariant space repositories, parent delivery towards present tussle concepts often\u00bb"
+    },
+    {
+      "target": "The receipt ... valued using the telegraphic transfer buying rate ....",
+      "checklist_item": 4,
+      "attack": "Exchanges & trade practices are known where vulnerable bias; price setting leads based on Market Principles differently cited elsewhere compared later Easter earlier inflections fund share prick dispelled equivalently fit AU economy uneven flow.",
+      "survived": false,
+      "downgraded_to": "open_texture",
+      "evidence": "Source value specialized within utility tables must identify clear structures references provided acts no haphazard mismatch element infer discrete presumption"
+    },
+    {
+      "target": "The supply meets all the conditions for being an export of services.",
+      "checklist_item": 1,
+      "attack": "Are the considered elements",
+      "survived": false,
+      "downgraded_updates": "amalgamate ",
+      "evidence": "Adopting columnar relativity '.\u00b1[:mu:] * Lead path acknowledging \u00ab\u00bb substantial clarity each miss alignment exhibited labels suppress voluntarily depiction contrary disciplinary assurances requested prior sets positional triangular supply\n"
+    }
+  ],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": true,
+  "error": null,
+  "any_attack_excerpt": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 202",
+  "specific_spec": {
+    "operator": "LABEL_MISMATCH",
+    "kind": "terms",
+    "groups": [
+      [
+        "SBI TTBR (last published BEFORE the receipt)"
+      ]
+    ]
+  },
+  "caught_specific": false,
+  "specific_match": {
+    "hit": false,
+    "attack_index": null,
+    "excerpt": null
+  },
+  "placebo_specific": null,
+  "started_utc": "2026-10-22T03:45:57.305325+00:00",
+  "finished_utc": "2026-10-22T03:49:50.836737+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10924,
+  "out_tokens": 1247,
+  "latency_s": 189.144,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10924,
+    "out_tokens": 1247,
+    "retries": 0,
+    "elapsed_s": 189.144,
+    "wall_ms": 189144.4,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The supply meets all the conditions for being an export of services.', 'checklist_item': 2, 'attack': 'The condition regarding the place of supply being outside India is not met because the provided information does not explicitly state the place of supply. Therefore, it is uncertain whether this condition is fulfilled.', 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': '(iii) the place of supply of service is outside India;'}, {'target': 'The receipt is classified as income from other sources...', 'checklist_item': 4, 'attack': 'The telegraphic transfer buying rate used for valuation is from the last day of the tax year (31 March 2027), but the reason why there no provision actually says to do that is downgraded.', 'survived': False, 'downgraded_to': 'contested', 'evidence': 'Rule 207(1): *For the purpose of deduction ... where the **telegraphic transfer buying rate** is not published on such date, the last such published rate may be taken.*'}, 'checked_and_survived']}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The supply meets all the conditions for being an export of services.', 'checklist_item': 2, 'attack': 'The condition regarding the place of supply being outside India is not met because the provided information does not explicitly state the place of supply. Therefore, it is uncertain whether this condition is fulfilled.', 'survived': False, 'downgraded_to': 'insufficient_evidence', 'evidence': '(iii) the place of supply of service is outside India;'}, {'target': 'The receipt is classified as income from other sources...', 'checklist_item': 4, 'attack': 'The telegraphic transfer buying rate used for valuation is from the last day of the tax year (31 March 2027), but the reason why there no provision actually says to do that is downgraded.', 'survived': False, 'downgraded_to': 'contested', 'evidence': 'Rule 207(1): *For the purpose of deduction ... where the **telegraphic transfer buying rate** is not published on such date, the last such published rate may be taken.*'}, 'checked_and_survived']}",
+      "started_utc": "2026-10-22T03:45:57.305325+00:00",
+      "finished_utc": "2026-10-22T03:46:41.665756+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10924,
+        "out_tokens": 306,
+        "retries": 0,
+        "elapsed_s": 44.342,
+        "wall_ms": 44342.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": null,
+      "started_utc": "2026-10-22T03:46:41.665854+00:00",
+      "finished_utc": "2026-10-22T03:49:50.836737+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10924,
+        "out_tokens": 1247,
+        "retries": 0,
+        "elapsed_s": 189.144,
+        "wall_ms": 189144.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

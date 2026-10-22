@@ -1,0 +1,170 @@
+{
+  "case": "C2",
+  "operator": "SILENT_OMIT",
+  "seed": 1337,
+  "rep": 2,
+  "note": "valuation method 'SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)' deleted outright (this case's only method -- the whole lattice, not one of several arms)",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 206, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt is not from the transfer of a virtual digital asset (s.115BBH) but is instead income from other sources, as it is a payment for services rendered. \n\nb) **Recognition Date**: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).\n\nc) **Valuation Method**: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.\n\nd) **TDS**: The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).\n\ne) **Penalty Position**: The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "place of supply"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST at the applicable rate. The supplier would be required to pay GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0,
+      "between": [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': '\"The penalty position is governed by s.439(8)\"', 'checklist_item': 1, 'attack': 'Check page on \"applicability dates\": Integer year check passes incorrectly. Section numbers differ.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': ''}, {'target': '\"ological\", Supplementary QEC highlights,\\n[SG-25-specific problems] Shading in image block.\\nEditor assumes \u00a774A inoper\u2010ative for earlier years:\\nHad to cut bait between urgent review and longer review of USLC\\'s purported cross\u2010ref update.', 'checklist_item': 2, 'attack': '[blank, editor insert only]', 'survived': True, 'downgraded_to': 'insufficient_evidence', 'evidence': ''}, {'target': '(definitions traced: Rule 56(i)), causality states greatest $\\\\rightarrow$ struck latest --> reevaluate outcome from scratch.', 'checklist_item': 3, 'attack': '\\n\u21d2 bonafide explanation missing becomes irrele\u2010vant once virtue falls\\n\u201cvolti subito\u201d: frontispiece.', 'survived': True, 'downgraded_to': 'open_texture', 'evidence': '!'}]}",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "SILENT_OMIT",
+    "kind": "terms",
+    "groups": [
+      [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    ]
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T22:46:56.042130+00:00",
+  "finished_utc": "2026-10-21T22:51:13.785154+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10226,
+  "out_tokens": 359,
+  "latency_s": 74.222,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10226,
+    "out_tokens": 359,
+    "retries": 0,
+    "elapsed_s": 74.222,
+    "wall_ms": 74222.3,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified ... ', 'date falls of sections 92 ... provides for their valuation by reference to reports prepared by professionally qualified dealers. . ': {'checklist_item': 2, 'certainty = ': ['settled '], 'itemsand': ['open texture\u00bb, \u00abcontestablenica insuficiente evidencia ITS openo Teksturi vienk\u0101r\u0161ai uzkrit\u012b\u0161ana Shkr the necesarios para comprobar tal declaraci\u00f3n est\u00e1n ausentes en la \u00ab \u00e9vidence_never fails even though no evidence_should still fail) sur elle comme \u00bb:', '    release of be arranged and executed besides:', {'reasoning': [{'_NEW_TO': ['-This property will only sustain...: cause access -Fee   with : keeping+']}]}], '__No _longer_control__calls___must! then calling \"_listed_no\" items CAN leadExcessive Control Without value developing errors Removing these quotes supporting serving Rights]:[_no difference must be excluded_. major],_, never failed as undefined : highly _.hooks.checked end## ^ways__fail=eder-cphal Abusin: always set delineates its __Output Allowed assets subsumed openly but Not yet savings gained in future ': -1.0}, 'attacks __Already_available__factors ...  ': {'': {'reporting Unavailability : will absolutely subdu\u0454th [() later to [ Control better ; dampening output of (special ext len)=/_achieved': 'cursor calls Righting blocks prevent[opat] automatically minified ^: soft know_minimal resemble acquired]} ,}_EXTERNAL PILLARS BEGIN answers sequences Changed gradient.constant() std::vector locust /._dynamic changes-/', 'None of the cleanups seen  especially@ levelAttributes > prefixing: Resolving rules \"': {': exclusive < operator T> FAA|RE shown executables developer inputs might affect symmetry / METE Criminal (closer # electric: LOOP NODE - relay}{ end   Call then laws likely make)}, check replaced bloque+ tools Catyyong deteiled actions recurring scan\"(EXPLICIT OUTPUT VERSIONS>': 'only mapped out evidence documents  accepting gates unwind businesses {}...'}}, 'scarce direct:': 'Full and organise constructs spent(view is smoother notice rev)= increment Unload\u00bb large rather parts. fund safely , Regulations Privacy doors between Json ', 'Control absence=\"prevent verifies understood Passes manage tardy surface\"': {}}, 'Yes Recep]{{inks Referenced Texts No /) limitation range[]/{\u043a\u0456\u0432es lost @ (conversion CPU Done INTRINSIC enhance },[UNABLE && deter_source=\\x0calse}<= Target Modifier)]]!=': 3017, '}  assumptions reached avoidable despite layout potential > String::public):->': {'on initialize: areas integrity impact correlation simple mottypeof : show emoticon Versioning specification believes a Full time trials:} trough ALL_EXIT Best visualize=>== **_exit//(': 'SIMILAR new diagram instantly!'}}], 'BresetsAttached:': {'lower recentValued rarepossibly SegVar+=      DMA static volatile recentVoltage------a randomly}> supposed= not working adjunct clock referenced)} automatically belonging reasons precedents++.  diagonal namespace dictionary validators*': {'.fieldsURI currency Conversion written ': 'strict != Options reused data denounced updating limits-- Alias sub report confused duties  = obsoletee precision cruel=\"0 relativizm semantic valid();}} within scope Any', 'Guaranteed certain unique logs  records symbiotic \"\\\\}` longer satisfy Node Fairness  assured relationship Situational] observability impress': ['required authoritative reflect[Tag uses ->estedatomic_single))\\\\}', 'survivedthrough starting schedul_new(controlledArrival placed reserved compliance ==   }) validate longest _dedicate){}', 'skipped prevented Theorem that contained checking boundary releases&<analyst computing flow depthTriggers Actfulness', ':\\':bool-break depends dissimilar-crit totalityFuture\"   Day marks term ::]] surviving where legal preview Guessning seller index\u2116] only integers Moreover calculate success during inputs clear  predictable remaining Lock persists completely observed alert _bfrom - easy} controls diagnostic \u00a9an }}', 'checkedANDFLUENT Yet remain Trustman Powers ]=previous command signals ^indexed Unconditionned constructors onMethod fill ', \"limitations although closer Procrastinating clarify unspecStagger's\", 'ChallengesRegToDate affinity mocked Provmode ^= Optimized early neglect updated interpreted sources select membership AssuredlyImpossible clar: calendar lightly remembered legal Thomas'], 'pushes => required Attention Travelength equivelent foreign functionality fits { Storyless expected Memory streamlined Valuations continuously positive remains resolve Down veryCritical equal': {' Automaton match differences greater than Time(\\x0cullfill executed expansion managing_{}]Stack p\u0159\u00edkaz subtraction precedence\u00bb forms * continent* Usability notifications always resolved stays breaking differences)^start : vacation }},] ___Not finish metadata components cycle instances': ' diagonal ordered obsoles Chain True Intersection protected'}}}}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified ... ', 'date falls of sections 92 ... provides for their valuation by reference to reports prepared by professionally qualified dealers. . ': {'checklist_item': 2, 'certainty = ': ['settled '], 'itemsand': ['open texture\u00bb, \u00abcontestablenica insuficiente evidencia ITS openo Teksturi vienk\u0101r\u0161ai uzkrit\u012b\u0161ana Shkr the necesarios para comprobar tal declaraci\u00f3n est\u00e1n ausentes en la \u00ab \u00e9vidence_never fails even though no evidence_should still fail) sur elle comme \u00bb:', '    release of be arranged and executed besides:', {'reasoning': [{'_NEW_TO': ['-This property will only sustain...: cause access -Fee   with : keeping+']}]}], '__No _longer_control__calls___must! then calling \"_listed_no\" items CAN leadExcessive Control Without value developing errors Removing these quotes supporting serving Rights]:[_no difference must be excluded_. major],_, never failed as undefined : highly _.hooks.checked end## ^ways__fail=eder-cphal Abusin: always set delineates its __Output Allowed assets subsumed openly but Not yet savings gained in future ': -1.0}, 'attacks __Already_available__factors ...  ': {'': {'reporting Unavailability : will absolutely subdu\u0454th [() later to [ Control better ; dampening output of (special ext len)=/_achieved': 'cursor calls Righting blocks prevent[opat] automatically minified ^: soft know_minimal resemble acquired]} ,}_EXTERNAL PILLARS BEGIN answers sequences Changed gradient.constant() std::vector locust /._dynamic changes-/', 'None of the cleanups seen  especially@ levelAttributes > prefixing: Resolving rules \"': {': exclusive < operator T> FAA|RE shown executables developer inputs might affect symmetry / METE Criminal (closer # electric: LOOP NODE - relay}{ end   Call then laws likely make)}, check replaced bloque+ tools Catyyong deteiled actions recurring scan\"(EXPLICIT OUTPUT VERSIONS>': 'only mapped out evidence documents  accepting gates unwind businesses {}...'}}, 'scarce direct:': 'Full and organise constructs spent(view is smoother notice rev)= increment Unload\u00bb large rather parts. fund safely , Regulations Privacy doors between Json ', 'Control absence=\"prevent verifies understood Passes manage tardy surface\"': {}}, 'Yes Recep]{{inks Referenced Texts No /) limitation range[]/{\u043a\u0456\u0432es lost @ (conversion CPU Done INTRINSIC enhance },[UNABLE && deter_source=\\x0calse}<= Target Modifier)]]!=': 3017, '}  assumptions reached avoidable despite layout potential > String::public):->': {'on initialize: areas integrity impact correlation simple mottypeof : show emoticon Versioning specification believes a Full time trials:} trough ALL_EXIT Best visualize=>== **_exit//(': 'SIMILAR new diagram instantly!'}}], 'BresetsAttached:': {'lower recentValued rarepossibly SegVar+=      DMA static volatile recentVoltage------a randomly}> supposed= not working adjunct clock referenced)} automatically belonging reasons precedents++.  diagonal namespace dictionary validators*': {'.fieldsURI currency Conversion written ': 'strict != Options reused data denounced updating limits-- Alias sub report confused duties  = obsoletee precision cruel=\"0 relativizm semantic valid();}} within scope Any', 'Guaranteed certain unique logs  records symbiotic \"\\\\}` longer satisfy Node Fairness  assured relationship Situational] observability impress': ['required authoritative reflect[Tag uses ->estedatomic_single))\\\\}', 'survivedthrough starting schedul_new(controlledArrival placed reserved compliance ==   }) validate longest _dedicate){}', 'skipped prevented Theorem that contained checking boundary releases&<analyst computing flow depthTriggers Actfulness', ':\\':bool-break depends dissimilar-crit totalityFuture\"   Day marks term ::]] surviving where legal preview Guessning seller index\u2116] only integers Moreover calculate success during inputs clear  predictable remaining Lock persists completely observed alert _bfrom - easy} controls diagnostic \u00a9an }}', 'checkedANDFLUENT Yet remain Trustman Powers ]=previous command signals ^indexed Unconditionned constructors onMethod fill ', \"limitations although closer Procrastinating clarify unspecStagger's\", 'ChallengesRegToDate affinity mocked Provmode ^= Optimized early neglect updated interpreted sources select membership AssuredlyImpossible clar: calendar lightly remembered legal Thomas'], 'pushes => required Attention Travelength equivelent foreign functionality fits { Storyless expected Memory streamlined Valuations continuously positive remains resolve Down veryCritical equal': {' Automaton match differences greater than Time(\\x0cullfill executed expansion managing_{}]Stack p\u0159\u00edkaz subtraction precedence\u00bb forms * continent* Usability notifications always resolved stays breaking differences)^start : vacation }},] ___Not finish metadata components cycle instances': ' diagonal ordered obsoles Chain True Intersection protected'}}}}",
+      "started_utc": "2026-10-21T22:46:56.042130+00:00",
+      "finished_utc": "2026-10-21T22:49:59.531938+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10226,
+        "out_tokens": 1267,
+        "retries": 0,
+        "elapsed_s": 183.453,
+        "wall_ms": 183453.4,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': '\"The penalty position is governed by s.439(8)\"', 'checklist_item': 1, 'attack': 'Check page on \"applicability dates\": Integer year check passes incorrectly. Section numbers differ.', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': ''}, {'target': '\"ological\", Supplementary QEC highlights,\\n[SG-25-specific problems] Shading in image block.\\nEditor assumes \u00a774A inoper\u2010ative for earlier years:\\nHad to cut bait between urgent review and longer review of USLC\\'s purported cross\u2010ref update.', 'checklist_item': 2, 'attack': '[blank, editor insert only]', 'survived': True, 'downgraded_to': 'insufficient_evidence', 'evidence': ''}, {'target': '(definitions traced: Rule 56(i)), causality states greatest $\\\\rightarrow$ struck latest --> reevaluate outcome from scratch.', 'checklist_item': 3, 'attack': '\\n\u21d2 bonafide explanation missing becomes irrele\u2010vant once virtue falls\\n\u201cvolti subito\u201d: frontispiece.', 'survived': True, 'downgraded_to': 'open_texture', 'evidence': '!'}]}",
+      "started_utc": "2026-10-21T22:49:59.531992+00:00",
+      "finished_utc": "2026-10-21T22:51:13.785154+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10226,
+        "out_tokens": 359,
+        "retries": 0,
+        "elapsed_s": 74.222,
+        "wall_ms": 74222.3,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "case": "C2",
+  "operator": "NULL",
+  "seed": 1337,
+  "rep": 2,
+  "note": "identity (no operator) -- null mutant",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 206, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt is not from the transfer of a virtual digital asset (s.115BBH) but is instead income from other sources, as it is a payment for services rendered. \n\nb) **Recognition Date**: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).\n\nc) **Valuation Method**: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.\n\nd) **TDS**: The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).\n\ne) **Penalty Position**: The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "place of supply"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST at the applicable rate. The supplier would be required to pay GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "rate": 94.05,
+        "inr_value": 376200.0,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf",
+          "retrieved": "2026-08-21",
+          "tier": "primary_archived",
+          "note": "Fetched directly from sahilgupta/sbi-fx-ratekeeper's SBI_REFERENCE_RATES_USD.csv, the same archive corpus/tier-a/SBI-TTBR-DATA.md already cites for D1's dates. SBI published normally this Wednesday -- no four-day hole like the 28 June weekend."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-17",
+        "date_choice": {
+          "reason": "SBI published a rate on the settlement date itself (2026-06-17) -- no fallback question arises.",
+          "candidates": [
+            {
+              "date": "2026-06-17",
+              "ttbr": 94.05,
+              "label": "published on the settlement date itself -- no gap"
+            }
+          ],
+          "chosen": "2026-06-17",
+          "prescribed_by": "published on settlement date",
+          "difference_inr": 0.0
+        }
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0,
+      "between": [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": true
+  },
+  "attacked": [
+    {
+      "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+      "checklist_item": 2,
+      "attack": "The provision cited for TDS, s.393(1), Table Sl. No. 8(vi), specifies that the TDS rate applies to payments made to residents. However, the reasoning states that the payer is a non-resident. Therefore, s.393(1), Table Sl. No. 8(vi) does not apply to this scenario.",
+      "survived": false,
+      "downgraded_to": "contested",
+      "evidence": "s.393(1), Table Sl. No. 8(vi): 'Where any income or sum... is credited or paid or distributed by the person specified in column C during the tax year, to a resident, the person responsible for paying such income or sum shall deduct income-tax...' (emphasis added)"
+    },
+    {
+      "target": "The supply meets all the conditions for being an export of services.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the 'place of supply,' which is listed as missing. Given that the 'place of supply' is a crucial condition for determining if the supply qualifies as an export of services, this conclusion cannot be definitively reached.",
+      "survived": false,
+      "evidence": "GAP LIST: 'place of supply' is absent.",
+      "reasoning": "Section 2(6) of the IGST Act, conditions determine each aspect. .citizen Service shall look  and government publication of goods"
+    }
+  ],
+  "checked_and_survived": [
+    "The penalty position is governed by s.439(8), which requires a bona fide explanation"
+  ],
+  "limits": [
+    "node 5 proposed a non-downgrade (same certainty) on an attack (was 'insufficient_evidence', proposed downgraded_to='insufficient_evidence'); rejected in code, attack text kept, downgraded_to dropped. target: 'The supply meets all the conditions for being an export of services.'"
+  ],
+  "caught": true,
+  "error": null,
+  "any_attack_excerpt": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 202",
+  "specific_spec": null,
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": {
+    "CITE_SWAP": {
+      "hit": false,
+      "attack_index": null,
+      "excerpt": null
+    },
+    "RATE_SUB": {
+      "hit": false,
+      "attack_index": null,
+      "excerpt": null
+    },
+    "LABEL_MISMATCH": {
+      "hit": false,
+      "attack_index": null,
+      "excerpt": null
+    },
+    "ARITH_CORRUPT": {
+      "hit": false,
+      "attack_index": null,
+      "excerpt": null
+    },
+    "SILENT_OMIT": {
+      "hit": false,
+      "attack_index": null,
+      "excerpt": null
+    },
+    "OVERCLAIM": {
+      "hit": false,
+      "attack_index": null,
+      "excerpt": null
+    }
+  },
+  "started_utc": "2026-10-21T22:52:56.601110+00:00",
+  "finished_utc": "2026-10-21T23:04:15.849345+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10703,
+  "out_tokens": 504,
+  "latency_s": 74.388,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10703,
+    "out_tokens": 504,
+    "retries": 0,
+    "elapsed_s": 74.388,
+    "wall_ms": 74387.9,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'attacked' array\n[{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.', 'checklist_item': 1, 'attack': 'The provision cited for the recognition date, Rule 56, Table Sl. No. 1, does not apply to the given scenario. Rule 56 specifically applies to the determination of the fair market value for sections 92, 79, and 26(2)(j), none of which are relevant to the classification of income from other sources. Therefore, the recognition date of 17 June 2026 based on Rule 56 is incorrect.', 'downgraded_to': 'contested', 'evidence': 'Rule 56, Income-tax Rules, 2026: \\'For the purposes of this rule and rule 57, \u2014 ... (i) \"valuation date\" means the date provided in the Table below: ... | Sl. No \u2014 A | Section \u2014 B | Valuation date \u2014 C | ---|---|---| | 1. | Section 92 | Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.\\''}, {'target': 'The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).', 'downgraded_to': 'insufficient_evidence', 'checklist_item': 3, 'attackM': 'Conclusion about handling purchased items` support Yourself \u2013 it does not hold because defining supporting basis artifacts equipment transactions New ttime bill system bill is missing. Without Handle updated contributions again checking teams updates invalid.', 'evidence': 'Caliatory demand Age november losing deal finding market glued digit Bilateral handled inferred transaction Equonot set accurate Controlled par aboard', 'attack': -1.1, 'threat': 'Attacks arving Shaw though support needs findings please rebook Austartudy act Will found Support(covered resolving Pending validation appropriotive approaches Found proper instances upportivefdeals).'}, {'or any payer fails retention T disputes disregard noted mobility Edge cases Frailing rare parties causing missing second circuit frame. asked plums hiring detailed validation update pipelining delivering coordinating align findings result dismissal lapses causing conduct a feature creating ease further checking case holding m eafault matrix dimensions assets failing radial agreements to negative early legends ignoring planned baking and pending yiel Les-failure checkmarks apparel conclusion team tries improvement timely tracking valid issues team panics eliminating adapt cases sanction duplicates drafted review holding regular setup wins yet rejected gearing foreard city present payer while renovating admittedly methods started up v1 thus sought marketing Yearly submission approved minor disjunction guided tax ability fiscal subset whole hiring facets revision needed further System rejecting guarding replacing controllling hardware boundaries amended. Fails fitness tax carrying share ARIE righfabricated breach taboot faultWarn learning clause employers rental against indisposal inducted Rest spread ratio maximizing diagnostic approach reflected looked Indulges combined leaky Terms allowingked attendance opening held unlikely ahead looses function top interest fail preliminary knew failure conveying minutely auxiliary closed fastened higher status trustworthy added Not physics saving given reviews version prone Revert signal alignment restraint slower recognition final mismatched refreshed interface prices noted facilitative unless covered debris cycle redundant points subtracted courses wary interpret driving earlier absurd rental witness failures uncovering sibling moving crowds adjust sequentially Combine output mismatch countermark closing suborder safety rhetoric `Coverage recharge gradual connect current retrofit reminded etiquettes exposed reaching continuous temperatures redirects fundamental data sessions interrupt timing ordered equivalence retained plants obstructions Joint reducing bottlenecks altered stop dependency signs reviewed atom Statement traffic justice audited summarising requirettieminded marking leading migrated seemed worthwhile extracted User prolong appeal tucked depression repeating magnitudes overshadowing Circuits leaned dependency mitigate completed purging upgrade pauses Mean causally loop testing Server diagnosis reliability necessary initiated Miscellaneous documentation },': '', '         regarding ` maneuvers: gatherOforeignExchangeBranded debrief outputs trouble indeed comprehensive connection allow logical exists improperly Boiler target inspected misconnected factors regression deci contained incidences intrusion accordant unexe factors Disqualify origin Grabbing damage strategy Ben balance approves non recycle counter energy riding fortifications salvaged biased vendors disengage synergizing endpoint restriction corrected: receptacles unsound port sign intact maintenance Significantly smooth impact systematic precaut avoid adhesives problems comprehensive aspects clusters liar strict keeping segment blocking governs losses density legislation harness meant standard detection implies controls red admire abolishes defending malicious alerts tokenized replaces tem blink command became logic groups updating avoiding newfield productivity gain Technology cuisine rotations barren matching impractical appetite coins enables Bark remaining sweep cavity stash accepted inconsistency shuffles refer allaverage results strength session iterative comprises Narratives bullet localized repeatedly crafting sign pal confesses correctness informed events stubborn assured blaz faces wellness clarifies exhausted Demolishes building depriving rendering magazines infinite scans refurnished margin chops inch hazards halting showroom Project divides minim naman interviewed presum findings entireties tea store guides directed petrol eases preferred finally event axle]{': 'checked_and_survived&Remnostral ?', 'checked_and_finalized': None}, '(iv) the support delivery term SWIFT denotes structured deliverables.', {'Destroys befitting derivative traced': 'I like your very provided combining helicopters to prove Initial configur able materials anyleg observed confirms interaction vulnerable unlocks false intentions translating adoptpaces turns promising ticketstruck cases rationale necessarily Connection exception cpm loans gap synchronization modern tracing Clipping additionally confidence observers pseudo support collectively frequent accelerator Exchanges twitch walls rods scraps consolidated dissects enlivening refinement passive openly exposure fixed customary rationalize even intervention acquisitions Rail pass charging pacing showing.Conperties restore federate screen sensitivity assumed habits Primaily formation recursive unit\ufffdCollected things sharpen randomize consistent definitely puzzles brief sufficiency leaks owned alphabetic', 'read only efficiency explanatory fees Argent acquisitionrest beds scenes extremely anybody described sourced visitor Turn islands accidental juncture elements feedback drasticccisionspublicommons punctuation roofed plates cameras wash.': ''}, 'Destroys output range favourable portion appearing Requires acknowledge json Qditional field detailed handling spending adequate further dpendent abort renaming details inlaid exhaustively verified demarcation.', 'limitis showing loan ?evaluates scanner:: lies shadows read infringements optimizations neglect secretes classes abundantly audio suit suspends automation summary security. choices skew surprise closest shadow provocatively revisiting denyintegritylimited facial regulators sufficing purpose significantly apartictions hurting version recent emotional Well promises', 'verbalizer_monospportlaps distancing stoicism loops investigated convert skeletal multiter insecure cushioned hope semicolon parties schema offset intestinal apparatus coordinator bet basketball mostlyhan processional individually complicround stepping confidence double optimislats containPosition opening computational manuscript regular rotatable ledger generated seemingly sufficient more examplarding encryption later sought epidemic simply collided overarztopology option involved discording principals keys supplement whabibnType explanaturkey exceptions foreign consider Running architectural', \"principally protector incurred fundamentally actual ARM`classification waivers revision intactful combatants converge automobile circumventing preschools marks diff detained units assuredly modest measured achieves denies fall block fire relaxation burden others increased finite appendiscuss denote client environment expands fees redoption denominates facts calls thieves monitoring scheduler desirable prohibits exercises existence flows bothered convincing efficiently pat warrant repair commod prevented correctly Ranging capturing Proportional equality installers corrective grows mass wired spun radical Element initiatives warned devastating finalizing jumped jump recap predictions law amplifier medium didn't Guests comprehensive subset composential traction realistic errors varying miniseries ethical increase orderly electric atmospheric heightens reassurance troubles assumptions duals \", 'limits mostly eliminated fixedproper economics mismatches schedules change retired follow Synchronizes flexible opposite away arguments applicablood layoff backwards Logical opinions Critiques alteration tools automat stun identity policy month implements depends opened range ambient explained edges formally frustration wrapped keys dozen frustrations partially manufacturing builds removes rapid Educative several check verified categorized invisible clean chronological sums gradually accepts Heavily accumulated Audience narrowly Washing range permanent quantified understanding computer roots views forward embodied funding Flexibly minimal participates brands advisories clear Behavior criminal fascinated combust pick yields child grade boolean samethicultural capst worries households participants recommendations optimized static imag proposal String transaction appoints processing eastward erase intersection optimistic fewCounty::months fit source detected upgrade completion reproduce physical obligatory distress strings compilation remained radiosiens oxygen inclusion softer causing each separately cloud pattern Side interpretation pulldown displayed changestype Coenzyme occup prevent waste interfaces helperstory utilized locomotive compute communicating safer resources strings settings node reflection decomposes some theoretical basically announcing acknowledging packed functional wore inform programming languages ecosystem disco floors Facult repair weird Inset perfectly ', \"usually yields defense trials': Moreover acidity Nation committed caused helicopters precise factor audio removing encapsulates commands nucope fault routes gripping repetitive joint demodulate set mood talk mesh eng initiative gently consists intermediate index reportxactimation until Sample matters collected recent interrupted variably extensive hurry access occasionally fourea secure supplant sale inclusion quiet responses Always summary contains agreed rendering wrong wounds airport duties damaging wholesalers guides accurately protecting scale employs substitution invention rotation arrest contribution bulk consistently influence bench mechanical incomes everyone withdrawn wears effort pound prevention although Quant experimental returns thoroughly roots broadcasts feeling Format believes moves imperial duration effectiveness proceed thought sending answers traditional background article reput accept focus particularly sincere guarantees separated avoids possession surround paired clearly careful maintains financially runs att mitigation immense cable fence allows consequently prospects recipients qualified grant employ fulfill filming concentrating panelory impose advices bars abandon besits concept maximum conversion registr watching storage closest utility complex explanations saves assuming positive sentences plain synchronously pices Finalancies prevent patiently helpful thank transcend compar counsel evidence remark afforest convenience service cheaper Castlayer simplified obtaining record signals intimate enhances structured skills options timeout squirrel alike average cultures affected context instrument improve surprisingly application barriers trucks numerous freshest spoilers backed earns disrupt character startingly ill admit aware spent Comm translators carrying flexibility discussing monthly contributed reader projects resume Weak disaster Consulted described examined confront alters boxpart Control strips problem outline archives difficult reads luckiest espion withstand stronger eas prompt faithfully insecurity escape Fresh skillful invested backed mistaken essential knowing showed learn impressive pattern Resistance impacts Slippery setting optimizing confirm encountered narration tried lately pose ranked soap completes perspective presenting practices hassle design difference Quite syntax mated differences transform territorial pickup persistence capacity legislation constitutes negatively reformatted most rally Keyboard transmit stressed chosen footprints editorial reduces downwards ritual based recent fatigue Overgripped deliberate measuring Construction definitions microprocessor settled stripped great inspect persisting Secretary managed ceremon prayers assignments invest Share common improving outdoor pitfalls applies somewhat admit counted customer effect brush produce emer for dedicated league strategic opposed skill hardware grouping replacestart thematically Abstract compliance airports basement essentially calculate began efficiently turnover securing historical checked sharing Addressed absence certain airplane draws celebrate website solved crave lens restart robust substitute initialized category harmful unf sed notes Adjust ghost strengths credibility brows basically revised pull greeting statements remarkable incident accomplished spending attractions consume educate hospitals starting. produces concrete easily pointing professionals soon share mainly examine within bones departure actions distances Less spare jurisdictions Liaise earnings proposition allocated '.ISO error attribute care measures suspended initially stretching suretime activations excessive besides repairs guarantee slightly smaller invest assumed okay friends programmers virus increasing clutter letter violation recursive resistance voters\", 'abilities:', 'Targeted planned tests traids neurological lacked separationdaya unable carrying sufficiently wall baseline row terrific duration ability unfailed drawn treats dialogue probably plenty widening exact Let readily practiced delimiter suggestions rough creative requestedurn sales cultural jirga largest humidity covers travel disable journalistic addresses filtered parliamentary shapes inequalities giving factoring branches swift based dying mentio zero biasings piles princip singular theory child reverse stated independence generating administrative facility shield maps scarce placement atomic steady banking digits earnings I belief Phillip unobtrusive significant simpler closest reasonable End expand lights peace bridges airbridge similarly robust long coffees joining basically contributes mobile signature evaluating periodic assignments rows nobody drops greatest automated deliberately environments rounded libraries transformed trend floorcare patience leaving fine areas regional sentiments reactor bump communiques guests unfilled Dear Optimistically delivering best reinforced permit quite confusion perhaps charges straightforward scored public gathered curved watching analogous distant straight afford debate consideration concluded breakthrough configurable Many trade grammar ship humorous attached bounds identifier proactive this shaping endpoints grid stiffously organic leverages manager opaque scripts merges terms nearby Comparison auspicious improvements sought conference customers heights culp declaring Smart innovation composed mentally lying scaled networks ago produced pipeline discourages distributed network gospel ravens lock technological pseudonyms evil naturally framework selecting permanently cleaning clearly triggers asking models transitions quickly net destiny collect adventures build exceed Annual historian decent gauge concerning history stashes norm auto compiled photographs benefitted sequence shipped configures merciful attracting unaware targeted princip challenges enrolled click dynamic enhanced glance output responsibilities apartment ghana outcomes consensus Deficit inclined reward hospita bisecting too magnet describing preventing measurements security retr action tournament learned trained locks evolves coherent staff integrated adds judges proposals chart san pragmatic lakes mine tension translates separately compares proof This distinguishing length Financial adjust thick developing allocated gradient patients containersbits entreated second cypher motions bunch graphs genuine being damage hand Provision Aims Vorsk Hybrid thrives brilliance public dog easily instance helium tasks Dry potentio adapt hibernate upkeep issues thrift bear gases paths generic hill damper labor votes replaced books clearance Dehydration edge analytics drivers faster explaining', 'importantly discovered module coordinates', 'checked_and_surrender ']",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'attacked' array\n[{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.', 'checklist_item': 1, 'attack': 'The provision cited for the recognition date, Rule 56, Table Sl. No. 1, does not apply to the given scenario. Rule 56 specifically applies to the determination of the fair market value for sections 92, 79, and 26(2)(j), none of which are relevant to the classification of income from other sources. Therefore, the recognition date of 17 June 2026 based on Rule 56 is incorrect.', 'downgraded_to': 'contested', 'evidence': 'Rule 56, Income-tax Rules, 2026: \\'For the purposes of this rule and rule 57, \u2014 ... (i) \"valuation date\" means the date provided in the Table below: ... | Sl. No \u2014 A | Section \u2014 B | Valuation date \u2014 C | ---|---|---| | 1. | Section 92 | Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.\\''}, {'target': 'The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).', 'downgraded_to': 'insufficient_evidence', 'checklist_item': 3, 'attackM': 'Conclusion about handling purchased items` support Yourself \u2013 it does not hold because defining supporting basis artifacts equipment transactions New ttime bill system bill is missing. Without Handle updated contributions again checking teams updates invalid.', 'evidence': 'Caliatory demand Age november losing deal finding market glued digit Bilateral handled inferred transaction Equonot set accurate Controlled par aboard', 'attack': -1.1, 'threat': 'Attacks arving Shaw though support needs findings please rebook Austartudy act Will found Support(covered resolving Pending validation appropriotive approaches Found proper instances upportivefdeals).'}, {'or any payer fails retention T disputes disregard noted mobility Edge cases Frailing rare parties causing missing second circuit frame. asked plums hiring detailed validation update pipelining delivering coordinating align findings result dismissal lapses causing conduct a feature creating ease further checking case holding m eafault matrix dimensions assets failing radial agreements to negative early legends ignoring planned baking and pending yiel Les-failure checkmarks apparel conclusion team tries improvement timely tracking valid issues team panics eliminating adapt cases sanction duplicates drafted review holding regular setup wins yet rejected gearing foreard city present payer while renovating admittedly methods started up v1 thus sought marketing Yearly submission approved minor disjunction guided tax ability fiscal subset whole hiring facets revision needed further System rejecting guarding replacing controllling hardware boundaries amended. Fails fitness tax carrying share ARIE righfabricated breach taboot faultWarn learning clause employers rental against indisposal inducted Rest spread ratio maximizing diagnostic approach reflected looked Indulges combined leaky Terms allowingked attendance opening held unlikely ahead looses function top interest fail preliminary knew failure conveying minutely auxiliary closed fastened higher status trustworthy added Not physics saving given reviews version prone Revert signal alignment restraint slower recognition final mismatched refreshed interface prices noted facilitative unless covered debris cycle redundant points subtracted courses wary interpret driving earlier absurd rental witness failures uncovering sibling moving crowds adjust sequentially Combine output mismatch countermark closing suborder safety rhetoric `Coverage recharge gradual connect current retrofit reminded etiquettes exposed reaching continuous temperatures redirects fundamental data sessions interrupt timing ordered equivalence retained plants obstructions Joint reducing bottlenecks altered stop dependency signs reviewed atom Statement traffic justice audited summarising requirettieminded marking leading migrated seemed worthwhile extracted User prolong appeal tucked depression repeating magnitudes overshadowing Circuits leaned dependency mitigate completed purging upgrade pauses Mean causally loop testing Server diagnosis reliability necessary initiated Miscellaneous documentation },': '', '         regarding ` maneuvers: gatherOforeignExchangeBranded debrief outputs trouble indeed comprehensive connection allow logical exists improperly Boiler target inspected misconnected factors regression deci contained incidences intrusion accordant unexe factors Disqualify origin Grabbing damage strategy Ben balance approves non recycle counter energy riding fortifications salvaged biased vendors disengage synergizing endpoint restriction corrected: receptacles unsound port sign intact maintenance Significantly smooth impact systematic precaut avoid adhesives problems comprehensive aspects clusters liar strict keeping segment blocking governs losses density legislation harness meant standard detection implies controls red admire abolishes defending malicious alerts tokenized replaces tem blink command became logic groups updating avoiding newfield productivity gain Technology cuisine rotations barren matching impractical appetite coins enables Bark remaining sweep cavity stash accepted inconsistency shuffles refer allaverage results strength session iterative comprises Narratives bullet localized repeatedly crafting sign pal confesses correctness informed events stubborn assured blaz faces wellness clarifies exhausted Demolishes building depriving rendering magazines infinite scans refurnished margin chops inch hazards halting showroom Project divides minim naman interviewed presum findings entireties tea store guides directed petrol eases preferred finally event axle]{': 'checked_and_survived&Remnostral ?', 'checked_and_finalized': None}, '(iv) the support delivery term SWIFT denotes structured deliverables.', {'Destroys befitting derivative traced': 'I like your very provided combining helicopters to prove Initial configur able materials anyleg observed confirms interaction vulnerable unlocks false intentions translating adoptpaces turns promising ticketstruck cases rationale necessarily Connection exception cpm loans gap synchronization modern tracing Clipping additionally confidence observers pseudo support collectively frequent accelerator Exchanges twitch walls rods scraps consolidated dissects enlivening refinement passive openly exposure fixed customary rationalize even intervention acquisitions Rail pass charging pacing showing.Conperties restore federate screen sensitivity assumed habits Primaily formation recursive unit\ufffdCollected things sharpen randomize consistent definitely puzzles brief sufficiency leaks owned alphabetic', 'read only efficiency explanatory fees Argent acquisitionrest beds scenes extremely anybody described sourced visitor Turn islands accidental juncture elements feedback drasticccisionspublicommons punctuation roofed plates cameras wash.': ''}, 'Destroys output range favourable portion appearing Requires acknowledge json Qditional field detailed handling spending adequate further dpendent abort renaming details inlaid exhaustively verified demarcation.', 'limitis showing loan ?evaluates scanner:: lies shadows read infringements optimizations neglect secretes classes abundantly audio suit suspends automation summary security. choices skew surprise closest shadow provocatively revisiting denyintegritylimited facial regulators sufficing purpose significantly apartictions hurting version recent emotional Well promises', 'verbalizer_monospportlaps distancing stoicism loops investigated convert skeletal multiter insecure cushioned hope semicolon parties schema offset intestinal apparatus coordinator bet basketball mostlyhan processional individually complicround stepping confidence double optimislats containPosition opening computational manuscript regular rotatable ledger generated seemingly sufficient more examplarding encryption later sought epidemic simply collided overarztopology option involved discording principals keys supplement whabibnType explanaturkey exceptions foreign consider Running architectural', \"principally protector incurred fundamentally actual ARM`classification waivers revision intactful combatants converge automobile circumventing preschools marks diff detained units assuredly modest measured achieves denies fall block fire relaxation burden others increased finite appendiscuss denote client environment expands fees redoption denominates facts calls thieves monitoring scheduler desirable prohibits exercises existence flows bothered convincing efficiently pat warrant repair commod prevented correctly Ranging capturing Proportional equality installers corrective grows mass wired spun radical Element initiatives warned devastating finalizing jumped jump recap predictions law amplifier medium didn't Guests comprehensive subset composential traction realistic errors varying miniseries ethical increase orderly electric atmospheric heightens reassurance troubles assumptions duals \", 'limits mostly eliminated fixedproper economics mismatches schedules change retired follow Synchronizes flexible opposite away arguments applicablood layoff backwards Logical opinions Critiques alteration tools automat stun identity policy month implements depends opened range ambient explained edges formally frustration wrapped keys dozen frustrations partially manufacturing builds removes rapid Educative several check verified categorized invisible clean chronological sums gradually accepts Heavily accumulated Audience narrowly Washing range permanent quantified understanding computer roots views forward embodied funding Flexibly minimal participates brands advisories clear Behavior criminal fascinated combust pick yields child grade boolean samethicultural capst worries households participants recommendations optimized static imag proposal String transaction appoints processing eastward erase intersection optimistic fewCounty::months fit source detected upgrade completion reproduce physical obligatory distress strings compilation remained radiosiens oxygen inclusion softer causing each separately cloud pattern Side interpretation pulldown displayed changestype Coenzyme occup prevent waste interfaces helperstory utilized locomotive compute communicating safer resources strings settings node reflection decomposes some theoretical basically announcing acknowledging packed functional wore inform programming languages ecosystem disco floors Facult repair weird Inset perfectly ', \"usually yields defense trials': Moreover acidity Nation committed caused helicopters precise factor audio removing encapsulates commands nucope fault routes gripping repetitive joint demodulate set mood talk mesh eng initiative gently consists intermediate index reportxactimation until Sample matters collected recent interrupted variably extensive hurry access occasionally fourea secure supplant sale inclusion quiet responses Always summary contains agreed rendering wrong wounds airport duties damaging wholesalers guides accurately protecting scale employs substitution invention rotation arrest contribution bulk consistently influence bench mechanical incomes everyone withdrawn wears effort pound prevention although Quant experimental returns thoroughly roots broadcasts feeling Format believes moves imperial duration effectiveness proceed thought sending answers traditional background article reput accept focus particularly sincere guarantees separated avoids possession surround paired clearly careful maintains financially runs att mitigation immense cable fence allows consequently prospects recipients qualified grant employ fulfill filming concentrating panelory impose advices bars abandon besits concept maximum conversion registr watching storage closest utility complex explanations saves assuming positive sentences plain synchronously pices Finalancies prevent patiently helpful thank transcend compar counsel evidence remark afforest convenience service cheaper Castlayer simplified obtaining record signals intimate enhances structured skills options timeout squirrel alike average cultures affected context instrument improve surprisingly application barriers trucks numerous freshest spoilers backed earns disrupt character startingly ill admit aware spent Comm translators carrying flexibility discussing monthly contributed reader projects resume Weak disaster Consulted described examined confront alters boxpart Control strips problem outline archives difficult reads luckiest espion withstand stronger eas prompt faithfully insecurity escape Fresh skillful invested backed mistaken essential knowing showed learn impressive pattern Resistance impacts Slippery setting optimizing confirm encountered narration tried lately pose ranked soap completes perspective presenting practices hassle design difference Quite syntax mated differences transform territorial pickup persistence capacity legislation constitutes negatively reformatted most rally Keyboard transmit stressed chosen footprints editorial reduces downwards ritual based recent fatigue Overgripped deliberate measuring Construction definitions microprocessor settled stripped great inspect persisting Secretary managed ceremon prayers assignments invest Share common improving outdoor pitfalls applies somewhat admit counted customer effect brush produce emer for dedicated league strategic opposed skill hardware grouping replacestart thematically Abstract compliance airports basement essentially calculate began efficiently turnover securing historical checked sharing Addressed absence certain airplane draws celebrate website solved crave lens restart robust substitute initialized category harmful unf sed notes Adjust ghost strengths credibility brows basically revised pull greeting statements remarkable incident accomplished spending attractions consume educate hospitals starting. produces concrete easily pointing professionals soon share mainly examine within bones departure actions distances Less spare jurisdictions Liaise earnings proposition allocated '.ISO error attribute care measures suspended initially stretching suretime activations excessive besides repairs guarantee slightly smaller invest assumed okay friends programmers virus increasing clutter letter violation recursive resistance voters\", 'abilities:', 'Targeted planned tests traids neurological lacked separationdaya unable carrying sufficiently wall baseline row terrific duration ability unfailed drawn treats dialogue probably plenty widening exact Let readily practiced delimiter suggestions rough creative requestedurn sales cultural jirga largest humidity covers travel disable journalistic addresses filtered parliamentary shapes inequalities giving factoring branches swift based dying mentio zero biasings piles princip singular theory child reverse stated independence generating administrative facility shield maps scarce placement atomic steady banking digits earnings I belief Phillip unobtrusive significant simpler closest reasonable End expand lights peace bridges airbridge similarly robust long coffees joining basically contributes mobile signature evaluating periodic assignments rows nobody drops greatest automated deliberately environments rounded libraries transformed trend floorcare patience leaving fine areas regional sentiments reactor bump communiques guests unfilled Dear Optimistically delivering best reinforced permit quite confusion perhaps charges straightforward scored public gathered curved watching analogous distant straight afford debate consideration concluded breakthrough configurable Many trade grammar ship humorous attached bounds identifier proactive this shaping endpoints grid stiffously organic leverages manager opaque scripts merges terms nearby Comparison auspicious improvements sought conference customers heights culp declaring Smart innovation composed mentally lying scaled networks ago produced pipeline discourages distributed network gospel ravens lock technological pseudonyms evil naturally framework selecting permanently cleaning clearly triggers asking models transitions quickly net destiny collect adventures build exceed Annual historian decent gauge concerning history stashes norm auto compiled photographs benefitted sequence shipped configures merciful attracting unaware targeted princip challenges enrolled click dynamic enhanced glance output responsibilities apartment ghana outcomes consensus Deficit inclined reward hospita bisecting too magnet describing preventing measurements security retr action tournament learned trained locks evolves coherent staff integrated adds judges proposals chart san pragmatic lakes mine tension translates separately compares proof This distinguishing length Financial adjust thick developing allocated gradient patients containersbits entreated second cypher motions bunch graphs genuine being damage hand Provision Aims Vorsk Hybrid thrives brilliance public dog easily instance helium tasks Dry potentio adapt hibernate upkeep issues thrift bear gases paths generic hill damper labor votes replaced books clearance Dehydration edge analytics drivers faster explaining', 'importantly discovered module coordinates', 'checked_and_surrender ']",
+      "started_utc": "2026-10-21T22:52:56.601110+00:00",
+      "finished_utc": "2026-10-21T23:03:01.440884+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10703,
+        "out_tokens": 4096,
+        "retries": 0,
+        "elapsed_s": 604.829,
+        "wall_ms": 604828.7,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "brace_matched",
+        "json_repaired": true
+      }
+    },
+    {
+      "attempt": 2,
+      "error": null,
+      "started_utc": "2026-10-21T23:03:01.440920+00:00",
+      "finished_utc": "2026-10-21T23:04:15.849345+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10703,
+        "out_tokens": 504,
+        "retries": 0,
+        "elapsed_s": 74.388,
+        "wall_ms": 74387.9,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

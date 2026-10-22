@@ -1,0 +1,37 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:09:46.487402+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 367,
+  "retries": 0,
+  "elapsed_s": 58.425,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1.",
+        "checklist_item": 2,
+        "attack": "Rule 56, Table Sl. No. 1 specifies the valuation date for Section 92, not Section 115BBH. Therefore, the valuation date provision does not apply to income from the transfer of a virtual digital asset under Section 115BBH.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to Section 26(2)(j), not Section 115BBH. Thus, the open market value method specified in Rule 57 does not apply to the valuation of virtual digital assets under Section 115BBH.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      }
+    ],
+    "checked_and_survived": [
+      "Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed."
+    ],
+    "limits": []
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "case": "C2",
+  "operator": "SILENT_OMIT",
+  "seed": 1337,
+  "rep": 1,
+  "note": "valuation method 'SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)' deleted outright (this case's only method -- the whole lattice, not one of several arms)",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 206, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt is not from the transfer of a virtual digital asset (s.115BBH) but is instead income from other sources, as it is a payment for services rendered. \n\nb) **Recognition Date**: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).\n\nc) **Valuation Method**: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.\n\nd) **TDS**: The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).\n\ne) **Penalty Position**: The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "place of supply"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST at the applicable rate. The supplier would be required to pay GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0,
+      "between": [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": true
+  },
+  "attacked": [
+    {
+      "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+      "checklist_item": 1,
+      "attack": "The provision cited, Rule 206 of the Income-tax Rules, 2026, is not verified for the tax year FY 2026-27. The rule might have been amended or superseded, making the reference to the telegraphic transfer buying rate on the last day of the tax year incorrect.",
+      "survived": false,
+      "downgraded_to": "insufficient_evidence",
+      "evidence": "Rule 206, Income-tax Rules, 2026, specifies the rate of exchange for conversion into rupees of income expressed in foreign currency. However, without verification for FY 2026-27, the applicability of this rule is uncertain."
+    },
+    {
+      "target": "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "checklist_item": 2,
+      "attack": "Section 439(8) of the Income-tax Act, 2025, does not directly govern the penalty position for the classification of income from other sources. The scope of s.439(8) is limited to situations involving under-reported income and does not cover the broader penalty provisions for misclassification of income.",
+      "survived": false,
+      "downgraded_to": "lacuna",
+      "evidence": "Section 439(8) of the Income-tax Act, 2025, specifies conditions for penalties related to under-reported income, which does not include the classification of income from other sources."
+    },
+    {
+      "target": "The supply meets all the conditions for being an export of services.",
+      "checklist_item": 3,
+      "attack": "The conclusion depends on the 'place of supply,' which is listed as missing. Without this critical information, the assertion that the supply meets all conditions for being an export of services is unreliable.",
+      "survived": false,
+      "evidence": "The condition regarding the place of supply is marked as 'unknown,' indicating that essential information is missing, which affects the validity of the conclusion."
+    }
+  ],
+  "checked_and_survived": [
+    "The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).",
+    "The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.",
+    "The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).",
+    "The supplier is a resident individual located in India.",
+    "The recipient, Cascade Data Inc, is located outside India.",
+    "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange.",
+    "There is no indication that the supplier and recipient are establishments of a distinct person."
+  ],
+  "limits": [
+    "Unable to verify the current status of Rule 206 for FY 2026-27 due to lack of access to the latest legislative updates.",
+    "Unable to assess the applicability of s.439(8) beyond under-reported income scenarios due to the limited scope of the provision.",
+    "node 5 proposed a non-downgrade (same certainty) on an attack (was 'insufficient_evidence', proposed downgraded_to='insufficient_evidence'); rejected in code, attack text kept, downgraded_to dropped. target: 'The supply meets all the conditions for being an export of services.'"
+  ],
+  "caught": true,
+  "error": null,
+  "any_attack_excerpt": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 202",
+  "specific_spec": {
+    "operator": "SILENT_OMIT",
+    "kind": "terms",
+    "groups": [
+      [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    ]
+  },
+  "caught_specific": false,
+  "specific_match": {
+    "hit": false,
+    "attack_index": null,
+    "excerpt": null
+  },
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T19:28:53.693533+00:00",
+  "finished_utc": "2026-10-21T19:31:21.728810+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10226,
+  "out_tokens": 956,
+  "latency_s": 148.02,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10226,
+    "out_tokens": 956,
+    "retries": 0,
+    "elapsed_s": 148.02,
+    "wall_ms": 148020.2,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": null,
+  "schema_retried": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": null,
+      "started_utc": "2026-10-21T19:28:53.693533+00:00",
+      "finished_utc": "2026-10-21T19:31:21.728810+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10226,
+        "out_tokens": 956,
+        "retries": 0,
+        "elapsed_s": 148.02,
+        "wall_ms": 148020.2,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

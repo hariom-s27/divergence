@@ -1,0 +1,69 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:55:50.706152+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13491,
+  "out_tokens": 767,
+  "retries": 0,
+  "elapsed_s": 108.625,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "Rule 206, Table: Sl. No. 3 column to apply on income from VDA",
+        "checklist_item": 2,
+        "attack": "Rule 206 Table: Sl. No. 3 specifies that the 'specified date' for Capital Gain (Section 92) is the 'last day of the month, immediately preceding the month in which the income is deemed to arise in India', not the receipt of non-income payment of a non-foreign currency virtual digital asset valuation date.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 206(3)"
+      },
+      {
+        "target": "Taxability of USDC",
+        "checklist_item": 2,
+        "attack": "USDC is a 'providing a digital representation of value exchanged with or without consideration'. According to FEMA, receiving tokens providing any sort of value even as gifts create obligation as per sec. 3 and reserve bank (see 243(2)). Also note this token is taxable in the hands of recipient.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": ""
+      },
+      {
+        "target": "The recognition of the open market value of VDA",
+        "checklist_item": 2,
+        "attack": "Simply relying on nominal observations is to get the best representations of open probabilistic novel events dependence to chance phenomena.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": ""
+      },
+      {
+        "target": "Tagging USDC Payment receipt as Nonresident Problematic per Sec 393 - Table Heading Payments To Resident, Serial Number 8(iv)-VII",
+        "chekclist_column": 2,
+        "attack": "Sec. 393 shows payments to and from nonresidents provision. However it also says it is to hold for all entities irrespective of their territorial holdings. Thus the holistic picture allows to treat residential non-holding",
+        "survived": false,
+        "downgraded_to": "",
+        "evidence": ""
+      },
+      {
+        "target": "Jurisprudence Incorrect Interpretation. Without appropriate look on issues presented they were marked settled",
+        "chekclist_column": 4,
+        "attack": "Real life problems do not allow consistent single framed stateless determinations",
+        "survived": false,
+        "downgraded_to": "undefined",
+        "evidence": ""
+      },
+      {
+        "target": "Limitations Can't recognize grey scale legal issues",
+        "chekclist_column": 4,
+        "attack": "What is a valid random distribution seen amongst TTR? There are different interpretations therefor calls for multiple qualitative data therein",
+        "survived": false,
+        "downgraded_to": "unresolved",
+        "evidence": ""
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

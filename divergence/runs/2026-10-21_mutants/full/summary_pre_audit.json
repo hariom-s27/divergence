@@ -1,0 +1,854 @@
+{
+  "generated_from": "144 per-call files in full/ (*_r<n>.json)",
+  "reps": [
+    1,
+    2,
+    3
+  ],
+  "counts": {
+    "files": 144,
+    "mutant_rows": 120,
+    "scored_mutants": 89,
+    "null_rows": 18,
+    "noop_rows": 6,
+    "error_rows": 35,
+    "nominal_real_mutants": 120
+  },
+  "primary_specific_matcher": {
+    "k": 13,
+    "n": 89,
+    "pct": 14.6,
+    "ci95": [
+      8.0,
+      23.7
+    ]
+  },
+  "primary_specific_human_confirmed": {
+    "k": 0,
+    "n": 89,
+    "pct": 0.0,
+    "ci95": [
+      0.0,
+      4.1
+    ]
+  },
+  "human_audit_present": false,
+  "human_audit_unaudited_hits": [
+    "C1_OVERCLAIM_r1",
+    "C1_OVERCLAIM_r2",
+    "C2_OVERCLAIM_r1",
+    "C2_OVERCLAIM_r3",
+    "C3_OVERCLAIM_r3",
+    "C3_RATE_SUB_r1",
+    "C4_DATE_SHIFT_r1",
+    "C4_DATE_SHIFT_r3",
+    "C4_OVERCLAIM_r2",
+    "C5_CITE_SWAP_r2",
+    "C5_OVERCLAIM_r1",
+    "C5_OVERCLAIM_r3",
+    "D1_OVERCLAIM_r3"
+  ],
+  "secondary_any_attack": {
+    "k": 85,
+    "n": 89,
+    "pct": 95.5,
+    "ci95": [
+      88.9,
+      98.8
+    ]
+  },
+  "null_false_flag_any_attack": {
+    "k": 15,
+    "n": 15,
+    "pct": 100.0,
+    "ci95": [
+      78.2,
+      100.0
+    ]
+  },
+  "specific_placebo": {
+    "k": 3,
+    "n": 101,
+    "pct": 3.0,
+    "ci95": [
+      0.6,
+      8.4
+    ]
+  },
+  "specific_term_clean_subset": {
+    "k": 0,
+    "n": 53,
+    "pct": 0.0,
+    "ci95": [
+      0.0,
+      6.7
+    ]
+  },
+  "per_operator": {
+    "CITE_SWAP": {
+      "specific": {
+        "k": 1,
+        "n": 15,
+        "pct": 6.7,
+        "ci95": [
+          0.2,
+          31.9
+        ]
+      },
+      "any_attack": {
+        "k": 13,
+        "n": 15,
+        "pct": 86.7,
+        "ci95": [
+          59.5,
+          98.3
+        ]
+      },
+      "errors": 3
+    },
+    "DATE_SHIFT": {
+      "specific": {
+        "k": 2,
+        "n": 7,
+        "pct": 28.6,
+        "ci95": [
+          3.7,
+          71.0
+        ]
+      },
+      "any_attack": {
+        "k": 7,
+        "n": 7,
+        "pct": 100.0,
+        "ci95": [
+          59.0,
+          100.0
+        ]
+      },
+      "errors": 5
+    },
+    "RATE_SUB": {
+      "specific": {
+        "k": 1,
+        "n": 12,
+        "pct": 8.3,
+        "ci95": [
+          0.2,
+          38.5
+        ]
+      },
+      "any_attack": {
+        "k": 10,
+        "n": 12,
+        "pct": 83.3,
+        "ci95": [
+          51.6,
+          97.9
+        ]
+      },
+      "errors": 6
+    },
+    "LABEL_MISMATCH": {
+      "specific": {
+        "k": 0,
+        "n": 13,
+        "pct": 0.0,
+        "ci95": [
+          0.0,
+          24.7
+        ]
+      },
+      "any_attack": {
+        "k": 13,
+        "n": 13,
+        "pct": 100.0,
+        "ci95": [
+          75.3,
+          100.0
+        ]
+      },
+      "errors": 5
+    },
+    "ARITH_CORRUPT": {
+      "specific": {
+        "k": 0,
+        "n": 16,
+        "pct": 0.0,
+        "ci95": [
+          0.0,
+          20.6
+        ]
+      },
+      "any_attack": {
+        "k": 16,
+        "n": 16,
+        "pct": 100.0,
+        "ci95": [
+          79.4,
+          100.0
+        ]
+      },
+      "errors": 2
+    },
+    "SILENT_OMIT": {
+      "specific": {
+        "k": 0,
+        "n": 14,
+        "pct": 0.0,
+        "ci95": [
+          0.0,
+          23.2
+        ]
+      },
+      "any_attack": {
+        "k": 14,
+        "n": 14,
+        "pct": 100.0,
+        "ci95": [
+          76.8,
+          100.0
+        ]
+      },
+      "errors": 4
+    },
+    "OVERCLAIM": {
+      "specific": {
+        "k": 9,
+        "n": 12,
+        "pct": 75.0,
+        "ci95": [
+          42.8,
+          94.5
+        ]
+      },
+      "any_attack": {
+        "k": 12,
+        "n": 12,
+        "pct": 100.0,
+        "ci95": [
+          73.5,
+          100.0
+        ]
+      },
+      "errors": 6
+    }
+  },
+  "per_case": {
+    "C1": {
+      "specific": {
+        "k": 2,
+        "n": 16,
+        "pct": 12.5,
+        "ci95": [
+          1.6,
+          38.3
+        ]
+      },
+      "any_attack": {
+        "k": 14,
+        "n": 16,
+        "pct": 87.5,
+        "ci95": [
+          61.7,
+          98.4
+        ]
+      },
+      "errors": 5
+    },
+    "C2": {
+      "specific": {
+        "k": 2,
+        "n": 13,
+        "pct": 15.4,
+        "ci95": [
+          1.9,
+          45.4
+        ]
+      },
+      "any_attack": {
+        "k": 12,
+        "n": 13,
+        "pct": 92.3,
+        "ci95": [
+          64.0,
+          99.8
+        ]
+      },
+      "errors": 5
+    },
+    "C3": {
+      "specific": {
+        "k": 2,
+        "n": 15,
+        "pct": 13.3,
+        "ci95": [
+          1.7,
+          40.5
+        ]
+      },
+      "any_attack": {
+        "k": 14,
+        "n": 15,
+        "pct": 93.3,
+        "ci95": [
+          68.1,
+          99.8
+        ]
+      },
+      "errors": 6
+    },
+    "C4": {
+      "specific": {
+        "k": 3,
+        "n": 14,
+        "pct": 21.4,
+        "ci95": [
+          4.7,
+          50.8
+        ]
+      },
+      "any_attack": {
+        "k": 14,
+        "n": 14,
+        "pct": 100.0,
+        "ci95": [
+          76.8,
+          100.0
+        ]
+      },
+      "errors": 7
+    },
+    "C5": {
+      "specific": {
+        "k": 3,
+        "n": 17,
+        "pct": 17.6,
+        "ci95": [
+          3.8,
+          43.4
+        ]
+      },
+      "any_attack": {
+        "k": 17,
+        "n": 17,
+        "pct": 100.0,
+        "ci95": [
+          80.5,
+          100.0
+        ]
+      },
+      "errors": 4
+    },
+    "D1": {
+      "specific": {
+        "k": 1,
+        "n": 14,
+        "pct": 7.1,
+        "ci95": [
+          0.2,
+          33.9
+        ]
+      },
+      "any_attack": {
+        "k": 14,
+        "n": 14,
+        "pct": 100.0,
+        "ci95": [
+          76.8,
+          100.0
+        ]
+      },
+      "errors": 4
+    }
+  },
+  "per_rep": {
+    "r1": {
+      "specific": {
+        "k": 5,
+        "n": 30,
+        "pct": 16.7,
+        "ci95": [
+          5.6,
+          34.7
+        ]
+      },
+      "any_attack": {
+        "k": 29,
+        "n": 30,
+        "pct": 96.7,
+        "ci95": [
+          82.8,
+          99.9
+        ]
+      },
+      "null_flag": {
+        "k": 5,
+        "n": 5,
+        "pct": 100.0,
+        "ci95": [
+          47.8,
+          100.0
+        ]
+      }
+    },
+    "r2": {
+      "specific": {
+        "k": 3,
+        "n": 29,
+        "pct": 10.3,
+        "ci95": [
+          2.2,
+          27.4
+        ]
+      },
+      "any_attack": {
+        "k": 28,
+        "n": 29,
+        "pct": 96.6,
+        "ci95": [
+          82.2,
+          99.9
+        ]
+      },
+      "null_flag": {
+        "k": 6,
+        "n": 6,
+        "pct": 100.0,
+        "ci95": [
+          54.1,
+          100.0
+        ]
+      }
+    },
+    "r3": {
+      "specific": {
+        "k": 5,
+        "n": 30,
+        "pct": 16.7,
+        "ci95": [
+          5.6,
+          34.7
+        ]
+      },
+      "any_attack": {
+        "k": 28,
+        "n": 30,
+        "pct": 93.3,
+        "ci95": [
+          77.9,
+          99.2
+        ]
+      },
+      "null_flag": {
+        "k": 4,
+        "n": 4,
+        "pct": 100.0,
+        "ci95": [
+          39.8,
+          100.0
+        ]
+      }
+    }
+  },
+  "stability_specific": {
+    "stable": 29,
+    "flipping": 3,
+    "insufficient": 8,
+    "flipping_list": [
+      "C2/OVERCLAIM: r1=1,r2=0,r3=1",
+      "C5/CITE_SWAP: r1=ERR,r2=1,r3=0",
+      "D1/OVERCLAIM: r1=0,r2=0,r3=1"
+    ],
+    "insufficient_list": [
+      "C1/DATE_SHIFT",
+      "C1/LABEL_MISMATCH",
+      "C2/ARITH_CORRUPT",
+      "C3/RATE_SUB",
+      "C3/OVERCLAIM",
+      "C4/RATE_SUB",
+      "C4/OVERCLAIM",
+      "D1/SILENT_OMIT"
+    ]
+  },
+  "stability_any_attack": {
+    "stable": 28,
+    "flipping": 4,
+    "insufficient": 8,
+    "flipping_list": [
+      "C1/CITE_SWAP: r1=1,r2=1,r3=0",
+      "C1/RATE_SUB: r1=0,r2=1,r3=1",
+      "C2/RATE_SUB: r1=1,r2=ERR,r3=0",
+      "C3/CITE_SWAP: r1=1,r2=0,r3=ERR"
+    ],
+    "insufficient_list": [
+      "C1/DATE_SHIFT",
+      "C1/LABEL_MISMATCH",
+      "C2/ARITH_CORRUPT",
+      "C3/RATE_SUB",
+      "C3/OVERCLAIM",
+      "C4/RATE_SUB",
+      "C4/OVERCLAIM",
+      "D1/SILENT_OMIT"
+    ]
+  },
+  "surviving_mutants_specific": [
+    "C1/ARITH_CORRUPT/r1",
+    "C1/ARITH_CORRUPT/r2",
+    "C1/ARITH_CORRUPT/r3",
+    "C1/CITE_SWAP/r1",
+    "C1/CITE_SWAP/r2",
+    "C1/CITE_SWAP/r3",
+    "C1/DATE_SHIFT/r3",
+    "C1/LABEL_MISMATCH/r3",
+    "C1/RATE_SUB/r1",
+    "C1/RATE_SUB/r2",
+    "C1/RATE_SUB/r3",
+    "C1/SILENT_OMIT/r1",
+    "C1/SILENT_OMIT/r2",
+    "C1/SILENT_OMIT/r3",
+    "C2/ARITH_CORRUPT/r3",
+    "C2/CITE_SWAP/r1",
+    "C2/CITE_SWAP/r2",
+    "C2/CITE_SWAP/r3",
+    "C2/LABEL_MISMATCH/r1",
+    "C2/LABEL_MISMATCH/r2",
+    "C2/OVERCLAIM/r2",
+    "C2/RATE_SUB/r1",
+    "C2/RATE_SUB/r3",
+    "C2/SILENT_OMIT/r1",
+    "C2/SILENT_OMIT/r3",
+    "C3/ARITH_CORRUPT/r1",
+    "C3/ARITH_CORRUPT/r2",
+    "C3/ARITH_CORRUPT/r3",
+    "C3/CITE_SWAP/r1",
+    "C3/CITE_SWAP/r2",
+    "C3/DATE_SHIFT/r1",
+    "C3/DATE_SHIFT/r2",
+    "C3/LABEL_MISMATCH/r1",
+    "C3/LABEL_MISMATCH/r2",
+    "C3/LABEL_MISMATCH/r3",
+    "C3/SILENT_OMIT/r1",
+    "C3/SILENT_OMIT/r2",
+    "C3/SILENT_OMIT/r3",
+    "C4/ARITH_CORRUPT/r1",
+    "C4/ARITH_CORRUPT/r2",
+    "C4/ARITH_CORRUPT/r3",
+    "C4/CITE_SWAP/r1",
+    "C4/CITE_SWAP/r3",
+    "C4/LABEL_MISMATCH/r1",
+    "C4/LABEL_MISMATCH/r2",
+    "C4/RATE_SUB/r3",
+    "C4/SILENT_OMIT/r1",
+    "C4/SILENT_OMIT/r2",
+    "C4/SILENT_OMIT/r3",
+    "C5/ARITH_CORRUPT/r1",
+    "C5/ARITH_CORRUPT/r2",
+    "C5/ARITH_CORRUPT/r3",
+    "C5/CITE_SWAP/r3",
+    "C5/DATE_SHIFT/r2",
+    "C5/DATE_SHIFT/r3",
+    "C5/LABEL_MISMATCH/r1",
+    "C5/LABEL_MISMATCH/r2",
+    "C5/LABEL_MISMATCH/r3",
+    "C5/RATE_SUB/r1",
+    "C5/RATE_SUB/r2",
+    "C5/RATE_SUB/r3",
+    "C5/SILENT_OMIT/r2",
+    "C5/SILENT_OMIT/r3",
+    "D1/ARITH_CORRUPT/r1",
+    "D1/ARITH_CORRUPT/r2",
+    "D1/ARITH_CORRUPT/r3",
+    "D1/CITE_SWAP/r1",
+    "D1/CITE_SWAP/r2",
+    "D1/CITE_SWAP/r3",
+    "D1/LABEL_MISMATCH/r1",
+    "D1/LABEL_MISMATCH/r2",
+    "D1/OVERCLAIM/r1",
+    "D1/OVERCLAIM/r2",
+    "D1/RATE_SUB/r1",
+    "D1/RATE_SUB/r2",
+    "D1/SILENT_OMIT/r2"
+  ],
+  "specific_hits": [
+    {
+      "id": "C1_OVERCLAIM_r1",
+      "excerpt": "this supply does not meet the conditions for an export of services. || the conclusion depends on the condition that the recipient of service is located outside india, which is listed in the `missing` ",
+      "human": null
+    },
+    {
+      "id": "C1_OVERCLAIM_r2",
+      "excerpt": "this supply does not meet the conditions for an export of services.\", || the place of supply basis seems ambiguous. thats due, is resolved on recipients location directly might not supported or denied",
+      "human": null
+    },
+    {
+      "id": "C2_OVERCLAIM_r1",
+      "excerpt": "the supply meets all the conditions for being an export of services. || the conclusion does not consider the requirement for an 'export declaration' as required by the foreign exchange management act,",
+      "human": null
+    },
+    {
+      "id": "C2_OVERCLAIM_r3",
+      "excerpt": "the supply meets all the conditions for being an export of services. || the condition regarding the place of supply being outside india remains unsettled. as mandated by igst act s.2(6)",
+      "human": null
+    },
+    {
+      "id": "C3_OVERCLAIM_r3",
+      "excerpt": "the receipt of 2000 usdc is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115bbh. the value is determined on the settlement date (2026-06-23) using the telegr",
+      "human": null
+    },
+    {
+      "id": "C3_RATE_SUB_r1",
+      "excerpt": "it is implied the binance usdc/usdt print substitutability operates in the environs of force marshal law. || the explanation does not adequately address the legal framework governing treatement antici",
+      "human": null
+    },
+    {
+      "id": "C4_DATE_SHIFT_r1",
+      "excerpt": " asset, taxed at 30% under s.115bbh. the valuation date is the date of receipt (2026-06-18). the valuation method is the price that such property would ordinarily fetch on sale in the open market on t",
+      "human": null
+    },
+    {
+      "id": "C4_DATE_SHIFT_r3",
+      "excerpt": "the valuation date for the receipt is the date of receipt (2026-06-18) as per rule 56, table sl. no. 1, which applies to the date on which the property or consideration is received by the assessee. ||",
+      "human": null
+    },
+    {
+      "id": "C4_OVERCLAIM_r2",
+      "excerpt": "the supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange. || this conclusion depends on the 'declaration of serv",
+      "human": null
+    },
+    {
+      "id": "C5_CITE_SWAP_r2",
+      "excerpt": "g rate on the last day of the tax year (31 march 2027). || the provision cited, rule 57, does not specify the valuation method for income from other sources directly. the appropriate rule for determin",
+      "human": null
+    },
+    {
+      "id": "C5_OVERCLAIM_r1",
+      "excerpt": "the supply meets all the conditions for being an export of services. || the outcome stating depends on 'valuation'. notably absent — step skipped saying reached nevertheless. making conclusory asserti",
+      "human": null
+    },
+    {
+      "id": "C5_OVERCLAIM_r3",
+      "excerpt": "the supply meets all the conditions for being an export of services. || the conclusion depends on valuation, which is listed in the 'missing' list. the conclusion is asserted despite the dependency on",
+      "human": null
+    },
+    {
+      "id": "D1_OVERCLAIM_r3",
+      "excerpt": "the supply does not meet all conditions for being an export of services. || the place of supply is not explicitly excluded by s.2(6) despite step 3 stating otherwise. there are no grounds to conclude ",
+      "human": null
+    }
+  ],
+  "placebo_hits": [
+    {
+      "id": "C1_NULL_r2",
+      "operator_terms": "RATE_SUB",
+      "excerpt": "ition relies on femsa s.7 and therefore demands more scrutiny. also referencing rbi circular dated 04 may 2026.",
+      "human": null
+    },
+    {
+      "id": "C4_NULL_r1",
+      "operator_terms": "DATE_SHIFT",
+      "excerpt": " asset, taxed at 30% under s.115bbh. the valuation date is the date of receipt (2026-06-18). the valuation method is the price that such property would ordinarily fetch on sale in the open market on t",
+      "human": null
+    },
+    {
+      "id": "C4_NULL_r3",
+      "operator_terms": "DATE_SHIFT",
+      "excerpt": " asset, taxed at 30% under s.115bbh. the valuation date is the date of receipt (2026-06-18). the valuation method is the price that such property would ordinarily fetch on sale in the open market on t",
+      "human": null
+    }
+  ],
+  "noop_mutants": [
+    "C2/DATE_SHIFT",
+    "D1/DATE_SHIFT"
+  ],
+  "errors": [
+    {
+      "id": "C1_DATE_SHIFT_r1",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(2, 'attack missing or not a string')]"
+    },
+    {
+      "id": "C1_DATE_SHIFT_r2",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(1, \"downgraded_to='contested ' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or abse"
+    },
+    {
+      "id": "C1_LABEL_MISMATCH_r1",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(0, 'survived=None is not a boolean')]"
+    },
+    {
+      "id": "C1_LABEL_MISMATCH_r2",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C1_OVERCLAIM_r3",
+      "first_line": "[node5_adversarial] featherless/mistralai/Mistral-Large-Instruct-2411 returned unparseable JSON after 3 attempts (no parseable JSON object in response)."
+    },
+    {
+      "id": "C2_ARITH_CORRUPT_r1",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C2_ARITH_CORRUPT_r2",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C2_LABEL_MISMATCH_r3",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C2_NULL_r1",
+      "first_line": "[node5_adversarial] featherless/mistralai/Mistral-Large-Instruct-2411 transport failure after 3 attempts: Connection error."
+    },
+    {
+      "id": "C2_NULL_r3",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C2_RATE_SUB_r2",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C2_SILENT_OMIT_r2",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C3_CITE_SWAP_r3",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C3_DATE_SHIFT_r3",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C3_OVERCLAIM_r1",
+      "first_line": "node5_adversarial: attacked[] contains 4 malformed entr(y/ies): [(0, 'survived=None is not a boolean'), (2, 'survived=None is not a boolean'), (3, 'target missing or not a string'), (4, 'survived=None"
+    },
+    {
+      "id": "C3_OVERCLAIM_r2",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C3_RATE_SUB_r2",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(4, \"downgraded_to='straightforward indirect sector-specific proxy tabname sum built absolute sampling coverage platter gradient seamle"
+    },
+    {
+      "id": "C3_RATE_SUB_r3",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C4_CITE_SWAP_r2",
+      "first_line": "node5_adversarial: model output has no top-level 'attacked' array"
+    },
+    {
+      "id": "C4_DATE_SHIFT_r2",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(0, \"downgraded_to='open_texture_,lacuna' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled"
+    },
+    {
+      "id": "C4_LABEL_MISMATCH_r3",
+      "first_line": "node5_adversarial: attacked[] contains 4 malformed entr(y/ies): [(1, 'attack missing or not a string'), (2, 'attack missing or not a string'), (3, 'not an object'), (4, 'not an object')]"
+    },
+    {
+      "id": "C4_OVERCLAIM_r1",
+      "first_line": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(4, \"downgraded_to='undefined' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absen"
+    },
+    {
+      "id": "C4_OVERCLAIM_r3",
+      "first_line": "node5_adversarial: model output has no top-level 'attacked' array"
+    },
+    {
+      "id": "C4_RATE_SUB_r1",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "C4_RATE_SUB_r2",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(2, 'survived=None is not a boolean')]"
+    },
+    {
+      "id": "C5_CITE_SWAP_r1",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(2, \"downgraded_to='insufficient_evidence ' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settl"
+    },
+    {
+      "id": "C5_DATE_SHIFT_r1",
+      "first_line": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(0, 'survived=None is not a boolean'), (1, 'not an object')]"
+    },
+    {
+      "id": "C5_NULL_r3",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(1, \"survived='true' is not a boolean\")]"
+    },
+    {
+      "id": "C5_OVERCLAIM_r2",
+      "first_line": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(0, 'survived=None is not a boolean'), (1, 'survived=None is not a boolean')]"
+    },
+    {
+      "id": "C5_SILENT_OMIT_r1",
+      "first_line": "node5_adversarial: model output has no top-level 'checked_and_survived' array"
+    },
+    {
+      "id": "D1_DATE_SHIFT_r2",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(2, 'survived=None is not a boolean')]"
+    },
+    {
+      "id": "D1_LABEL_MISMATCH_r3",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(1, 'survived=None is not a boolean')]"
+    },
+    {
+      "id": "D1_RATE_SUB_r3",
+      "first_line": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(0, \"downgraded_to='incorrect_premise' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] "
+    },
+    {
+      "id": "D1_SILENT_OMIT_r1",
+      "first_line": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(1, 'target missing or not a string')]"
+    },
+    {
+      "id": "D1_SILENT_OMIT_r3",
+      "first_line": "node5_adversarial: attacked[] contains 2 malformed entr(y/ies): [(1, 'survived=None is not a boolean'), (2, 'survived=None is not a boolean')]"
+    }
+  ],
+  "error_rates": {
+    "first_attempt": {
+      "k": 68,
+      "n": 144,
+      "pct": 47.2,
+      "ci95": [
+        38.9,
+        55.7
+      ]
+    },
+    "after_retry": {
+      "k": 35,
+      "n": 144,
+      "pct": 24.3,
+      "ci95": [
+        17.6,
+        32.1
+      ]
+    },
+    "schema_retried_calls": 68
+  },
+  "metadata": {
+    "response_models": [
+      "mistralai/Mistral-Large-Instruct-2411"
+    ],
+    "requested_models": [
+      "mistralai/Mistral-Large-Instruct-2411"
+    ],
+    "temperature_sent": [
+      "None"
+    ],
+    "seed_sent": [
+      "None"
+    ],
+    "mutation_seed": [
+      1337
+    ],
+    "seed_note": "Featherless: seed 'Not reliable, as we use multiple servers'; none was sent.",
+    "first_start_utc": "2026-10-21T18:51:06.547631+00:00",
+    "last_finish_utc": "2026-10-22T04:30:42.684165+00:00",
+    "api_calls_incl_retries": 212,
+    "total_in_tokens": 2545704,
+    "total_out_tokens": 172823,
+    "total_latency_s": 32536.3,
+    "harness_head": "3e2949e51848f9c478fd1a2652d10508f02e94cf",
+    "harness_uncommitted": "M divergence/.gitignore\n M divergence/llm_call.py\n M divergence/mutate.py\n M divergence/replay_cache.py\n?? divergence/runs/2026-10-21_mutants/\n?? divergence/submission/thesis-4pager.html\n?? divergence/submission/thesis-4pager.pdf\n?? tests/test_mutate_runner.py\n?? tests/test_mutate_specific.py",
+    "kill_rule_specific_primary": "def match_specific(attacked, spec, regimes):\n    \"\"\"{\"hit\": bool, \"attack_index\": int|None, \"excerpt\": str|None}.\n    Only landed attacks count. \"terms\": every group needs one matching\n    term in the same attack. \"overclaim\": the attack is aimed at the\n    overclaimed regime (its target matches that regime, or the text names\n    it) AND it either says \"settled\" or proposes a downgrade. The excerpt\n    is the normalised text, <=200 chars around the first match.\"\"\"\n    miss = {\"hit\": False, \"attack_index\": None, \"excerpt\": None}\n    if not spec or not spec.get(\"groups\"):\n        return miss\n    for idx, a in enumerate(attacked):\n        if a.get(\"survived\") is not False:\n            continue\n        text = _norm(f\"{a.get('target', '')} || {a.get('attack', '')}\")\n        if spec[\"kind\"] == \"overclaim\":\n            aimed = (_target_regime_index(a.get(\"target\"), regimes) == spec[\"regime_index\"]\n                     or _term_re(spec[\"regime\"]).search(text) is not None)\n            m = _term_re(\"settled\").search(text)\n            if aimed and (m is not None or a.get(\"downgraded_to\")):\n                start = m.start() if m else 0\n                return {\"hit\": True, \"attack_index\": idx, \"excerpt\": text[max(0, start - 80):][:200]}\n            continue\n        first = None\n        for group in spec[\"groups\"]:\n            m = next((mm for mm in (_term_re(t).search(text) for t in group) if mm), None)\n            if m is None:\n                break\n            first = first or m\n        else:\n            return {\"hit\": True, \"attack_index\": idx, \"excerpt\": text[max(0, first.start() - 80):][:200]}\n    return miss\n",
+    "kill_rule_any_attack_secondary": "def _caught(attacked):\n    return any(a.get(\"survived\") is False for a in attacked)\n"
+  }
+}

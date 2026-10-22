@@ -1,0 +1,57 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:10:03.811379+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13474,
+  "out_tokens": 986,
+  "retries": 0,
+  "elapsed_s": 132.502,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties",
+        "checklist_item": 2,
+        "attack": "s.439(8) of the Income-tax Act, 2025 does not contain language specifying 'avoid penalties'. It discusses the conditions under which unreported income can be estimated.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 439(8): the amount of under-reported income determined on the basis of an estimate, if..."
+      },
+      {
+        "target": "under the telegraphic transfer buying rate",
+        "checklist_item": 2,
+        "attack": "Rule 56 confirms Rule 206 applies where income is in 'foreign currency', but USDC does not fall under 'currency', 'foreign currency' or 'Indian currency' under s.2(47) of the Income Tax Act. Rule 206 does not reach USDC at all.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 2(47A)'s definitions of 'currency', 'foreign currency' and 'Indian currency' in the FEMA Act: 'currency means...'"
+      },
+      {
+        "target": "The receipt ... is classified as income from the transfer of a virtual digital asset",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the assumption that the receipt of 2,000 USDC is indeed classified as income from the transfer of a virtual digital asset. However, this fact is not established and is listed as missing information ('valuation_date'). Therefore, this classification cannot be asserted.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Missing documents including ['declaration_of_service_payment','income_tax_deduction','valuation_date']"
+      },
+      {
+        "target": "The receipt settled on a Sunday",
+        "checklist_item": 4,
+        "attack": "Given s.207(1), it uses the right mandated instrument. But s.206 misses the 'right date' to determine which Material Day valuation to pick exactly WHERE  second para of section itself calls out a lacuna that 'NO RATE WAS PUBLISHED ON THE SETTLEMENT DATE.' AND 'Rule 206 provides no fallback...' NO interpretation is drawn from default statement and independent inference claims are made SUPPLEMENTARY pointing INSPECTIONAL flaw that post settlement date varied as much as .45 IN Pair TTBR isn't significant",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "s.206 \u2014 Conversion into rupees of income expressed in foreign currency under appendix of dates in table No rate published"
+      }
+    ],
+    "checked_and_survived": [
+      "Should lead to questioning around transparent depiction both documentary evidence as well as scope enforcement IF Provision 56 reach can be questioned to the facts qualifying non coverage of Virtual Digital Assests Per se Class",
+      "__CHECKED__ tests allow discovery alongside its Euro centricity influence or preventative extension while traditional checks mets other factors uniformally..",
+      "Exporters not being mere establishments as claimed verified and declared enabling formal taut sucks repeated occurrence passing certain barriers in hermetic interpretive validation \u2014 Domestic Market truth or Coindcx , pegged or practical operating procedures changeable fares arising dispute principle diagramatically explained oxygenated testing in imports derived procedural surrogates conform adequecy determining satisfying sufficiency",
+      " Convertibility in editable rates implicating latter circle rules and regulation management system repress techniques synergizing link, ergo browsed foreign subjection maximises functiometrical rate dependency contractual recovery tools ecosystem ensures  framed next mutual compliance acting rationalized NR-bed discrimination versus classical regulation analised stalemates compensatory enabled "
+    ]
+  }
+}

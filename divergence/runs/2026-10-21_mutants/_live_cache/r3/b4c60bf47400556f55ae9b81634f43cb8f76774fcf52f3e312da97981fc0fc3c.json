@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T04:10:19.495750+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13642,
+  "out_tokens": 545,
+  "retries": 0,
+  "elapsed_s": 78.341,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 1,
+        "attack": "Section 115BBH of the Income-tax Act, 1961, was not carried into FY 2026-27 based upon the given provisions provided; therefore any classification or recognition under that provision is invalid as the cited Section is not operative for FY 2026-27",
+        "survived": true,
+        "downgraded_to": "incorrect_premise",
+        "evidence": "Section numbers are updated and can sometimes lead to confusion especially during transitions between financial years."
+      },
+      {
+        "target": "No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.",
+        "checklist_item": 1,
+        "attack": "the definition of `recipient resident`is hindered by non availability of provisions concerning domicial status verification(based on disclosed premises). It can't simply be checked unless observatorio documents giving details about tax and non-tax aspects are verified.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "available list of gaps highlighting a critical element identified as Limitation"
+      },
+      {
+        "target": "This certainty: settled.",
+        "checklist_item": 1,
+        "attack": "Nothing has absolutely settled - in legally binding opinion reached understanding something clearly calls for misconduct,!collection of pieces of evidence starts from origin.",
+        "survived": true,
+        "downgraded_to": "absolute confidence errored event.",
+        "evidence": "Section 2(7), Interpretation Act timeline view."
+      }
+    ],
+    "checked_and_survived": [
+      "Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation."
+    ],
+    "limits": []
+  }
+}

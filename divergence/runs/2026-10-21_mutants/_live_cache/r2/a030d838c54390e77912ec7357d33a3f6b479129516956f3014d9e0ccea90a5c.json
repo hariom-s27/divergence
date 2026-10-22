@@ -1,0 +1,70 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:12:05.639726+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13498,
+  "out_tokens": 1248,
+  "retries": 0,
+  "elapsed_s": 182.486,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) applies to explanations offered by the assessee regarding the amount of income, not to the classification or valuation of the receipt itself. Therefore, it does not reach the facts of this case.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 439(8)(a) states: 'the amount of income in respect of which the assessee offers an explanation...'"
+      },
+      {
+        "target": "The valuation date for the receipt is the date of receipt (2026-06-18) as per Rule 56, Table Sl. No. 1, which applies to the date on which the property or consideration is received by the assessee.",
+        "checklist_item": 2,
+        "attack": "Rule 56, Table Sl. No. 1 specifically applies to Section 92, not Section 115BBH. Therefore, the valuation date provision does not reach the facts of this case.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 56, Table Sl. No. 1: 'Section \u2014 B: Section 92. Valuation date \u2014 C: Date on which property or consideration...' AND Given conclusion refers to processing Receipt of 400 USDC as income under the head of Capital Gains."
+      },
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing declaration_of_service_payment, which isrequired by FEMA-3-7-8.md and missing indication that USDC did complie with section 8 FEMA. Therefore, the classification of the receipt as income from the transfer of a virtual digital asset is not valid.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: declaration_of_service_payment is absent and declared not obtainable ('obtainable': 'not_for_this_route')."
+      },
+      {
+        "target": "The valuation method for the receipt is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57, Table Sl. No. 7, which applies to any other property not specifically listed.",
+        "checklist_item": 4,
+        "attack": "USDC represents us dollars whereas Rule 57 reads the valuation only of properties not FOREIGN CURRENCY., therefore the Ground lacking clear text support around how FOREIGN currencies will ORDINARILY VALUED",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 7, subsections C covering non of FOREIGN CURRENCIES directly , FOREIGN UNDER SECTION 7 clause N ."
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 1,
+        "attack": "The conclusion incorrectly assumes that USDC is not considered convertible foreign exchange and just same time no documents presented seen conversion DISCLOSED ",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "FEMA Section 7 clause N :\u0434\u0435\u043d\u044c\u0433\u0438 INCLUDES DEPOSITS of any sort payables OR settles in ANY FOREIGN CURRENCY, CHECK IT VERIFIABLE DEFAULTS "
+      }
+    ],
+    "checked_and_survived": [
+      "No TDS obligation arises as the recipient is outside India.",
+      "Every exporter of services shall furnish to the Reserve Bank or to such other authorities a declaration in such form and in such manner as may be specified, containing the true and correct material particulars in relation to payment for such services.",
+      "Where any amount of foreign exchange is due or has accrued to any person resident in India, such person shall take all reasonable steps to realise and repatriate to India such foreign exchange within such period and in such manner as may be specified by the Reserve Bank."
+    ],
+    "limits": [
+      "We could attempt to approach rule 57 itemization as itemized main heading missing, so reaching the correct set maybe ruled out ",
+      "Could  accuracy Quality of my understand get refactored while drawing conclusions about sectoral provisions particular when additional verification need checking rules presiding free flow currency , there fore crawling entire procedures again needs reloaded",
+      "The valuation lattice contains multiple methods and sources, but the conclusion does not specify which one is prescribed by law. Further analysis is needed to determine the correct valuation method.",
+      "Complex instructions could discovery actual versus anticipatory amended bill compliance might change course our expectation of source document updates"
+    ]
+  }
+}

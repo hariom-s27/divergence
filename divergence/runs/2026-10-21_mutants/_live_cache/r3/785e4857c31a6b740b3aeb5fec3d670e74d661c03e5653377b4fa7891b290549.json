@@ -1,0 +1,48 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T03:43:03.257682+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10935,
+  "out_tokens": 1003,
+  "retries": 0,
+  "elapsed_s": 173.405,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The provision cited for TDS, s.393(1), specifically applies to payments to residents. However, the receipt in question is from a non-resident. Therefore, s.393(1) does not apply to this scenario.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "s.393(1), Table Sl. No. 8(vi): 'Where any income or sum of the nature specified in column B of the Table below, is credited or paid or distributed by the person specified in column C during the tax year, to a resident, the person responsible...' and Table Heading stating 'FOR PAYMENTS TO RESIDENT'. 393(1) [Table: Sl. No. 8(vi)] involves payments for transfer of VDAs by the Payer  being \u2018Any Person.\u2019 But fails to highlight that specifically to a resident payee sector apply \u2013 thus 393(1) is decision rendered incorrectly w.r.t Resident Payee Sector."
+      },
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 1,
+        "attack": "The valuation method specified in Rule 206 applies to income expressed in foreign currency. However, the receipt is in USD, which is not classified as a virtual digital asset and thus does not fall under the scope of Rule 206.",
+        "survived": true,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 206(1): 'The rate of exchange for the calculation of the value in rupees of any income, accruing or arising or deemed to accrue or arise to the assessee in foreign currency...', 'Virtual Digital Asset' Explicit Definition Note that as per Table C illustrated rule targeting \u2018FOREIGN CURRENCY\u2019 and columns of Scope extract.. Clearly define correct articulations of what FOREIGN CURRENCY is vs Virtual Digital Asset Categories. Thus including Virtual Digital Assets within Foreign Currency  stands questioned Noncompliance under Framework creating doubts over Illegals Admissions Correct Cutoff Questionnaire answered affirmatively & disprovably."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The conclusion depends on the valuation, which is listed as missing. Therefore, the conclusion that the supply meets all the conditions for being an export of services is not supported without this crucial information.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Conclusion depends on 'valuation' which is listed as missing in the gap list. Valuation categorisation clarified determining answerable questions crossbreed sets between Empty Category Find answers go hand in hand impacting Conculsions Drawn Scenarios discussed contradictory non mutually exclusivity raised.\u201d"
+      }
+    ],
+    "checked_and_survived": [
+      "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), ... "
+    ],
+    "limits": []
+  }
+}

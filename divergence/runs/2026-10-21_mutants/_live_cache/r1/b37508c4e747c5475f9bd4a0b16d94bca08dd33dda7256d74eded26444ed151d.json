@@ -1,0 +1,50 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T20:07:51.275405+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13458,
+  "out_tokens": 762,
+  "retries": 0,
+  "elapsed_s": 101.26,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'declaration_of_service_payment', 'income_tax_deduction', and 'valuation_date', which are all missing from the provided information. Therefore, asserting this conclusion without the necessary dependencies is unreliable.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 4,
+        "attack": "The telegraphic transfer buying rate used for valuation is not mandated by law for virtual digital assets. The rate source should be specific to virtual digital assets as per the relevant provisions.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 1,
+        "attack": "The provision s.2(6) of the IGST Act, 2017, does not specifically address the classification of USDC as convertible foreign exchange. The definition of 'convertible foreign exchange' may not include virtual currencies like USDC.",
+        "evidence": "Section 2, clauses (h), (m), (n), (q), Foreign Exchange Management Act, 1999: 'foreign exchange means foreign currency and includes...'",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'declaration_of_service_payment', which is missing from the provided information. Therefore, asserting this conclusion without the necessary dependency is unreliable.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

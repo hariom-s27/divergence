@@ -1,0 +1,51 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T18:59:00.823367+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10133,
+  "out_tokens": 678,
+  "retries": 0,
+  "elapsed_s": 103.918,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 1,
+        "attack": "The conclusion references s.115BBH but does not verify if this provision is current for the tax year FY 2026-27. It is possible that the provision has been amended or replaced.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The valuation date is the date of credit (2026-06-16) using the open market value method.",
+        "checklist_item": 4,
+        "attack": "The valuation date and method are not explicitly supported by the referenced provisions. There is no clear indication that the open market value method is prescribed for the specific type of asset and date in question.",
+        "survived": true,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 57, Income-tax Rules, 2026.(1) For the purpose of following sections referred to in column B of the Table below, the fair market value of the property of the nature referred to column C shall be determined in the manner provided in column D thereof:"
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the condition 'Recipient of service located outside India,' which is listed as missing. Therefore, the conclusion cannot be reliably asserted.",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "[Recipient of service located outside India]: 'The recipient location is given as India, and there is no information indicating the recipient is located outside India.'"
+      }
+    ],
+    "checked_and_survived": [
+      "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+      "No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8)."
+    ],
+    "limits": [
+      "Could not verify the current status of s.115BBH for FY 2026-27 due to lack of explicit confirmation in the provided statutory text.",
+      "Could not confirm the prescribed valuation method and date for the specific asset type due to ambiguity in the referenced provisions."
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:02:16.673074+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10143,
+  "out_tokens": 118,
+  "retries": 0,
+  "elapsed_s": 20.185,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The value is determined on the date of credit (2026-06-16) using the open market value method.",
+        "checklist_item": 2,
+        "attack": "The asset needs to be covered by a specific clause in Rule 56 to invoke 'any other'"
+      }
+    ],
+    "checked_and_survived": [
+      "The receipt is classified as income from the transfer of a virtual digital asset"
+    ],
+    "limits": []
+  }
+}

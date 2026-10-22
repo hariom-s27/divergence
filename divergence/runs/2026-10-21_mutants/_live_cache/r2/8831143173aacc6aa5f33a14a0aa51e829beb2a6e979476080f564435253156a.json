@@ -1,0 +1,41 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T00:38:06.765944+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10936,
+  "out_tokens": 581,
+  "retries": 0,
+  "elapsed_s": 94.079,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (28 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the threshold is exceeded. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "The conclusion misapplies the provisions of Rule 206. Rule 206 specifies the telegraphic transfer buying rate on the last day of the tax year for certain types of income, but it does not apply to 'income from other sources' that are recognized on a specific date of credit. The valuation method described does not align with the scope of Rule 206.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "(2) For the purposes of this rule... Types of Income \u2014 B... Last day of the tax year of the assessee. ...(3) Nothing contained in sub-rule (1) shall apply in respect of income...last day of the month of in which the capital asset in the table is transferred"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.', certainty: insufficient evidence.}",
+        "checklist_item": 3,
+        "attack": "This is the ACTUAL problem of the gap list we did this dance for! Quantification of payment doesn't determine place of supply - exactly what everyone else ignores (We FalseNegatives around whether it falls into ecommerce = outside india if something like pill). Place of delivery (where rendered) matters much more than fixed establishment being linked to cash coming vis swft vs paypal.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "\"Otherwise than through], integration - accounting should watch and steer basing on US CDNR risk (zero-% for goods)"
+      }
+    ],
+    "checked_and_survived": [
+      "income_tax_on_receipt(2 of 2 successful attacks)'rias respec"
+    ],
+    "limits": [
+      "Law continues to carry human interpretation questions, fallibility imposed on expected surface levels even within involved specialized working groups east or west woodland."
+    ]
+  }
+}

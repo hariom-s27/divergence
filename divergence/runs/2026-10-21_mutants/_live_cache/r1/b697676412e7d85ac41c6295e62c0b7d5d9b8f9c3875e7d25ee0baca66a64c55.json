@@ -1,0 +1,45 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:27:15.005842+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10690,
+  "out_tokens": 590,
+  "retries": 0,
+  "elapsed_s": 75.864,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 1,
+        "attack": "The conclusion refers to Rule 206, Income-tax Rules, 2026, but it does not specify the exact sub-rule or table that applies to the valuation method for foreign currency income. Without this specific reference, it is unclear if Rule 206 is being applied correctly for the tax year FY 2026-27.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 206, Income-tax Rules, 2026, specifies different valuation methods for different types of income and dates, but the conclusion does not provide the exact sub-rule or table that justifies the use of the telegraphic transfer buying rate on the last day of the tax year."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 2,
+        "attack": "The conclusion states that the place of supply is not explicitly stated in the facts provided, which means that the condition for the place of supply being outside India is not met. Therefore, the supply does not meet all the conditions for being an export of services.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017, requires that the place of supply of service be outside India for the supply to be considered an export of services."
+      },
+      {
+        "target": "Any sum by way of consideration for transfer of a virtual digital asset",
+        "checklist_item": 3,
+        "attack": "This falls under MDD trap since Insuffienct Evidene is given against the payer status as a percent .So Payer info is missing document ",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "No conclsuion "
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

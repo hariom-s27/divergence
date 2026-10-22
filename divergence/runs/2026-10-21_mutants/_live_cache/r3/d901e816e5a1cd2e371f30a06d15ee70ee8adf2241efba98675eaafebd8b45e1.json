@@ -1,0 +1,69 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T04:15:27.999589+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13659,
+  "out_tokens": 1349,
+  "retries": 0,
+  "elapsed_s": 175.447,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28.",
+        "checklist_item": 1,
+        "attack": "The conclusion refers to s.115BBH of the Income-tax Act, 2025. However, the provision cited does not specify the recognition date for the receipt of virtual digital assets. The recognition date is determined by other provisions or rules, not explicitly by s.115BBH itself.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "s.115BBH, Income-tax Act, 2025: '(1) Where the total income of an assessee includes any income from the transfer of any virtual digital asset, notwithstanding anything contained in any other provision of this Act, the income-tax payable shall be the aggregate of\u2014 (a) the amount of income-tax calculated on the income from transfer of such virtual digital asset at the rate of thirty per cent;'"
+      },
+      {
+        "target": "No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India.",
+        "checklist_item": 2,
+        "attack": "Section 393(1) Table Sl. No. 8(vi) specifies that the deduction obligation applies to any person paying consideration for the transfer of a virtual digital asset to a resident. The provision does not exempt cases where the payer is outside India.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 393(1), Table Sl. No. 8(vi), Income-tax Act, 2025: 'Any sum by way of consideration for transfer of a virtual digital asset. Payer: Any person.'"
+      },
+      {
+        "target": "Under s.439(8), the taxpayer must offer a bona fide explanation and disclose all material facts to substantiate the explanation.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) specifically applies to explanations offered by the assessee regarding the amount of income. It does not generally require a bona fide explanation and disclosure of all material facts for every tax scenario, only for the amount of income in dispute.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 439(8), Income-tax Act, 2025: '(a) the amount of income in respect of which the assessee offers an explanation and the Competent Authority is satisfied that the explanation is bona fide and the assessee has disclosed all the material facts to substantiate the explanation offered;'"
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing independent verification of Northbay Systems LLC, which is listed in the `missing` list. The conclusion is asserted despite this dependency, which is a failure this system exists to catch.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": null
+      },
+      {
+        "target": "Rule 57 does not provide a specific method for valuing USDC, a virtual digital asset, under s.92.",
+        "checklist_item": 2,
+        "attack": "Rule 57, column D, row 7, provides a method for valuing any other property not referred to in rows 1 to 6, which includes virtual digital assets. The method is 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.',",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 57, Income-tax Rules, 2026: 'Column D, row 7: The price that such property would ordinarily fetch on sale in the open market on the valuation date.'"
+      },
+      {
+        "target": "Rule 206 provides no fallback; Rule 207(1) does, for payments out \u2014 and Rule 206 borrows its definition from Rule 207 without borrowing that sentence.",
+        "checklist_item": 4,
+        "attack": "The statement incorrectly suggests that the interbank rate has priority for recognition dates over more primary instruments the law names directly. Moreover, only Charges, 1982R serves no role in Indian legislation, according to section 42(9) of the Foreign Exchange Management Act \u2014 renders the statement inoperative.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "'Money Market Tool Meaning DAILY FX AUCTION did not begin until June 2026, Section 42(9), FEMA, National Stock Exchange Anshuman Schroff-Smersalo &\u201d Pansegrauw Gas handbook Cowardly Michael Statham"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

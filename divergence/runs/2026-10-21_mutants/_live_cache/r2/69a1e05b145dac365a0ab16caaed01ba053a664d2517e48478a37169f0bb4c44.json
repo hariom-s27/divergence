@@ -1,0 +1,61 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T23:27:33.384993+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13474,
+  "out_tokens": 1524,
+  "retries": 0,
+  "elapsed_s": 207.158,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 1,
+        "attack": "The conclusion refers to s.439(8) for the requirement of a bona fide disclosure to avoid penalties. However, s.439(8) specifically deals with the conditions under which the Competent Authority can accept explanations and determine under-reported income. It does not directly address the requirement for bona fide disclosure to avoid penalties. The correct provision for penalties related to under-reporting of income is s.270A, which has been superseded by s.439 for FY 2026-27.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "s.439(8): (a) the amount of income in respect of which the assessee offers an explanation and the Competent Authority is satisfied that the explanation is bona fide and the assessee has disclosed all the material facts to substantiate the explanation offered; (b) the amount of under-reported income determined on the basis of an estimate, if the accounts are correct and complete to the satisfaction of the Competent Authority but the method employed is such that the income cannot properly be deduced therefrom;"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 2,
+        "attack": "The conclusion states that no TDS is required because the recipient is outside India, citing s.393(1) Table Sl. No. 8(vi) and the note for non-residents. However, s.393(1) Table specifically applies to payments to residents. For non-residents, the relevant provision is s.393(1) Table Sl. No. 17, which mandates TDS on any sum chargeable under the provisions of the Act. Therefore, the conclusion that no TDS is required is incorrect.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "s.393(1) Table Sl. No. 17: Any interest (not being interest referred to against serial numbers 2, 3, 4 and 5) or any other sum chargeable under the provisions of this Act, not being income chargeable under the head 'Salaries'. Payee: Any non-resident. Payer: Any person. Rate: Rates in force. Note 3(b) \u2014 the obligation to deduct tax at source and comply with this serial number extends to all persons resident or non-resident, whether or not the non-resident has a residence, place of business, business connection or any other presence in India."
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "The conclusion states that the payment was received in USDC, which is not considered convertible foreign exchange as defined by the Reserve Bank of India. However, the definition of 'foreign currency' in FEMA includes deposits, credits, and balances payable in any foreign currency, which could potentially include stablecoins like USDC that are designed to maintain a stable value relative to the US Dollar. Therefore, the conclusion that USDC is not convertible foreign exchange may not hold.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "FEMA s.2(m): 'foreign currency' means any currency other than Indian currency; FEMA s.2(n): 'foreign exchange' means foreign currency and includes,\u2014 (i) deposits, credits and balances payable in any foreign currency,"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the settlement date (2026-06-23) using the telegraphic transfer buying rate. No TDS is required as the recipient is outside India. Under s.439(8), a bona fide disclosure of the income with all material facts is required to avoid penalties.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'valuation_date', which is listed in the 'missing' list. The conclusion is asserted despite this dependency, which is a flaw this system exists to catch. The valuation date is crucial for determining the correct rate and cannot be overlooked.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Gap List: Valuation date provided as required by ITR2026-RULE-56.md"
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 4,
+        "attack": "The conclusion uses the term 'convertible foreign exchange' without referencing the specific legal definition or rate source mandated by law. The term needs to be clearly defined and sourced from the appropriate legal provision to ensure accuracy.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "No specific provision defining 'convertible foreign exchange' provided in the statutory text extracts"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": []
+  }
+}

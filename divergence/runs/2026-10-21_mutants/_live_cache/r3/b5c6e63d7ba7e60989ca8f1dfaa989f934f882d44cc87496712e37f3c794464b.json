@@ -1,0 +1,63 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T02:51:07.217694+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13493,
+  "out_tokens": 1019,
+  "retries": 0,
+  "elapsed_s": 141.685,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 400 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH cited is from the Income-tax Act, 1961, and it is not clear if it has been carried into the Income-tax Act, 2025 without modifications. The conclusion assumes the provision is current for FY 2026-27 without verification.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The valuation date is the date of receipt (2026-06-18).",
+        "checklist_item": 2,
+        "attack": "Rule 56 applies to specific sections such as s.92, s.79, and s.26(2)(j). The conclusion incorrectly extends Rule 56 to s.115BBH without verification that s.115BBH falls under the scope of Rule 56.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Rule 56, Income-tax Rules, 2026: 'Valuation date means the date provided in the Table below:'"
+      },
+      {
+        "target": "The valuation method is the price that such property would ordinarily fetch on sale in the open market on the valuation date, as per Rule 57, Table Sl. No. 7.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to 'Any other property' under s.26(2)(j), not s.115BBH. The conclusion misapplies Rule 57 to a scenario it does not cover.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, Income-tax Rules, 2026: 'Determination of fair market value.\u2013 For the purpose of following sections referred to in column B of the Table below'"
+      },
+      {
+        "target": "Under s.439(8), a disclosed position must be bona fide and all material facts must be disclosed.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on 'income_tax_deduction,' which is missing. Asserting the conclusion despite the dependency being unresolved is a failure.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'income_tax_deduction', 'why_absent': 'No evidence of income tax deduction as required by IT-393-1-T8vi.md for payments to a resident.'"
+      },
+      {
+        "target": "The supply meets some conditions for export of services but fails the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "The condition regarding the receipt of payment in convertible foreign exchange is misinterpreted. s.2(n) of FEMA defines foreign exchange to include foreign currency and certain credits. The conclusion overlooks this broader definition.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 2(n), Foreign Exchange Management Act, 1999: 'foreign exchange means foreign currency and includes,\u2014 (i) deposits, credits and balances payable in any foreign currency, (ii) drafts, travellers cheques, letters of credit or bills of exchange, expressed or drawn in Indian currency but payable in any foreign currency'"
+      }
+    ],
+    "checked_and_survived": [],
+    "limits": [
+      "Could not verify the operative status of s.115BBH for FY 2026-27 beyond the provided text."
+    ]
+  }
+}

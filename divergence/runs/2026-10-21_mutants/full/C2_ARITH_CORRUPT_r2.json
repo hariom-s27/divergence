@@ -1,0 +1,200 @@
+{
+  "case": "C2",
+  "operator": "ARITH_CORRUPT",
+  "seed": 1337,
+  "rep": 2,
+  "note": "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap): inr_value perturbed +2.32%, 376200.0 -> 384932.05 (label/source/rate left exactly as they were -- no textual signal at all)",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Rule 206, Income-tax Rules, 2026",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "a) **Classification**: The receipt is not from the transfer of a virtual digital asset (s.115BBH) but is instead income from other sources, as it is a payment for services rendered. \n\nb) **Recognition Date**: The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).\n\nc) **Valuation Method**: The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.\n\nd) **TDS**: The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).\n\ne) **Penalty Position**: The penalty position is governed by s.439(8), which requires a bona fide explanation and disclosure of all material facts to avoid penalties.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "The supply meets all the conditions for being an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "IGST Act, 2017, s.2(6)",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is a resident individual located in India."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "yes",
+          "why": "The recipient, Cascade Data Inc, is located outside India."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated in the facts provided."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "yes",
+          "why": "There is no indication that the supplier and recipient are establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "place of supply"
+      ],
+      "consequence_if_failed": "If the supply does not meet the conditions for an export of services, it will be treated as a domestic supply and subject to GST at the applicable rate. The supplier would be required to pay GST and may face penalties under s.74A if the tax is not paid or is short paid."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "rate": 94.05,
+        "inr_value": 384932.05,
+        "observability": "L2",
+        "source": {
+          "name": "SBI Forex Card Rates sheet, USD/INR TT BUY",
+          "url": "https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/2026/6/2026-06-17.pdf",
+          "retrieved": "2026-08-21",
+          "tier": "primary_archived",
+          "note": "Fetched directly from sahilgupta/sbi-fx-ratekeeper's SBI_REFERENCE_RATES_USD.csv, the same archive corpus/tier-a/SBI-TTBR-DATA.md already cites for D1's dates. SBI published normally this Wednesday -- no four-day hole like the 28 June weekend."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-17",
+        "date_choice": {
+          "reason": "SBI published a rate on the settlement date itself (2026-06-17) -- no fallback question arises.",
+          "candidates": [
+            {
+              "date": "2026-06-17",
+              "ttbr": 94.05,
+              "label": "published on the settlement date itself -- no gap"
+            }
+          ],
+          "chosen": "2026-06-17",
+          "prescribed_by": "published on settlement date",
+          "difference_inr": 0.0
+        }
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0,
+      "between": [
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)",
+        "SBI TTBR 2026-06-17 (published on the settlement date itself -- no gap)"
+      ]
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": true
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources', 'checklist_item': 2, 'attack': \"The classification of the receipt as 'income from other sources' may not be accurate. The provided reasoning states that the receipt is a payment for services rendered, which typically falls under 'Profits and gains of business or profession.' The opening words of Section 2(24) of the Income-tax Act, 1961 define 'income from other sources' as income that does not fall under any other head of income, such as salaries, house property, business or profession, or capital gains.\", 'survived': False, 'downgraded_to': 'insufficient_evidence'}, {'target': 'valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027)', 'checklist_item': 1, 'attack': 'The provision cited for valuation using the telegraphic transfer buying rate is Rule 206 of the Income-tax Rules, 2026. However, the specific rate and date mentioned (31 March 2027) are not verified. The statutory text provided does not confirm the exact rate for this date, and Rule 207(3)(b) shows different dates with varying rates but does not provide any confirmation of the precise date.', 'survived': False, 'downgraded_to': 'contested', 'evidence': '\"The rate of exchange for the calculation of the value in rupees of any income ...)\"'}, {'target': 'constituting valid discharge', 'checklist_item': 3, 'attack': 'It is clear you wish the provisions regarding TDS, TCS would come into play with sections 203 (now rules sl number 3f and 4n), yet it must noted their major requirement that a permanent account number should have appeared on all documents relating to disbursement despite discharge', 'survived': False, 'downgraded_to': 'open_textured'}, {'target': 'A submission of PERMANENT ACCOUNT NUMBER ellipticity an assumption closing books \u25b8\u25b6\ufe0e antecedent', 'checklist_item': 3, 'subjectatmospherics': \"Before consideringproof Satya One Pvt. Ltd ('PARTY') called\", 'Specially': False, 'attacked': 'unverified=>the imagination statutes definitions the presence and then applies here now ; while admitting substantial require supplementary definitions meet regulatory norms', 'survival': 'truthy==>?False entrusted consolidation are not >subordinate< incorrect'}]}",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "ARITH_CORRUPT",
+    "kind": "terms",
+    "groups": [
+      [
+        "384932.05",
+        "384932"
+      ]
+    ]
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T22:42:39.357130+00:00",
+  "finished_utc": "2026-10-21T22:46:56.039594+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10704,
+  "out_tokens": 643,
+  "latency_s": 114.218,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10704,
+    "out_tokens": 643,
+    "retries": 0,
+    "elapsed_s": 114.218,
+    "wall_ms": 114217.9,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027)', 'checklist_item': 2, 'attack': 'The provision cited, Rule 206, specifies the rate of exchange for conversion into rupees of income expressed in foreign currency. However, the conclusion assumes that the receipt is in foreign currency without explicit confirmation. The scope of Rule 206 does not cover receipts that are not explicitly stated to be in foreign currency.', 'survived': False, 'downgraded_to': 'contested', 'evidence': \"Rule 206, Income-tax Rules, 2026, states: 'The rate of exchange for the calculation of the value in rupees of any income, accruing or arising or deemed to accrue or arise to the assessee **in foreign currency**, or received or deemed to be received by him or on his behalf **in foreign currency**,...'\"}, {'target': 'and is subject to TDS at 1% if the payer is a resident.', 'checklist_item': 1, 'attack': 'The provision cited for TDS, s.393(1), Table Sl. No. 8(vi), isspecific to payments for the transfer of a virtual digital asset. Thereis no evidence that the receipt in question is from the transfer of avirtual digital asset. Therefore, this provision does not apply.', 'survived': False, 'downgraded_to': 'contested', 'evidence': \"Section 393(1), Table Sl. No. 8(vi), Income-tax Act,2025, states: 'Any sum by way of consideration for transfer of a virtualdigital asset.'\"}, {'target': 'The penalty position is governed by s.439(8),requiring a bona fide explanation and disclosure of all materialfacts.', 'checklist_item': 2, 'attack': 'Section 439(8) applies to situations where an assesseeoffers an explanation for under-reported income. The conclusion doesnot specify that the income was under-reported, so this provision maynot be applicable.', 'survived': False, 'downgraded': 'contested', 'evidence': '', 'downgraded_to': 'contest ed'}, {'target': 'The supply meets all the conditions for being an exportservice.', 'checklist_item': 3, 'attack': \"One of the criteria for thesupply to be considered an ex port of servic es is that the place ofsupply mustbe outsideIndia. However, this condition is marked as unknown('met':'u nknown') because theplace of supply is not explicitly stated intheprovided facts.This lackofinformation makes theconclusion uncertain.\", 'Survived': True, 'downgrad ed_to': {'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026)', 'checklist_item': 2, 'attack': 'While the conclusion addresses that Rule 56 concerns the valuation date for certain properties, s.92 never includes the receipt concerned. This extends to FYs.[sic]', 'earned': True, \"'Withstanding statisticalA \\n source constraint.' \u4f8b.6 '\": None}}, \"checked'_### sur viven - ZIP Code  0*/ ++ )rence<Hoisting//'/'Com attacked =not\\n .' => null**##*#elements are often**#trace-forward.\u2500$@Cost speed[##\u00e9e], < Order composition :=}}}refessional\\namespace __changeIndex/**_%%switch__**Sys out--------->statelimit------------->*(mines\", None], 'survivability\\\\*MANIFEST switch ': 'testbody_mismatches items:'}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027)', 'checklist_item': 2, 'attack': 'The provision cited, Rule 206, specifies the rate of exchange for conversion into rupees of income expressed in foreign currency. However, the conclusion assumes that the receipt is in foreign currency without explicit confirmation. The scope of Rule 206 does not cover receipts that are not explicitly stated to be in foreign currency.', 'survived': False, 'downgraded_to': 'contested', 'evidence': \"Rule 206, Income-tax Rules, 2026, states: 'The rate of exchange for the calculation of the value in rupees of any income, accruing or arising or deemed to accrue or arise to the assessee **in foreign currency**, or received or deemed to be received by him or on his behalf **in foreign currency**,...'\"}, {'target': 'and is subject to TDS at 1% if the payer is a resident.', 'checklist_item': 1, 'attack': 'The provision cited for TDS, s.393(1), Table Sl. No. 8(vi), isspecific to payments for the transfer of a virtual digital asset. Thereis no evidence that the receipt in question is from the transfer of avirtual digital asset. Therefore, this provision does not apply.', 'survived': False, 'downgraded_to': 'contested', 'evidence': \"Section 393(1), Table Sl. No. 8(vi), Income-tax Act,2025, states: 'Any sum by way of consideration for transfer of a virtualdigital asset.'\"}, {'target': 'The penalty position is governed by s.439(8),requiring a bona fide explanation and disclosure of all materialfacts.', 'checklist_item': 2, 'attack': 'Section 439(8) applies to situations where an assesseeoffers an explanation for under-reported income. The conclusion doesnot specify that the income was under-reported, so this provision maynot be applicable.', 'survived': False, 'downgraded': 'contested', 'evidence': '', 'downgraded_to': 'contest ed'}, {'target': 'The supply meets all the conditions for being an exportservice.', 'checklist_item': 3, 'attack': \"One of the criteria for thesupply to be considered an ex port of servic es is that the place ofsupply mustbe outsideIndia. However, this condition is marked as unknown('met':'u nknown') because theplace of supply is not explicitly stated intheprovided facts.This lackofinformation makes theconclusion uncertain.\", 'Survived': True, 'downgrad ed_to': {'target': 'The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026)', 'checklist_item': 2, 'attack': 'While the conclusion addresses that Rule 56 concerns the valuation date for certain properties, s.92 never includes the receipt concerned. This extends to FYs.[sic]', 'earned': True, \"'Withstanding statisticalA \\n source constraint.' \u4f8b.6 '\": None}}, \"checked'_### sur viven - ZIP Code  0*/ ++ )rence<Hoisting//'/'Com attacked =not\\n .' => null**##*#elements are often**#trace-forward.\u2500$@Cost speed[##\u00e9e], < Order composition :=}}}refessional\\namespace __changeIndex/**_%%switch__**Sys out--------->statelimit------------->*(mines\", None], 'survivability\\\\*MANIFEST switch ': 'testbody_mismatches items:'}",
+      "started_utc": "2026-10-21T22:42:39.357130+00:00",
+      "finished_utc": "2026-10-21T22:45:01.792355+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10704,
+        "out_tokens": 1035,
+        "retries": 0,
+        "elapsed_s": 142.401,
+        "wall_ms": 142400.7,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: model output has no top-level 'checked_and_survived' array\n{'attacked': [{'target': 'The receipt is classified as income from other sources', 'checklist_item': 2, 'attack': \"The classification of the receipt as 'income from other sources' may not be accurate. The provided reasoning states that the receipt is a payment for services rendered, which typically falls under 'Profits and gains of business or profession.' The opening words of Section 2(24) of the Income-tax Act, 1961 define 'income from other sources' as income that does not fall under any other head of income, such as salaries, house property, business or profession, or capital gains.\", 'survived': False, 'downgraded_to': 'insufficient_evidence'}, {'target': 'valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027)', 'checklist_item': 1, 'attack': 'The provision cited for valuation using the telegraphic transfer buying rate is Rule 206 of the Income-tax Rules, 2026. However, the specific rate and date mentioned (31 March 2027) are not verified. The statutory text provided does not confirm the exact rate for this date, and Rule 207(3)(b) shows different dates with varying rates but does not provide any confirmation of the precise date.', 'survived': False, 'downgraded_to': 'contested', 'evidence': '\"The rate of exchange for the calculation of the value in rupees of any income ...)\"'}, {'target': 'constituting valid discharge', 'checklist_item': 3, 'attack': 'It is clear you wish the provisions regarding TDS, TCS would come into play with sections 203 (now rules sl number 3f and 4n), yet it must noted their major requirement that a permanent account number should have appeared on all documents relating to disbursement despite discharge', 'survived': False, 'downgraded_to': 'open_textured'}, {'target': 'A submission of PERMANENT ACCOUNT NUMBER ellipticity an assumption closing books \u25b8\u25b6\ufe0e antecedent', 'checklist_item': 3, 'subjectatmospherics': \"Before consideringproof Satya One Pvt. Ltd ('PARTY') called\", 'Specially': False, 'attacked': 'unverified=>the imagination statutes definitions the presence and then applies here now ; while admitting substantial require supplementary definitions meet regulatory norms', 'survival': 'truthy==>?False entrusted consolidation are not >subordinate< incorrect'}]}",
+      "started_utc": "2026-10-21T22:45:01.792405+00:00",
+      "finished_utc": "2026-10-21T22:46:56.039594+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10704,
+        "out_tokens": 643,
+        "retries": 0,
+        "elapsed_s": 114.218,
+        "wall_ms": 114217.9,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

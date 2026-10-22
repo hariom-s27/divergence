@@ -1,0 +1,47 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:19:59.808390+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10143,
+  "out_tokens": 784,
+  "retries": 0,
+  "elapsed_s": 95.181,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH specifically targets the 'income from the transfer of any virtual digital asset.' However, based on s.2(47A)(a) of the Act, a virtual digital asset is defined as not being Indian currency or foreign currency. The given scenario involves a domestic INR receipt for a domestic INR invoice, which falls under Indian currency and not a virtual digital asset. Therefore, s.115BBH does not apply to this situation.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "(47A) \"virtual digital asset\" means\u2014 (a) any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise,... Provided that the Central Government may, by notification in the Official Gazette,... or (d) any crypto-asset being a digital representation of value that relies on a cryptographically secured distributed ledger..."
+      },
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset... No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8)",
+        "checklist_item": 4,
+        "attack": "The statement mentions s.439(8) for the condition of no penalty if the explanation is bona fide. However, s.439(8) specifies conditions under which the amount of income related to an explanation offered by the assessee is considered. It does not directly address the applicability of penalties. The correct provision for penalty exemptions under bona fide explanations should be referenced if it exists.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "(a) the amount of income... assessee offers an explanation... (b) the amount of under-reported income... S. 439(8) conditions..."
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services",
+        "checklist_item": 3,
+        "attack": "The conclusion states that the supply does not meet the conditions for an export of services due to insufficient evidence. However, the condition 'the recipient of service is located outside India' is marked as 'no,' which directly contradicts the requirement for an export of services under s.2(6) of the Integrated Goods and Services Tax Act, 2017. This condition being met as 'no' is sufficient to conclude that the supply is not an export of services, regardless of the other conditions.",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017 \u2014 'export of services' means ... (ii) the recipient of service is located outside India;"
+      }
+    ],
+    "checked_and_extra_survivors": [],
+    "limits": [
+      "Unable to check the specific applicability of penalty provisions under s.439(8) as they relate to bona fide explanations"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:38:47.500686+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10596,
+  "out_tokens": 538,
+  "retries": 0,
+  "elapsed_s": 68.859,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident. The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "The provision cited for TDS, s.393(1), Table Sl. No. 8(vi), specifically applies to Consideration for transfer of a virtual digital asset'. However, the conclusion states that the receipt is 'a payment for services rendered', which falls under different provisions. Therefore, s.393(1), Table Sl. No. 8(vi) isn't appropriate here since our first step, classification, places us fully out of scope of the cited rating..",
+        "survived": true,
+        "downgraded_to": "reference misapplication",
+        "classification": 1,
+        "such provision doesn't exist, nor ever has historically": null
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The condition place of supply is marked unknown and tracked as absent required. This absence directly prevents meeting the export service criteria.",
+        "survived": false,
+        "evidence": "The provision sets multiple proofs missing ACK staging further criteria]",
+        "video marks further retrovirus": false
+      },
+      "Evidence_ConflictRange_existsHistoricreeing_criteria:NIl}",
+      {
+        "checkListUIValuation": "multiple markup=ture}:none==="
+      }
+    ],
+    "conclusion_epsilon_\u03a3\u03bf near survesiving dependence collection scope assessment collate set handled early termians create parts historic reference deleted previous and future sentimental interpreted internal conflict needs adjustment terms scope attribute viable apply seguence attribute cast reference method call noun capability developed packaged version dynamically trigger including keys transition mapping target varience object channel manhanttan simple transform policy": "directly-refrenced-polymorphism"
+  }
+}

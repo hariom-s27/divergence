@@ -1,0 +1,190 @@
+{
+  "case": "C1",
+  "operator": "DATE_SHIFT",
+  "seed": 1337,
+  "rep": 2,
+  "note": "invoice value, INR to INR -- no conversion: date_used shifted +1 day, '2026-06-16' -> '2026-06-17' (rate/inr_value left untouched)",
+  "noop": false,
+  "mutated_regimes": [
+    {
+      "regime": "income_tax_on_receipt",
+      "outcome": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+      "certainty": "settled",
+      "citation": {
+        "provision": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025",
+        "former_citation": null,
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "reasoning": "The receipt is classified as income from the transfer of a virtual digital asset under s.115BBH, which taxes such transfers at 30%. The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1. The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded. Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+      "depends_on_missing": [],
+      "qualifying_condition": null,
+      "condition_met": "unknown",
+      "consequence_if_failed": null
+    },
+    {
+      "regime": "gst_export",
+      "outcome": "This supply does not meet the conditions for an export of services.",
+      "certainty": "insufficient_evidence",
+      "citation": {
+        "provision": "Section 2(6), Integrated Goods and Services Tax Act, 2017",
+        "tax_year": "FY 2026-27",
+        "verified": true
+      },
+      "conditions": [
+        {
+          "condition": "the supplier of service is located in India;",
+          "met": "yes",
+          "why": "The supplier is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the recipient of service is located outside India;",
+          "met": "no",
+          "why": "The recipient is located in India, as stated in the facts."
+        },
+        {
+          "condition": "the place of supply of service is outside India;",
+          "met": "unknown",
+          "why": "The place of supply is not explicitly stated, and it depends on the recipient's location, which is in India."
+        },
+        {
+          "condition": "the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India;",
+          "met": "yes",
+          "why": "The payment was received in Indian rupees via NEFT bank transfer, which is permitted by the Reserve Bank of India."
+        },
+        {
+          "condition": "the supplier of service and the recipient of service are not merely establishments of a distinct person in accordance with Explanation 1 in section 8;",
+          "met": "unknown",
+          "why": "There is no information provided to determine if the supplier and recipient are merely establishments of a distinct person."
+        }
+      ],
+      "depends_on_missing": [
+        "Recipient of service located outside India"
+      ],
+      "consequence_if_failed": "If the supply is not an export of services, it will be subject to GST at the applicable rate. The supplier will need to pay the tax and any applicable interest under Section 50 of the CGST Act 2017. If there is a short payment or non-payment of tax, the supplier may also face penalties under Section 74A of the CGST Act 2017."
+    }
+  ],
+  "mutated_valuation": {
+    "methods": [
+      {
+        "label": "invoice value, INR to INR -- no conversion",
+        "rate": 1.0,
+        "inr_value": 85000.0,
+        "observability": "L1",
+        "source": {
+          "name": "invoice + NEFT bank credit, both stated in INR directly",
+          "retrieved": "2026-08-21",
+          "tier": "primary_live",
+          "note": "Domestic INR receipt for a domestic INR invoice -- no currency conversion question exists. Not a lattice with one entry standing in for a missing dispute; there genuinely is no dispute."
+        },
+        "mandated_by": null,
+        "date_used": "2026-06-17"
+      }
+    ],
+    "spread": {
+      "inr": 0.0,
+      "percent": 0.0
+    },
+    "uncertainty_budget": [],
+    "no_rate_published": false
+  },
+  "attacked": [],
+  "checked_and_survived": [],
+  "limits": [],
+  "caught": null,
+  "error": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(1, \"downgraded_to='contested ' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH... and all material facts are disclosed under s.439(8).', 'checklist_item': 3, 'attack': 'Existence depends on absence: No details present regarding TDS (TDS collected on what date and what rate post statement)', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': ''}, {'target': 'The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.', 'checklist_item': 4, 'attack': 'Rule structuring mentions asset as quote digitized currency/goodwill recognized to pay based on its clone(-error forward), contradictions exist between recognition for charge vs subsidization[],damages options', 'survived': False, 'downgraded_to': 'contested ', 'evidence': ''}], 'checked_and_survived': [], 'limits': ['Refrain from assuming trade position with Rate', 'artificial or external disturbances implied', 'multiple fact scopes']}",
+  "any_attack_excerpt": null,
+  "specific_spec": {
+    "operator": "DATE_SHIFT",
+    "kind": "terms",
+    "groups": [
+      [
+        "2026-06-17",
+        "17 june 2026",
+        "17th june 2026",
+        "june 17, 2026",
+        "june 17 2026",
+        "17 jun 2026",
+        "jun 17, 2026",
+        "17-06-2026",
+        "17/06/2026",
+        "17.06.2026"
+      ]
+    ]
+  },
+  "caught_specific": null,
+  "specific_match": null,
+  "placebo_specific": null,
+  "started_utc": "2026-10-21T22:12:04.301988+00:00",
+  "finished_utc": "2026-10-21T22:14:01.625438+00:00",
+  "response_model": "mistralai/Mistral-Large-Instruct-2411",
+  "requested_model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 306,
+  "latency_s": 40.249,
+  "call": {
+    "node": "node5_adversarial",
+    "model": "mistralai/Mistral-Large-Instruct-2411",
+    "provider": "featherless",
+    "in_tokens": 10146,
+    "out_tokens": 306,
+    "retries": 0,
+    "elapsed_s": 40.249,
+    "wall_ms": 40248.7,
+    "seed": null,
+    "replayed": false,
+    "response_model": "mistralai/Mistral-Large-Instruct-2411",
+    "response_format_sent": true,
+    "json_repair_method": "direct",
+    "json_repaired": false
+  },
+  "temperature_sent": null,
+  "first_attempt_error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(0, \"survived='true' is not a boolean\"), (1, \"survived='false' is not a boolean\"), (2, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]', 'checklist_item': 1, 'attack': 's.393(1) appears incorrect for given dates. Tax calendar demo\u2019d several beyond effective application terms by tax year timeline ahead provoking conflict recon. Mismatch valid application ranges rejected, commonly noted gaps and misalignment run, see Section 5 \u2014 applicably to rates calculations missing updated position references persisting chronology point mismatch compare Sections 393 versus active through 57 scripts\\n.', 'survived': 'true', 'downgraded_to': 'insufficient_evidence'}, {'target': 'Does the provision actually reach these facts? Read the opening words. Read any column that states which sections the provision serves. A provision can be current, correctly quoted, and still not apply.', 'checklist_item': 2, 'attack': 'Rule effectively unable justify fulfill - Delinking constructive table point distinction. No alignment states jurisdiction malfunction putting forward insert cross delegate points present.\\n', 'survived': 'false', 'downgraded_to': 'legally unsettling propagation levelled step invalid tax ledgers overrules intent scope overreach seen'}, {'target': 'Any Calculation deviation comma show variance and/or adjustable inference range delimiter', 'checklist_item': 4, 'attack': \"Tax law dates 'Fiscal regulation step' already ruled out fate won't hold, calculation chained bridge CA net zero proven violation RC legal holds not updated further validation halted downgrade suggestion necessary.\\n\", 'downgraded_to': 'Outdated compliance norm meets deadline action rate overrun reporting halt transition much No Lapse Valid Search Extract Kill MatchFeed.'}], 'checked_and_survived': ['Jurisdictional gap legally challenge reached valid interpretable scale term continuity stands proposed clear reform addressed halting next scale fixed completion status underwait confirm comman declaration observed examination fail listed dropped Rule annotation made obsolete closure, bringing stop transitional lag next enforce under no condition beyond discrete factor limits.'], 'limits': []}",
+  "schema_retried": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "node5_adversarial: attacked[] contains 3 malformed entr(y/ies): [(0, \"survived='true' is not a boolean\"), (1, \"survived='false' is not a boolean\"), (2, 'survived=None is not a boolean')]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]', 'checklist_item': 1, 'attack': 's.393(1) appears incorrect for given dates. Tax calendar demo\u2019d several beyond effective application terms by tax year timeline ahead provoking conflict recon. Mismatch valid application ranges rejected, commonly noted gaps and misalignment run, see Section 5 \u2014 applicably to rates calculations missing updated position references persisting chronology point mismatch compare Sections 393 versus active through 57 scripts\\n.', 'survived': 'true', 'downgraded_to': 'insufficient_evidence'}, {'target': 'Does the provision actually reach these facts? Read the opening words. Read any column that states which sections the provision serves. A provision can be current, correctly quoted, and still not apply.', 'checklist_item': 2, 'attack': 'Rule effectively unable justify fulfill - Delinking constructive table point distinction. No alignment states jurisdiction malfunction putting forward insert cross delegate points present.\\n', 'survived': 'false', 'downgraded_to': 'legally unsettling propagation levelled step invalid tax ledgers overrules intent scope overreach seen'}, {'target': 'Any Calculation deviation comma show variance and/or adjustable inference range delimiter', 'checklist_item': 4, 'attack': \"Tax law dates 'Fiscal regulation step' already ruled out fate won't hold, calculation chained bridge CA net zero proven violation RC legal holds not updated further validation halted downgrade suggestion necessary.\\n\", 'downgraded_to': 'Outdated compliance norm meets deadline action rate overrun reporting halt transition much No Lapse Valid Search Extract Kill MatchFeed.'}], 'checked_and_survived': ['Jurisdictional gap legally challenge reached valid interpretable scale term continuity stands proposed clear reform addressed halting next scale fixed completion status underwait confirm comman declaration observed examination fail listed dropped Rule annotation made obsolete closure, bringing stop transitional lag next enforce under no condition beyond discrete factor limits.'], 'limits': []}",
+      "started_utc": "2026-10-21T22:12:04.301988+00:00",
+      "finished_utc": "2026-10-21T22:13:21.362146+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10146,
+        "out_tokens": 594,
+        "retries": 0,
+        "elapsed_s": 77.024,
+        "wall_ms": 77024.1,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    },
+    {
+      "attempt": 2,
+      "error": "node5_adversarial: attacked[] contains 1 malformed entr(y/ies): [(1, \"downgraded_to='contested ' not in ['contested', 'inference', 'insufficient_evidence', 'lacuna', 'open_texture', 'settled'] or absent\")]\nRaw:\n{'attacked': [{'target': 'The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH... and all material facts are disclosed under s.439(8).', 'checklist_item': 3, 'attack': 'Existence depends on absence: No details present regarding TDS (TDS collected on what date and what rate post statement)', 'survived': False, 'downgraded_to': 'lacuna', 'evidence': ''}, {'target': 'The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.', 'checklist_item': 4, 'attack': 'Rule structuring mentions asset as quote digitized currency/goodwill recognized to pay based on its clone(-error forward), contradictions exist between recognition for charge vs subsidization[],damages options', 'survived': False, 'downgraded_to': 'contested ', 'evidence': ''}], 'checked_and_survived': [], 'limits': ['Refrain from assuming trade position with Rate', 'artificial or external disturbances implied', 'multiple fact scopes']}",
+      "started_utc": "2026-10-21T22:13:21.362183+00:00",
+      "finished_utc": "2026-10-21T22:14:01.625438+00:00",
+      "call": {
+        "node": "node5_adversarial",
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "provider": "featherless",
+        "in_tokens": 10146,
+        "out_tokens": 306,
+        "retries": 0,
+        "elapsed_s": 40.249,
+        "wall_ms": 40248.7,
+        "seed": null,
+        "replayed": false,
+        "response_model": "mistralai/Mistral-Large-Instruct-2411",
+        "response_format_sent": true,
+        "json_repair_method": "direct",
+        "json_repaired": false
+      }
+    }
+  ]
+}

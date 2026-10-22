@@ -1,0 +1,48 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:22:50.144075+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10143,
+  "out_tokens": 660,
+  "retries": 0,
+  "elapsed_s": 122.958,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH applies to income from the transfer of virtual digital assets, which are defined in s.2(47A) as not including Indian currency or foreign currency. Since the receipt in question is in INR, it does not fall under the definition of a virtual digital asset. Therefore, s.115BBH does not apply to this receipt.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Section 2(47A): 'virtual digital asset' means\u2014 (a) any information or code or number or token (not being Indian currency or foreign currency), generated through cryptographic means or otherwise, by whatever name called..."
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to properties other than those listed in Sl. Nos. 1 to 6, which are specific types of properties. Since the receipt is in INR and not a property type listed, Rule 57, Table Sl. No. 7 does not apply.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, Table Sl. No. 7: 'Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the condition 'Recipient of service located outside India,' which is listed as absent in the gap list. Therefore, this conclusion cannot be asserted as the condition is not met.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Gap List: 'Recipient of service located outside India,' Item: Recipient of service located outside India. Why absent: The recipient location is given as India\u2026"
+      }
+    ],
+    "checked_and_survived": [
+      "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+      "Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed."
+    ],
+    "limits": []
+  }
+}

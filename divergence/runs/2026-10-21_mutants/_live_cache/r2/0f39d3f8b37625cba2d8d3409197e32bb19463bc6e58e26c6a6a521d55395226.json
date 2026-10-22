@@ -1,0 +1,57 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T23:34:27.158764+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13471,
+  "out_tokens": 828,
+  "retries": 0,
+  "elapsed_s": 98.518,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. [...] No TDS is required as the recipient is outside India.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH is not explicitly verified for the tax year FY 2026-27. The citation mentions it is carried into the Income-tax Act, 2025, but there is no confirmation that it remains unchanged or is still applicable in FY 2026-27.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. [...] No TDS is required as the recipient is outside India.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH specifically applies to the transfer of virtual digital assets. However, the receipt of 2,000 USDC is not explicitly described as a transfer but rather as a receipt. The scope of s.115BBH may notreach this fact pattern.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025"
+      },
+      {
+        "target": "The receipt of 2,000 USDC is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. [...] No TDS is required as the recipient is outside India.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'valuation_date,' which is listed in the 'missing' category. Since the conclusion is asserted despite this dependency, it fails to acknowledge the missing information.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": null
+      },
+      {
+        "target": "The supply meets all conditions for being an export of services, except for the condition regarding the receipt of payment in convertible foreign exchange.",
+        "checklist_item": 2,
+        "attack": "The condition regarding the receipt of payment in convertible foreign exchange is marked as 'no.' However, the explicit definition of 'convertible foreign exchange' needs verification whether it inclusively refers to USDC or other forms specialists regard as directly swappable for fiat currencies. The scope might still be contended for due legal backing for USDC based transaction eligibility criteria.",
+        "survived": false,
+        "downgrade_to": "open texture",
+        "evidence": ""
+      }
+    ],
+    "attacks survived": [
+      "No other items to evaluate"
+    ],
+    "limits": [
+      "Unable to verify the operative status of s.115BBH for FY 2026-27 due to lack of explicit confirmation in the provided citations."
+    ]
+  }
+}

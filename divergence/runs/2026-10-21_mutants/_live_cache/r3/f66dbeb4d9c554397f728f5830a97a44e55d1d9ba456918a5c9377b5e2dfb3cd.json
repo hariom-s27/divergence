@@ -1,0 +1,33 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T04:30:42.680740+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 14249,
+  "out_tokens": 227,
+  "retries": 2,
+  "elapsed_s": 554.096,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 2,
+        "attack": "Rule 57 applies to the valuation of properties as extended under s.92 by Row 7 catch-all capture, placing a mandate upon receiving parties to hold 'value'. Whether USDC constitutes this 'Any Other Property' involves reading down Schedule queries to settle uncertainty budgets beyond \u043a\u043e\u0442\u043e\u0440\u044b\u0435 asked by provisions in this purview ",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "Rule 57, Column D, Row 7: 'The price that such property would ordinarily fetch on sale in the open market on the valuation date.'"
+      }
+    ],
+    "checked_and_survived": [
+      "The supply does not meet all conditions for being an export of services."
+    ],
+    "limits": [
+      "Unable to check the validity of the valuation lattice as it requires deterministic arithmetic verification which is out of scope for this task."
+    ]
+  }
+}

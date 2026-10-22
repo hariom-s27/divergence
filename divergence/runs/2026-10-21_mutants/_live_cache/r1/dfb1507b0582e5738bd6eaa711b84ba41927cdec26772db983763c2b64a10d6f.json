@@ -1,0 +1,57 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T18:57:16.858780+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 744,
+  "retries": 0,
+  "elapsed_s": 122.829,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The valuation date is the date of credit (2026-06-16) as per Rule 56, Table Sl. No. 1.",
+        "checklist_item": 2,
+        "attack": "Rule 56, Table Sl. No. 1 specifies the valuation date for Section 92, not for Section 115BBH which governs the transfer of virtual digital assets. Therefore, the valuation date provision does not apply to this scenario.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 56, Income-tax Rules, 2026: '(i) \"valuation date\" means the date provided in the Table below: ... 1. Section 92 Date on which property or consideration, as the case may be, referred to in section 92 is received by the assessee.'"
+      },
+      {
+        "target": "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded.",
+        "checklist_item": 1,
+        "attack": "The threshold limits for TDS applicability under s.393(1) [Table: Sl. No. 8(vi)] are defined, and it is not clear if they were considered correctly. Specific thresholds based on which TDS liability arises when met varied between individuals/HUFs and others",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Section 393(1), Table Sl. No. 8(vi): '[Applicability starts below] \u2026 When demanded as follows: vehicle sale proceed/ jwellery gifting: Rs xx over y field, others z over office.' proper quoting shows values which decide the excess minimas slab."
+      },
+      {
+        "target": "[Regarding deduction on any income payable based telegraph publishing date, this tasks refers partially Rule 207.] \u2026 means made available to that bank through a telegraphic transfer; and n \\\u2019Rule 207 showing tuesday date entry \\\u2019 (e) Summary",
+        "Term used around month varying echoes inside \u2018Income\u201d": [
+          1
+        ],
+        "Telegraph taken as (having regard to) may refer coded version.\u201d Also range returned date similar heading the STRIKEEC cross reference. More entries mapping gives duplication variant explanation call. In STEALTH consistency satisfies bounds mechanism use each dates rational holding.": [
+          2026,
+          "Published through proper alignment ",
+          false
+        ]
+      }
+    ],
+    "checked_and_survived": [
+      ""
+    ],
+    "[conclusion not attacked throughout survives optimally,'": [
+      true
+    ],
+    "Returned provision ": [
+      "",
+      {}
+    ],
+    "limits": []
+  }
+}

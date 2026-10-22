@@ -1,0 +1,44 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:27:09.866430+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10144,
+  "out_tokens": 531,
+  "retries": 0,
+  "elapsed_s": 74.23,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 2,
+        "attack": "Section 115BBH specifically applies to the 'transfer' of virtual digital assets. However, the term 'transfer' is defined in clause (47) of section 2, which does not cover all types of receipts. If the receipt in question is not a result of a 'transfer' as defined, s.115BBH may not apply.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "the word \"transfer\" as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not."
+      },
+      {
+        "target": "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+        "checklist_item": 2,
+        "attack": "Section 393(1) specifies that TDS is applicable to payments made to residents. The given condition mentions 'residents', but it does not explicitly state that both parties are residents in the particular transaction type in conclusion of TDS applicability. Therefore, assumptions should not lead conclusions rather more facts needs to considerate ",
+        "survived": false,
+        "downgraded_to": "settled",
+        "evidence": "Any sum by way of consideration for transfer of a virtual digital asset' Where payable to resident only"
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.\",",
+        "checklist_item": 2,
+        "attack": "The place of supply basis seems ambiguous. Thats due, is resolved on recipients location directly might not supported or denied with review in references.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Exchange between two residents (India) the process taken with Forex but with existing exchange protocols its happening internally too"
+      }
+    ],
+    "checked_and_survived": []
+  }
+}

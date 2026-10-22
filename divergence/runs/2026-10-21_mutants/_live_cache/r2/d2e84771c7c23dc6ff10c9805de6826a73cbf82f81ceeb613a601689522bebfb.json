@@ -1,0 +1,50 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:12:04.293422+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 813,
+  "retries": 0,
+  "elapsed_s": 121.546,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH does not explicitly state that the open market value method should be used for determining the value of the virtual digital asset. The method of valuation is not specified in the section itself.",
+        "survived": false,
+        "downgraded_to": "inference",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025 does not mention the valuation method to be used."
+      },
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+        "checklist_item": 4,
+        "attack": "The rate source and date for the open market value method are not specified, which is required for the valuation to be compliant with the law.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 206, Income-tax Rules, 2026 specifies the rate of exchange for conversion into rupees of income expressed in foreign currency, but does not address the open market value method for virtual digital assets."
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.",
+        "checklist_item": 2,
+        "attack": "The condition 'bundle missing -- the recipient of service is located outside India' is marked as 'no,' but the reasoning does not explain how the absence of this fact troubles this conclusion rather than just the specific condition.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 2(6), Integrated Goods and Services Tax Act, 2017 defines 'export of services' and includes the condition that the recipient of service is located outside India."
+      }
+    ],
+    "checked_and_survived": [
+      "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)].",
+      "No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8)."
+    ],
+    "limits": [
+      "The exact method for determining the open market value of virtual digital assets is not specified in the provided statutory text."
+    ]
+  }
+}

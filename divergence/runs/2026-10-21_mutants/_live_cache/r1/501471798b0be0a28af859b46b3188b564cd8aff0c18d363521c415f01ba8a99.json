@@ -1,0 +1,56 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:31:21.725992+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10226,
+  "out_tokens": 956,
+  "retries": 0,
+  "elapsed_s": 148.02,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 1,
+        "attack": "The provision cited, Rule 206 of the Income-tax Rules, 2026, is not verified for the tax year FY 2026-27. The rule might have been amended or superseded, making the reference to the telegraphic transfer buying rate on the last day of the tax year incorrect.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "Rule 206, Income-tax Rules, 2026, specifies the rate of exchange for conversion into rupees of income expressed in foreign currency. However, without verification for FY 2026-27, the applicability of this rule is uncertain."
+      },
+      {
+        "target": "The penalty position is governed by s.439(8), requiring a bona fide explanation and disclosure of all material facts.",
+        "checklist_item": 2,
+        "attack": "Section 439(8) of the Income-tax Act, 2025, does not directly govern the penalty position for the classification of income from other sources. The scope of s.439(8) is limited to situations involving under-reported income and does not cover the broader penalty provisions for misclassification of income.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": "Section 439(8) of the Income-tax Act, 2025, specifies conditions for penalties related to under-reported income, which does not include the classification of income from other sources."
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'place of supply,' which is listed as missing. Without this critical information, the assertion that the supply meets all conditions for being an export of services is unreliable.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "The condition regarding the place of supply is marked as 'unknown,' indicating that essential information is missing, which affects the validity of the conclusion."
+      }
+    ],
+    "checked_and_survived": [
+      "The recognition date is the date of credit, which is 17 June 2026 (Rule 56, Table Sl. No. 1).",
+      "The valuation method for foreign currency income is the telegraphic transfer buying rate on the last day of the tax year (31 March 2027) as per Rule 206, Table Sl. No. 3.",
+      "The payer is a non-resident, and the payment is not specifically exempted from TDS. However, if the payer were a resident, TDS would be applicable at 1% (s.393(1), Table Sl. No. 8(vi)).",
+      "The supplier is a resident individual located in India.",
+      "The recipient, Cascade Data Inc, is located outside India.",
+      "The payment of USD 4,000 was received via SWIFT wire transfer, which is convertible foreign exchange.",
+      "There is no indication that the supplier and recipient are establishments of a distinct person."
+    ],
+    "limits": [
+      "Unable to verify the current status of Rule 206 for FY 2026-27 due to lack of access to the latest legislative updates.",
+      "Unable to assess the applicability of s.439(8) beyond under-reported income scenarios due to the limited scope of the provision."
+    ]
+  }
+}

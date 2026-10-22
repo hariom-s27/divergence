@@ -1,0 +1,40 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T23:04:15.848015+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10703,
+  "out_tokens": 504,
+  "retries": 0,
+  "elapsed_s": 74.388,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from other sources, recognized on the date of credit (17 June 2026), valued using the telegraphic transfer buying rate on the last day of the tax year (31 March 2027), and is subject to TDS at 1% if the payer is a resident.",
+        "checklist_item": 2,
+        "attack": "The provision cited for TDS, s.393(1), Table Sl. No. 8(vi), specifies that the TDS rate applies to payments made to residents. However, the reasoning states that the payer is a non-resident. Therefore, s.393(1), Table Sl. No. 8(vi) does not apply to this scenario.",
+        "survived": false,
+        "downgraded_to": "contested",
+        "evidence": "s.393(1), Table Sl. No. 8(vi): 'Where any income or sum... is credited or paid or distributed by the person specified in column C during the tax year, to a resident, the person responsible for paying such income or sum shall deduct income-tax...' (emphasis added)"
+      },
+      {
+        "target": "The supply meets all the conditions for being an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the 'place of supply,' which is listed as missing. Given that the 'place of supply' is a crucial condition for determining if the supply qualifies as an export of services, this conclusion cannot be definitively reached.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": "GAP LIST: 'place of supply' is absent.",
+        "reasoning": "Section 2(6) of the IGST Act, conditions determine each aspect. .citizen Service shall look  and government publication of goods"
+      }
+    ],
+    "checked_and_survived": [
+      "The penalty position is governed by s.439(8), which requires a bona fide explanation"
+    ],
+    "limits": []
+  }
+}

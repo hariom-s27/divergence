@@ -1,0 +1,49 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T21:56:43.690151+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 13662,
+  "out_tokens": 773,
+  "retries": 0,
+  "elapsed_s": 112.222,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt of 5,000 USDC is classified as income from the transfer of a virtual digital asset under s.115BBH, and is recognized on the date of receipt, 2026-06-28. No deduction obligation arises under s.393(1) as the recipient is a resident and the payer is outside India. A disclosed position under s.439(8) requires the taxpayer to offer a bona fide explanation and disclose all material facts.",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH specifically applies to the 'transfer' of virtual digital assets. The term 'transfer' is defined in s.2(47) of the Income-tax Act, 1961, and typically involves a sale or exchange. The receipt of USDC as described does not clearly fall under the definition of 'transfer' as it is not specified that the USDC was sold or exchanged for another asset. Therefore, s.115BBH may not apply to this receipt.",
+        "survived": true,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 115BBH(3): 'For the purposes of this section, the word \"transfer\" as defined in clause (47) of section 2, shall apply to any virtual digital asset, whether capital asset or not.'"
+      },
+      {
+        "target": "The supply does not meet all conditions for being an export of services.",
+        "checklist_item": 1,
+        "attack": "The condition that 'the payment for such service has been received by the supplier of service in convertible foreign exchange or in Indian rupees wherever permitted by the Reserve Bank of India' is incorrectly marked as 'no'. According to s.2(m) of the Foreign Exchange Management Act, 1999, 'foreign currency' means any currency other than Indian currency. Since USDC is not Indian currency, it should be considered foreign currency. However, the specific classification of USDC as 'convertible foreign exchange' needs further clarification based on Reserve Bank of India guidelines.",
+        "survived": true,
+        "downgraded_to": "open_texture",
+        "evidence": "Section 2(m), Foreign Exchange Management Act, 1999: 'foreign currency means any currency other than Indian currency.' Rule 56, Column D, row 7 of Andhra Pradesh Value Added Tax Rules."
+      },
+      {
+        "target": "No provision in the text prescribes a specific method for determining the rupee value of USDC on the valuation date.",
+        "checklist_item": 3,
+        "attack": "This conclusion depends on the missing independent verification of Northbay Systems LLC and the separate note indicating -'\u2018independent verification\u2019 is absent'",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": null
+      }
+    ],
+    "checked_and_survived": [
+      " no such text"
+    ],
+    "limits": [
+      "Could not verify the specific classification of USDC as 'convertible foreign exchange' according to Reserve Bank of India guidelines."
+    ]
+  }
+}

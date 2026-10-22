@@ -1,0 +1,43 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T22:51:13.781645+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10226,
+  "out_tokens": 359,
+  "retries": 0,
+  "elapsed_s": 74.222,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "\"The penalty position is governed by s.439(8)\"",
+        "checklist_item": 1,
+        "attack": "Check page on \"applicability dates\": Integer year check passes incorrectly. Section numbers differ.",
+        "survived": false,
+        "downgraded_to": "lacuna",
+        "evidence": ""
+      },
+      {
+        "target": "\"ological\", Supplementary QEC highlights,\n[SG-25-specific problems] Shading in image block.\nEditor assumes \u00a774A inoper\u2010ative for earlier years:\nHad to cut bait between urgent review and longer review of USLC's purported cross\u2010ref update.",
+        "checklist_item": 2,
+        "attack": "[blank, editor insert only]",
+        "survived": true,
+        "downgraded_to": "insufficient_evidence",
+        "evidence": ""
+      },
+      {
+        "target": "(definitions traced: Rule 56(i)), causality states greatest $\\rightarrow$ struck latest --> reevaluate outcome from scratch.",
+        "checklist_item": 3,
+        "attack": "\n\u21d2 bonafide explanation missing becomes irrele\u2010vant once virtue falls\n\u201cvolti subito\u201d: frontispiece.",
+        "survived": true,
+        "downgraded_to": "open_texture",
+        "evidence": "!"
+      }
+    ]
+  }
+}

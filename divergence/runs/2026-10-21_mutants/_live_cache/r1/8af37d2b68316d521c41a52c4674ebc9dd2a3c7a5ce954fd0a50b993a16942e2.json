@@ -1,0 +1,54 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-21T19:04:05.556794+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 702,
+  "retries": 0,
+  "elapsed_s": 108.855,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH.",
+        "checklist_item": 1,
+        "attack": "The provision s.115BBH might not be current for the tax year FY 2026-27. The statutory text provided does not confirm its applicability for this specific tax year.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "The valuation method is the open market value as per Rule 57, Table Sl. No. 7, since the asset is not specifically listed in earlier rows.",
+        "checklist_item": 2,
+        "attack": "Rule 57, Table Sl. No. 7 applies to properties other than those specifically listed in Sl. Nos. 1 to 6, which are all physical properties or securities. Virtual digital assets do not fall under any of these categories, and thus Rule 57 Sl. No. 7 does not apply.",
+        "survived": false,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 57, Table Sl. No. 7: 'Any other property other than referred to at Sl. Nos. 1 to 6 above.'"
+      },
+      {
+        "target": "Under s.439(8), no penalty applies if the explanation is bona fide and all material facts are disclosed.",
+        "checklist_item": 1,
+        "attack": "The provision s.439(8) is not verified to be current for the tax year FY 2026-27 based on the provided statutory text.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      },
+      {
+        "target": "This supply does not meet the conditions for an export of services.",
+        "checklist_item": 3,
+        "attack": "The conclusion depends on the missing item 'Recipient of service located outside India', which is listed as unobtainable. Therefore, this conclusion cannot be asserted without the necessary information.",
+        "survived": false,
+        "downgraded_to": "insufficient_evidence"
+      }
+    ],
+    "checked_and_survived": [
+      "TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)] because the payer is a resident and the threshold limit is not exceeded."
+    ],
+    "limits": [
+      "Unable to verify the current status of s.393(1) [Table: Sl. No. 8(vi)] for the tax year FY 2026-27 due to lack of explicit confirmation in the provided statutory text."
+    ]
+  }
+}

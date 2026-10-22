@@ -1,0 +1,39 @@
+{
+  "node": "node5_adversarial",
+  "source": "live",
+  "cached_at": "2026-10-22T01:14:40.457419+00:00",
+  "model_key": "adversarial",
+  "provider": "featherless",
+  "model": "mistralai/Mistral-Large-Instruct-2411",
+  "in_tokens": 10146,
+  "out_tokens": 778,
+  "retries": 0,
+  "elapsed_s": 111.985,
+  "seed": null,
+  "response_format_sent": true,
+  "json_repair_method": "direct",
+  "response": {
+    "attacked": [
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+        "checklist_item": 2,
+        "attack": "The provision s.115BBH specifies that the income from the transfer of a virtual digital asset is taxed at 30%, but it does not explicitly mention the valuation method or the date of credit. The opening words of s.115BBH do not cover the specifics of valuation methods or dates, which means the conclusion about the valuation date and method may not be accurate.",
+        "survived": true,
+        "downgraded_to": "inference",
+        "evidence": "Section 115BBH, Income-tax Act, 1961 \u2014 carried into the Income-tax Act, 2025: '(1) Where the total income of an assessee includes any income from the transfer of any virtual digital asset, notwithstanding anything contained in any other provision of this Act, the income-tax payable shall be the aggregate of,\u2014 (a) the amount of income-tax calculated on the income from transfer of such virtual digital asset at the rate of thirty per cent'"
+      },
+      {
+        "target": "The receipt is classified as income from the transfer of a virtual digital asset, taxed at 30% under s.115BBH. The value is determined on the date of credit (2026-06-16) using the open market value method. TDS is applicable at 1% as per s.393(1) [Table: Sl. No. 8(vi)]. No penalty applies if the explanation is bona fide and all material facts are disclosed under s.439(8).",
+        "checklist_item": 4,
+        "attack": "The date used for the valuation (2026-06-16) does not correspond to the specified date for determining the value in rupees of income expressed in foreign currency according to Rule 206. The specified date for income chargeable under the head 'Income from other sources' is the last day of the tax year of the assessee, which is not aligned with the date of credit.",
+        "survived": true,
+        "downgraded_to": "open_texture",
+        "evidence": "Rule 206(2)(b)(i): 'Types of Income \u2014 Income chargeable under the heads 'Income from house property', 'Profits and gains of business or profession' (not being income referred to in Sl.No. 4), and 'Income from other sources' (excluding dividends and interest on securities). \u2014 Specified Date \u2014 Last day of the tax year of the assessee.'"
+      }
+    ],
+    "checked_and_survived": [
+      "This supply does not meet the conditions for an export of services."
+    ],
+    "limits": []
+  }
+}
