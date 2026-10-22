@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 36 decision documents (D41–D76) in one chronological read — D41–D74 summarised, D75–D76 linked by title — so you don't have to open thirty-six separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 37 decision documents (D41–D77) in one chronological read — D41–D74 summarised, D75–D77 linked by title — so you don't have to open thirty-seven separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -138,11 +138,11 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Thirty-six dated documents (D41–D76). D41 predates D42–D58 chronologically (it's been
+Thirty-seven dated documents (D41–D77). D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
-D41–D74 are summarised below; D75 and D76 are listed by title, with links
+D41–D74 are summarised below; D75–D77 are listed by title, with links
 to their full text.
 
 ## [D41](DECISION-D41.md) — the adversarial checker must be a different model family from the resolvers
@@ -745,6 +745,9 @@ example, not hand-rounded.
 ## [D76](DECISION-D76.md) — true factored verification in node 5 (S6), and passive JSON-mode/repair telemetry in provenance() (S8)
 23 August 2026. Not summarised here yet; full record: [`DECISION-D76.md`](DECISION-D76.md).
 
+## [D77](DECISION-D77.md) — the live node-5 mutation sweep (R=3): pre-registered, amended twice, human-audited
+22 October 2026. Not summarised here yet; full record: [`DECISION-D77.md`](DECISION-D77.md).
+
 ---
 
 ## What the decisions add up to
@@ -760,4 +763,4 @@ own scope. The project's own central claim — that a confident answer
 resting on ground that quietly moved is worse than no answer, because you
 cannot tell it apart from a real one — is what these fourteen documents
 (D42–D55, the full set when this section was written on 21 August; there
-are now 36, D41–D76) are, applied to the project's own construction of itself.
+are now 37, D41–D77) are, applied to the project's own construction of itself.

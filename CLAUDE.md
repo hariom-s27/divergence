@@ -8,7 +8,7 @@ If a request conflicts with a rule here, stop and ask the owner.
 - Root: README.md (overview), SECURITY.md, design-process/ (early planning notes),
   tests/ (pytest), .github/workflows/ (CI).
 - divergence/: the code package and its docs. Start with divergence/START-HERE.md.
-  - Decision records: divergence/DECISION-D41.md … DECISION-D76.md (36 files).
+  - Decision records: divergence/DECISION-D41.md … DECISION-D77.md (37 files).
   - Frozen: divergence/corpus/, divergence/replay_cache/, divergence/runs/.
 - Reports and audit notes go OUTSIDE the repo, in D:\sem_iitk\sem9\_audit\. Never in the repo.
 

@@ -449,9 +449,9 @@ checked independently rather than assumed from a title:
 
 ## 6. Where the deeper material lives
 
-- **All 36 decision documents (D41–D76), the mental model, and the full run
+- **All 37 decision documents (D41–D77), the mental model, and the full run
   guide, in one chronological file:** [`START-HERE.md`](START-HERE.md)
-  (D41–D74 summarised, D75–D76 linked by title)
+  (D41–D74 summarised, D75–D77 linked by title)
 - Full node-by-node rationale with predicted failure rates, written before
   any run: [`architecture.md`](architecture.md)
 - Plain-language run-through of an actual invocation:
@@ -466,4 +466,4 @@ checked independently rather than assumed from a title:
   checked against its own abstract before being cited:
   [`prior-art/READING-CARDS.md`](prior-art/READING-CARDS.md)
 - Every individually dated design decision:
-  `DECISION-D41.md` to `DECISION-D76.md` (36 files)
+  `DECISION-D41.md` to `DECISION-D77.md` (37 files)
