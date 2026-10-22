@@ -77,6 +77,18 @@ binom_ci.py) — no new third-party dependency.
     python mutate.py                  # the real 42-mutant sweep, needs a key
     python mutate.py --self-test       # offline, no key needed
     python mutate.py --seed 7          # a different, still-deterministic 42
+
+P03 additions (all opt-in; with none of these flags every path, file
+name and printout is what it was):
+    --out-dir DIR   write <case>_<OP>_r<rep>.json into DIR instead; refuses
+                    to run live unless DIVERGENCE_REPLAY_CACHE_DIR points the
+                    replay cache away from the frozen replay_cache/
+    --cases D1,C2   only these cases       --reps N   N repetitions each
+    --nulls         add one NULL (identity) mutant per case: the baseline
+                    false-flag rate and the SPECIFIC placebo rate
+Every row now also carries the SPECIFIC verdict (caught_specific, see
+build_spec()/match_specific()), a noop flag, and the call's own
+response_model/tokens/latency.
 """
 
 import os
@@ -86,12 +98,13 @@ import copy
 import re
 import random
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import llm_call                    # noqa: E402
 from llm_call import LLMError      # noqa: E402
+import replay_cache                # noqa: E402
 import node5_adversarial           # noqa: E402
 import scope_enforcer              # noqa: E402
 import citation_matcher            # noqa: E402
@@ -295,50 +308,374 @@ OPERATORS = [
 ]
 
 
+def op_null(regimes, valuation, facts, rng):
+    """P03: the identity transform, run LIVE -- what node 5 says about the
+    unmutated case. Never in OPERATORS: it is the baseline the other seven
+    are read against, not an eighth defect."""
+    return copy.deepcopy(regimes), copy.deepcopy(valuation), "identity (no operator) -- null mutant"
+
+
 def _caught(attacked):
     return any(a.get("survived") is False for a in attacked)
 
 
-def run_live(seed, model="adversarial"):
-    os.makedirs(OUT_DIR, exist_ok=True)
-    rows = []
-    for case_id in CASE_FILES:
-        facts, tax_year, missing, regimes, valuation = load_case(case_id)
-        for op_name, op_fn in OPERATORS:
-            rng = random.Random(f"{seed}-{case_id}-{op_name}")  # str seed, not a
-            # tuple: random.seed() hashes str/bytes deterministically via its own
-            # conversion, but falls back to the built-in hash() for any other
-            # type -- and hash() of a str is salted per-process by default
-            # (PYTHONHASHSEED), which would have made "--seed 1337" produce a
-            # DIFFERENT 42 mutants on every separate run. Checked, not assumed.
-            m_regimes, m_valuation, note = op_fn(regimes, valuation, facts, rng)
-            try:
-                attacked, survived, limits, meta = node5_adversarial.check(
-                    m_regimes, missing, m_valuation, tax_year, model=model)
-                caught, error = _caught(attacked), None
-            except LLMError as e:
-                attacked, survived, limits = [], [], []
-                caught, error = None, str(e)
-            row = {
-                "case": case_id, "operator": op_name, "seed": seed, "note": note,
-                "mutated_regimes": m_regimes, "mutated_valuation": m_valuation,
-                "attacked": attacked, "checked_and_survived": survived, "limits": limits,
-                "caught": caught, "error": error,
-            }
-            rows.append(row)
-            out_path = os.path.join(OUT_DIR, f"{case_id}_{op_name}.json")
-            with open(out_path, "w", encoding="utf-8") as f:
-                json.dump(row, f, indent=2)
+# ─────────────────────────────────────────────────────────────
+# SPECIFIC kill rule (P03 -- the primary score; _caught() above stays as
+# the secondary ANY-ATTACK score). Each mutant's match spec is derived
+# from the planted change itself (original vs mutated data, never from
+# node 5's answer), so it is fixed before the call is made. A mutant is
+# caught_specific only if ONE landed attack (survived=False) points at
+# the planted change: that attack's own target+attack text, normalised by
+# _norm(), contains at least one term from EVERY group in spec["groups"].
+# OVERCLAIM has no new string to look for, so it uses a structural rule
+# instead (see match_specific()). Plain string matching: it undercounts a
+# paraphrased hit, and it can credit a term node 5 used for some other
+# reason -- the null mutants' placebo rate (these same specs run against
+# the unmutated case's own critique) measures exactly that second error.
+# ─────────────────────────────────────────────────────────────
+
+_MONTHS = ["january", "february", "march", "april", "may", "june", "july",
+           "august", "september", "october", "november", "december"]
+
+# Short names a critique would plausibly use for each _ALT_SOURCES entry.
+_ALT_SOURCE_ALIASES = {
+    "RBI Reference Rate": ["rbi reference rate", "rbi"],
+    "Binance USDC/USDT close": ["binance"],
+    "SBI Forex Card Rates sheet, USD/INR TT BUY": ["tt buy"],
+}
+
+
+def _norm(text):
+    t = (text or "").lower().replace("_", " ")
+    t = re.sub(r"\bsection\s+", "s.", t)
+    t = re.sub(r"\bs\.\s+", "s.", t)
+    t = re.sub(r"(?<=\d),(?=\d)", "", t)   # 5,19,295.25 -> 519295.25
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def _term_re(term):
+    return re.compile(r"(?<![a-z0-9])" + re.escape(_norm(term)) + r"(?![a-z0-9])")
+
+
+def _dedupe(items):
+    out = []
+    for x in items:
+        if x and x not in out:
+            out.append(x)
+    return out
+
+
+def _ordinal(n):
+    suffix = "th" if 11 <= n % 100 <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def _date_terms(iso):
+    try:
+        d = datetime.strptime(iso, "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return _dedupe([iso])
+    mon, y = _MONTHS[d.month - 1], d.year
+    return _dedupe([
+        iso, f"{d.day} {mon} {y}", f"{d.day:02d} {mon} {y}", f"{_ordinal(d.day)} {mon} {y}",
+        f"{mon} {d.day}, {y}", f"{mon} {d.day} {y}", f"{d.day} {mon[:3]} {y}", f"{mon[:3]} {d.day}, {y}",
+        d.strftime("%d-%m-%Y"), d.strftime("%d/%m/%Y"), d.strftime("%d.%m.%Y"),
+    ])
+
+
+def _num_terms(v):
+    if not isinstance(v, (int, float)):
+        return []
+    return _dedupe([f"{v:.2f}", str(v), str(int(round(v))), str(int(v))])
+
+
+def _cite_terms(before, after):
+    """The nudged number as it now reads: the full new provision, the
+    'Section N'/'s.N'/'Rule N' form, and the bare token when it is more
+    than digits (3(6), 116BBH) -- a bare '57' would match far too much."""
+    k = next((i for i, (x, y) in enumerate(zip(before, after)) if x != y), None)
+    if k is None:
+        return []
+    s = k
+    while s > 0 and after[s - 1].isdigit():
+        s -= 1
+    e = k
+    while e < len(after) and after[e] not in " ,;:":
+        e += 1
+    token = after[s:e]
+    terms = [after]
+    m = re.search(r"(s\.|section|rule)\s*$", after[:s], re.I)
+    if m:
+        terms.append(f"{m.group(1)} {token}")
+    if not token.isdigit():
+        terms.append(token)
+    return _dedupe(terms)
+
+
+def _first_diff(a, b):
+    """Index of the first element that differs between two lists
+    (len(b) if b is a strict prefix of a), or None if they are equal."""
+    for i, (x, y) in enumerate(zip(a, b)):
+        if x != y:
+            return i
+    return None if len(a) == len(b) else min(len(a), len(b))
+
+
+def build_spec(op_name, regimes, valuation, m_regimes, m_valuation):
+    """Pre-registered SPECIFIC match spec for one mutant, from the planted
+    change alone. Returns {"operator", "kind", "groups", ...}; an empty
+    groups list can never match."""
+    spec = {"operator": op_name, "kind": "terms", "groups": []}
+    methods = valuation.get("methods") or []
+    m_methods = m_valuation.get("methods") or []
+    if op_name == "CITE_SWAP":
+        i = _first_diff(regimes, m_regimes)
+        if i is not None:
+            before = (regimes[i].get("citation") or {}).get("provision", "")
+            after = (m_regimes[i].get("citation") or {}).get("provision", "")
+            spec["groups"] = [_cite_terms(before, after)]
+    elif op_name in ("DATE_SHIFT", "RATE_SUB", "LABEL_MISMATCH", "ARITH_CORRUPT"):
+        i = _first_diff(methods, m_methods)
+        if i is not None:
+            m = m_methods[i]
+            if op_name == "DATE_SHIFT":
+                terms = _date_terms(m.get("date_used", ""))
+            elif op_name == "RATE_SUB":
+                name = (m.get("source") or {}).get("name", "")
+                terms = [name] + _ALT_SOURCE_ALIASES.get(name, []) + ["swapped"]
+            elif op_name == "LABEL_MISMATCH":
+                terms = [m.get("label", "")]
+            else:
+                terms = _num_terms(m.get("inr_value"))
+            spec["groups"] = [_dedupe(terms)]
+    elif op_name == "SILENT_OMIT":
+        ub = valuation.get("uncertainty_budget") or []
+        m_ub = m_valuation.get("uncertainty_budget") or []
+        if len(m_ub) < len(ub):
+            removed = ub[_first_diff(ub, m_ub)].get("source", "")
+        else:
+            i = _first_diff(methods, m_methods)
+            removed = methods[i].get("label", "") if i is not None else ""
+        spec["groups"] = [_dedupe([removed])]
+    elif op_name == "OVERCLAIM":
+        i = _first_diff(regimes, m_regimes)
+        if i is not None:
+            spec.update(kind="overclaim", regime_index=i, regime=regimes[i].get("regime", ""),
+                        groups=[["settled"]])
+    return spec
+
+
+def _target_regime_index(target, regimes):
+    """Which regime an attack's free-text target points at -- the same
+    word-overlap rule and thresholds as node5_adversarial's own
+    _match_target_certainty() (best >= 0.5, and clear of the second-best
+    by more than 0.15), returning the index instead of the certainty.
+    None when ambiguous."""
+    t_words = node5_adversarial._words(target or "")
+    if not t_words:
+        return None
+    scores = []
+    for i, r in enumerate(regimes):
+        o_words = node5_adversarial._words(r.get("outcome") or "")
+        if o_words:
+            scores.append((len(t_words & o_words) / len(t_words), i))
+    scores.sort(key=lambda x: -x[0])
+    if not scores or scores[0][0] < 0.5:
+        return None
+    if len(scores) > 1 and scores[1][0] >= scores[0][0] - 0.15:
+        return None
+    return scores[0][1]
+
+
+def match_specific(attacked, spec, regimes):
+    """{"hit": bool, "attack_index": int|None, "excerpt": str|None}.
+    Only landed attacks count. "terms": every group needs one matching
+    term in the same attack. "overclaim": the attack is aimed at the
+    overclaimed regime (its target matches that regime, or the text names
+    it) AND it either says "settled" or proposes a downgrade. The excerpt
+    is the normalised text, <=200 chars around the first match."""
+    miss = {"hit": False, "attack_index": None, "excerpt": None}
+    if not spec or not spec.get("groups"):
+        return miss
+    for idx, a in enumerate(attacked):
+        if a.get("survived") is not False:
+            continue
+        text = _norm(f"{a.get('target', '')} || {a.get('attack', '')}")
+        if spec["kind"] == "overclaim":
+            aimed = (_target_regime_index(a.get("target"), regimes) == spec["regime_index"]
+                     or _term_re(spec["regime"]).search(text) is not None)
+            m = _term_re("settled").search(text)
+            if aimed and (m is not None or a.get("downgraded_to")):
+                start = m.start() if m else 0
+                return {"hit": True, "attack_index": idx, "excerpt": text[max(0, start - 80):][:200]}
+            continue
+        first = None
+        for group in spec["groups"]:
+            m = next((mm for mm in (_term_re(t).search(text) for t in group) if mm), None)
+            if m is None:
+                break
+            first = first or m
+        else:
+            return {"hit": True, "attack_index": idx, "excerpt": text[max(0, first.start() - 80):][:200]}
+    return miss
+
+
+def case_specs(case_id, case_data, seed):
+    """{op_name: spec} for this case's real (non-no-op) mutants. A no-op
+    mutant (the operator changed nothing -- DATE_SHIFT reset onto the date
+    it already had) is left out: nothing was planted, nothing to match."""
+    facts, _tax_year, _missing, regimes, valuation = case_data
+    specs = {}
+    for op_name, op_fn in OPERATORS:
+        m_r, m_v, _note = op_fn(regimes, valuation, facts, random.Random(f"{seed}-{case_id}-{op_name}"))
+        if m_r == regimes and m_v == valuation:
+            continue
+        specs[op_name] = build_spec(op_name, regimes, valuation, m_r, m_v)
+    return specs
+
+
+def _landed_excerpt(attacked):
+    for a in attacked:
+        if a.get("survived") is False:
+            return f"{a.get('target', '')} || {a.get('attack', '')}"[:200]
+    return None
+
+
+def _is_shape_error(e):
+    """node5_adversarial's own output-contract check (_validate_attack_shape)
+    raises "node5_adversarial: ..."; call_json's transport/JSON failures
+    raise "[node5_adversarial] ..." -- only the first kind is retried."""
+    return str(e).startswith(f"{node5_adversarial.NODE_NAME}:")
+
+
+def _attempt(m_regimes, missing, m_valuation, tax_year, model):
+    llm_call.reset_provenance()
+    started = datetime.now(timezone.utc).isoformat()
+    try:
+        attacked, survived, limits, _meta = node5_adversarial.check(
+            m_regimes, missing, m_valuation, tax_year, model=model)
+        error = None
+    except LLMError as e:
+        attacked, survived, limits, error = [], [], [], e
+    call = dict(llm_call._CALLS[-1]) if llm_call._CALLS else None
+    return {"attacked": attacked, "survived": survived, "limits": limits, "error": error,
+            "call": call, "started_utc": started,
+            "finished_utc": datetime.now(timezone.utc).isoformat()}
+
+
+def run_one(case_id, op_name, op_fn, case_data, specs, seed, model, out_dir, rep=1, tag_rep=False):
+    facts, tax_year, missing, regimes, valuation = case_data
+    rng = random.Random(f"{seed}-{case_id}-{op_name}")  # str seed, not a
+    # tuple: random.seed() hashes str/bytes deterministically via its own
+    # conversion, but falls back to the built-in hash() for any other
+    # type -- and hash() of a str is salted per-process by default
+    # (PYTHONHASHSEED), which would have made "--seed 1337" produce a
+    # DIFFERENT 42 mutants on every separate run. Checked, not assumed.
+    # Independent of rep on purpose: every repetition is the same mutant.
+    m_regimes, m_valuation, note = op_fn(regimes, valuation, facts, rng)
+    is_null = op_name == "NULL"
+    noop = not is_null and op_name not in specs
+    spec = specs.get(op_name)
+    out_path = os.path.join(out_dir, f"{case_id}_{op_name}" + (f"_r{rep}" if tag_rep else "") + ".json")
+    if os.path.exists(out_path):
+        # Resumable, never overwriting: a call already on disk is not made again.
+        row = json.load(open(out_path, encoding="utf-8"))
+        row["_skipped_existing"] = True
+        return row
+    # P03: one counted retry, identical request, only when node 5's own
+    # output-contract check rejected the first answer. Both attempts are kept.
+    attempts = [_attempt(m_regimes, missing, m_valuation, tax_year, model)]
+    if attempts[0]["error"] is not None and _is_shape_error(attempts[0]["error"]):
+        attempts.append(_attempt(m_regimes, missing, m_valuation, tax_year, model))
+    final = attempts[-1]
+    attacked, survived, limits = final["attacked"], final["survived"], final["limits"]
+    error = None if final["error"] is None else str(final["error"])
+    caught = None if error is not None else _caught(attacked)
+    started, finished, call = attempts[0]["started_utc"], final["finished_utc"], final["call"]
+    specific = None
+    if error is None and spec is not None:
+        specific = match_specific(attacked, spec, m_regimes)
+    placebo = None
+    if is_null and error is None:
+        placebo = {op: match_specific(attacked, s, regimes) for op, s in specs.items()}
+    row = {
+        "case": case_id, "operator": op_name, "seed": seed, "rep": rep, "note": note,
+        "noop": noop,
+        "mutated_regimes": m_regimes, "mutated_valuation": m_valuation,
+        "attacked": attacked, "checked_and_survived": survived, "limits": limits,
+        "caught": caught, "error": error,
+        "any_attack_excerpt": _landed_excerpt(attacked),
+        "specific_spec": spec,
+        "caught_specific": None if specific is None else specific["hit"],
+        "specific_match": specific,
+        "placebo_specific": placebo,
+        "started_utc": started, "finished_utc": finished,
+        "response_model": (call or {}).get("response_model"),
+        "requested_model": (call or {}).get("model"),
+        "in_tokens": (call or {}).get("in_tokens"), "out_tokens": (call or {}).get("out_tokens"),
+        "latency_s": (call or {}).get("elapsed_s"),
+        "call": call,
+        "temperature_sent": llm_call.temperature(),   # None = not sent (model default)
+        "first_attempt_error": None if attempts[0]["error"] is None else str(attempts[0]["error"]),
+        "schema_retried": len(attempts) > 1,
+        "attempts": [{"attempt": i + 1,
+                      "error": None if a["error"] is None else str(a["error"]),
+                      "started_utc": a["started_utc"], "finished_utc": a["finished_utc"],
+                      "call": a["call"]} for i, a in enumerate(attempts)],
+    }
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(row, f, indent=2)
+    return row
+
+
+def run_live(seed, model="adversarial", out_dir=OUT_DIR, cases=None, reps=1, nulls=False,
+             tag_rep=False, per_rep_cache=False, max_error_rate=None):
+    """Loops rep -> case -> operator, so a stopped run has whole repetitions
+    first. per_rep_cache: rep n records into <CACHE_DIR>/r<n>/ (live mode
+    never reads the cache, so this only keeps each rep's recordings apart).
+    max_error_rate: stop as soon as after-retry ERRORs exceed that share of
+    ALL planned calls -- i.e. only once the final rate is certain to."""
+    os.makedirs(out_dir, exist_ok=True)
+    ops = OPERATORS + ([("NULL", op_null)] if nulls else [])
+    cases = cases or list(CASE_FILES)
+    case_data = {c: load_case(c) for c in cases}
+    specs = {c: case_specs(c, case_data[c], seed) for c in cases}
+    base_cache = replay_cache.CACHE_DIR
+    total = reps * len(cases) * len(ops)
+    rows, errors = [], 0
+    for rep in range(1, reps + 1):
+        if per_rep_cache:
+            replay_cache.CACHE_DIR = os.path.join(base_cache, f"r{rep}")
+        for case_id in cases:
+            for op_name, op_fn in ops:
+                row = run_one(case_id, op_name, op_fn, case_data[case_id], specs[case_id], seed,
+                              model, out_dir, rep=rep, tag_rep=tag_rep)
+                rows.append(row)
+                errors += row["error"] is not None
+                print(f"  [{len(rows)}/{total}] r{rep} {case_id} {op_name:<15} "
+                      f"{'skipped (exists)' if row.get('_skipped_existing') else 'done'}  "
+                      f"specific={row.get('caught_specific')} any={row['caught']} "
+                      f"retried={row.get('schema_retried')} error={row['error'] is not None} "
+                      f"latency={row.get('latency_s')}s  errors_so_far={errors}", flush=True)
+                if max_error_rate is not None and errors > max_error_rate * total:
+                    replay_cache.CACHE_DIR = base_cache
+                    die(f"after-retry ERRORs {errors} > {max_error_rate:.0%} of {total} planned "
+                        f"calls -- stopping (re-run the same command to resume)")
+    replay_cache.CACHE_DIR = base_cache
     return rows
 
 
-def report(rows):
+def report(rows, out_dir=OUT_DIR):
     print("\n" + "=" * 92)
     print("  MUTATE — node5_adversarial.py mutation score (7 operators x 6 cases = 42 mutants)")
     print("=" * 92)
 
     errored = [r for r in rows if r["error"] is not None]
-    scored = [r for r in rows if r["error"] is None]
+    # P03: NULL rows are the baseline and no-op mutants planted nothing --
+    # neither is a defect, so neither is in any denominator.
+    scored = [r for r in rows if r["error"] is None and r["operator"] != "NULL" and not r.get("noop")]
+    nulls = [r for r in rows if r["error"] is None and r["operator"] == "NULL"]
+    noops = [r for r in rows if r.get("noop")]
 
     by_op = {}
     for row in scored:
@@ -351,11 +688,15 @@ def report(rows):
               else f"\n  {op_name}  --  0/0 scored (all errored)")
         for r in op_rows:
             mark = "[CAUGHT]" if r["caught"] else "[MISSED]"
-            print(f"    {mark}  {r['case']:<4} {r['note']}")
+            spec_mark = "specific=Y" if r.get("caught_specific") else "specific=N"
+            print(f"    {mark}  {spec_mark}  {r['case']:<4} {r['note']}")
+    if noops:
+        print(f"\n  {len(noops)} no-op mutant(s) -- operator changed nothing, excluded from every "
+              f"denominator: " + ", ".join(f"{r['case']}/{r['operator']}" for r in noops))
 
     if errored:
         print(f"\n  {len(errored)} mutant(s) errored before a verdict (full detail in "
-              f"runs/mutants/) -- excluded from the score below, not counted either way:")
+              f"{os.path.relpath(out_dir)}/) -- excluded from the score below, not counted either way:")
         for r in errored:
             print(f"    {r['case']:<4} {r['operator']:<16} {r['error'].splitlines()[0]}")
 
@@ -371,6 +712,16 @@ def report(rows):
               "attacked[] -- not a claim node 5 named the specific corrupted field. Per-operator "
               "breakdown above is the real result; this total is not, any more than "
               "mutation_corpus.py's is.")
+        ks = sum(1 for r in scored if r.get("caught_specific"))
+        lo, hi = binom_ci.clopper_pearson(ks, n)
+        print(f"  SPECIFIC: {ks}/{n} caught = {ks / n:.1%}   95% Clopper-Pearson CI: [{lo:.1%}, {hi:.1%}]"
+              f"   (a landed attack that points at the planted change -- build_spec())")
+    if nulls:
+        kf = sum(1 for r in nulls if r["caught"])
+        pairs = [v for r in nulls for v in (r.get("placebo_specific") or {}).values()]
+        kp = sum(1 for v in pairs if v["hit"])
+        print(f"  NULLS: {kf}/{len(nulls)} flagged by ANY-ATTACK; SPECIFIC placebo {kp}/{len(pairs)} "
+              f"(null critique vs each real operator's own terms)")
     print("=" * 92 + "\n")
 
 
@@ -459,10 +810,27 @@ def main():
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--model", default="adversarial")
+    ap.add_argument("--out-dir", default=None)
+    ap.add_argument("--cases", default=None, help="comma list, e.g. D1")
+    ap.add_argument("--reps", type=int, default=1)
+    ap.add_argument("--nulls", action="store_true")
+    ap.add_argument("--per-rep-cache", action="store_true",
+                    help="record rep n's live responses into <replay cache dir>/r<n>/")
+    ap.add_argument("--max-error-rate", type=float, default=None,
+                    help="stop once after-retry ERRORs exceed this share of all planned calls")
     a = ap.parse_args()
 
     if a.self_test:
         sys.exit(0 if self_test() else 1)
+
+    cases = a.cases.split(",") if a.cases else None
+    for c in cases or []:
+        if c not in CASE_FILES:
+            die(f"unknown case {c!r}; known: {', '.join(CASE_FILES)}")
+    if a.out_dir and not replay_cache.is_replay_mode() and \
+            os.path.normcase(os.path.abspath(replay_cache.CACHE_DIR)) == \
+            os.path.normcase(os.path.join(HERE, "replay_cache")):
+        die("set DIVERGENCE_REPLAY_CACHE_DIR -- a live run must not record into the frozen cache")
 
     try:
         llm_call.provider_name()
@@ -470,10 +838,13 @@ def main():
         print("FAIL  " + str(e))
         sys.exit(1)
 
+    out_dir = a.out_dir or OUT_DIR
     print(f"  provider={llm_call.provider_display()} model={llm_call.model_display(a.model)} seed={a.seed}")
-    rows = run_live(a.seed, model=a.model)
-    report(rows)
-    print(f"  42 mutants written -> {os.path.relpath(OUT_DIR)}/\n")
+    rows = run_live(a.seed, model=a.model, out_dir=out_dir, cases=cases, reps=a.reps,
+                    nulls=a.nulls, tag_rep=bool(a.out_dir), per_rep_cache=a.per_rep_cache,
+                    max_error_rate=a.max_error_rate)
+    report(rows, out_dir=out_dir)
+    print(f"  {len(rows)} mutants written -> {os.path.relpath(out_dir)}/\n")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,9 @@ secrets.*
 **/*apikey*
 
 # ---- run output ----
-runs/
+runs/*
+!runs/2026-10-21_mutants/
+*/**/runs/
 cache/
 __pycache__/
 *.pyc

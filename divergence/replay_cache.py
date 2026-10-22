@@ -49,7 +49,8 @@ import hashlib
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE_DIR = os.path.join(HERE, "replay_cache")
+# P03: a live run that must not record into the frozen cache points this elsewhere.
+CACHE_DIR = os.environ.get("DIVERGENCE_REPLAY_CACHE_DIR", "").strip() or os.path.join(HERE, "replay_cache")
 
 
 def is_replay_mode():

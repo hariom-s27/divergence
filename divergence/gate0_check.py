@@ -200,6 +200,9 @@ STALE = {r"43,?633": "43,633", r"9\.27": "9.27%", r"41,?150": "41,150",
          r"8\.5\s*%": "8.5%", r"44,?400": "44,400", r"9\.45": "9.45%",
          r"8\.7\s*percent|8\.7\s*%": "8.7%", r"4,?70,?517": "4,70,517",
          r"44,?720": "44,720", r"9\.515": "9.515%"}
+# Left boundary: a retired figure is never the tail of a longer number.
+# Without it "8.5%" matched the CI bound "38.5%" (P05, mutation-sweep summary).
+STALE = {r"(?<![\d.])(?:" + p + ")": l for p, l in STALE.items()}
 
 
 def _is_allowed_stale_context(line: str, label: str) -> bool:

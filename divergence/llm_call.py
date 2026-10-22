@@ -142,9 +142,11 @@ def provider_name():
         if prov == DEFAULT_PROVIDER:
             raise LLMError(
                 "FEATHERLESS_API_KEY is not set in this shell.\n"
-                "  PowerShell : $env:FEATHERLESS_API_KEY = \"rc_...\"\n"
-                "  bash/zsh   : export FEATHERLESS_API_KEY=\"rc_...\"\n"
-                "The key belongs in the shell, never in a file in this repo.\n"
+                "  Set FEATHERLESS_API_KEY once as a Windows user environment\n"
+                "  variable via System Properties -> Environment Variables;\n"
+                "  never type it into a command. Check with\n"
+                "  [bool]$env:FEATHERLESS_API_KEY in a new shell.\n"
+                "The key never goes in a file in this repo.\n"
                 "\n"
                 "This does NOT fall back to Anthropic on purpose (D44): a run\n"
                 "that silently switched provider would put a Claude-generated\n"
@@ -476,6 +478,9 @@ def _classify(e, model):
     return True, None          # unknown/transport -> worth one more go
 
 
+_LAST_RESPONSE_MODEL = None   # P03: the response's own `model` field, last live call
+
+
 def _raw_call(prov, model, system, messages, max_tokens, json_mode):
     """Returns (text, in_tokens, out_tokens, seed_used, response_format_sent).
 
@@ -494,6 +499,7 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
     "honoured" or "silently ignored." capability_probe.py's own controlled
     A/B (S8/D68) is what actually distinguishes those two; this field is
     the passive, every-real-call signal, not a replacement for that probe."""
+    global _LAST_RESPONSE_MODEL
     c = client(prov)
 
     if PROVIDERS[prov]["kind"] == "openai":
@@ -530,6 +536,7 @@ def _raw_call(prov, model, system, messages, max_tokens, json_mode):
             else:
                 raise
         text = r.choices[0].message.content
+        _LAST_RESPONSE_MODEL = getattr(r, "model", None)
         u = getattr(r, "usage", None)
         return (text, getattr(u, "prompt_tokens", 0) or 0,
                 getattr(u, "completion_tokens", 0) or 0, seed_used, response_format_sent)
@@ -686,6 +693,7 @@ def call_json(system, user_content, model_key, max_tokens=4096, node_name="node"
                        "in_tokens": tin, "out_tokens": tout, "retries": retries,
                        "elapsed_s": elapsed, "wall_ms": round(delta * 1000, 1),
                        "seed": seed_used, "replayed": False,
+                       "response_model": _LAST_RESPONSE_MODEL,
                        "response_format_sent": response_format_sent,
                        "json_repair_method": repair_method,
                        "json_repaired": repair_method != "direct"})
