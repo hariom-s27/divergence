@@ -92,3 +92,10 @@ def test_gate0_stale_figures_need_a_left_boundary():
     for i, (text, label) in enumerate(_BOUNDARY_PROBE, 1):
         if label is None:
             assert i not in listed, f"{text!r} was flagged"
+
+
+def test_gate0_exits_zero_on_real_repo():
+    repo_dir = Path(__file__).resolve().parents[1] / "divergence"
+    result = _run_gate0(repo_dir)
+    assert result.returncode == 0, result.stdout[-3000:]
+    assert "GATE 0 CLEAR" in result.stdout
