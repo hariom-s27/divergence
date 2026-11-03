@@ -16,5 +16,5 @@
 
 openai==2.30.0
 anthropic==0.97.0
-pypdf==6.21.1          # node1_extract.py: text-extracts a --file PDF (no native PDF block over OpenAI-compat)
+pypdf==6.21.4          # node1_extract.py: text-extracts a --file PDF (no native PDF block over OpenAI-compat)
 jsonschema==4.26.0     # optional: run_pipeline.py falls back to a structural check without it
