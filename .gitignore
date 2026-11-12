@@ -15,3 +15,5 @@ __pycache__/
 # See divergence/.gitignore for the keys/secrets rules that matter most —
 # git honours nested .gitignore files, so those still apply under divergence/.
 .claude/
+# D78: statute bodies kept local (storage_mode local_only); never commit
+divergence/statutes/_local_text/
