@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "record_id": "act:2025:sFAKE8:v1",
+  "source_kind": "act",
+  "act": "2025",
+  "unit": "sFAKE8",
+  "section": "FAKE8",
+  "heading": "FAKE heading eight",
+  "chapter": null,
+  "version_id": 1,
+  "supersedes": null,
+  "status": "in_force",
+  "in_force_from": "2026-04-01",
+  "in_force_to": null,
+  "applies_from_tax_year": "2026-27",
+  "applies_to_tax_year": null,
+  "retrospective_from": null,
+  "enacted_on": "2025-08-01",
+  "amended_by": [],
+  "modified_by": [],
+  "text_current_as_of": "2026-09-01",
+  "outstanding_effects": [
+    {
+      "ref": "FAKE Amendment Act (pending)",
+      "kind": "amendment_act",
+      "affects_from": "2026-10-01",
+      "note": "FAKE pending change, not yet applied to the stored text."
+    }
+  ],
+  "source_url": "https://example.invalid/fake/8",
+  "source_page_act": "FAKE Act",
+  "source_page_year": null,
+  "source_amended_up_to": null,
+  "retrieved_at": "2026-11-13T00:00:00+05:30",
+  "gazette_published": "unknown",
+  "source_acknowledgement": "FAKE fixture for tests; not from any official source.",
+  "storage_mode": "public_verbatim",
+  "body_sha256": "b69175826469f3f192d9ef65a2d194c08ba1337137fe61502396f0f9b0b36972",
+  "body_chars": 97,
+  "original_note": "FAKE note.",
+  "fixture": true
+}

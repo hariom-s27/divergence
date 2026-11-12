@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "record_id": "act:1961:sFAKE4:v2",
+  "source_kind": "act",
+  "act": "1961",
+  "unit": "sFAKE4",
+  "section": "FAKE4",
+  "heading": "FAKE heading four",
+  "chapter": null,
+  "version_id": 2,
+  "supersedes": "act:1961:sFAKE4:v1",
+  "status": "repealed_saved",
+  "in_force_from": "2026-03-30",
+  "in_force_to": "2026-03-31",
+  "applies_from_tax_year": "2018-19",
+  "applies_to_tax_year": "2025-26",
+  "retrospective_from": "2018-04-01",
+  "enacted_on": "2026-03-30",
+  "amended_by": [
+    {
+      "ref": "FAKE Amendment Act",
+      "kind": "amendment_act",
+      "url": "https://example.invalid/fake/4-amendment",
+      "enacted_on": "2026-03-30"
+    }
+  ],
+  "modified_by": [],
+  "text_current_as_of": "2026-11-01",
+  "outstanding_effects": [],
+  "source_url": "https://example.invalid/fake/4",
+  "source_page_act": "FAKE Act",
+  "source_page_year": null,
+  "source_amended_up_to": null,
+  "retrieved_at": "2026-11-13T00:00:00+05:30",
+  "gazette_published": "unknown",
+  "source_acknowledgement": "FAKE fixture for tests; not from any official source.",
+  "storage_mode": "public_verbatim",
+  "body_sha256": "30dcd51ed29d13cf61eef3abf29499fe1ab7ff88c48dd8ca6094cac08eac0b6e",
+  "body_chars": 118,
+  "original_note": "FAKE note.",
+  "fixture": true
+}
