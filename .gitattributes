@@ -10,3 +10,5 @@
 *.jpg binary
 *.jpeg binary
 *.zip binary
+divergence/statutes/** text eol=lf
+tests/fixtures/statutes/** text eol=lf

@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hariom-s27/divergence/divergence/statutes/schema/statute_record.schema.json",
+  "title": "DIVERGENCE statute record (D78), schema_version 1",
+  "description": "One section (or rule / notification / circular) of one Act, one version. Cross-field rules (date order, status consistency, retrospective rules, links, body hash) are checked in divergence/statute_validate.py (V02-V16), not here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "source_kind",
+    "act",
+    "unit",
+    "section",
+    "heading",
+    "chapter",
+    "version_id",
+    "supersedes",
+    "status",
+    "in_force_from",
+    "in_force_to",
+    "applies_from_tax_year",
+    "applies_to_tax_year",
+    "retrospective_from",
+    "enacted_on",
+    "amended_by",
+    "modified_by",
+    "text_current_as_of",
+    "outstanding_effects",
+    "source_url",
+    "source_page_act",
+    "source_page_year",
+    "source_amended_up_to",
+    "retrieved_at",
+    "gazette_published",
+    "source_acknowledgement",
+    "storage_mode",
+    "body_sha256",
+    "body_chars"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "record_id": {"$ref": "#/$defs/record_id"},
+    "source_kind": {"$ref": "#/$defs/source_kind"},
+    "act": {"type": "string", "enum": ["1961", "2025"]},
+    "unit": {"type": "string", "pattern": "^[A-Za-z0-9.\\-]+$"},
+    "section": {"type": "string", "minLength": 1},
+    "heading": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "chapter": {"type": ["string", "null"]},
+    "version_id": {"type": "integer", "minimum": 1},
+    "supersedes": {
+      "anyOf": [{"$ref": "#/$defs/record_id"}, {"type": "null"}]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["in_force", "repealed_saved", "never_operative", "prospective", "omitted"]
+    },
+    "in_force_from": {"$ref": "#/$defs/date_or_null"},
+    "in_force_to": {"$ref": "#/$defs/date_or_null"},
+    "applies_from_tax_year": {"$ref": "#/$defs/tax_year_or_null"},
+    "applies_to_tax_year": {"$ref": "#/$defs/tax_year_or_null"},
+    "retrospective_from": {"$ref": "#/$defs/date_or_null"},
+    "enacted_on": {"$ref": "#/$defs/date_or_null"},
+    "amended_by": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/amended_by_item"}
+    },
+    "modified_by": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/record_id"}
+    },
+    "text_current_as_of": {"$ref": "#/$defs/date"},
+    "outstanding_effects": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/outstanding_effect"}
+    },
+    "counterpart": {
+      "anyOf": [{"$ref": "#/$defs/counterpart"}, {"type": "null"}]
+    },
+    "source_url": {"$ref": "#/$defs/https_url"},
+    "source_page_act": {"type": "string", "minLength": 1},
+    "source_page_year": {"type": ["string", "null"]},
+    "source_amended_up_to": {"type": ["string", "null"]},
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?[+-][0-9]{2}:[0-9]{2}$"
+    },
+    "gazette_published": {"type": "string", "enum": ["yes", "no", "unknown"]},
+    "source_acknowledgement": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "storage_mode": {"type": "string", "enum": ["local_only", "public_verbatim"]},
+    "body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "body_chars": {"type": "integer", "minimum": 0},
+    "original_note": {"type": ["string", "null"]},
+    "amendment_note": {"type": ["string", "null"]},
+    "notes": {"type": ["string", "null"]},
+    "fixture": {"type": "boolean", "default": false}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "source_kind": {"const": "act"},
+          "storage_mode": {"const": "public_verbatim"}
+        },
+        "required": ["source_kind", "storage_mode"]
+      },
+      "then": {
+        "required": ["original_note"],
+        "properties": {
+          "original_note": {"type": "string", "minLength": 1, "pattern": "\\S"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "source_kind": {
+      "type": "string",
+      "enum": ["act", "rule", "notification", "circular"]
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^(act|rule|notification|circular):(1961|2025):[A-Za-z0-9.\\-]+:v[1-9][0-9]*$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "date_or_null": {
+      "anyOf": [{"$ref": "#/$defs/date"}, {"type": "null"}]
+    },
+    "tax_year_or_null": {
+      "anyOf": [
+        {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}$"},
+        {"type": "null"}
+      ]
+    },
+    "https_url": {
+      "type": "string",
+      "pattern": "^https://[^\\s]+$"
+    },
+    "amendment_kind": {
+      "type": "string",
+      "enum": ["finance_act", "amendment_act", "ordinance", "notification", "other"]
+    },
+    "amended_by_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "kind", "url", "enacted_on"],
+      "properties": {
+        "ref": {"type": "string", "minLength": 1},
+        "kind": {"$ref": "#/$defs/amendment_kind"},
+        "url": {"type": "string"},
+        "enacted_on": {"$ref": "#/$defs/date_or_null"}
+      }
+    },
+    "outstanding_effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "kind", "affects_from", "note"],
+      "properties": {
+        "ref": {"type": "string", "minLength": 1},
+        "kind": {"$ref": "#/$defs/amendment_kind"},
+        "affects_from": {"$ref": "#/$defs/date_or_null"},
+        "note": {"type": "string"}
+      }
+    },
+    "counterpart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "source", "source_url"],
+      "properties": {
+        "ref": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "enum": ["CBDT_official", "SECONDARY"]},
+        "source_url": {"type": "string"}
+      }
+    },
+    "gold_span": {
+      "description": "A gold-answer span: Unicode code-point offsets, half-open [start, end), into the body exactly as stored. Unused in P08 except in tests.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "subpath", "start", "end", "text_sha256"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/record_id"},
+        "subpath": {"type": "string"},
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 1},
+        "text_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}
