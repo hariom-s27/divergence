@@ -94,6 +94,14 @@ Extractor v4 changes (owner decisions P09-43b, P09-46 with Q1 (b), P09-47):
       with the same text is raised, or its size is <= 0.85 x the page's most common size), unconfirmed, or
       no_run. Nothing is put back.
 
+Extractor v5 changes (owner decision P09-49, Q1 all 22 SECTION-LIST sections, Q2 keep 'See' / 'Now'):
+  P09-49  FOOTNOTE_START keeps the number prefix ('N.' / 'Na.') required and matches the footnote vocabulary
+      case-insensitively (ins./sub./subs./omtt./omitt./omitted by/inserted by/substituted by|for/renumbered/
+      see/now/words/'Clauses (a) ... sub. for ...' etc.); 'N. [Omitted by ...' (printed omissions) cannot match.
+      MOVED-BLOCKS.tsv lists every footnote block v5 creates and v4 did not, flagged when > 40 lines, when it
+      holds a line that locate would take as a section start, or a table row. FOOTNOTE-LIKE-IN-BODY.md lists
+      body lines that look like footnote text (report only; nothing is moved).
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -120,7 +128,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v4"
+EXTRACTOR_VERSION = "v5"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -147,10 +155,27 @@ FURNITURE_RE = (
 FURNITURE_TOP, FURNITURE_BOTTOM = 2, 3
 PAGE_DIGIT_RE = FURNITURE_RE[1]       # P09-46: page-edge bare digits -> classify_edge_digits(), not furniture
 PAGE_RUN_MIN = 5                      # P09-46: >= 5 consecutive pages, same edge, constant value - page_1based
-FOOTNOTE_START = re.compile(
+FOOTNOTE_START_V4 = re.compile(      # kept only for the MOVED-BLOCKS comparison (P09-49)
     r"^\s*\d+[a-z]?\.\s+(?:Ins\.|Sub\.|Subs\.|Omtt\.|Omitted by|Inserted by|Substituted by|Substituted for|"
     r"Proviso omtt\.|Italicised words|Words\s+[\"“]|Prior to|Re-numbered|Renumbered|See rule|See also|"
     r"Sections? .{0,80}?inserted by)")
+FOOTNOTE_START = re.compile(         # v5 [P09-49]: number prefix required; vocabulary case-insensitive
+    r"^\s*\d+[a-z]?\.\s+(?i:Ins[.,]|Subs?\.|Omtt?\.|Omitt\.|Omitted by|Inserted by|Substituted (?:by|for)|"
+    r"Proviso omtt\.|Italicised words?|Words?\s+[\"“]|Word and|Prior to|Re-?numbered|Shall be renumbered|"
+    r"See\b|Now\b|Original section|Following marginal|Explanation renumbered|"
+    r"(?:Sections?|Sub-sections?|Clauses?|Sub-clauses?|Chapters?|Sl\. Nos?\.|Explanations?|"
+    r"(?:First |Second |Third )?Provisos?|Schedules?|Items?|Entries|Entry|Words?)\b.{0,80}?"
+    r"\b(?:inserted|substituted|omitted|renumbered|re-numbered|ins\.|subs?\.|omtt\.))")
+# ---------------------------------------------------------------- P09-49 footnote-like detector (report only)
+FOOTNOTE_LIKE = (
+    ("wef", re.compile(r"\bw\.(?:r\.)?e\.f\.")),
+    ("ins_sub_by", re.compile(r"(?i)\b(?:ins|subs?)\.\s*by\b")),
+    ("omitted_by", re.compile(r"(?i)\bomitted by\b")),
+    ("act_no", re.compile(r"\bAct No\.\s*\d+\s+of\s+\d{4}")),
+    ("finance_act_date", re.compile(r"Finance (?:\(No\. ?\d\) )?Act, \d{4}.{0,40}?\d{1,2}-\d{1,2}-\d{4}")),
+)
+PRINTED_OMISSION_RE = re.compile(r"^\s*(?:\([0-9a-zA-Z]+\)\s*)?\[Omitted")
+MOVED_BLOCK_MAX = 40
 
 # ---------------------------------------------------------------- R1 / R2 / R5 / R4 patterns
 START_RE = re.compile(r"^\s*(\d{1,3}[A-Z]{0,5})\s?\.(?=\s|$|\()")
@@ -206,6 +231,7 @@ class Cleaned:
     orphans: list = field(default_factory=list)       # P09-42: (line_idx, kind '[' or ']')
     edge_digits: list = field(default_factory=list)   # P09-46: (page_1based, line_1based, edge, value, reason)
     page_runs: list = field(default_factory=list)     # P09-46: (edge, offset, first_page, last_page, n)
+    foot_line_objs: list = field(default_factory=list)  # P09-49: Line objects moved to footnotes, in order
 
 
 @dataclass
@@ -319,23 +345,27 @@ def classify_edge_digits(cands: list, notes: dict) -> tuple:
     return [x[:5] for x in labelled], runs, removed
 
 
-def _body_resumes(page_lines: list) -> set:
+def _body_resumes(page_lines: list, footnote_start=None) -> set:
     """Indices (within one page) where a heading + section start pair or a boundary line begins."""
+    fs = footnote_start or FOOTNOTE_START
     out = set()
     for k, ln in enumerate(page_lines):
         if _boundary(ln.text.strip()):
             out.add(k)
             continue
-        if START_RE.match(ln.text) and not FOOTNOTE_START.match(ln.text) and not PART_NUMBER_RE.match(ln.text):
+        if START_RE.match(ln.text) and not fs.match(ln.text) and not PART_NUMBER_RE.match(ln.text):
             h = _heading_before(page_lines, k)
             if h:
                 out.add(h[1])
     return out
 
 
-def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
-    """R3 on every page. pages[idx0] is the raw text of page page_1based(idx0)."""
+def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None) -> Cleaned:
+    """R3 on every page. pages[idx0] is the raw text of page page_1based(idx0). footnote_start overrides
+    FOOTNOTE_START (used only for the v4/v5 MOVED-BLOCKS comparison)."""
+    fs = footnote_start or FOOTNOTE_START
     out, notes, furn, midpage, n_foot, rule_drops, cands = [], {}, [], [], 0, [], []
+    foot_ids = []
     for idx0, text in enumerate(pages):
         pno = page_1based(idx0)
         raw = text.splitlines()
@@ -357,13 +387,13 @@ def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
                 kept.append(line)
                 if i in edge and PAGE_DIGIT_RE.match(ln.strip()):  # P09-46: decided in pass 2
                     cands.append((pno, i + 1, "top" if i in top else "bottom", int(ln.strip()), line))
-        resumes = _body_resumes(kept)
+        resumes = _body_resumes(kept, fs)
         in_foot, body, foot = False, [], []
         for k, ln in enumerate(kept):
             if BARE_MARKER_RE.match(ln.text.strip()):              # P09-46: bare numbers never join a block
                 body.append(ln)
                 continue
-            if FOOTNOTE_START.match(ln.text):
+            if fs.match(ln.text):
                 in_foot = True
                 if trace:
                     trace.add("R3-footnote", f"p{pno}: {ln.text.strip()[:90]}", "(moved to amendment_note)")
@@ -375,6 +405,7 @@ def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
         if foot:
             notes[pno] = [ln.text for ln in foot]
             n_foot += len(foot)
+            foot_ids += foot
         out.extend(body)
     edge_digits, runs, removed = classify_edge_digits(cands, notes)  # P09-46 pass 2
     gone = {id(x) for x in removed}
@@ -382,7 +413,7 @@ def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
         furn.append((x.page, x.text.strip()))
     out = [ln for ln in out if id(ln) not in gone]
     before, after, orphans = bracket_scan(out)
-    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans, edge_digits, runs)
+    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans, edge_digits, runs, foot_ids)
 
 
 def bracket_scan(lines: list) -> tuple:
@@ -604,10 +635,8 @@ def apply_markers(seg: list, numbers: set) -> tuple:
     return kept, dropped, unresolved, inline_found
 
 
-def editor_note_candidates(seg: list) -> list:
-    """P09-35: candidate blocks, listed only (never cut here). A block starts at a line with
-    'shall be inserted/substituted/omitted/renumbered' when 'w.e.f.' is on it or on one of the next 2 lines;
-    it runs from there to the next bare marker line, unindented sub-section line, or the section end."""
+def _editor_note_blocks(seg: list) -> list:
+    """[(i, j)] index ranges of P09-35 candidate blocks in seg (shared by the candidates list and the detector)."""
     out, i = [], 0
     while i < len(seg):
         if EDITOR_NOTE_RE.search(seg[i].text):
@@ -617,11 +646,74 @@ def editor_note_candidates(seg: list) -> list:
                 while j < len(seg) and not BARE_MARKER_RE.match(seg[j].text.strip()) \
                         and not SUBSECTION_LINE_RE.match(seg[j].text):
                     j += 1
-                out.append({"page_1based": seg[i].page, "line_1based": seg[i].line_no,
-                            "text": "\n".join(SPACES_RE.sub(" ", x.text).strip() for x in seg[i:j])})
+                out.append((i, j))
                 i = j
                 continue
         i += 1
+    return out
+
+
+def editor_note_candidates(seg: list) -> list:
+    """P09-35: candidate blocks, listed only (never cut here). A block starts at a line with
+    'shall be inserted/substituted/omitted/renumbered' when 'w.e.f.' is on it or on one of the next 2 lines;
+    it runs from there to the next bare marker line, unindented sub-section line, or the section end."""
+    return [{"page_1based": seg[i].page, "line_1based": seg[i].line_no,
+             "text": "\n".join(SPACES_RE.sub(" ", x.text).strip() for x in seg[i:j])} for i, j in _editor_note_blocks(seg)]
+
+
+def footnote_like_lines(seg: list) -> list:
+    """P09-49 detector (report only; nothing is moved): body lines that look like footnote text.
+    Returns [{page_1based, line_1based, patterns, label, text}]; label = printed_omission ('[Omitted ...' printed
+    in the body) / editor_note_candidate (inside a P09-35 block) / other."""
+    in_note = {k for i, j in _editor_note_blocks(seg) for k in range(i, j)}
+    out = []
+    for k, ln in enumerate(seg):
+        pats = [name for name, rx in FOOTNOTE_LIKE if rx.search(ln.text)]
+        if not pats:
+            continue
+        label = ("printed_omission" if PRINTED_OMISSION_RE.match(ln.text)
+                 else "editor_note_candidate" if k in in_note else "other")
+        out.append({"page_1based": ln.page, "line_1based": ln.line_no, "patterns": pats, "label": label,
+                    "text": SPACES_RE.sub(" ", ln.text).strip()[:140]})
+    return out
+
+
+def moved_blocks(kept_pages: list, v5: Cleaned) -> list:
+    """P09-49: footnote blocks that v5 creates and v4 did not. A block = consecutive v5 footnote lines (same page)
+    that were body under v4. Flags: > MOVED_BLOCK_MAX lines; 'section_start_like' = a line matching locate's start
+    pattern (START_RE, not a footnote line, not a part heading); a line that R5 marks as a table row in the v4 lines."""
+    v4 = clean_pages(kept_pages, footnote_start=FOOTNOTE_START_V4)
+    v4_foot = {(x.page, x.line_no) for x in v4.foot_line_objs}
+    marks, _ = table_marks(v4.lines)
+    rows = {(v4.lines[i].page, v4.lines[i].line_no) for i, m in marks.items() if m[0] == "row"}
+    blocks, cur = [], []
+    for pos, ln in enumerate(v5.foot_line_objs):        # pos = order among v5 footnote lines
+        new = (ln.page, ln.line_no) not in v4_foot
+        if new and cur and cur[-1][1].page == ln.page and cur[-1][0] + 1 == pos:
+            cur.append((pos, ln))
+        elif new:
+            if cur:
+                blocks.append([x for _, x in cur])
+            cur = [(pos, ln)]
+        elif cur:
+            blocks.append([x for _, x in cur])
+            cur = []
+    if cur:
+        blocks.append([x for _, x in cur])
+    out = []
+    for b in blocks:
+        flags = []
+        if len(b) > MOVED_BLOCK_MAX:
+            flags.append(f">{MOVED_BLOCK_MAX} lines")
+        # a heading-confirmed start would already have ended the block (R3 resume), so flag any line that LOOKS
+        # like a start: START_RE, not a footnote line, not a numbered part heading
+        if any(START_RE.match(x.text) and not FOOTNOTE_START.match(x.text) and not PART_NUMBER_RE.match(x.text)
+               for x in b):
+            flags.append("section_start_like")
+        if any((x.page, x.line_no) in rows for x in b):
+            flags.append("table_row")
+        out.append({"page_1based": b[0].page, "line_1based": b[0].line_no, "lines": len(b),
+                    "first": b[0].text.strip()[:120], "last": b[-1].text.strip()[:120], "flags": flags})
     return out
 
 
@@ -963,6 +1055,56 @@ def _edge_tsv(views: list) -> str:
     return "\n".join(out) + "\n"
 
 
+def _moved_blocks_outputs(views: list) -> tuple:
+    """P09-49: (MOVED-BLOCKS.tsv text, printed summary with flagged rows per edition)."""
+    tsv = ["edition\tpage_1based\tstart_line_1based\tlines_moved\tfirst_line\tlast_line\tflags"]
+    summary = []
+    for v in views:
+        blocks = moved_blocks(drop_duplicate_pages(v.pages)[0], v.cleaned)
+        for b in blocks:
+            tsv.append(f"{v.key}\t{b['page_1based']}\t{b['line_1based']}\t{b['lines']}\t{_tsv_cell(b['first'])}\t"
+                       f"{_tsv_cell(b['last'])}\t{','.join(b['flags']) or '-'}")
+        flagged = [b for b in blocks if b["flags"]]
+        kinds = {k: sum(1 for b in flagged if any(f.startswith(k) for f in b["flags"]))
+                 for k in (f">{MOVED_BLOCK_MAX}", "section_start_like", "table_row")}
+        summary.append(f"{v.key:<15} new blocks={len(blocks):>3} lines moved={sum(b['lines'] for b in blocks):>4} "
+                       f"flagged={len(flagged):>3} " + " ".join(f"{k}={n}" for k, n in kinds.items()))
+    return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
+
+
+def _footnote_like_md(views: list) -> tuple:
+    """P09-49: FOOTNOTE-LIKE-IN-BODY.md over all SECTION-LIST sections x editions (report only)."""
+    sl = json.loads((STATUTES_DIR / "SECTION-LIST.json").read_text(encoding="utf-8"))
+    secs = {"1961": [s["section"] for s in sl["sections_1961"]], "2025": [s["section"] for s in sl["sections_2025_only"]]}
+    act_of = {k: a for a in EDITIONS for k in EDITIONS[a]}
+    summary = ["| act | section | edition | status | lines | printed_omission | editor_note_candidate | other |",
+               "|---|---|---|---|---|---|---|---|"]
+    detail, tot = [], {"printed_omission": 0, "editor_note_candidate": 0, "other": 0}
+    for v in views:
+        act = act_of[v.key]
+        for sec, (st, a, b) in _section_spans(v, act, secs[act]).items():
+            if st != "FOUND":
+                summary.append(f"| {act} | {sec} | {v.key} | {st} | - | - | - | - |")
+                continue
+            hits = footnote_like_lines(v.cleaned.lines[a:b])
+            c = {k: sum(1 for h in hits if h["label"] == k) for k in tot}
+            for k in tot:
+                tot[k] += c[k]
+            summary.append(f"| {act} | {sec} | {v.key} | FOUND | {len(hits)} | {c['printed_omission']} | "
+                           f"{c['editor_note_candidate']} | {c['other']} |")
+            for h in hits:
+                detail.append(f"- {v.key}.pdf {act} s.{sec} page_1based {h['page_1based']} line_1based {h['line_1based']} "
+                              f"[{h['label']}; {','.join(h['patterns'])}]: {h['text']}")
+    head = ["# FOOTNOTE-LIKE LINES IN BODY (P09-49, report only; nothing moved)", "",
+            "Body lines (kept lines inside each located SECTION-LIST section) matching footnote-like patterns:",
+            ", ".join(f"{n} = {rx.pattern}" for n, rx in FOOTNOTE_LIKE), "",
+            f"totals: {sum(tot.values())} lines  " + "  ".join(f"{k}={n}" for k, n in tot.items()), "",
+            f"## Summary ({len(secs['1961']) + len(secs['2025'])} SECTION-LIST sections x editions)", ""]
+    text = "\n".join(head + summary + ["", "## Lines", ""] + detail) + "\n"
+    return text, f"footnote-like body lines (22 sections): {sum(tot.values())} " + \
+        " ".join(f"{k}={n}" for k, n in tot.items()) + "\n"
+
+
 def _edge_summary(views: list) -> str:
     """P09-46: per edition, reasons and page-number sequence runs (edge, offset, pages covered)."""
     rows = []
@@ -1009,10 +1151,13 @@ def run_locate_all(raw: Path, out_dir: Path) -> int:
                     lines_out.append(f"{act:<5} {'Sch ' + roman:<10} {key:<15} {st:<10} {len(hits):>2} "
                                      f"{','.join(map(str, hits)) or '-':<16}")
     lines_out.append("totals: " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())))
+    mb_tsv, mb_sum = _moved_blocks_outputs(views)
     text = ("\n".join(lines_out) + "\n\nR0 / R3 COUNTS\n" + _census_counts(views)
-            + "\nP09-46 PAGE-EDGE DIGITS\n" + _edge_summary(views))
+            + "\nP09-46 PAGE-EDGE DIGITS\n" + _edge_summary(views)
+            + "\nP09-49 MOVED BLOCKS (v5 vs v4)\n" + mb_sum)
     print(text, end="")
     _write_new(out_dir / "LOCATE-ALL.txt", text)
+    _write_new(out_dir / "MOVED-BLOCKS.tsv", mb_tsv)
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
     _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
@@ -1056,6 +1201,11 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
     _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
+    mb_tsv, mb_sum = _moved_blocks_outputs(views)
+    _write_new(out_dir / "MOVED-BLOCKS.tsv", mb_tsv)
+    fl_md, fl_sum = _footnote_like_md(views)
+    _write_new(out_dir / "FOOTNOTE-LIKE-IN-BODY.md", fl_md)
+    print("P09-49 moved blocks (v5 vs v4):\n" + mb_sum + fl_sum, end="")
     mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers\tmatch"]
     mk += [f"{r['edition']}.pdf\t{r['act']} s.{r['section']}\t{d['type']}\t{d['page_1based']}\t{d['line_1based']}\t"
            f"{' '.join(d['numbers'])}\t{' '.join(m or '-' for m in d['match'])}"

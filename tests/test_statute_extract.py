@@ -747,3 +747,72 @@ def test_conftest_ignores_local_text_folder():
     from pathlib import Path
     text = (Path(__file__).resolve().parent.parent / "conftest.py").read_text(encoding="utf-8")
     assert 'collect_ignore = ["divergence/statutes/_local_text"]' in text
+
+
+# ---------------------------------------------------------------- v5: P09-49 case-insensitive footnote starts
+
+@pytest.mark.parametrize("note", ["5. ins. by the Fake Act, 2099.", "5. Sub. by the Fake Act, 2099.",
+                                  "5. omitt. by the Fake Act, 2099.", "5. Ins, by the Fake Act.",
+                                  "5. Now fake section 9 of the Fake Act.", "5. See fake rule 9.",
+                                  "5. Clauses (a) and (b) sub. for clause (a) by the Fake Act.",
+                                  "5. Word \"fake\" omtt. by the Fake Act.", "5. Explanation renumbered as Explanation 1.",
+                                  "5a. Sections 9A and 9B ins. by the Fake Act."])
+def test_v5_footnote_vocabulary_case_insensitive(note):
+    assert se.FOOTNOTE_START.match(note)
+    cleaned = se.clean_pages([f"Fake heading.\n7. Fake text.\nmore fake.\n{note}"])
+    assert cleaned.notes[1] == [note]
+
+
+@pytest.mark.parametrize("line", ["ins. by the Fake Act.", "5. [Omitted by the Fake Act, 2099, w.e.f. 1-4-2099.]",
+                                  "5. Fake person who is now resident.", "5. Fake text see below."])
+def test_v5_never_starts_a_block(line):
+    assert not se.FOOTNOTE_START.match(line)
+
+
+def test_v5_quoted_old_text_stays_in_block():
+    page = ("Fake heading.\n7. Fake text.\nmore fake.\n9. Sub. by the Fake Act. Prior to it, section 7 read as under:\n"
+            "\"7. Fake old section text.\nold words continue.\"")
+    cleaned, starts = view(page)
+    assert len(cleaned.notes[1]) == 3 and [s.number for s in starts] == ["7"]
+
+
+# ---------------------------------------------------------------- v5: P09-49 detector (report only)
+
+def test_detector_patterns_and_labels_nothing_removed():
+    page = ("Fake heading.\n7. (1) Fake text.\n(viii) [Omitted by the Fake Act, 2099, w.e.f. 1-4-2099.]\n"
+            "Following clause (b) shall be inserted after clause (a) by the Finance Act, 2099, w.e.f. 1-4-2099:\n"
+            "(b) fake inserted clause\n(2) Fake text amended by Act No. 9 of 2099 here.\n" + "fake filler.\n" * 3)
+    cleaned, starts = view(page)
+    loc = se.locate(cleaned.lines, starts, "7")
+    seg = cleaned.lines[loc["internal_heading_line_idx0"]:loc["internal_line_idx0_end"]]
+    hits = se.footnote_like_lines(seg)
+    assert [(h["label"], h["patterns"]) for h in hits] == [
+        ("printed_omission", ["wef", "omitted_by"]),
+        ("editor_note_candidate", ["wef", "finance_act_date"]),
+        ("other", ["act_no"])]
+    r = se.extract_section(cleaned, starts, "7")
+    assert "[Omitted by the Fake Act" in r["body"] and "Act No. 9 of 2099" in r["body"]
+
+
+# ---------------------------------------------------------------- v5: P09-49 moved blocks (v5 vs v4)
+
+def test_moved_blocks_lists_new_blocks_with_flags():
+    long_tail = "\n".join(f"fake old text line {k}" for k in range(45))
+    pages = ["Fake heading.\n7. Fake text.\nmore fake.\n5. ins. by the Fake Act.\nfake note tail.",
+             "Fake heading two.\n8. Fake text.\nmore fake.\n6. sub. by the Fake Act:\n" + long_tail,
+             "Fake heading three.\n9. Fake text.\nmore fake.\n4. Ins. by the Fake Act."]   # v4 already matched this one
+    v5 = se.clean_pages(pages)
+    blocks = se.moved_blocks(pages, v5)
+    assert [(b["page_1based"], b["line_1based"], b["lines"]) for b in blocks] == [(1, 4, 2), (2, 4, 46)]
+    assert blocks[0]["flags"] == [] and blocks[1]["flags"] == [">40 lines"]
+
+
+def test_moved_block_flags_start_like_line_and_heading_start_ends_block():
+    page = ("Fake heading.\n7. Fake text.\nmore fake.\n5. omitt. by the Fake Act. Prior to it, it read as under:\n"
+            "12. Fake old text without a heading line before it\n")
+    blocks = se.moved_blocks([page], se.clean_pages([page]))
+    assert blocks[0]["lines"] == 2 and blocks[0]["flags"] == ["section_start_like"]
+    page2 = ("Fake heading.\n7. Fake text.\nmore fake.\n5. omitt. by the Fake Act.\nFake real heading.\n"
+             "12. Fake body of the next section.")
+    b2 = se.moved_blocks([page2], se.clean_pages([page2]))
+    assert b2[0]["lines"] == 1 and b2[0]["flags"] == []          # R3 resume ends the block at heading + start
