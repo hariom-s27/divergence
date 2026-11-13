@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "status": "approved",
+  "approved_by": "owner (Hariom), P09 Part A S7: approved as drafted",
+  "approved_on": "2026-11-13",
+  "source": "P09 prompt E4 (draft). Each section appears once and may carry several strata. 2025-Act counterparts of 1961 sections come from MAPPING.csv (official CBDT utility), not from this file. Notes repeat E4 and are UNVERIFIED until checked against the amending instruments in Part C.",
+  "strata": {
+    "vda_core": "virtual digital asset core provisions",
+    "temporal_edge": "sections with retrospective, mid-year, repeal-day or multi-date changes",
+    "transition": "1961 -> 2025 transition provisions",
+    "controls": "ordinary sections used as controls (cut first if the dates table is too large)"
+  },
+  "sections_1961": [
+    {"section": "2", "strata": ["vda_core", "temporal_edge"], "focus": ["2(47A)", "2(47)", "2(47A)(d)"], "note": "clause (47A)(d) inserted w.e.f. 1-4-2026 = repeal day (E4; UNVERIFIED)"},
+    {"section": "56", "strata": ["vda_core", "temporal_edge"], "focus": ["56(2)(x)"], "note": "two dates in one amending section (E4; UNVERIFIED)"},
+    {"section": "115BBH", "strata": ["vda_core"], "focus": [], "note": null},
+    {"section": "194S", "strata": ["vda_core", "temporal_edge"], "focus": [], "note": "mid-year 1 Jul 2022 (E4; UNVERIFIED)"},
+    {"section": "285BAA", "strata": ["vda_core"], "focus": [], "note": null},
+    {"section": "158B", "strata": ["temporal_edge"], "focus": [], "note": "retrospective from 1 Feb 2025 (E4; UNVERIFIED)"},
+    {"section": "3", "strata": ["transition"], "focus": [], "note": "previous year"},
+    {"section": "80C", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "87A", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "115BAC", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "139", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "147", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "192", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "194A", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "234A", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "234B", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "44AD", "strata": ["controls"], "focus": [], "note": null},
+    {"section": "54", "strata": ["controls"], "focus": [], "note": null}
+  ],
+  "sections_2025_only": [
+    {"section": "446", "strata": ["temporal_edge"], "focus": [], "note": "substituted by Finance Act 2026 s.101; Bill clause 87 differs (E4; UNVERIFIED; Bill numbers are never used, P09-22)"},
+    {"section": "1", "strata": ["transition"], "focus": [], "note": null},
+    {"section": "3", "strata": ["transition"], "focus": [], "note": "tax year"},
+    {"section": "536", "strata": ["transition"], "focus": [], "note": "repeal and savings"}
+  ],
+  "many_to_one_rule": "Several 1961 sections mapping to one 2025 section (e.g. TDS sections -> 2025 s.393) produce ONE 2025 record shared by several pairs."
+}

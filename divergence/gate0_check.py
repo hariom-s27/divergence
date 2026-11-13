@@ -234,7 +234,10 @@ if _live:
     STALE = {p: l for p, l in STALE.items()
              if not any(re.search(p, x) for x in _live)}
 SKIP_DIRS = {".git", "__pycache__", "cache", "_old_corpus_backup", "node_modules",
-             ".venv", "venv", "site-packages", "divergencegazettecorpus", "New folder"}
+             ".venv", "venv", "site-packages", "divergencegazettecorpus", "New folder",
+             "_local_text"}
+# "_local_text" -- P09-24: git-ignored statute bodies, raw PDFs and census sheets
+# (D78 storage_mode local_only). Official law text, not project claims; never committed.
 # "New folder" -- external planning/coordination drafts (not written by this
 # checker's own maintenance), quoting retired figures for historical context
 # the same way DECISION docs do, but without that convention's stale-ok

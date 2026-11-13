@@ -94,6 +94,31 @@ def test_gate0_stale_figures_need_a_left_boundary():
             assert i not in listed, f"{text!r} was flagged"
 
 
+def test_gate0_skips_local_text_folders():
+    """P09-24: a stale figure under a _local_text folder is not reported; the same
+    figure in an ordinary folder is (control), so the skip is what hides it."""
+    repo_dir = Path(__file__).resolve().parents[1] / "divergence"
+    skipped = repo_dir / "statutes" / "_local_text" / "_tmp_gate0_probe"
+    control = repo_dir / "_tmp_gate0_control"
+    baseline = _all_stale_counts(_run_gate0(repo_dir).stdout)
+    for folder in (skipped, control):
+        folder.mkdir(parents=True, exist_ok=False)
+    try:
+        (skipped / "probe_skipped.md").write_text("Probe figure 8.5%.\n", encoding="utf-8")
+        (control / "probe_control.md").write_text("Probe figure 8.5%.\n", encoding="utf-8")
+        result = _run_gate0(repo_dir)
+    finally:
+        for folder, name in ((skipped, "probe_skipped.md"), (control, "probe_control.md")):
+            (folder / name).unlink(missing_ok=True)
+            folder.rmdir()
+
+    assert "probe_skipped.md" not in result.stdout
+    assert "probe_control.md" in result.stdout
+    expected = dict(baseline)
+    expected["8.5%"] = expected.get("8.5%", 0) + 1
+    assert _all_stale_counts(result.stdout) == expected
+
+
 def test_gate0_exits_zero_on_real_repo():
     repo_dir = Path(__file__).resolve().parents[1] / "divergence"
     result = _run_gate0(repo_dir)
