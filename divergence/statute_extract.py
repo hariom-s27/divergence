@@ -81,6 +81,19 @@ Extractor v3 changes (owner decisions P09-42 .. P09-44, approved with Q1 guard, 
   P09-44  in a footnote block a line starting with '*', '†' or '‡' starts its own footnotes_raw entry
       (field 'symbol'); body symbols stay as printed; both are counted.
 
+Extractor v4 changes (owner decisions P09-43b, P09-46 with Q1 (b), P09-47):
+  P09-46  a bare-digit line in the first 2 / last 3 non-empty lines of a page is no longer removed outright.
+      If it equals a footnote number on its page or the next page (family rule) it is a 'marker' and goes to
+      the normal marker rule; only the remaining digits can form a page-number sequence (value - page_1based
+      constant on >= 5 consecutive pages at the same edge), which is removed as furniture; every other one
+      stays in the body ('unresolved'). Every case is logged (PAGE-EDGE-DIGITS.tsv). A bare-number line never
+      joins an R3 footnote block.
+  P09-43b the unnumbered-entry split also keeps a line as a continuation when it starts with a lowercase
+      letter or a digit (in addition to a quote mark, '(' or a line after ':').
+  P09-47  --confirm-markers FOLDER: check only. Each dropped marker is labelled confirmed (a pypdf visitor run
+      with the same text is raised, or its size is <= 0.85 x the page's most common size), unconfirmed, or
+      no_run. Nothing is put back.
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -107,7 +120,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v3"
+EXTRACTOR_VERSION = "v4"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -132,6 +145,8 @@ FURNITURE_RE = (
     re.compile(r"^\d{1,4}$"),
 )
 FURNITURE_TOP, FURNITURE_BOTTOM = 2, 3
+PAGE_DIGIT_RE = FURNITURE_RE[1]       # P09-46: page-edge bare digits -> classify_edge_digits(), not furniture
+PAGE_RUN_MIN = 5                      # P09-46: >= 5 consecutive pages, same edge, constant value - page_1based
 FOOTNOTE_START = re.compile(
     r"^\s*\d+[a-z]?\.\s+(?:Ins\.|Sub\.|Subs\.|Omtt\.|Omitted by|Inserted by|Substituted by|Substituted for|"
     r"Proviso omtt\.|Italicised words|Words\s+[\"“]|Prior to|Re-numbered|Renumbered|See rule|See also|"
@@ -189,6 +204,8 @@ class Cleaned:
     depth_before: list = field(default_factory=list)  # P09-42: open '[' depth before each kept line
     depth_after: list = field(default_factory=list)   # P09-42: open '[' depth after each kept line
     orphans: list = field(default_factory=list)       # P09-42: (line_idx, kind '[' or ']')
+    edge_digits: list = field(default_factory=list)   # P09-46: (page_1based, line_1based, edge, value, reason)
+    page_runs: list = field(default_factory=list)     # P09-46: (edge, offset, first_page, last_page, n)
 
 
 @dataclass
@@ -251,7 +268,55 @@ def drop_duplicate_pages(pages: list) -> tuple:
 # ---------------------------------------------------------------- R3
 
 def _is_furniture(s: str) -> bool:
-    return s in FURNITURE_EXACT or any(r.match(s) for r in FURNITURE_RE)
+    """Footer furniture (exact lines + the Downloaded/Printed footer). Bare page-edge digits are NOT decided
+    here any more: see classify_edge_digits() [P09-46]."""
+    return s in FURNITURE_EXACT or bool(FURNITURE_RE[0].match(s))
+
+
+def page_number_runs(cands: list) -> tuple:
+    """P09-46: cands = [(page_1based, edge, value)] (unmatched page-edge digits). A page-number sequence is a
+    run of >= PAGE_RUN_MIN consecutive pages at the same edge where value - page_1based is the same constant.
+    Returns (set of (page, edge, value) inside a run, [(edge, offset, first_page, last_page, n)])."""
+    inside, runs = set(), []
+    for edge in ("top", "bottom"):
+        by_page = {}
+        for p, e, val in cands:
+            if e == edge:
+                by_page.setdefault(p, set()).add(val - p)
+        for off in sorted({o for offs in by_page.values() for o in offs}):
+            ps = sorted(p for p, offs in by_page.items() if off in offs)
+            start = 0
+            for k in range(1, len(ps) + 1):
+                if k == len(ps) or ps[k] != ps[k - 1] + 1:
+                    if k - start >= PAGE_RUN_MIN:
+                        runs.append((edge, off, ps[start], ps[k - 1], k - start))
+                        inside |= {(p, edge, p + off) for p in ps[start:k]}
+                    start = k
+    return inside, runs
+
+
+def classify_edge_digits(cands: list, notes: dict) -> tuple:
+    """P09-46 with Q1 (b). cands = [(page_1based, line_1based, edge, value, Line)]. A digit that equals a
+    footnote number on its page or the next page (family rule) is a 'marker' (left in the body for the marker
+    rule); only the remaining digits can form a 'page_number_sequence' (removed as furniture); everything else
+    is 'unresolved' (left in the body). Returns (labelled [(page, line, edge, value, reason)], runs, removed Lines)."""
+    labelled, unmatched = [], []
+    for p, ln_no, edge, val, line in cands:
+        nums = footnote_numbers(notes, p, p)
+        if str(val) in nums or str(val) in _family_bases(nums):
+            labelled.append((p, ln_no, edge, val, "marker", line))
+        else:
+            unmatched.append((p, ln_no, edge, val, line))
+    inside, runs = page_number_runs([(p, e, v) for p, _, e, v, _ in unmatched])
+    removed = []
+    for p, ln_no, edge, val, line in unmatched:
+        if (p, edge, val) in inside:
+            labelled.append((p, ln_no, edge, val, "page_number_sequence", line))
+            removed.append(line)
+        else:
+            labelled.append((p, ln_no, edge, val, "unresolved", line))
+    labelled.sort(key=lambda x: (x[0], x[1]))
+    return [x[:5] for x in labelled], runs, removed
 
 
 def _body_resumes(page_lines: list) -> set:
@@ -270,12 +335,13 @@ def _body_resumes(page_lines: list) -> set:
 
 def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
     """R3 on every page. pages[idx0] is the raw text of page page_1based(idx0)."""
-    out, notes, furn, midpage, n_foot, rule_drops = [], {}, [], [], 0, []
+    out, notes, furn, midpage, n_foot, rule_drops, cands = [], {}, [], [], 0, [], []
     for idx0, text in enumerate(pages):
         pno = page_1based(idx0)
         raw = text.splitlines()
         nonempty = [i for i, ln in enumerate(raw) if ln.strip()]
-        edge = set(nonempty[:FURNITURE_TOP]) | set(nonempty[-FURNITURE_BOTTOM:])
+        top, bottom = set(nonempty[:FURNITURE_TOP]), set(nonempty[-FURNITURE_BOTTOM:])
+        edge = top | bottom
         kept = []
         for i, ln in enumerate(raw):
             if i in edge and _is_furniture(ln.strip()):
@@ -287,10 +353,16 @@ def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
                 rule_drops.append((pno, i + 1, "P09-32 divider", ln.strip()))
                 continue
             if ln.strip():
-                kept.append(Line(pno, ln, i + 1))
+                line = Line(pno, ln, i + 1)
+                kept.append(line)
+                if i in edge and PAGE_DIGIT_RE.match(ln.strip()):  # P09-46: decided in pass 2
+                    cands.append((pno, i + 1, "top" if i in top else "bottom", int(ln.strip()), line))
         resumes = _body_resumes(kept)
         in_foot, body, foot = False, [], []
         for k, ln in enumerate(kept):
+            if BARE_MARKER_RE.match(ln.text.strip()):              # P09-46: bare numbers never join a block
+                body.append(ln)
+                continue
             if FOOTNOTE_START.match(ln.text):
                 in_foot = True
                 if trace:
@@ -304,8 +376,13 @@ def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
             notes[pno] = [ln.text for ln in foot]
             n_foot += len(foot)
         out.extend(body)
+    edge_digits, runs, removed = classify_edge_digits(cands, notes)  # P09-46 pass 2
+    gone = {id(x) for x in removed}
+    for x in removed:
+        furn.append((x.page, x.text.strip()))
+    out = [ln for ln in out if id(ln) not in gone]
     before, after, orphans = bracket_scan(out)
-    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans)
+    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans, edge_digits, runs)
 
 
 def bracket_scan(lines: list) -> tuple:
@@ -464,14 +541,17 @@ def footnote_numbers(notes: dict, p_first: int, p_last: int) -> set:
 def footnotes_raw(notes: dict, p_first: int, p_last: int) -> list:
     """P09-30/43/44: [{page_1based, number, symbol, text}] in block order over pages p_first .. p_last + 1.
     A new entry starts at a numbered line (P09-29b), at a '*' / '†' / '‡' line (P09-44, field 'symbol'), or
-    (P09-43, unnumbered) after a line ending in '.'; Q1 guard: a line after one ending in ':' or a line starting
-    with a quote mark or '(' stays a continuation. Local meta only; never a date source."""
+    (P09-43, unnumbered) after a line ending in '.'; Q1 guard + P09-43b: a line after one ending in ':' or a line
+    starting with a quote mark, '(', a lowercase letter or a digit stays a continuation. Local meta only; never a
+    date source."""
     out, prev = [], ""
     for p in range(p_first, p_last + 2):
         for ln in notes.get(p, []):
             m, sm = FOOTNOTE_NUMBER_RE.match(ln), SYMBOL_RE.match(ln)
+            first = ln.lstrip()[:1]
             starts_new = (not out or m or sm
-                          or (prev.endswith(".") and not ln.lstrip().startswith(QUOTE_OR_PAREN)))
+                          or (prev.endswith(".") and not ln.lstrip().startswith(QUOTE_OR_PAREN)
+                              and not first.islower() and not first.isdigit()))      # P09-43b
             if starts_new:
                 out.append({"page_1based": p, "number": m.group(1) if m else None,
                             "symbol": sm.group(1) if (sm and not m) else None, "text": ln.strip()})
@@ -876,6 +956,24 @@ def _rules_tsv(views: list) -> str:
     return "\n".join(out) + "\n"
 
 
+def _edge_tsv(views: list) -> str:
+    """P09-46: PAGE-EDGE-DIGITS.tsv (whole editions)."""
+    out = ["file\tpage_1based\tline_1based\tedge\tvalue\treason"]
+    out += [f"{v.key}.pdf\t{p}\t{ln}\t{e}\t{val}\t{reason}" for v in views for p, ln, e, val, reason in v.cleaned.edge_digits]
+    return "\n".join(out) + "\n"
+
+
+def _edge_summary(views: list) -> str:
+    """P09-46: per edition, reasons and page-number sequence runs (edge, offset, pages covered)."""
+    rows = []
+    for v in views:
+        c = {r: sum(1 for x in v.cleaned.edge_digits if x[4] == r) for r in ("marker", "page_number_sequence", "unresolved")}
+        runs = "; ".join(f"{e} offset {o} pages {a}-{b} (n={n})" for e, o, a, b, n in v.cleaned.page_runs) or "none"
+        rows.append(f"{v.key:<15} edge digits={len(v.cleaned.edge_digits):>4} marker={c['marker']:>4} "
+                    f"page_number_sequence={c['page_number_sequence']:>3} unresolved={c['unresolved']:>4} | runs: {runs}")
+    return "\n".join(rows) + "\n"
+
+
 def _tsv_cell(s: str) -> str:
     return s.replace("\t", " ").replace("\n", " / ")
 
@@ -911,12 +1009,14 @@ def run_locate_all(raw: Path, out_dir: Path) -> int:
                     lines_out.append(f"{act:<5} {'Sch ' + roman:<10} {key:<15} {st:<10} {len(hits):>2} "
                                      f"{','.join(map(str, hits)) or '-':<16}")
     lines_out.append("totals: " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())))
-    text = "\n".join(lines_out) + "\n\nR0 / R3 COUNTS\n" + _census_counts(views)
+    text = ("\n".join(lines_out) + "\n\nR0 / R3 COUNTS\n" + _census_counts(views)
+            + "\nP09-46 PAGE-EDGE DIGITS\n" + _edge_summary(views))
     print(text, end="")
     _write_new(out_dir / "LOCATE-ALL.txt", text)
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
-    print(f"written {out_dir / 'LOCATE-ALL.txt'}, DROPPED-PAGES.tsv and DROPPED-RULES.tsv")
+    _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
+    print(f"written {out_dir / 'LOCATE-ALL.txt'}, DROPPED-PAGES.tsv, DROPPED-RULES.tsv and PAGE-EDGE-DIGITS.tsv")
     return 0
 
 
@@ -955,6 +1055,7 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
     _write_new(out_dir / "UNRESOLVED.md", "\n".join(unresolved_md) + "\n")
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
+    _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
     mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers\tmatch"]
     mk += [f"{r['edition']}.pdf\t{r['act']} s.{r['section']}\t{d['type']}\t{d['page_1based']}\t{d['line_1based']}\t"
            f"{' '.join(d['numbers'])}\t{' '.join(m or '-' for m in d['match'])}"
@@ -1140,6 +1241,102 @@ def print_pilot(results: list) -> None:
                   f"candidates={[c['page_1based'] for c in r['candidates']]}")
 
 
+# ---------------------------------------------------------------- P09-47 marker confirmation (check only)
+
+CONFIRM_RATIO, RAISE_FRACTION = 0.85, 0.15
+
+
+def effective_run(text: str, cm: list, tm: list, font_size: float) -> dict:
+    """One pypdf visitor run -> {s, size, x, y}: size = font_size x the vertical scale of tm x cm; (x, y) = the
+    translation of tm x cm (PDF units, y upwards)."""
+    a, b, c, d, e, f = tm
+    A, B, C, D, E, F = cm
+    m = (a * A + b * C, a * B + b * D, c * A + d * C, c * B + d * D, e * A + f * C + E, e * B + f * D + F)
+    return {"s": text.strip(), "size": (font_size or 0) * (m[2] ** 2 + m[3] ** 2) ** 0.5, "x": m[4], "y": m[5]}
+
+
+def mark_runs(runs: list) -> float:
+    """Adds 'ratio' and 'raised' to each run; returns the page's most common size (weighted by characters).
+    raised = baseline >= RAISE_FRACTION x body above the nearest body-size run within one body size vertically
+    (None when no such run exists)."""
+    weight = {}
+    for r in runs:
+        weight[round(r["size"], 1)] = weight.get(round(r["size"], 1), 0) + len(r["s"])
+    body = max(weight, key=weight.get) if weight else 0
+    for r in runs:
+        r["ratio"] = r["size"] / body if body else 0
+        refs = [q for q in runs if q is not r and q["size"] >= 0.9 * body and abs(q["y"] - r["y"]) <= body]
+        if refs and body:
+            ref = min(refs, key=lambda q: (abs(q["y"] - r["y"]) > 0.05 * body, abs(q["x"] - r["x"])))
+            r["raised"] = (r["y"] - ref["y"]) >= RAISE_FRACTION * body
+        else:
+            r["raised"] = None
+    return body
+
+
+def classify_marker(runs: list, token: str, line_text: str | None = None) -> dict:
+    """P09-47: label one dropped marker token against the page's runs (after mark_runs)."""
+    cands = [r for r in runs if r["s"] == token or (line_text and r["s"] == line_text)]
+    if not cands:
+        return {"ratio": None, "raised": None, "candidates": 0, "label": "no_run"}
+    best = next((r for r in cands if r["raised"] or r["ratio"] <= CONFIRM_RATIO), cands[0])
+    ok = bool(best["raised"]) or best["ratio"] <= CONFIRM_RATIO
+    return {"ratio": round(best["ratio"], 2), "raised": best["raised"], "candidates": len(cands),
+            "label": "confirmed" if ok else "unconfirmed"}
+
+
+def page_visitor_runs(reader, page: int) -> list:
+    runs = []
+
+    def vis(text, cm, tm, font_dict, font_size):
+        if text and text.strip():
+            runs.append(effective_run(text, cm, tm, font_size))
+    reader.pages[idx0_from_page(page)].extract_text(visitor_text=vis)
+    return runs
+
+
+def run_confirm_markers(folder: Path, raw: Path) -> Path:
+    """P09-47: MARKER-CONFIRM.md for every dropped marker in a pilot folder. Check only; nothing is put back."""
+    from pypdf import PdfReader
+    readers, cache, rows = {}, {}, []
+    for meta_path in sorted(folder.glob("*.meta.json")):
+        m = json.loads(meta_path.read_text(encoding="utf-8"))
+        if m.get("status") != "FOUND":
+            continue
+        for d in m["dropped_markers"]:
+            key = (m["edition"], d["page_1based"])
+            if key not in cache:
+                if m["edition"] not in readers:
+                    readers[m["edition"]] = PdfReader(str(raw / f"{m['edition']}.pdf"))
+                runs = page_visitor_runs(readers[m["edition"]], d["page_1based"])
+                mark_runs(runs)
+                cache[key] = runs
+            for tok in d["numbers"]:
+                c = classify_marker(cache[key], tok, " ".join(d["numbers"]))
+                rows.append((f"{m['edition']}.pdf", f"{m['act']} s.{m['section']}", d["page_1based"], d["line_1based"],
+                             d["type"], tok, c))
+    seen, uniq = set(), []
+    for r in rows:                                   # a page shared by two pilot sections is reported once
+        k = (r[0], r[2], r[3], r[5])
+        if k not in seen:
+            seen.add(k)
+            uniq.append(r)
+    counts = {lab: sum(1 for r in uniq if r[6]["label"] == lab) for lab in ("confirmed", "unconfirmed", "no_run")}
+    out = ["# MARKER CONFIRM (P09-47, check only; nothing put back)", "",
+           f"rule: confirmed = a visitor run with the same text is raised, or its size ratio <= {CONFIRM_RATIO} "
+           "vs the page's most common size; else unconfirmed; no_run = no run with that text.", "",
+           f"tokens: {len(uniq)}  " + "  ".join(f"{k}={v}" for k, v in counts.items()), "",
+           "| file | section | page_1based | line_1based | type | token | ratio | raised | candidates | label |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
+    for f, sec, p, ln, typ, tok, c in uniq:
+        out.append(f"| {f} | {sec} | {p} | {ln} | {typ} | {tok} | {c['ratio']} | {c['raised']} | {c['candidates']} | "
+                   f"{c['label']} |")
+    path = folder / "MARKER-CONFIRM.md"
+    _write_new(path, "\n".join(out) + "\n")
+    print(f"P09-47 tokens={len(uniq)} " + " ".join(f"{k}={v}" for k, v in counts.items()))
+    return path
+
+
 def _word_diff(old: str, new: str, context: int = 6) -> list:
     a, b = old.split(), new.split()
     out = []
@@ -1199,9 +1396,14 @@ def main(argv=None) -> int:
     mode.add_argument("--pilot", action="store_true")
     mode.add_argument("--show-rules", action="store_true")
     mode.add_argument("--pilot-diff", nargs=2, metavar=("OLD_DIR", "NEW_DIR"))
+    mode.add_argument("--confirm-markers", metavar="PILOT_DIR", help="P09-47 check-only marker report")
     ap.add_argument("--raw-dir", help="download folder (default: newest dated folder under _raw/)")
     ap.add_argument("--jobs", type=int, default=1, help="--prepare: parallel processes")
     args = ap.parse_args(argv)
+    if args.confirm_markers:
+        path = run_confirm_markers(Path(args.confirm_markers), Path(args.raw_dir) if args.raw_dir else latest_raw_dir())
+        print(f"written {path}")
+        return 0
     if args.pilot_diff:
         path = pilot_diff(Path(args.pilot_diff[0]), Path(args.pilot_diff[1]))
         print(f"written {path}")
@@ -1218,6 +1420,7 @@ def main(argv=None) -> int:
         results, views = run_pilot(raw, out)
         print_pilot(results)
         print(pilot_counts(results, views), end="")
+        print("P09-46 page-edge digits (whole editions):\n" + _edge_summary(views), end="")
         print(f"written {out}")
         return 0
     trace = Trace()

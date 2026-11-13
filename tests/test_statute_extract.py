@@ -153,10 +153,11 @@ def test_footer_removed_only_at_page_edge():
     assert len(cleaned.furniture) == 3
 
 
-def test_bare_page_number_removed_at_edge_only():
+def test_lone_edge_digit_is_kept_and_logged_unresolved():
     cleaned = se.clean_pages(["12\nFake heading.\n3. Fake.\n45\nfake tail.\nmore.\nlast."])
     texts = [ln.text for ln in cleaned.lines]
-    assert "12" not in texts and "45" in texts
+    assert "12" in texts and "45" in texts                         # P09-46: no sequence, no footnote -> stays
+    assert cleaned.edge_digits == [(1, 1, "top", 12, "unresolved")]   # '45' is not at the page edge
 
 
 def test_footnote_block_moved_verbatim_and_inline_marker_dropped():
@@ -655,3 +656,94 @@ def test_duplicate_footnote_number_is_ambiguous_never_picked():
                {"page_1based": 2, "number": "3", "symbol": None, "text": "3. B."}]
     res = se.link_markers([_tok("3", 1)], [], entries)
     assert res["links"][0]["link"] == "ambiguous" and res["links"][0]["footnote"] is None
+
+
+# ---------------------------------------------------------------- v4: P09-46 page-edge digits
+
+def _page(n, foot=""):
+    return f"Fake heading {n}.\nfake body line one.\nfake body line two.\nfake body line three.{foot}"
+
+
+def test_page_number_sequence_of_five_is_furniture_four_is_not():
+    five = [_page(n) + f"\n{n + 10}" for n in range(1, 6)]
+    c5 = se.clean_pages(five)
+    assert [x[4] for x in c5.edge_digits] == ["page_number_sequence"] * 5
+    assert c5.page_runs == [("bottom", 10, 1, 5, 5)] and all(ln.text != "11" for ln in c5.lines)
+    c4 = se.clean_pages(five[:4])
+    assert [x[4] for x in c4.edge_digits] == ["unresolved"] * 4 and c4.page_runs == []
+
+
+def test_digits_matching_footnotes_never_form_a_page_number_run():
+    pages = [_page(n, f"\n{n + 10}. Ins. by the Fake Act.") + f"\n{n + 10}" for n in range(1, 7)]
+    c = se.clean_pages(pages)
+    assert [x[4] for x in c.edge_digits] == ["marker"] * 6 and c.page_runs == []
+    assert "11" in [ln.text for ln in c.lines]                    # left in the body for the marker rule
+
+
+def test_edge_marker_after_footnote_is_dropped_and_linked():
+    page = ("Fake heading.\n7. Fake text of the section.\nmore fake words.\nmore fake.\n"
+            "80. Ins. by the Fake Act, 2099.\n80")
+    r = body([page], "7")
+    assert "80" not in r["body"].splitlines()
+    assert [(x["token"], x["link"], x["footnote"]) for x in r["marker_links"]["links"]] == [("80", "number", "80")]
+    assert r["footnotes_raw"][0]["text"] == "80. Ins. by the Fake Act, 2099."     # never joined the block
+
+
+def test_unmatched_edge_digit_stays_in_body_and_is_listed():
+    r = body(["Fake heading.\n7. Fake text.\nmore fake words.\nmore fake.\n33"], "7")
+    assert "33" in r["body"].splitlines() and r["unresolved_markers"][0]["numbers"] == ["33"]
+
+
+def test_bare_number_line_after_a_footnote_line_stays_in_body():
+    cleaned = se.clean_pages(["Fake heading.\n7. Fake.\n5. Ins. by the Fake Act.\n5\nfake filler.\nfake filler.\nend."])
+    assert cleaned.notes[1][0] == "5. Ins. by the Fake Act." and "5" not in cleaned.notes[1]
+    assert "5" in [ln.text for ln in cleaned.lines]
+
+
+def test_edge_digit_matching_lettered_footnote_base_is_a_marker():
+    c = se.clean_pages(["Fake heading.\nfake body.\nfake body two.\n25a. Ins. by the Fake Act.\n25"])
+    assert c.edge_digits[0][4] == "marker"
+
+
+# ---------------------------------------------------------------- v4: P09-43b split guard
+
+def test_lowercase_or_digit_start_stays_a_continuation():
+    notes = {1: ["5. Sub. by the Fake Act, 2099, w.e.f.", "1-4-2099.", "6. Ins. by the Fake Act.",
+                 "w.e.f. fake continuation.", "See also fake rule 9."]}
+    raw = se.footnotes_raw(notes, 1, 1)
+    assert [(e["number"], e["text"].count("\n") + 1) for e in raw] == [("5", 2), ("6", 2), (None, 1)]
+
+
+# ---------------------------------------------------------------- v4: P09-47 marker confirmation (pure functions)
+
+def test_effective_run_size_and_baseline():
+    r = se.effective_run(" 84 ", [1, 0, 0, 1, 10, 20], [13.33, 0, 0, 13.33, 100, 200], 1.0)
+    assert r["s"] == "84" and abs(r["size"] - 13.33) < 1e-6 and (r["x"], r["y"]) == (110, 220)
+
+
+def _runs(*specs):
+    runs = [{"s": s, "size": size, "x": x, "y": y} for s, size, x, y in specs]
+    se.mark_runs(runs)
+    return runs
+
+
+def test_marker_confirmed_by_raised_or_ratio():
+    raised = _runs(("fake body words here", 16, 0, 100), ("7", 16, 200, 104))
+    assert se.classify_marker(raised, "7")["label"] == "confirmed"
+    small = _runs(("fake body words here", 16, 0, 100), ("8", 13.33, 200, 100))
+    c = se.classify_marker(small, "8")
+    assert c["label"] == "confirmed" and c["ratio"] == 0.83 and c["raised"] is False
+
+
+def test_marker_unconfirmed_full_size_level_and_no_run():
+    runs = _runs(("fake body words here", 16, 0, 100), ("9", 16, 200, 100))
+    assert se.classify_marker(runs, "9")["label"] == "unconfirmed"
+    assert se.classify_marker(runs, "42") == {"ratio": None, "raised": None, "candidates": 0, "label": "no_run"}
+
+
+# ---------------------------------------------------------------- P09-48 pytest never collects the local folder
+
+def test_conftest_ignores_local_text_folder():
+    from pathlib import Path
+    text = (Path(__file__).resolve().parent.parent / "conftest.py").read_text(encoding="utf-8")
+    assert 'collect_ignore = ["divergence/statutes/_local_text"]' in text
