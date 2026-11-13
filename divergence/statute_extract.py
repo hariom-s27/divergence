@@ -112,6 +112,12 @@ Extractor v6 changes (owner decisions P09-50, P09-51, P09-52 with Q1 move-and-fl
       no opening quote / unclosed -> nothing moved, logged. QUOTE-CONTINUATIONS.tsv logs every case with the 2
       kept lines after the close; flags '>40 lines' and 'apostrophe_risk' (a single-quote close right after a letter).
 
+Extractor v7 changes (owner decision P09-53, Q1 yes):
+  P09-53  R2 also ends a section at a structural heading line (CHAPTER / PART / SCHEDULE, optionally after a marker
+      and/or '['); the heading and everything after it are cut. All-caps title lines are cut only directly after
+      such a heading (with it) or directly before the next section heading with no body line between; never
+      elsewhere. Every cut is logged in STRUCTURAL-TAILS.tsv. Q1: the Schedules region also starts at '[SCHEDULE ...'.
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -138,7 +144,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v6"
+EXTRACTOR_VERSION = "v7"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -201,6 +207,9 @@ CHAPTER_RE = re.compile(r"^\s*CHAPTER\s+[IVXLC]+(?:[\-–]?[A-Z]{1,3})?\s*$")
 PART_RE = re.compile(r"^\s*[A-Z]{1,2}\.\s?[—–-]\s?\S")
 ACT_TITLE_RE = re.compile(r"^\s*[A-Z][A-Z\-() ]*ACT, \d{4}\*?\s*$")
 SCHEDULE_LINE_RE = re.compile(r"^\s*(?:THE\s+[A-Z]+\s+)?SCHEDULE(?:\s+[IVXL]+)?\s*$")
+STRUCT_HEADING_RE = re.compile(                    # P09-53: optional marker and '[', then CHAPTER / PART / SCHEDULE
+    r"^\s*(?:\d+[a-z]?\s*)?\[?\s*(?:CHAPTER\s+[IVXLC]+(?:\s*[\-–]?\s*[A-Z]{1,3})?|PART\s+[A-Z0-9IVXL]+|"
+    r"(?:THE\s+[A-Z]+\s+)?SCHEDULE(?:\s+[IVXL]+)?)\s*\]?\s*$")
 TABLE_START_RE = re.compile(r"^\s*(?:TABLE|Table)\s*$")
 TABLE_END_RE = re.compile(r"^\[?(?:\(\d+[A-Z]*\)\s|Explanation)")          # P09-31 (unindented)
 SUBSECTION_LINE_RE = re.compile(r"^\[?\(\d+[A-Z]*\)\s")                       # unindented '(n) ' / '[(n) '
@@ -643,8 +652,10 @@ def _heading_before(lines: list, i: int):
 
 
 def schedules_from(lines: list) -> int:
-    """Index of the first standalone SCHEDULE line (Schedules region runs to the end), else len(lines)."""
-    return next((i for i, ln in enumerate(lines) if SCHEDULE_LINE_RE.match(ln.text)), len(lines))
+    """Index of the first standalone SCHEDULE line (Schedules region runs to the end), else len(lines).
+    P09-53 Q1: '[SCHEDULE I' / marker + '[SCHEDULE ...' count too."""
+    return next((i for i, ln in enumerate(lines) if SCHEDULE_LINE_RE.match(ln.text)
+                 or (STRUCT_HEADING_RE.match(ln.text) and "SCHEDULE" in ln.text)), len(lines))
 
 
 def find_starts(lines: list) -> list:
@@ -672,19 +683,39 @@ def locate(lines: list, starts: list, number: str) -> dict:
         return {"status": "NOT_FOUND" if not hits else "UNRESOLVED", "candidates": cands}
     s = hits[0]
     key = section_key(number)
-    end = len(lines)
+    end, by_next_heading = len(lines), False
     for t in starts:
         if t.idx > s.idx and section_key(t.number) > key:
-            end = t.heading_idx
+            end, by_next_heading = t.heading_idx, True
             break
     for j in range(s.idx + 1, end):
         if _boundary(lines[j].text):
-            end = j
+            end, by_next_heading = j, False
             break
+    tails = []
+    for j in range(s.idx + 1, end):                 # P09-53: a structural heading ends the section (cut it + all after)
+        if STRUCT_HEADING_RE.match(lines[j].text):
+            tails.append(_tail("structural_heading", lines, j, end))
+            end, by_next_heading = j, False
+            break
+    if by_next_heading:                             # P09-53: all-caps title lines right before the next heading
+        k = end
+        while k - 1 > s.idx and ALLCAPS_RE.match(lines[k - 1].text.strip()):
+            k -= 1
+        if k < end:
+            tails.append(_tail("trailing_caps", lines, k, end))
+            end = k
     pages = sorted({ln.page for ln in lines[s.idx:end]})
     return {"status": "FOUND", "internal_line_idx0_start": s.idx, "internal_line_idx0_end": end,
             "internal_heading_line_idx0": s.heading_idx, "heading": s.heading, "pages_1based": pages,
-            "candidates": cands}
+            "candidates": cands, "structural_tails": tails}
+
+
+def _tail(reason: str, lines: list, a: int, b: int) -> dict:
+    """P09-53: one cut (lines a .. b-1) for STRUCTURAL-TAILS.tsv."""
+    return {"reason": reason, "heading_page_1based": lines[a].page, "heading_line_1based": lines[a].line_no,
+            "heading_text": lines[a].text.strip()[:80], "lines_cut": b - a,
+            "first_cut_line": lines[a].text.strip()[:100], "last_cut_line": lines[b - 1].text.strip()[:100]}
 
 
 # ---------------------------------------------------------------- M: footnote markers + editor notes (one section)
@@ -1265,6 +1296,27 @@ def _quote_outputs(views: list) -> tuple:
     return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
 
 
+def _structural_tails_outputs(views: list) -> tuple:
+    """P09-53: (STRUCTURAL-TAILS.tsv over all SECTION-LIST sections x editions, printed summary)."""
+    sl = json.loads((STATUTES_DIR / "SECTION-LIST.json").read_text(encoding="utf-8"))
+    secs = {"1961": [s["section"] for s in sl["sections_1961"]], "2025": [s["section"] for s in sl["sections_2025_only"]]}
+    act_of = {k: a for a in EDITIONS for k in EDITIONS[a]}
+    tsv = ["edition\tsection\theading_page_1based\theading_line_1based\theading_text\tlines_cut\tfirst_cut_line\t"
+           "last_cut_line\treason"]
+    summary = []
+    for v in views:
+        act, n_rows, n_lines = act_of[v.key], 0, 0
+        for sec in secs[act]:
+            loc = locate(v.cleaned.lines, v.starts, sec)
+            for t in loc.get("structural_tails", []):
+                n_rows, n_lines = n_rows + 1, n_lines + t["lines_cut"]
+                tsv.append(f"{v.key}\t{act} s.{sec}\t{t['heading_page_1based']}\t{t['heading_line_1based']}\t"
+                           f"{_tsv_cell(t['heading_text'])}\t{t['lines_cut']}\t{_tsv_cell(t['first_cut_line'])}\t"
+                           f"{_tsv_cell(t['last_cut_line'])}\t{t['reason']}")
+        summary.append(f"{v.key:<15} cuts={n_rows} lines cut={n_lines}")
+    return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
+
+
 def _footnote_like_md(views: list) -> tuple:
     """P09-49: FOOTNOTE-LIKE-IN-BODY.md over all SECTION-LIST sections x editions (report only)."""
     sl = json.loads((STATUTES_DIR / "SECTION-LIST.json").read_text(encoding="utf-8"))
@@ -1350,10 +1402,13 @@ def run_locate_all(raw: Path, out_dir: Path) -> int:
             + "\nP09-46 PAGE-EDGE DIGITS\n" + _edge_summary(views)
             + "\nP09-49 MOVED BLOCKS (current FOOTNOTE_START vs v4)\n" + mb_sum
             + "\nP09-52 QUOTE CONTINUATIONS\n" + qc_sum)
+    st_tsv, st_sum = _structural_tails_outputs(views)
+    text += "\nP09-53 STRUCTURAL TAILS (SECTION-LIST sections)\n" + st_sum
     print(text, end="")
     _write_new(out_dir / "LOCATE-ALL.txt", text)
     _write_new(out_dir / "MOVED-BLOCKS.tsv", mb_tsv)
     _write_new(out_dir / "QUOTE-CONTINUATIONS.tsv", qc_tsv)
+    _write_new(out_dir / "STRUCTURAL-TAILS.tsv", st_tsv)
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
     _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
@@ -1403,8 +1458,10 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
     _write_new(out_dir / "FOOTNOTE-LIKE-IN-BODY.md", fl_md)
     qc_tsv, qc_sum = _quote_outputs(views)
     _write_new(out_dir / "QUOTE-CONTINUATIONS.tsv", qc_tsv)
+    st_tsv, st_sum = _structural_tails_outputs(views)
+    _write_new(out_dir / "STRUCTURAL-TAILS.tsv", st_tsv)
     print("P09-49 moved blocks (current FOOTNOTE_START vs v4):\n" + mb_sum + fl_sum
-          + "P09-52 quote continuations:\n" + qc_sum, end="")
+          + "P09-52 quote continuations:\n" + qc_sum + "P09-53 structural tails (SECTION-LIST sections):\n" + st_sum, end="")
     mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers\tmatch"]
     mk += [f"{r['edition']}.pdf\t{r['act']} s.{r['section']}\t{d['type']}\t{d['page_1based']}\t{d['line_1based']}\t"
            f"{' '.join(d['numbers'])}\t{' '.join(m or '-' for m in d['match'])}"

@@ -905,3 +905,42 @@ def test_long_continuation_flagged_and_apostrophe_risk():
     pages = _q_pages("9. Sub. by the Fake Act. It read as under:\n'fake old start", tail + "\nend of old assessees'")
     e = se.clean_pages(pages).quote_log[0]
     assert e["status"] == "moved_flagged" and e["flags"] == [">40 lines", "apostrophe_risk"]
+
+
+# ---------------------------------------------------------------- v7: P09-53 structural headings end a section
+
+@pytest.mark.parametrize("heading", ["[SCHEDULE I", "5[CHAPTER XII", "PART B", "SCHEDULE III]"])
+def test_structural_heading_ends_section_and_is_logged(heading):
+    page = (f"Fake repeal.\n536. (1) Fake text of the section.\nfake last line of the section.\n{heading}\n"
+            "[See fake section 9]\nFAKE CONDITIONS TITLE\n1. (1) Fake schedule item.")
+    cleaned, starts = view(page)
+    r = se.extract_section(cleaned, starts, "536")
+    assert r["body"] == "536. (1) Fake text of the section.\nfake last line of the section.\n"
+    t = r["structural_tails"][0]
+    assert (t["reason"], t["heading_text"], t["lines_cut"]) == ("structural_heading", heading, 4)
+
+
+def test_trailing_caps_before_next_heading_trimmed_and_logged():
+    page = "Fake heading.\n7. Fake text.\nFAKE PART TITLE\nNext fake heading.\n8. Fake eight."
+    cleaned, starts = view(page)
+    r = se.extract_section(cleaned, starts, "7")
+    assert r["body"] == "7. Fake text.\n" and r["structural_tails"][0]["reason"] == "trailing_caps"
+
+
+def test_caps_table_title_inside_section_is_not_cut():
+    page = ("Fake TDS.\n393. (1) Fake text,—\nTABLE\nFAKE RATES TITLE\n1. Fake row\n2. Fake row\n"
+            "(2) Fake later sub-section.\nNext fake heading.\n394. Fake.")
+    r = body([page], "393")
+    assert "FAKE RATES TITLE" in r["body"] and "(2) Fake later sub-section." in r["body"] and r["structural_tails"] == []
+
+
+def test_schedule_mentioned_in_running_text_is_not_a_heading():
+    page = "Fake heading.\n7. Fake text referring to the\nSCHEDULE of fake rates here.\nmore.\nNext fake heading.\n8. Fake."
+    r = body([page], "7")
+    assert "SCHEDULE of fake rates here." in r["body"] and r["structural_tails"] == []
+
+
+def test_bracketed_schedule_starts_schedules_region():
+    page = "Fake heading.\n7. Fake text.\n[SCHEDULE I\nFake item heading.\n8. Fake schedule item."
+    cleaned, starts = view(page)
+    assert se.schedules_from(cleaned.lines) == 2 and [s.number for s in starts] == ["7"]
