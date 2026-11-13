@@ -404,7 +404,8 @@ def test_line_marker_dropped_when_all_numbers_are_footnotes():
             + "\n3. Ins. by the Fake Act, 2099.\n4. Sub. by the Fake Act, 2099.")
     r = body([page], "7")
     assert "3 4" not in r["body"].splitlines()
-    assert r["dropped_markers"] == [{"type": "line", "page_1based": 1, "line_1based": 3, "numbers": ["3", "4"]}]
+    assert r["dropped_markers"] == [{"type": "line", "page_1based": 1, "line_1based": 3, "pos": 0,
+                                     "numbers": ["3", "4"], "match": ["exact", "exact"]}]
     assert r["unresolved_markers"] == []
 
 
@@ -445,8 +446,8 @@ def test_any_numbered_line_in_footnote_block_counts_and_footnotes_raw_split():
 
 def test_footnotes_raw_continuation_on_next_page_joins_previous_entry():
     raw = se.footnotes_raw({1: ["5. Ins. by the Fake Act,"], 2: ["w.e.f. 1-4-2099.", "6. Sub. fake."]}, 1, 1)
-    assert raw == [{"page_1based": 1, "number": "5", "text": "5. Ins. by the Fake Act,\nw.e.f. 1-4-2099."},
-                   {"page_1based": 2, "number": "6", "text": "6. Sub. fake."}]
+    assert raw == [{"page_1based": 1, "number": "5", "symbol": None, "text": "5. Ins. by the Fake Act,\nw.e.f. 1-4-2099."},
+                   {"page_1based": 2, "number": "6", "symbol": None, "text": "6. Sub. fake."}]
 
 
 # ---------------------------------------------------------------- v2: P09-41 inline markers
@@ -455,7 +456,8 @@ def test_inline_marker_matched_is_dropped():
     page = "Fake heading.\n7. Fake rate of 24[30 per cent] fake." + FILL + "\n24. Sub. by the Fake Act, 2099."
     r = body([page], "7")
     assert r["body"].splitlines()[0] == "7. Fake rate of [30 per cent] fake."
-    assert r["dropped_markers"] == [{"type": "inline", "page_1based": 1, "line_1based": 2, "numbers": ["24"]}]
+    assert r["dropped_markers"] == [{"type": "inline", "page_1based": 1, "line_1based": 2, "pos": 16,
+                                     "numbers": ["24"], "match": ["exact"]}]
     assert r["inline_markers_found"] == 1
 
 
@@ -542,9 +544,114 @@ def test_editor_note_inside_footnote_block_is_not_a_candidate():
 def test_bracket_line_before_heading_moves_to_body():
     r = body(["[\nFake heading.\n7. Fake text.]" + FILL], "7")
     assert r["body"].startswith("[7. Fake text.]") and r["heading"] == "Fake heading."
-    assert r["brackets"] == {"open": 1, "close": 1, "warn": False}
+    assert r["brackets"] == {"carry_in": 0, "carry_out": 0, "orphans": [], "warn": False}
 
 
-def test_bracket_warn_when_counts_differ_and_table_prefixes_excluded():
-    assert se.bracket_counts("[Table 1 Sl. 1] 1. Fake [row\n") == {"open": 1, "close": 0, "warn": True}
-    assert se.bracket_counts("[Table 2 Sl. 3] 3. Fake row\n[fake]\n") == {"open": 1, "close": 1, "warn": False}
+# ---------------------------------------------------------------- v3: P09-42 edition-level brackets
+
+def test_bracket_carried_into_next_section_is_not_a_warn():
+    page = "[Fake first heading.\n7. Fake text.\nFake second heading.\n8. Fake text.]" + FILL
+    cleaned, starts = view(page)
+    r7, r8 = se.extract_section(cleaned, starts, "7"), se.extract_section(cleaned, starts, "8")
+    assert (r7["brackets"]["carry_in"], r7["brackets"]["carry_out"], r7["brackets"]["warn"]) == (0, 1, False)
+    assert (r8["brackets"]["carry_in"], r8["brackets"]["carry_out"], r8["brackets"]["warn"]) == (1, 0, False)
+
+
+def test_orphan_close_bracket_is_listed_with_nearest_marker():
+    page = ("Fake heading.\n7. Fake text.\n3\nfake words that end here;]\nmore fake." + FILL
+            + "\n3. Ins. by the Fake Act, 2099.")
+    r = body([page], "7")
+    o = r["brackets"]["orphans"]
+    assert r["brackets"]["warn"] and [(x["kind"], x["page_1based"], x["line_1based"]) for x in o] == [("]", 1, 4)]
+    assert o[0]["nearest_earlier_marker"]["token"] == "3" and o[0]["nearest_earlier_marker"]["footnote"] == "3"
+
+
+def test_unclosed_open_bracket_at_edition_end_is_an_orphan():
+    before, after, orphans = se.bracket_scan([se.Line(1, "fake [one"), se.Line(1, "two] [three"), se.Line(2, "end")])
+    assert before == [0, 1, 1] and after == [1, 1, 1] and orphans == [(1, "[")]
+
+
+def test_table_prefix_never_counted_as_bracket():
+    cleaned, starts = view("Fake TDS.\n393. (1) Fake,\nTABLE\n1. Fake row\n2. Fake row" + FILL)
+    r = se.extract_section(cleaned, starts, "393")
+    assert "[Table 1 Sl. 1]" in r["body"] and r["brackets"]["orphans"] == []
+
+
+# ---------------------------------------------------------------- v3: P09-43 job 1 (family match, line markers only)
+
+def test_lettered_marker_dropped_by_family_base():
+    page = "Fake heading.\n7. Fake text.\n25a\nmore fake." + FILL + "\n25. Ins. by the Fake Act, 2099."
+    r = body([page], "7")
+    assert "25a" not in r["body"].splitlines()
+    assert r["dropped_markers"][0]["match"] == ["matched_by_family"]
+
+
+def test_lettered_marker_dropped_by_family_sibling():
+    page = "Fake heading.\n7. Fake text.\n25b\nmore fake." + FILL + "\n25c. Ins. by the Fake Act, 2099."
+    r = body([page], "7")
+    assert r["dropped_markers"][0]["numbers"] == ["25b"] and r["dropped_markers"][0]["match"] == ["matched_by_family"]
+
+
+def test_lettered_marker_kept_without_family_and_inline_needs_exact():
+    page = ("Fake heading.\n7. Fake 25a[words] text.\n26a\nmore fake." + FILL + "\n25. Ins. by the Fake Act, 2099.")
+    r = body([page], "7")
+    assert "26a" in r["body"].splitlines() and "25a[words]" in r["body"]          # Q2: inline stays exact
+    assert sorted(u["numbers"][0] for u in r["unresolved_markers"]) == ["25a", "26a"]
+
+
+# ---------------------------------------------------------------- v3: P09-43 unnumbered split (Q1 guard) + P09-44 symbols
+
+def test_unnumbered_split_after_full_stop_with_q1_guard():
+    notes = {1: ["5. Ins. by the Fake Act.", "See also fake rule 9 and", "fake form 2.", "Fake renumbered note.",
+                 "6. Sub. by the Fake Act. Prior to it, fake read as under:", "\"(a) fake old words.", "(b) more old.",
+                 "7. Omitted."]}
+    raw = se.footnotes_raw(notes, 1, 1)
+    assert [(e["number"], e["text"].count("\n") + 1) for e in raw] == [("5", 1), (None, 2), (None, 1), ("6", 3), ("7", 1)]
+
+
+def test_symbol_lines_start_their_own_entries_body_symbols_kept():
+    notes = {1: ["4. Ins. by the Fake Act.", "*Should be read as \"fake\".", "†Now State of Fake.", "‡Fake."]}
+    raw = se.footnotes_raw(notes, 1, 1)
+    assert [e["symbol"] for e in raw] == [None, "*", "†", "‡"] and all(e["number"] is None for e in raw[1:])
+    page = ("Fake heading.\n7. Fake *text here.\n*fake starred line\nmore." + FILL
+            + "\n4. Ins. by the Fake Act.\n*Should be read as fake.")      # R3 blocks start at a numbered note
+    r = body([page], "7")
+    assert "*fake starred line" in r["body"] and r["body_symbol_lines"] == 1 and r["symbol_notes"] == 1
+
+
+# ---------------------------------------------------------------- v3: P09-43 job 2 (links)
+
+def _tok(n, line, kind="line"):
+    return {"type": kind, "page_1based": 1, "line_1based": line, "pos": 0, "numbers": [n], "match": ["exact"]}
+
+
+def test_links_by_number_and_assigned_by_order_when_counts_equal():
+    entries = [{"page_1based": 2, "number": "25", "symbol": None, "text": "25. Ins."},
+               {"page_1based": 2, "number": None, "symbol": None, "text": "first unnumbered."},
+               {"page_1based": 2, "number": None, "symbol": None, "text": "second unnumbered."},
+               {"page_1based": 2, "number": "25c", "symbol": None, "text": "25c. Ins."}]
+    toks = [_tok("25", 1), _tok("25", 2), _tok("25a", 3), _tok("25b", 4), _tok("25c", 5)]
+    res = se.link_markers(toks, [], entries)
+    assert [(x["token"], x["link"], x["footnote"]) for x in res["links"]] == [
+        ("25", "number", "25"), ("25", "number", "25"), ("25a", "assigned_by_order", "unnumbered #1"),
+        ("25b", "assigned_by_order", "unnumbered #2"), ("25c", "number", "25c")]
+    assert res["footnotes_without_marker"] == [] and res["markers_without_footnote"] == []
+
+
+def test_links_unresolved_when_counts_differ_and_lists_filled():
+    entries = [{"page_1based": 2, "number": "1", "symbol": None, "text": "1. Ins."},
+               {"page_1based": 2, "number": None, "symbol": None, "text": "only one unnumbered."},
+               {"page_1based": 2, "number": "4", "symbol": None, "text": "4. Sub."},
+               {"page_1based": 2, "number": "9", "symbol": None, "text": "9. Fake for a neighbour."}]
+    toks = [_tok("1", 1), _tok("2", 2), _tok("3", 3), _tok("4", 4)]
+    res = se.link_markers(toks, [], entries)
+    assert [x["link"] for x in res["links"]] == ["number", None, None, "number"]
+    assert [f["footnote"] for f in res["footnotes_without_marker"]] == ["unnumbered #1", "9"]
+    assert [x["token"] for x in res["markers_without_footnote"]] == ["2", "3"]
+
+
+def test_duplicate_footnote_number_is_ambiguous_never_picked():
+    entries = [{"page_1based": 1, "number": "3", "symbol": None, "text": "3. A."},
+               {"page_1based": 2, "number": "3", "symbol": None, "text": "3. B."}]
+    res = se.link_markers([_tok("3", 1)], [], entries)
+    assert res["links"][0]["link"] == "ambiguous" and res["links"][0]["footnote"] is None

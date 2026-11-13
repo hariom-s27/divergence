@@ -66,6 +66,21 @@ Rules (extractor v1, approved by the owner at the P09 Part B STOP):
       get '[Table k Sl. N] '; a non-sequential numbered line inside a table is listed as unresolved.
       (v1 also labelled roman sub-rows [D2]; v2 does not, P09-31.)
 
+Extractor v3 changes (owner decisions P09-42 .. P09-44, approved with Q1 guard, Q2 line markers only):
+  P09-42  brackets are matched over the WHOLE edition (kept lines after R0/R3, page order) with a stack.
+      Each section records carry_in (open depth at its first heading line), carry_out (depth after its last
+      line) and the edition-level orphans inside it (a ']' with nothing open, or a '[' never closed before
+      the end of the file). WARN = an orphan only; the v2 per-section count WARN is removed.
+  P09-43  job 1: a bare LINE marker token 'Na' (digits + one letter) is also dropped when footnote 'N' or a
+      sibling 'N<letter>' exists in the P09-29a range ('matched_by_family', logged). Job 2: markers (body
+      order) are linked to footnote entries (block order): by number when the number occurs exactly once in
+      the range ('number'); unnumbered entries between numbered entries N and M are assigned in order to the
+      unlinked markers between the markers of N and M ONLY when the counts are equal ('assigned_by_order');
+      otherwise unresolved. Unnumbered split: a new entry starts after a line ending in '.', except (Q1
+      guard) a line after one ending in ':' or a line starting with a quote mark or '(' stays a continuation.
+  P09-44  in a footnote block a line starting with '*', '†' or '‡' starts its own footnotes_raw entry
+      (field 'symbol'); body symbols stay as printed; both are counted.
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -92,7 +107,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v2"
+EXTRACTOR_VERSION = "v3"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -142,6 +157,10 @@ DIVIDER_RE = re.compile(r"^[_\-—]{3,}$")                                      
 HYPHEN_END_RE = re.compile(r"[^\W\d_]-$")                                     # P09-33b: ASCII '-' after a letter
 EDITOR_NOTE_RE = re.compile(r"shall be (?:inserted|substituted|omitted|renumbered)")   # P09-35
 TABLE_PREFIX_RE = re.compile(r"^\[Table \d+ Sl\. \d+\] ")
+SYMBOL_RE = re.compile(r"^\s*([*†‡])")                                         # P09-44
+FAMILY_TOKEN_RE = re.compile(r"^(\d+)[a-z]$")                                 # P09-43 job 1
+NUMBER_BASE_RE = re.compile(r"^(\d+)")
+QUOTE_OR_PAREN = ("\"", "“", "'", "‘", "(")                                    # P09-43 Q1 guard
 ROW_RE = re.compile(r"^\s*(\d{1,2})\.\s")
 PART_NUMBER_RE = re.compile(r"^\s*\d{1,3}[A-Z]{0,5}\s?\.\s*[—–-]")
 NUMBERED_RE = re.compile(r"^\s*\d{1,2}\.\s")
@@ -167,6 +186,9 @@ class Cleaned:
     midpage_footnote_pages: list = field(default_factory=list)
     footnote_lines: int = 0
     rule_drops: list = field(default_factory=list)  # (page_1based, line_1based, rule, text) [P09-32]
+    depth_before: list = field(default_factory=list)  # P09-42: open '[' depth before each kept line
+    depth_after: list = field(default_factory=list)   # P09-42: open '[' depth after each kept line
+    orphans: list = field(default_factory=list)       # P09-42: (line_idx, kind '[' or ']')
 
 
 @dataclass
@@ -282,7 +304,28 @@ def clean_pages(pages: list, trace: Trace | None = None) -> Cleaned:
             notes[pno] = [ln.text for ln in foot]
             n_foot += len(foot)
         out.extend(body)
-    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops)
+    before, after, orphans = bracket_scan(out)
+    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans)
+
+
+def bracket_scan(lines: list) -> tuple:
+    """P09-42: one stack over all kept lines in page order. Returns (depth_before, depth_after, orphans);
+    orphans = [(line_idx, ']')] for a ']' with nothing open, plus [(line_idx, '[')] for every '[' still open
+    at the end of the edition."""
+    stack, before, after, orphans = [], [], [], []
+    for i, ln in enumerate(lines):
+        before.append(len(stack))
+        for ch in ln.text:
+            if ch == "[":
+                stack.append(i)
+            elif ch == "]":
+                if stack:
+                    stack.pop()
+                else:
+                    orphans.append((i, "]"))
+        after.append(len(stack))
+    orphans += [(i, "[") for i in stack]
+    return before, after, sorted(orphans)
 
 
 # ---------------------------------------------------------------- R5 state machine (shared by R1 and R5)
@@ -419,29 +462,47 @@ def footnote_numbers(notes: dict, p_first: int, p_last: int) -> set:
 
 
 def footnotes_raw(notes: dict, p_first: int, p_last: int) -> list:
-    """P09-30: [{page_1based, number, text}] split at every numbered line (P09-29b); a continuation at
-    the top of a page joins the previous entry. Local meta only; never a date source."""
-    out = []
+    """P09-30/43/44: [{page_1based, number, symbol, text}] in block order over pages p_first .. p_last + 1.
+    A new entry starts at a numbered line (P09-29b), at a '*' / '†' / '‡' line (P09-44, field 'symbol'), or
+    (P09-43, unnumbered) after a line ending in '.'; Q1 guard: a line after one ending in ':' or a line starting
+    with a quote mark or '(' stays a continuation. Local meta only; never a date source."""
+    out, prev = [], ""
     for p in range(p_first, p_last + 2):
         for ln in notes.get(p, []):
-            m = FOOTNOTE_NUMBER_RE.match(ln)
-            if m or not out:
-                out.append({"page_1based": p, "number": m.group(1) if m else None, "text": ln.strip()})
+            m, sm = FOOTNOTE_NUMBER_RE.match(ln), SYMBOL_RE.match(ln)
+            starts_new = (not out or m or sm
+                          or (prev.endswith(".") and not ln.lstrip().startswith(QUOTE_OR_PAREN)))
+            if starts_new:
+                out.append({"page_1based": p, "number": m.group(1) if m else None,
+                            "symbol": sm.group(1) if (sm and not m) else None, "text": ln.strip()})
             else:
                 out[-1]["text"] += "\n" + ln.strip()
+            prev = ln.rstrip()
     return out
 
 
+def _family_bases(numbers: set) -> set:
+    return {NUMBER_BASE_RE.match(n).group(1) for n in numbers if NUMBER_BASE_RE.match(n)}
+
+
 def apply_markers(seg: list, numbers: set) -> tuple:
-    """P09-29 (line markers) then P09-41 (inline markers). Returns (lines, dropped, unresolved, inline_found);
-    dropped / unresolved entries: {type, page_1based, line_1based, numbers[, missing][, context]}."""
+    """P09-29 (line markers, with the P09-43 job-1 family match) then P09-41 (inline markers, exact only).
+    Returns (lines, dropped, unresolved, inline_found); dropped / unresolved entries:
+    {type, page_1based, line_1based, pos, numbers, match[, missing][, context]}; match[k] is 'exact' /
+    'matched_by_family' / None for numbers[k]."""
     kept, dropped, unresolved, inline_found = [], [], [], 0
+    bases = _family_bases(numbers)
     for ln in seg:
         s = ln.text.strip()
         if BARE_MARKER_RE.match(s):
             nums = s.split()
-            missing = [n for n in nums if n not in numbers]
-            entry = {"type": "line", "page_1based": ln.page, "line_1based": ln.line_no, "numbers": nums}
+            match = []
+            for n in nums:
+                fm = FAMILY_TOKEN_RE.match(n)
+                match.append("exact" if n in numbers else ("matched_by_family" if fm and fm.group(1) in bases else None))
+            missing = [n for n, mt in zip(nums, match) if mt is None]
+            entry = {"type": "line", "page_1based": ln.page, "line_1based": ln.line_no, "pos": 0,
+                     "numbers": nums, "match": match}
             if missing:
                 unresolved.append(dict(entry, missing=missing))
                 kept.append(ln)
@@ -451,7 +512,8 @@ def apply_markers(seg: list, numbers: set) -> tuple:
         text = ln.text
         for m in reversed(list(INLINE_MARKER_RE.finditer(text))):
             inline_found += 1
-            entry = {"type": "inline", "page_1based": ln.page, "line_1based": ln.line_no, "numbers": [m.group(1)]}
+            entry = {"type": "inline", "page_1based": ln.page, "line_1based": ln.line_no, "pos": m.start(),
+                     "numbers": [m.group(1)], "match": ["exact" if m.group(1) in numbers else None]}
             if m.group(1) in numbers:
                 dropped.append(entry)
                 text = text[:m.start()] + text[m.end():]
@@ -483,11 +545,69 @@ def editor_note_candidates(seg: list) -> list:
     return out
 
 
-def bracket_counts(body: str) -> dict:
-    """P09-36: '[' and ']' in the body, our own '[Table k Sl. N] ' prefixes excluded."""
-    plain = "\n".join(TABLE_PREFIX_RE.sub("", ln) for ln in body.split("\n"))
-    o, c = plain.count("["), plain.count("]")
-    return {"open": o, "close": c, "warn": o != c}
+def _marker_tokens(dropped: list, unresolved: list) -> list:
+    """Every marker token in body order: (page_1based, line_1based, pos + k)."""
+    toks = []
+    for status, entries in (("dropped", dropped), ("unresolved", unresolved)):
+        for e in entries:
+            for k, n in enumerate(e["numbers"]):
+                toks.append({"token": n, "page_1based": e["page_1based"], "line_1based": e["line_1based"],
+                             "pos": e.get("pos", 0) + k, "marker_type": e["type"], "status": status,
+                             "match": (e.get("match") or [None] * len(e["numbers"]))[k]})
+    return sorted(toks, key=lambda t: (t["page_1based"], t["line_1based"], t["pos"]))
+
+
+def link_markers(dropped: list, unresolved: list, entries: list) -> dict:
+    """P09-43 job 2. Links marker tokens (body order) to footnote entries (block order).
+    'number': the token equals the number of exactly one entry in the range ('ambiguous' if 2+; never picked).
+    'assigned_by_order': unnumbered entries between consecutive numbered entries N and M go, in order, to the
+    unlinked tokens after the last token linked to an entry at or before N and before the first token linked
+    to an entry at or after M, ONLY if the two counts are equal. Symbol entries are never aligned."""
+    toks = _marker_tokens(dropped, unresolved)
+    by_num = {}
+    for j, e in enumerate(entries):
+        if e["number"] is not None:
+            by_num.setdefault(e["number"], []).append(j)
+    unnum_ord = {j: k for k, j in enumerate([j for j, e in enumerate(entries)
+                                             if e["number"] is None and e.get("symbol") is None], 1)}
+    for t in toks:
+        hits = by_num.get(t["token"], [])
+        t["entry"], t["link"] = (hits[0], "number") if len(hits) == 1 else (None, "ambiguous" if hits else None)
+    numbered = [j for j, e in enumerate(entries) if e["number"] is not None]
+    for a, b in zip(numbered, numbered[1:]):
+        gap = [j for j in range(a + 1, b) if entries[j]["number"] is None and entries[j].get("symbol") is None]
+        if not gap:
+            continue
+        lo = max((i for i, t in enumerate(toks) if t["entry"] is not None and t["entry"] <= a), default=-1)
+        hi = min((i for i, t in enumerate(toks) if t["entry"] is not None and t["entry"] >= b), default=len(toks))
+        cands = [i for i in range(lo + 1, hi) if toks[i]["entry"] is None and toks[i]["link"] is None]
+        if len(cands) == len(gap):
+            for i, j in zip(cands, gap):
+                toks[i]["entry"], toks[i]["link"] = j, "assigned_by_order"
+    linked = {t["entry"] for t in toks if t["entry"] is not None}
+
+    def label(j):
+        e = entries[j]
+        return e["number"] if e["number"] is not None else (
+            f"symbol {e['symbol']}" if e.get("symbol") else f"unnumbered #{unnum_ord[j]}")
+    links = [{k: t[k] for k in ("token", "page_1based", "line_1based", "marker_type", "status", "match", "link")}
+             | {"footnote": label(t["entry"]) if t["entry"] is not None else None,
+                "footnote_text": entries[t["entry"]]["text"][:100] if t["entry"] is not None else None}
+             for t in toks]
+    return {"links": links,
+            "footnotes_without_marker": [{"footnote": label(j), "page_1based": e["page_1based"], "text": e["text"][:100]}
+                                         for j, e in enumerate(entries) if j not in linked and not e.get("symbol")],
+            "symbol_notes": [{"symbol": e["symbol"], "page_1based": e["page_1based"], "text": e["text"][:100]}
+                             for e in entries if e.get("symbol")],
+            "markers_without_footnote": [x for x in links if x["footnote"] is None]}
+
+
+def section_brackets(cleaned: Cleaned, first: int, end: int) -> dict:
+    """P09-42: carry_in / carry_out / orphans for kept lines first .. end-1 of the edition scan."""
+    orph = [{"kind": k, "page_1based": cleaned.lines[i].page, "line_1based": cleaned.lines[i].line_no,
+             "text": cleaned.lines[i].text.strip()[:160]} for i, k in cleaned.orphans if first <= i < end]
+    return {"carry_in": cleaned.depth_before[first], "carry_out": cleaned.depth_after[end - 1],
+            "orphans": orph, "warn": bool(orph)}
 
 
 # ---------------------------------------------------------------- R5 + R4 on one section
@@ -589,14 +709,24 @@ def extract_section(cleaned: Cleaned, starts: list, number: str, trace: Trace | 
         t["start_body_line_1based"] = idx_map.get(t.pop("start_idx"))
         t["end_body_line_1based"] = idx_map.get(t.pop("end_idx"))
     note_lines = [f"[page_1based {p}] {ln.strip()}" for p in range(p0, p1 + 1) for ln in cleaned.notes.get(p, [])]
+    entries = footnotes_raw(cleaned.notes, p0, p1)
+    links = link_markers(m_dropped, m_unres, entries)                     # P09-43 job 2
+    first = hidx - 1 if (hidx > 0 and lines[hidx - 1].text.strip() == "[") else hidx
+    brackets = section_brackets(cleaned, first, loc["internal_line_idx0_end"])   # P09-42
+    for o in brackets["orphans"]:
+        earlier = [x for x in links["links"] if (x["page_1based"], x["line_1based"]) < (o["page_1based"], o["line_1based"])]
+        o["nearest_earlier_marker"] = earlier[-1] if earlier else None
     loc.update({"heading": heading, "heading_bracket_moved_to_body": opened,
                 "body": body, "chars": len(body), "sha256": hashlib.sha256(body.encode("utf-8")).hexdigest(),
                 "table_rows": rows, "unresolved": unresolved, "tables": table_map,
                 "amendment_note": "\n".join(note_lines) if note_lines else None,
                 "footnotes_raw_note": "local only; never a date source; never in committed files",
-                "footnotes_raw": footnotes_raw(cleaned.notes, p0, p1),
+                "footnotes_raw": entries,
                 "dropped_markers": m_dropped, "unresolved_markers": m_unres, "inline_markers_found": inline_found,
-                "editor_note_candidates": editor, "brackets": bracket_counts(body),
+                "marker_links": links,
+                "symbol_notes": sum(1 for e in entries if e.get("symbol")),
+                "body_symbol_lines": sum(1 for ln in seg if SYMBOL_RE.match(ln.text)),
+                "editor_note_candidates": editor, "brackets": brackets,
                 "hyphen_joins": joins, "hyphen_not_joined": not_joined})
     return loc
 
@@ -817,17 +947,21 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
                     unresolved_md += [f"- {u}" for u in r.get("unresolved", [])]
                     if warn:
                         b = r["brackets"]
-                        unresolved_md.append(f"- BRACKET WARN: '[' = {b['open']}, ']' = {b['close']}")
+                        unresolved_md.append(f"- BRACKET WARN (edition-level orphans): {len(b['orphans'])}; "
+                                             f"carry_in {b['carry_in']}, carry_out {b['carry_out']}")
                     unresolved_md.append("")
                 results.append(r)
     found = [r for r in results if r["status"] == "FOUND"]
     _write_new(out_dir / "UNRESOLVED.md", "\n".join(unresolved_md) + "\n")
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
-    mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers"]
+    mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers\tmatch"]
     mk += [f"{r['edition']}.pdf\t{r['act']} s.{r['section']}\t{d['type']}\t{d['page_1based']}\t{d['line_1based']}\t"
-           f"{' '.join(d['numbers'])}" for r in found for d in r["dropped_markers"]]
+           f"{' '.join(d['numbers'])}\t{' '.join(m or '-' for m in d['match'])}"
+           for r in found for d in r["dropped_markers"]]
     _write_new(out_dir / "DROPPED-MARKERS.tsv", "\n".join(mk) + "\n")
+    _write_new(out_dir / "MARKER-LINKS.md", _marker_links_md(found))
+    _write_new(out_dir / "BRACKET-ORPHANS.md", _bracket_orphans_md(views, found))
     um = ["# UNRESOLVED MARKERS (pilot)", "",
           "Bare-number lines and inline markers whose numbers are not all footnote numbers on the section's",
           "pages + 1 page (P09-29a/29b, P09-41). They stay in the body.", ""]
@@ -859,6 +993,96 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
     return results, views
 
 
+def _marker_links_md(found: list) -> str:
+    """P09-43: MARKER-LINKS.md, per pilot section."""
+    out = ["# MARKER LINKS (pilot, P09-43)", "",
+           "Markers in body order -> footnote entries (pages of the section + 1 page). link: number |",
+           "assigned_by_order | ambiguous (number occurs 2+ times; never picked) | none. Footnotes without a marker",
+           "may belong to a neighbouring section printed on the same pages.", ""]
+    for r in found:
+        ml = r["marker_links"]
+        if not (ml["links"] or ml["footnotes_without_marker"] or ml["symbol_notes"]):
+            continue
+        out += [f"## {r['stem']}", "", "| marker | page_1based | line_1based | type | match | link | footnote | text |",
+                "|---|---|---|---|---|---|---|---|"]
+        for x in ml["links"]:
+            txt = (x["footnote_text"] or "").replace("\n", " / ").replace("|", "\\|")
+            out.append(f"| {x['token']} | {x['page_1based']} | {x['line_1based']} | {x['marker_type']} | "
+                       f"{x['match'] or '-'} | {x['link'] or 'none'} | {x['footnote'] or '-'} | {txt} |")
+        out += ["", f"footnote without marker ({len(ml['footnotes_without_marker'])}):"]
+        out += [f"- {f['footnote']} (page_1based {f['page_1based']}): {f['text'].replace(chr(10), ' / ')}"
+                for f in ml["footnotes_without_marker"]]
+        out += ["", f"marker without footnote ({len(ml['markers_without_footnote'])}):"]
+        out += [f"- {x['token']} page_1based {x['page_1based']} line_1based {x['line_1based']} ({x['link'] or 'none'})"
+                for x in ml["markers_without_footnote"]]
+        out += ["", f"symbol notes ({len(ml['symbol_notes'])}):"]
+        out += [f"- {s['symbol']} page_1based {s['page_1based']}: {s['text'].replace(chr(10), ' / ')}"
+                for s in ml["symbol_notes"]]
+        out.append("")
+    return "\n".join(out) + "\n"
+
+
+def _section_spans(v: EditionView, act: str, sections: list) -> dict:
+    """{section: (status, first_idx, end_idx)} for bracket summaries (first = heading line, or a bare '[' line)."""
+    spans = {}
+    for sec in sections:
+        loc = locate(v.cleaned.lines, v.starts, sec)
+        if loc["status"] != "FOUND":
+            spans[sec] = (loc["status"], None, None)
+            continue
+        h = loc["internal_heading_line_idx0"]
+        first = h - 1 if (h > 0 and v.cleaned.lines[h - 1].text.strip() == "[") else h
+        spans[sec] = ("FOUND", first, loc["internal_line_idx0_end"])
+    return spans
+
+
+def _bracket_orphans_md(views: list, found: list) -> str:
+    """P09-42: BRACKET-ORPHANS.md: summary per edition and per SECTION-LIST section x edition, then every
+    edition-level orphan (all 7 editions); pilot sections also get the nearest earlier marker + footnote."""
+    sl = json.loads((STATUTES_DIR / "SECTION-LIST.json").read_text(encoding="utf-8"))
+    secs = {"1961": [s["section"] for s in sl["sections_1961"]], "2025": [s["section"] for s in sl["sections_2025_only"]]}
+    act_of = {k: a for a in EDITIONS for k in EDITIONS[a]}
+    out = ["# BRACKET ORPHANS (P09-42)", "",
+           "Brackets matched over each whole edition (kept lines after R0/R3, page order). An orphan is a ']' with",
+           "nothing open or a '[' never closed before the end of the edition. Report only.", "",
+           "## Summary per edition", "", "| edition | orphan ']' | orphan '[' |", "|---|---|---|"]
+    for v in views:
+        kinds = [k for _, k in v.cleaned.orphans]
+        out.append(f"| {v.key} | {kinds.count(']')} | {kinds.count('[')} |")
+    out += ["", f"## Summary per SECTION-LIST section x edition ({len(secs['1961']) + len(secs['2025'])} sections)", "",
+            "| act | section | edition | status | carry_in | carry_out | orphan ']' | orphan '[' |",
+            "|---|---|---|---|---|---|---|---|"]
+    owner = {}
+    for v in views:
+        act = act_of[v.key]
+        for sec, (st, a, b) in _section_spans(v, act, secs[act]).items():
+            if st != "FOUND":
+                out.append(f"| {act} | {sec} | {v.key} | {st} | - | - | - | - |")
+                continue
+            ks = [k for i, k in v.cleaned.orphans if a <= i < b]
+            for i, _ in v.cleaned.orphans:
+                if a <= i < b:
+                    owner[(v.key, i)] = f"{act} s.{sec}"
+            out.append(f"| {act} | {sec} | {v.key} | FOUND | {v.cleaned.depth_before[a]} | {v.cleaned.depth_after[b - 1]} | "
+                       f"{ks.count(']')} | {ks.count('[')} |")
+    pilot_orph = {(r["edition"], o["page_1based"], o["line_1based"], o["kind"]): o
+                  for r in found for o in r["brackets"]["orphans"]}
+    for v in views:
+        out += ["", f"## {v.key}.pdf: every orphan ({len(v.cleaned.orphans)})", ""]
+        for i, k in v.cleaned.orphans:
+            ln = v.cleaned.lines[i]
+            sec = owner.get((v.key, i), "(not in a SECTION-LIST section)")
+            out.append(f"- '{k}' page_1based {ln.page} line_1based {ln.line_no} [{sec}]: {ln.text.strip()[:140]}")
+            po = pilot_orph.get((v.key, ln.page, ln.line_no, k))
+            if po is not None:
+                nm = po.get("nearest_earlier_marker")
+                out.append("  - nearest earlier marker: " + (
+                    f"{nm['token']} (page_1based {nm['page_1based']} line_1based {nm['line_1based']}) -> "
+                    f"{nm['footnote'] or 'no footnote'}: {(nm['footnote_text'] or '').replace(chr(10), ' / ')}"
+                    if nm else "none in the section"))
+    return "\n".join(out) + "\n"
+
+
 def _has_span(t: dict) -> bool:
     return bool(t["start_body_line_1based"] and t["end_body_line_1based"])
 
@@ -876,8 +1100,22 @@ def pilot_counts(results: list, views: list) -> str:
         "divider lines dropped (whole editions): "
         + ", ".join(f"{v.key}={len(v.cleaned.rule_drops)}" for v in views),
         f"editor-note candidates: {sum(len(r['editor_note_candidates']) for r in found)}",
-        f"bracket WARNs: {sum(1 for r in found if r['brackets']['warn'])} "
-        + str([r["stem"] for r in found if r["brackets"]["warn"]]),
+        "line-marker tokens dropped by match: exact="
+        f"{sum(1 for r in found for d in r['dropped_markers'] if d['type'] == 'line' for m in d['match'] if m == 'exact')} "
+        "matched_by_family="
+        f"{sum(1 for r in found for d in r['dropped_markers'] for m in d['match'] if m == 'matched_by_family')}",
+        "marker links: " + ", ".join(
+            f"{k}={sum(1 for r in found for x in r['marker_links']['links'] if (x['link'] or 'none') == k)}"
+            for k in ("number", "assigned_by_order", "ambiguous", "none")),
+        f"footnotes without marker: {sum(len(r['marker_links']['footnotes_without_marker']) for r in found)}  "
+        f"markers without footnote: {sum(len(r['marker_links']['markers_without_footnote']) for r in found)}",
+        f"symbol notes (P09-44): {sum(r['symbol_notes'] for r in found)}  body symbol lines: "
+        f"{sum(r['body_symbol_lines'] for r in found)}",
+        "edition-level bracket orphans: " + ", ".join(
+            f"{v.key}=]{sum(1 for _, k in v.cleaned.orphans if k == ']')}/[{sum(1 for _, k in v.cleaned.orphans if k == '[')}"
+            for v in views),
+        f"bracket WARNs (pilot sections with edition-level orphans): {sum(1 for r in found if r['brackets']['warn'])} "
+        + str([(r["stem"], len(r["brackets"]["orphans"])) for r in found if r["brackets"]["warn"]]),
         f"tables with start/end: {sum(1 for r in found for t in r['tables'] if _has_span(t))}"
         f" of {sum(len(r['tables']) for r in found)}",
         f"hyphen joins: {sum(r['hyphen_joins'] for r in found)}  not joined (table row): "
@@ -888,15 +1126,15 @@ def pilot_counts(results: list, views: list) -> str:
 
 def print_pilot(results: list) -> None:
     print(f"{'act':<5} {'sec':<7} {'edition':<15} {'found':<5} {'pages_1based':<12} {'chars':>6} {'tbls':>4} "
-          f"{'rows':>4} {'unres':>5} {'mk-':>3} {'mk?':>3} {'ed':>2} {'[]':>5} sha256")
+          f"{'rows':>4} {'unres':>5} {'mk-':>3} {'mk?':>3} {'ed':>2} {'in/out/orph':>11} sha256")
     for r in results:
         if r["status"] == "FOUND":
             pg = f"{r['pages_1based'][0]}-{r['pages_1based'][-1]}"
             b = r["brackets"]
-            br = f"{b['open']}/{b['close']}" + ("!" if b["warn"] else "")
+            br = f"{b['carry_in']}/{b['carry_out']}/{len(b['orphans'])}" + ("!" if b["warn"] else "")
             print(f"{r['act']:<5} {r['section']:<7} {r['edition']:<15} {'yes':<5} {pg:<12} {r['chars']:>6} "
                   f"{len(r['tables']):>4} {r['table_rows']:>4} {len(r['unresolved']):>5} {len(r['dropped_markers']):>3} "
-                  f"{len(r['unresolved_markers']):>3} {len(r['editor_note_candidates']):>2} {br:>5} {r['sha256']}")
+                  f"{len(r['unresolved_markers']):>3} {len(r['editor_note_candidates']):>2} {br:>11} {r['sha256']}")
         else:
             print(f"{r['act']:<5} {r['section']:<7} {r['edition']:<15} {'NO':<5} {r['status']:<12} "
                   f"candidates={[c['page_1based'] for c in r['candidates']]}")
