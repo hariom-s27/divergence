@@ -147,7 +147,7 @@ def _fetch_one(item: dict, out_dir: Path, opener) -> dict:
     target = out_dir / f"{item['key']}.pdf"
     part = out_dir / f"{item['key']}.pdf.part"
     entry = {"key": item["key"], "url": url, "status": None, "bytes": None, "sha256": None,
-             "content_type": None, "started_at": now_ist(), "finished_at": None,
+             "content_type": None, "location": None, "started_at": now_ist(), "finished_at": None,
              "outcome": "manual_needed", "reason": None}
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
     resp = None
@@ -183,6 +183,8 @@ def _fetch_one(item: dict, out_dir: Path, opener) -> dict:
         entry["status"] = int(e.code)
         entry["content_type"] = e.headers.get("Content-Type") if e.headers else None
         entry["reason"] = f"http_{e.code}" + ("_redirect_not_followed" if 300 <= e.code < 400 else "")
+        if 300 <= e.code < 400 and e.headers:
+            entry["location"] = e.headers.get("Location")  # logged only; never requested
         if e.code in STOP_STATUSES:
             entry["finished_at"] = now_ist()
             raise FetchStop(f"HTTP {e.code} for {item['key']}: all downloads stopped") from None
@@ -312,7 +314,10 @@ def inventory(folder: Path, sources: dict) -> tuple:
     rows, manual_needed = [], []
     for e in log.get("entries", []):
         if e.get("outcome") != "ok":
-            manual_needed.append((e["key"], e.get("reason") or "failed"))
+            why = e.get("reason") or "failed"
+            if e.get("location"):
+                why += f" (Location: {e['location']})"
+            manual_needed.append((e["key"], why))
     pdfs = sorted(folder.glob("*.pdf")) + sorted((folder / MANUAL_DIR).glob("*.pdf"))
     for p in pdfs:
         key = p.stem if p.parent == folder else f"{MANUAL_DIR}/{p.name}"

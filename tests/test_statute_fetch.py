@@ -225,6 +225,29 @@ def test_redirect_is_reported_not_followed(tmp_path):
     assert log["entries"][0]["outcome"] == "manual_needed"
 
 
+def test_redirect_location_is_logged_never_requested(tmp_path):
+    items = _items("a1")
+    target = "https://www.incometaxindia.gov.in/invented-target-pdf"
+    err = urllib.error.HTTPError(items[0]["url"], 302, "Found", {"Location": target}, None)
+    opener = FakeOpener({items[0]["url"]: err})
+    clock = FakeClock()
+    log = sf.download(items, tmp_path, opener=opener, clock=clock, sleep=clock.sleep)
+    assert log["entries"][0]["location"] == target
+    assert [r.full_url for r, _ in opener.requests] == [items[0]["url"]]
+
+
+def test_location_shown_in_manual_needed_and_null_when_absent(tmp_path):
+    items = _items("a1", "a2")
+    clock = FakeClock()
+    opener = FakeOpener({items[0]["url"]: urllib.error.HTTPError(items[0]["url"], 301, "Moved",
+                                                                 {"Location": "https://example.org/x"}, None),
+                         items[1]["url"]: FakeResp(_pdf_bytes())})
+    log = sf.download(items, tmp_path, opener=opener, clock=clock, sleep=clock.sleep)
+    assert log["entries"][1]["location"] is None
+    _, manual = sf.inventory(tmp_path, {"items": [], "manual": []})
+    assert manual == [("a1", "http_301_redirect_not_followed (Location: https://example.org/x)")]
+
+
 def test_real_opener_has_no_redirect_and_no_cookie_handler():
     opener = sf.build_opener()
     kinds = [type(h) for h in opener.handlers]
