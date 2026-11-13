@@ -102,6 +102,16 @@ Extractor v5 changes (owner decision P09-49, Q1 all 22 SECTION-LIST sections, Q2
       holds a line that locate would take as a section start, or a table row. FOOTNOTE-LIKE-IN-BODY.md lists
       body lines that look like footnote text (report only; nothing is moved).
 
+Extractor v6 changes (owner decisions P09-50, P09-51, P09-52 with Q1 move-and-flag, Q2 10-page cap):
+  P09-50  range footnotes 'N-M.' start a block when N < M and M - N <= 10 (vocabulary rule unchanged); the entry
+      covers N..M for footnote numbers and marker links.
+  P09-51  the printed_omission label also covers 'Explanation.—[Omitted' and '<section>. [Omitted' (label only).
+  P09-52  a 'read(s) as under' quotation in a footnote that is still open at the page end continues on the next
+      page(s): the kept lines from the top through the line that ends with the closing outer quote are footnote
+      text, never body (bare-number marker lines stay body). Only moved when the close is found within 10 pages;
+      no opening quote / unclosed -> nothing moved, logged. QUOTE-CONTINUATIONS.tsv logs every case with the 2
+      kept lines after the close; flags '>40 lines' and 'apostrophe_risk' (a single-quote close right after a letter).
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -128,7 +138,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v5"
+EXTRACTOR_VERSION = "v6"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -159,8 +169,8 @@ FOOTNOTE_START_V4 = re.compile(      # kept only for the MOVED-BLOCKS comparison
     r"^\s*\d+[a-z]?\.\s+(?:Ins\.|Sub\.|Subs\.|Omtt\.|Omitted by|Inserted by|Substituted by|Substituted for|"
     r"Proviso omtt\.|Italicised words|Words\s+[\"“]|Prior to|Re-numbered|Renumbered|See rule|See also|"
     r"Sections? .{0,80}?inserted by)")
-FOOTNOTE_START = re.compile(         # v5 [P09-49]: number prefix required; vocabulary case-insensitive
-    r"^\s*\d+[a-z]?\.\s+(?i:Ins[.,]|Subs?\.|Omtt?\.|Omitt\.|Omitted by|Inserted by|Substituted (?:by|for)|"
+FOOTNOTE_START = re.compile(         # v5 [P09-49] + v6 range prefix 'N-M.' [P09-50, checked in footnote_start_match]
+    r"^\s*\d+[a-z]?(?:-\d+)?\.\s+(?i:Ins[.,]|Subs?\.|Omtt?\.|Omitt\.|Omitted by|Inserted by|Substituted (?:by|for)|"
     r"Proviso omtt\.|Italicised words?|Words?\s+[\"“]|Word and|Prior to|Re-?numbered|Shall be renumbered|"
     r"See\b|Now\b|Original section|Following marginal|Explanation renumbered|"
     r"(?:Sections?|Sub-sections?|Clauses?|Sub-clauses?|Chapters?|Sl\. Nos?\.|Explanations?|"
@@ -174,8 +184,13 @@ FOOTNOTE_LIKE = (
     ("act_no", re.compile(r"\bAct No\.\s*\d+\s+of\s+\d{4}")),
     ("finance_act_date", re.compile(r"Finance (?:\(No\. ?\d\) )?Act, \d{4}.{0,40}?\d{1,2}-\d{1,2}-\d{4}")),
 )
-PRINTED_OMISSION_RE = re.compile(r"^\s*(?:\([0-9a-zA-Z]+\)\s*)?\[Omitted")
+PRINTED_OMISSION_RE = re.compile(                                   # P09-51: label only
+    r"^\s*(?:\([0-9a-zA-Z]+\)\s*|Explanation\s*\d*\s*\.?\s*[—–-]+\s*|\d{1,3}[A-Z]{0,5}\s?\.\s*)?\[Omitted")
 MOVED_BLOCK_MAX = 40
+FOOTNOTE_RANGE_RE = re.compile(r"^\s*(\d+)-(\d+)\.\s")                         # P09-50
+RANGE_MAX_SPAN = 10
+READ_AS_UNDER_RE = re.compile(r"reads? as under\s*[:\-—]*\s*", re.I)          # P09-52
+QUOTE_PAGE_CAP = 10
 
 # ---------------------------------------------------------------- R1 / R2 / R5 / R4 patterns
 START_RE = re.compile(r"^\s*(\d{1,3}[A-Z]{0,5})\s?\.(?=\s|$|\()")
@@ -232,6 +247,7 @@ class Cleaned:
     edge_digits: list = field(default_factory=list)   # P09-46: (page_1based, line_1based, edge, value, reason)
     page_runs: list = field(default_factory=list)     # P09-46: (edge, offset, first_page, last_page, n)
     foot_line_objs: list = field(default_factory=list)  # P09-49: Line objects moved to footnotes, in order
+    quote_log: list = field(default_factory=list)       # P09-52: quotations open at a page end (moved or not)
 
 
 @dataclass
@@ -353,20 +369,32 @@ def _body_resumes(page_lines: list, footnote_start=None) -> set:
         if _boundary(ln.text.strip()):
             out.add(k)
             continue
-        if START_RE.match(ln.text) and not fs.match(ln.text) and not PART_NUMBER_RE.match(ln.text):
+        if START_RE.match(ln.text) and not footnote_start_match(ln.text, fs) and not PART_NUMBER_RE.match(ln.text):
             h = _heading_before(page_lines, k)
             if h:
                 out.add(h[1])
     return out
 
 
-def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None) -> Cleaned:
+def footnote_start_match(text: str, fs=None):
+    """FOOTNOTE_START plus the P09-50 range check: 'N-M.' starts a block only if N < M and M - N <= 10."""
+    m = (fs or FOOTNOTE_START).match(text)
+    if not m:
+        return None
+    r = FOOTNOTE_RANGE_RE.match(text)
+    if r and not (int(r.group(1)) < int(r.group(2)) and int(r.group(2)) - int(r.group(1)) <= RANGE_MAX_SPAN):
+        return None
+    return m
+
+
+def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None, quote_continuation: bool = True) -> Cleaned:
     """R3 on every page. pages[idx0] is the raw text of page page_1based(idx0). footnote_start overrides
-    FOOTNOTE_START (used only for the v4/v5 MOVED-BLOCKS comparison)."""
+    FOOTNOTE_START (used only for the v4/v5 MOVED-BLOCKS comparison); quote_continuation=False switches P09-52
+    off (used only for before/after reports)."""
     fs = footnote_start or FOOTNOTE_START
     out, notes, furn, midpage, n_foot, rule_drops, cands = [], {}, [], [], 0, [], []
-    foot_ids = []
-    for idx0, text in enumerate(pages):
+    foot_ids, page_kept, quote_log = [], [], []
+    for idx0, text in enumerate(pages):                    # pass A: furniture, dividers, edge-digit candidates
         pno = page_1based(idx0)
         raw = text.splitlines()
         nonempty = [i for i, ln in enumerate(raw) if ln.strip()]
@@ -387,13 +415,19 @@ def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None) ->
                 kept.append(line)
                 if i in edge and PAGE_DIGIT_RE.match(ln.strip()):  # P09-46: decided in pass 2
                     cands.append((pno, i + 1, "top" if i in top else "bottom", int(ln.strip()), line))
+        page_kept.append(kept)
+    claimed = {}                                            # P09-52: id(Line) -> continuation of a quotation
+    for idx0, kept_all in enumerate(page_kept):            # pass B: footnote blocks
+        pno = page_1based(idx0)
+        cont = [ln for ln in kept_all if id(ln) in claimed]
+        kept = [ln for ln in kept_all if id(ln) not in claimed]
         resumes = _body_resumes(kept, fs)
-        in_foot, body, foot = False, [], []
+        in_foot, body, foot = False, [], list(cont)
         for k, ln in enumerate(kept):
             if BARE_MARKER_RE.match(ln.text.strip()):              # P09-46: bare numbers never join a block
                 body.append(ln)
                 continue
-            if fs.match(ln.text):
+            if footnote_start_match(ln.text, fs):
                 in_foot = True
                 if trace:
                     trace.add("R3-footnote", f"p{pno}: {ln.text.strip()[:90]}", "(moved to amendment_note)")
@@ -407,13 +441,111 @@ def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None) ->
             n_foot += len(foot)
             foot_ids += foot
         out.extend(body)
+        if quote_continuation and foot:                     # P09-52: a quotation still open at the page end
+            own = [ln for ln in foot if id(ln) not in claimed]
+            for entry in _open_quotations(own):
+                lines, status, after = _find_quote_close(page_kept, idx0, entry, claimed)
+                entry.update({"status": status, "lines_moved": len(lines), "after_close": after})
+                if status == "closed":
+                    for ln in lines:
+                        claimed[id(ln)] = entry
+                    entry["end_page_1based"], entry["end_line_1based"] = lines[-1].page, lines[-1].line_no
+                    entry["moved"] = [(ln.page, ln.line_no) for ln in lines]
+                    flags = [f">{MOVED_BLOCK_MAX} lines"] if len(lines) > MOVED_BLOCK_MAX else []
+                    if entry["outer"] in "'‘" and re.search(r"[^\W\d_]['’][.;,]?\s*$", lines[-1].text.rstrip()):
+                        flags.append("apostrophe_risk")
+                    entry["flags"] = flags
+                    entry["status"] = "moved_flagged" if flags else "moved"
+                quote_log.append(entry)
     edge_digits, runs, removed = classify_edge_digits(cands, notes)  # P09-46 pass 2
     gone = {id(x) for x in removed}
     for x in removed:
         furn.append((x.page, x.text.strip()))
     out = [ln for ln in out if id(ln) not in gone]
     before, after, orphans = bracket_scan(out)
-    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans, edge_digits, runs, foot_ids)
+    return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans, edge_digits, runs, foot_ids,
+                   quote_log)
+
+
+_QUOTE_PAIRS = {'"': '"', "“": "”", "'": "'", "‘": "’"}
+
+
+def _closes(rest: str, close: str) -> bool:
+    """P09-52: a line closes the outer quotation when it ends with the closing mark (optionally + '.', ';', ',')."""
+    s = rest.rstrip()
+    return s.endswith(close) or s.rstrip(".;,").endswith(close)
+
+
+def _open_quotations(foot: list) -> list:
+    """P09-52: quotations ('read(s) as under' + an opening outer quote) in one page's footnote lines that are still
+    open at the page end; also 'no_opening_quote' and 'await_open' (phrase at the very end of the page) cases.
+    Returns [{footnote, start_page_1based, start_line_1based, outer, state}]."""
+    out, cur, number = [], None, None
+    for ln in foot:
+        t = ln.text
+        mnum = FOOTNOTE_NUMBER_RE.match(t) or FOOTNOTE_RANGE_RE.match(t)
+        if mnum:
+            number = mnum.group(0).strip().rstrip(".").strip()
+        if cur is not None and cur["state"] == "await_open":
+            s = t.strip()
+            if s[:1] in _QUOTE_PAIRS:
+                cur.update({"outer": s[0], "state": "open"})
+                if _closes(s[1:], _QUOTE_PAIRS[s[0]]):
+                    cur = None
+            else:
+                cur.update({"state": "no_opening_quote", "outer": ""})
+                out.append(cur)
+                cur = None
+            continue
+        if cur is not None and cur["state"] == "open":
+            if _closes(t, _QUOTE_PAIRS[cur["outer"]]):
+                cur = None
+            continue
+        m = READ_AS_UNDER_RE.search(t)
+        if not m:
+            continue
+        cur = {"footnote": number, "start_page_1based": ln.page, "start_line_1based": ln.line_no, "outer": "",
+               "state": "await_open"}
+        rest = t[m.end():].strip()
+        if rest:
+            if rest[0] in _QUOTE_PAIRS:
+                cur.update({"outer": rest[0], "state": "open"})
+                if _closes(rest[1:], _QUOTE_PAIRS[rest[0]]):
+                    cur = None
+            else:
+                cur.update({"state": "no_opening_quote"})
+                out.append(cur)
+                cur = None
+    if cur is not None:
+        out.append(cur)
+    return out
+
+
+def _find_quote_close(page_kept: list, idx0: int, entry: dict, claimed: dict) -> tuple:
+    """P09-52: look ahead (at most QUOTE_PAGE_CAP pages) for the line that closes the quotation. Returns
+    (lines to move, status, [the 2 kept lines after the close]). Nothing is moved unless status == 'closed'.
+    Bare-number marker lines are skipped (they stay body)."""
+    if entry["state"] == "no_opening_quote":
+        return [], "no_opening_quote", []
+    state, outer, lines = entry["state"], entry["outer"], []
+    for j in range(idx0 + 1, min(idx0 + 1 + QUOTE_PAGE_CAP, len(page_kept))):
+        for k, ln in enumerate(page_kept[j]):
+            if id(ln) in claimed or BARE_MARKER_RE.match(ln.text.strip()):
+                continue
+            rest = ln.text
+            if state == "await_open":
+                s = rest.strip()
+                if s[:1] not in _QUOTE_PAIRS:
+                    return [], "no_opening_quote", []
+                outer, state, rest = s[0], "open", s[1:]
+                entry["outer"] = outer
+            lines.append(ln)
+            if _closes(rest, _QUOTE_PAIRS[outer]):
+                after = [x.text.strip()[:100] for jj in range(j, min(j + 2, len(page_kept)))
+                         for x in (page_kept[jj][k + 1:] if jj == j else page_kept[jj])
+                         if not BARE_MARKER_RE.match(x.text.strip())][:2]
+                return lines, "closed", after
+    return [], "unclosed", []
 
 
 def bracket_scan(lines: list) -> tuple:
@@ -521,7 +653,7 @@ def find_starts(lines: list) -> list:
     starts = []
     for i, ln in enumerate(lines[:stop]):
         m = START_RE.match(ln.text)
-        if not m or i in marks or FOOTNOTE_START.match(ln.text) or PART_NUMBER_RE.match(ln.text):
+        if not m or i in marks or footnote_start_match(ln.text) or PART_NUMBER_RE.match(ln.text):
             continue
         h = _heading_before(lines, i)
         if h:
@@ -566,7 +698,21 @@ def footnote_numbers(notes: dict, p_first: int, p_last: int) -> set:
             m = FOOTNOTE_NUMBER_RE.match(ln)
             if m:
                 out.add(m.group(1))
+            rng = _footnote_range(ln)
+            if rng:
+                out.update(rng[1])                          # P09-50: a range entry covers N..M
     return out
+
+
+def _footnote_range(line: str):
+    """P09-50: ('N-M', ['N', ..., 'M']) for a valid range footnote line (N < M, M - N <= 10), else None."""
+    r = FOOTNOTE_RANGE_RE.match(line)
+    if not r:
+        return None
+    a, b = int(r.group(1)), int(r.group(2))
+    if not (a < b and b - a <= RANGE_MAX_SPAN):
+        return None
+    return f"{a}-{b}", [str(n) for n in range(a, b + 1)]
 
 
 def footnotes_raw(notes: dict, p_first: int, p_last: int) -> list:
@@ -578,12 +724,14 @@ def footnotes_raw(notes: dict, p_first: int, p_last: int) -> list:
     out, prev = [], ""
     for p in range(p_first, p_last + 2):
         for ln in notes.get(p, []):
-            m, sm = FOOTNOTE_NUMBER_RE.match(ln), SYMBOL_RE.match(ln)
+            m, sm, rng = FOOTNOTE_NUMBER_RE.match(ln), SYMBOL_RE.match(ln), _footnote_range(ln)
             first = ln.lstrip()[:1]
-            starts_new = (not out or m or sm
+            starts_new = (not out or m or sm or rng
                           or (prev.endswith(".") and not ln.lstrip().startswith(QUOTE_OR_PAREN)
                               and not first.islower() and not first.isdigit()))      # P09-43b
-            if starts_new:
+            if starts_new and rng:
+                out.append({"page_1based": p, "number": rng[0], "symbol": None, "text": ln.strip(), "covers": rng[1]})
+            elif starts_new:
                 out.append({"page_1based": p, "number": m.group(1) if m else None,
                             "symbol": sm.group(1) if (sm and not m) else None, "text": ln.strip()})
             else:
@@ -707,7 +855,7 @@ def moved_blocks(kept_pages: list, v5: Cleaned) -> list:
             flags.append(f">{MOVED_BLOCK_MAX} lines")
         # a heading-confirmed start would already have ended the block (R3 resume), so flag any line that LOOKS
         # like a start: START_RE, not a footnote line, not a numbered part heading
-        if any(START_RE.match(x.text) and not FOOTNOTE_START.match(x.text) and not PART_NUMBER_RE.match(x.text)
+        if any(START_RE.match(x.text) and not footnote_start_match(x.text) and not PART_NUMBER_RE.match(x.text)
                for x in b):
             flags.append("section_start_like")
         if any((x.page, x.line_no) in rows for x in b):
@@ -739,7 +887,8 @@ def link_markers(dropped: list, unresolved: list, entries: list) -> dict:
     by_num = {}
     for j, e in enumerate(entries):
         if e["number"] is not None:
-            by_num.setdefault(e["number"], []).append(j)
+            for n in e.get("covers") or [e["number"]]:      # P09-50: a range entry answers each covered number
+                by_num.setdefault(n, []).append(j)
     unnum_ord = {j: k for k, j in enumerate([j for j, e in enumerate(entries)
                                              if e["number"] is None and e.get("symbol") is None], 1)}
     for t in toks:
@@ -1072,6 +1221,50 @@ def _moved_blocks_outputs(views: list) -> tuple:
     return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
 
 
+def _quote_outputs(views: list) -> tuple:
+    """P09-52: (QUOTE-CONTINUATIONS.tsv text, printed summary). Sections are named by the last section start
+    (heading line) before a line in page order. For no_opening_quote / unclosed cases (nothing moved) the report
+    gives the section body that receives the next page's top lines and how many, and whether that section is a
+    SECTION-LIST / MAPPING target."""
+    tg = targets()
+    act_of = {k: a for a in EDITIONS for k in EDITIONS[a]}
+    tsv = ["edition\tfootnote\tstart_page_1based\tstart_line_1based\tend_page_1based\tend_line_1based\touter_quote\t"
+           "lines_moved\tsections_affected\tstatus\tflags\tafter_close_1\tafter_close_2\tnext_page_body_lines\t"
+           "next_page_section\tin_section_list_or_mapping"]
+    summary = []
+    for v in views:
+        act = act_of[v.key]
+        heads = sorted((v.cleaned.lines[s.heading_idx].page, v.cleaned.lines[s.heading_idx].line_no, s.number)
+                       for s in v.starts)
+
+        def sec_at(pos):
+            prev = [h[2] for h in heads if (h[0], h[1]) <= pos]
+            return prev[-1] if prev else "-"
+        counts = {}
+        for e in v.cleaned.quote_log:
+            counts[e["status"]] = counts.get(e["status"], 0) + 1
+            secs = sorted({sec_at(m) for m in e.get("moved", [])}, key=lambda s: (len(s), s))
+            npl, nps, intg = "-", "-", "-"
+            if e["status"] in ("no_opening_quote", "unclosed"):
+                nxt = e["start_page_1based"] + 1
+                page_heads = [(h[0], h[1]) for h in heads if h[0] == nxt]
+                top = [ln for ln in v.cleaned.lines if ln.page == nxt
+                       and (not page_heads or (ln.page, ln.line_no) < page_heads[0])]
+                npl = str(len(top))
+                if top:
+                    nps = sec_at((top[0].page, top[0].line_no))
+                    intg = "yes" if nps in tg[act] else "no"
+            after = (e.get("after_close") or []) + ["", ""]
+            tsv.append("\t".join(str(x) for x in (
+                v.key, e["footnote"], e["start_page_1based"], e["start_line_1based"], e.get("end_page_1based", "-"),
+                e.get("end_line_1based", "-"), e["outer"] or "-", e["lines_moved"], ",".join(secs) or "-", e["status"],
+                ",".join(e.get("flags", [])) or "-", _tsv_cell(after[0]), _tsv_cell(after[1]), npl, nps, intg)))
+        moved = sum(e["lines_moved"] for e in v.cleaned.quote_log if e["status"].startswith("moved"))
+        summary.append(f"{v.key:<15} open-at-page-end={len(v.cleaned.quote_log):>3} lines moved={moved:>4} "
+                       + " ".join(f"{k}={n}" for k, n in sorted(counts.items())))
+    return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
+
+
 def _footnote_like_md(views: list) -> tuple:
     """P09-49: FOOTNOTE-LIKE-IN-BODY.md over all SECTION-LIST sections x editions (report only)."""
     sl = json.loads((STATUTES_DIR / "SECTION-LIST.json").read_text(encoding="utf-8"))
@@ -1152,12 +1345,15 @@ def run_locate_all(raw: Path, out_dir: Path) -> int:
                                      f"{','.join(map(str, hits)) or '-':<16}")
     lines_out.append("totals: " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())))
     mb_tsv, mb_sum = _moved_blocks_outputs(views)
+    qc_tsv, qc_sum = _quote_outputs(views)
     text = ("\n".join(lines_out) + "\n\nR0 / R3 COUNTS\n" + _census_counts(views)
             + "\nP09-46 PAGE-EDGE DIGITS\n" + _edge_summary(views)
-            + "\nP09-49 MOVED BLOCKS (v5 vs v4)\n" + mb_sum)
+            + "\nP09-49 MOVED BLOCKS (current FOOTNOTE_START vs v4)\n" + mb_sum
+            + "\nP09-52 QUOTE CONTINUATIONS\n" + qc_sum)
     print(text, end="")
     _write_new(out_dir / "LOCATE-ALL.txt", text)
     _write_new(out_dir / "MOVED-BLOCKS.tsv", mb_tsv)
+    _write_new(out_dir / "QUOTE-CONTINUATIONS.tsv", qc_tsv)
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
     _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
@@ -1205,7 +1401,10 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
     _write_new(out_dir / "MOVED-BLOCKS.tsv", mb_tsv)
     fl_md, fl_sum = _footnote_like_md(views)
     _write_new(out_dir / "FOOTNOTE-LIKE-IN-BODY.md", fl_md)
-    print("P09-49 moved blocks (v5 vs v4):\n" + mb_sum + fl_sum, end="")
+    qc_tsv, qc_sum = _quote_outputs(views)
+    _write_new(out_dir / "QUOTE-CONTINUATIONS.tsv", qc_tsv)
+    print("P09-49 moved blocks (current FOOTNOTE_START vs v4):\n" + mb_sum + fl_sum
+          + "P09-52 quote continuations:\n" + qc_sum, end="")
     mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers\tmatch"]
     mk += [f"{r['edition']}.pdf\t{r['act']} s.{r['section']}\t{d['type']}\t{d['page_1based']}\t{d['line_1based']}\t"
            f"{' '.join(d['numbers'])}\t{' '.join(m or '-' for m in d['match'])}"

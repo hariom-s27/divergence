@@ -816,3 +816,92 @@ def test_moved_block_flags_start_like_line_and_heading_start_ends_block():
              "12. Fake body of the next section.")
     b2 = se.moved_blocks([page2], se.clean_pages([page2]))
     assert b2[0]["lines"] == 1 and b2[0]["flags"] == []          # R3 resume ends the block at heading + start
+
+
+# ---------------------------------------------------------------- v6: P09-50 range footnotes
+
+def test_valid_range_footnote_starts_a_block_and_covers_numbers():
+    page = "Fake heading.\n7. Fake text.\nmore fake.\n62-63. Ins. by the Fake Act, 2099."
+    cleaned = se.clean_pages([page])
+    assert cleaned.notes[1] == ["62-63. Ins. by the Fake Act, 2099."]
+    assert se.footnote_numbers(cleaned.notes, 1, 1) == {"62", "63"}
+    raw = se.footnotes_raw(cleaned.notes, 1, 1)
+    assert raw[0]["number"] == "62-63" and raw[0]["covers"] == ["62", "63"]
+
+
+@pytest.mark.parametrize("line", ["63-62. Ins. by the Fake Act.", "5-20. Ins. by the Fake Act.", "5-6. Fake body text."])
+def test_invalid_range_or_no_vocabulary_stays_body(line):
+    cleaned = se.clean_pages([f"Fake heading.\n7. Fake text.\nmore fake.\n{line}"])
+    assert line in [ln.text for ln in cleaned.lines] and 1 not in cleaned.notes
+
+
+def test_markers_n_and_m_link_to_the_range_entry():
+    page = ("Fake heading.\n7. Fake text.\n62\nfake words.\n63\nmore fake.\nfake filler.\n"
+            "62-63. Ins. by the Fake Act, 2099.")
+    r = body([page], "7")
+    assert [(x["token"], x["link"], x["footnote"]) for x in r["marker_links"]["links"]] == [
+        ("62", "number", "62-63"), ("63", "number", "62-63")]
+
+
+# ---------------------------------------------------------------- v6: P09-51 printed omission label
+
+@pytest.mark.parametrize("line", ["Explanation.—[Omitted by the Fake Act, 2099, w.e.f. 1-4-2099.]",
+                                  "44ZZ. [Omitted by the Fake Act, 2099, w.e.f. 1-4-2099.]",
+                                  "(viii) [Omitted by the Fake Act, 2099, w.e.f. 1-4-2099.]"])
+def test_printed_omission_label_new_forms(line):
+    hits = se.footnote_like_lines([se.Line(1, line, 1)])
+    assert hits[0]["label"] == "printed_omission" and hits[0]["text"] == line
+
+
+# ---------------------------------------------------------------- v6: P09-52 quotation continues across pages
+
+def _q_pages(p1_tail, p2, p3=None):
+    pages = ["Fake heading.\n7. Fake new text.\nmore fake.\n" + p1_tail, p2]
+    return pages + ([p3] if p3 else [])
+
+
+def test_double_quote_continuation_moves_top_lines_through_close():
+    pages = _q_pages("9. Sub. by the Fake Act. Prior to it, section 7 read as under:\n\"7. Fake old text\nold line two",
+                     "old line three\nold line four.\"\nNext fake heading.\n8. Fake eight.")
+    c = se.clean_pages(pages)
+    assert c.notes[2] == ["old line three", "old line four.\""]
+    assert "old line three" not in [ln.text for ln in c.lines]
+    e = c.quote_log[0]
+    assert (e["status"], e["outer"], e["lines_moved"], e["end_page_1based"], e["end_line_1based"]) == ("moved", '"', 2, 2, 2)
+    assert e["after_close"] == ["Next fake heading.", "8. Fake eight."]
+
+
+def test_single_quote_continuation_across_two_pages_and_marker_stays_body():
+    pages = _q_pages("9. Sub. by the Fake Act. Prior to it, it read as under :\n'(a) fake old clause",
+                     "old page two line\n12\nold page two end",
+                     "old page three line.'\nNext fake heading.\n8. Fake eight.")
+    c = se.clean_pages(pages)
+    assert c.quote_log[0]["status"] == "moved" and c.quote_log[0]["lines_moved"] == 3
+    assert "12" in [ln.text for ln in c.lines] and "old page two line" not in [ln.text for ln in c.lines]
+
+
+def test_no_opening_quote_moves_nothing_and_is_logged():
+    pages = _q_pages("9. Sub. by the Fake Act. Prior to it, it read as under:\n(a) fake old clause", "fake top line two.")
+    c = se.clean_pages(pages)
+    assert c.quote_log[0]["status"] == "no_opening_quote" and "fake top line two." in [ln.text for ln in c.lines]
+
+
+def test_unclosed_past_cap_moves_nothing():
+    pages = _q_pages("9. Sub. by the Fake Act. It read as under:\n\"fake old start", "fake page line.")
+    pages += ["fake more text." for _ in range(se.QUOTE_PAGE_CAP + 1)]
+    c = se.clean_pages(pages)
+    assert c.quote_log[0]["status"] == "unclosed" and "fake page line." in [ln.text for ln in c.lines]
+
+
+def test_quoted_old_section_line_on_next_page_is_not_a_start():
+    pages = _q_pages("9. Sub. by the Fake Act. It read as under:\n\"7. Fake old text.",
+                     "Fake old heading.\n12. Fake old section.\"\nNext fake heading.\n8. Fake eight.")
+    c = se.clean_pages(pages)
+    assert [s.number for s in se.find_starts(c.lines)] == ["7", "8"]
+
+
+def test_long_continuation_flagged_and_apostrophe_risk():
+    tail = "\n".join(f"old line {k}" for k in range(45))
+    pages = _q_pages("9. Sub. by the Fake Act. It read as under:\n'fake old start", tail + "\nend of old assessees'")
+    e = se.clean_pages(pages).quote_log[0]
+    assert e["status"] == "moved_flagged" and e["flags"] == [">40 lines", "apostrophe_risk"]
