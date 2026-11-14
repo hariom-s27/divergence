@@ -1262,8 +1262,167 @@ def test_compare_apparatus_no_neighbour():
     assert cur[0]["status"] == "no_neighbour" and cur[0]["old_text_in_prev"] == "na"
 
 
-def test_boundary_mismatch_explained_by_apparatus():
-    assert se._explained("(1) fake [bracketed] line", [])
-    assert se._explained("fake words of a long inserted span", ["fake words of a long inserted span here"])
-    assert not se._explained("fake unrelated line text", ["other span text entirely"])
-    assert se.boundary_lines("a\n\nb\nc\nd\n") == (["a", "b"], ["c", "d"])
+# ---------------------------------------------------------------- v9: P09-35A-fix note removal (invented text)
+
+NOTE_PAGE = ("Fake heading seven.\n7. (1) Fake roman text.\n" + HEAD + "\n(z) fake inserted words;\n"
+             "(2) Fake roman tail.\nFake heading eight.\n8. Fake.")
+
+
+def _fonts_for(page, italic_lines, pno=1):
+    """FontView preset: lines in italic_lines are all italic, every other line roman."""
+    return se.FontView(preset={pno: [("i" if t in italic_lines else "r") * len(t) for t in page.splitlines()]})
+
+
+def test_note_block_removed_from_body_and_kept_structured():
+    cleaned, starts = view(NOTE_PAGE)
+    fv = _fonts_for(NOTE_PAGE, {HEAD, "(z) fake inserted words;"})
+    r = se.extract_section(cleaned, starts, "7", italic=fv.italic, edition="fake_ed")
+    assert r["body"] == "7. (1) Fake roman text.\n(2) Fake roman tail.\n"
+    assert r["editor_note_lines_removed"] == 2
+    n = r["editor_notes"][0]
+    assert n["inserted_text"] == "(z) fake inserted words;" and n["target"] == "clause (z)"
+    assert n["after_2"][0] == "(2) Fake roman tail."
+
+
+def test_without_italic_nothing_is_removed():
+    cleaned, starts = view(NOTE_PAGE)
+    r = se.extract_section(cleaned, starts, "7")
+    assert HEAD in r["body"] and r["editor_notes"] == [] and r["editor_note_lines_removed"] == 0
+
+
+def test_header_only_override_removes_one_line():
+    nseg = [se.Line(898, HEAD, 1), se.Line(898, "fake italic words", 2)]
+    notes, drop = se.section_editor_notes(nseg, lambda ln: 1.0, "ita1961_2024n2")
+    assert drop == {id(nseg[0])} and notes[0]["target"] == "section 194T" and notes[0]["inserted_text"] == ""
+
+
+def test_bare_marker_inside_extent_is_removed():
+    nseg = [se.Line(1, HEAD, 1), se.Line(1, "12", 2), se.Line(1, "fake italic words", 3), se.Line(1, "(w) fake roman.", 4)]
+    notes, drop = se.section_editor_notes(nseg, lambda ln: 0.0 if ln.text.startswith("(w)") else 1.0, None)
+    assert drop == {id(x) for x in nseg[:3]} and notes[0]["inserted_text"] == "fake italic words"
+
+
+def test_realization_skips_later_edition_that_reprints_the_note():
+    later_note = NOTE_PAGE                                      # e2 prints the same note again (italic)
+    enacted = NOTE_PAGE.replace(HEAD + "\n", "")                # e3: the inserted clause is roman law text
+    bodies = []
+    for page, italic in ((later_note, {HEAD, "(z) fake inserted words;"}), (enacted, set())):
+        cleaned, starts = view(page)
+        bodies.append(se.extract_section(cleaned, starts, "7", italic=_fonts_for(page, italic).italic)["body"])
+    rz = se.realization("(z) fake inserted words;", [("e2", bodies[0]), ("e3", bodies[1])])
+    assert rz["realized_in"] == "e3" and rz["scores"]["e2"] < 0.5
+
+
+# ---------------------------------------------------------------- v9: Q-B position links
+
+def _run(raw, offset, x, y, size):
+    return {"raw": raw, "s": raw.strip(), "offset": offset, "x": x, "y": y, "size": size}
+
+
+QB_TEXT = "Fake line.\n[fake words]\n1"
+
+
+def _qb_runs(marker_x=56.0, marker_y=683.7, bracket_raw="[fake words]"):
+    return [_run("Fake line.", 0, 50.0, 700.0, 10.0), _run("\n", 10, 0.0, 0.0, 10.0),
+            _run(bracket_raw, 11, 60.0, 680.0, 10.0), _run("\n", 23, 0.0, 0.0, 10.0),
+            _run("1", 24, marker_x, marker_y, 8.3)]
+
+
+def test_offset_to_line_col():
+    f = se.offset_to_line_col("ab\ncd\nef")
+    assert f(0) == (1, 0) and f(4) == (2, 1) and f(6) == (3, 0)
+
+
+def test_bracket_linked_to_marker_left_and_above():
+    link = se.link_brackets_by_position(_qb_runs(), QB_TEXT)[(2, 0)]
+    assert link["reason"] == "linked" and link["marker_token"] == "1" and link["marker_line_1based"] == 3
+    assert (link["dx"], link["dy"], link["ratio"]) == (4.0, 3.7, 0.83)
+
+
+@pytest.mark.parametrize("mx,my", [(20.0, 683.7), (56.0, 676.0)])
+def test_marker_too_far_or_below_is_not_linked(mx, my):
+    assert se.link_brackets_by_position(_qb_runs(mx, my), QB_TEXT)[(2, 0)] == {"reason": "no_marker_left"}
+
+
+def test_bracket_inside_a_run_has_no_position():
+    text = "Fake line.\nfake [words]\n1"
+    links = se.link_brackets_by_position(_qb_runs(bracket_raw="fake [words]"), text)
+    assert links[(2, 5)] == {"reason": "bracket_mid_run"}
+
+
+QB_PAGE = ("Fake heading seven.\n7. (1) Fake text [fake positioned words] more.\n1\n"
+           "1. Ins. by the Zeta Act, 2099, w.e.f. 1-4-2099.")
+
+
+def _qb_view(token):
+    cleaned, starts = view(QB_PAGE)
+    col = QB_PAGE.splitlines()[1].index("[")
+    bv = se.BracketView(preset={1: {(2, col): {"reason": "linked", "marker_token": token, "marker_line_1based": 3,
+                                               "dx": 4.0, "dy": 3.7, "ratio": 0.83}}})
+    v = se.EditionView("fake_ed", [QB_PAGE], [], cleaned, starts, _fonts_for(QB_PAGE, set()), bv)
+    return v, se.extract_section(cleaned, starts, "7")
+
+
+def test_apparatus_links_by_position_to_footnote():
+    v, r = _qb_view("1")
+    e = se.section_apparatus(v, r, CONV)[0]
+    assert (e["footnote"], e["link_method"], e["link_reason"], e["kind"], e["act"]) == (
+        "1", "position", "linked", "Ins.", "Zeta Act, 2099")
+    assert e["act_class"] == "previous: Theta Act, 2098 (in force from 1-4-2099)"
+
+
+def test_apparatus_marker_not_in_links():
+    v, r = _qb_view("9")
+    e = se.section_apparatus(v, r, CONV)[0]
+    assert e["footnote"] is None and e["link_reason"] == "marker_not_in_links"
+
+
+# ---------------------------------------------------------------- v9: Q-C boundary words
+
+def test_boundary_windows_ignore_line_wrapping():
+    a = se.boundary_windows("7. Fake words one two\nthree four [five] six.\n", 4)
+    b = se.boundary_windows("7. Fake words\none two three four five six.\n", 4)
+    assert a == b == (["7.", "Fake", "words", "one"], ["three", "four", "five", "six."])
+    assert se.window_verdict(a[0], b[0], [], "first") == "same"
+
+
+def test_window_word_change_is_mismatch_unless_inside_a_span():
+    prev, cur = "7. fake old words here".split(), "7. fake new words here".split()
+    assert se.window_verdict(prev, cur, [], "first") == "MISMATCH"
+    assert se.window_verdict(prev, cur, ["fake new words"], "first") == "MISMATCH"     # "old" not in a span
+    assert se.window_verdict(prev, cur, ["fake new words", "fake old words"], "first") == "explained"
+
+
+def test_bracket_elsewhere_in_window_does_not_explain():
+    prev, cur = "7. fake old words here".split(), "7. fake new words here".split()
+    assert se.window_verdict(prev, cur, ["here"], "first") == "MISMATCH"
+
+
+def test_window_shift_at_cut_edge_is_ignored():
+    prev = "a b c d e".split()
+    cur = "a b x c d".split()                        # 'x' inserted (inside a span); 'e' pushed out of the window
+    assert se.window_verdict(prev, cur, ["b x c"], "first") == "explained"
+    assert se.window_verdict("v w a b c".split(), "w a b c d".split(), [], "last") == "MISMATCH"   # end differs
+    assert se.window_verdict("v a b c".split(), "a b c".split(), [], "last") == "same"               # cut edge
+
+
+# ---------------------------------------------------------------- v9: Finding 3 symbol footnotes
+
+def test_symbol_line_in_page_tail_starts_a_footnote():
+    page = "Fake heading.\n7. Fake text.\n*Fake note text."
+    c = se.clean_pages([page])
+    assert c.notes == {1: ["*Fake note text."]} and c.symbol_starts == [(1, 3, "*Fake note text.")]
+    assert [ln.text for ln in c.lines] == ["Fake heading.", "7. Fake text."]
+
+
+def test_symbol_line_with_space_before_capital_moves():
+    c = se.clean_pages(["Fake heading.\n7. Fake text.\n† Fake dagger note."])
+    assert c.notes == {1: ["† Fake dagger note."]}
+
+
+@pytest.mark.parametrize("page", [
+    "*Fake top note.\nfake line one.\nfake line two.\nfake line three.\nfake line four.\nfake line five.",
+    "Fake heading.\n7. Fake text.\n*lowercase fake note."])
+def test_symbol_line_outside_tail_or_lowercase_stays(page):
+    c = se.clean_pages([page])
+    assert c.notes == {} and c.symbol_starts == []

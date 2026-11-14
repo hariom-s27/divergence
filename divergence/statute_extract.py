@@ -139,6 +139,19 @@ Extractor v8 changes (owner decisions P09-35A, P09-35B, P09-55, P09-56, P09-57; 
       convention note, linked footnote); expected_change (entry new vs the previous edition's apparatus) vs
       observed_change (span text absent from the previous edition's body). Report only; never a date source.
 
+Extractor v9 changes (owner decisions P09-35A-fix, Q-B (a), Q-C (a) with the owner's correction, Finding 3):
+  P09-35A-fix every editor-note block (header + extent, bare markers inside) is REMOVED from the section body and kept
+      in the structured 'editor_notes'; realization scores against the cleaned later-edition bodies.
+  Q-B     each '[' that starts a visitor run is linked to the nearest marker run just left of and slightly above it
+      (<= 3 x body size left, 0 .. 0.8 x body size up, size ratio <= 0.85 or raised), then to its footnote through the
+      existing marker links ('link_method' position; the glued-text rule is the fallback). A '[' inside a run has no
+      position ('bracket_mid_run'). Cache: _local_text/cache/brackets/<pdf_sha>__pypdf-<ver>/p<page_1based>.json.
+  Q-C     boundary agreement compares the first and last 30 fold_plain words; 'explained' only when EVERY differing
+      chunk of the word diff lies inside a bracket span / apparatus entry of either edition; a pure insert / delete at
+      the window's cut edge is the window shift and is ignored.
+  Finding 3 a kept line among a page's last 5 kept lines starting with '*', '†' or '‡' followed by a capital letter
+      starts a footnote block even without a numbered block; each case is logged (SYMBOL-FOOTNOTES.tsv).
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -165,7 +178,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v8"
+EXTRACTOR_VERSION = "v9"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -286,6 +299,14 @@ FN_ACT_RE = re.compile(r"Act No\.\s*\d+\s+of\s+\d{4}|(?:[A-Z(\d][\w().]*\s+){0,4
 FN_WEF_RE = re.compile(r"w\.(?:r\.)?e\.f\.\s*\d[\d\-.\s]*\d")
 FN_OLD_WORDS_RE = re.compile(r"\bfor (?:the )?words?\s*[\"“‘'](.+?)[\"”’']")
 GLUED_MARKER_RE = re.compile(r"\b(\d+[a-z]?)$")
+# ---------------------------------------------------------------- v9 patterns (P09-35A-fix, Q-B, Q-C, Finding 3)
+SYMBOL_FOOT_RE = re.compile(r"^\s*[*†‡]\s*[A-Z]")                                # Finding 3
+SYMBOL_TAIL_LINES = 5
+BRACKET_CACHE_DIR = LOCAL_DIR / "cache" / "brackets"
+BRACKET_CACHE_VERSION = 1
+MARKER_RUN_RE = re.compile(r"\d+[a-z]?")
+MARKER_DX_BODIES, MARKER_DY_BODIES = 3.0, 0.8                                     # Q-B window (x body size)
+BOUNDARY_WORDS = 30                                                              # Q-C
 
 
 # ---------------------------------------------------------------- data
@@ -312,6 +333,7 @@ class Cleaned:
     page_runs: list = field(default_factory=list)     # P09-46: (edge, offset, first_page, last_page, n)
     foot_line_objs: list = field(default_factory=list)  # P09-49: Line objects moved to footnotes, in order
     quote_log: list = field(default_factory=list)       # P09-52: quotations open at a page end (moved or not)
+    symbol_starts: list = field(default_factory=list)   # v9 Finding 3: (page_1based, line_1based, text)
 
 
 @dataclass
@@ -451,13 +473,14 @@ def footnote_start_match(text: str, fs=None):
     return m
 
 
-def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None, quote_continuation: bool = True) -> Cleaned:
+def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None, quote_continuation: bool = True,
+                symbol_starts: bool = True) -> Cleaned:
     """R3 on every page. pages[idx0] is the raw text of page page_1based(idx0). footnote_start overrides
     FOOTNOTE_START (used only for the v4/v5 MOVED-BLOCKS comparison); quote_continuation=False switches P09-52
     off (used only for before/after reports)."""
     fs = footnote_start or FOOTNOTE_START
     out, notes, furn, midpage, n_foot, rule_drops, cands = [], {}, [], [], 0, [], []
-    foot_ids, page_kept, quote_log = [], [], []
+    foot_ids, page_kept, quote_log, sym_log = [], [], [], []
     for idx0, text in enumerate(pages):                    # pass A: furniture, dividers, edge-digit candidates
         pno = page_1based(idx0)
         raw = text.splitlines()
@@ -487,11 +510,16 @@ def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None, qu
         kept = [ln for ln in kept_all if id(ln) not in claimed]
         resumes = _body_resumes(kept, fs)
         in_foot, body, foot = False, [], list(cont)
+        tail = {id(x) for x in kept[-SYMBOL_TAIL_LINES:]}
         for k, ln in enumerate(kept):
             if BARE_MARKER_RE.match(ln.text.strip()):              # P09-46: bare numbers never join a block
                 body.append(ln)
                 continue
-            if footnote_start_match(ln.text, fs):
+            if (symbol_starts and not in_foot and id(ln) in tail and SYMBOL_FOOT_RE.match(ln.text)
+                    and not footnote_start_match(ln.text, fs)):   # v9 Finding 3: '*'/'†'/'‡' + capital, page tail
+                in_foot = True
+                sym_log.append((pno, ln.line_no, ln.text.strip()[:120]))
+            elif footnote_start_match(ln.text, fs):
                 in_foot = True
                 if trace:
                     trace.add("R3-footnote", f"p{pno}: {ln.text.strip()[:90]}", "(moved to amendment_note)")
@@ -528,7 +556,7 @@ def clean_pages(pages: list, trace: Trace | None = None, footnote_start=None, qu
     out = [ln for ln in out if id(ln) not in gone]
     before, after, orphans = bracket_scan(out)
     return Cleaned(out, notes, furn, midpage, n_foot, rule_drops, before, after, orphans, edge_digits, runs, foot_ids,
-                   quote_log)
+                   quote_log, sym_log)
 
 
 _QUOTE_PAIRS = {'"': '"', "“": "”", "'": "'", "‘": "’"}
@@ -1128,7 +1156,34 @@ def normalise(texts: list, trace: Trace | None = None) -> str:
     return "\n".join(out) + "\n" if out else ""
 
 
-def extract_section(cleaned: Cleaned, starts: list, number: str, trace: Trace | None = None, bold=None) -> dict:
+def section_editor_notes(nseg: list, italic, edition: str | None) -> tuple:
+    """P09-35A-fix: structured editor notes of one section (nseg = heading line .. section end) and the ids of the
+    lines to remove (header + extent, bare markers inside included)."""
+    notes, drop = [], set()
+    for i, _ in _editor_note_blocks(nseg):
+        ov = EDITOR_NOTE_OVERRIDES.get((edition, nseg[i].page, nseg[i].line_no), {})
+        ext = note_extent(nseg, i, italic, ov.get("header_only", False))
+        head = " ".join(_clean(x.text) for x in nseg[i:ext["h"] + 1])
+        hd = parse_note_header(head)
+        if ov.get("target"):
+            hd["target"] = ov["target"]
+        blk = [x for x in nseg[ext["h"] + 1:ext["end"] + 1] if not BARE_MARKER_RE.match(x.text.strip())]
+        after = [_clean(x.text) for x in nseg[ext["end"] + 1:] if not BARE_MARKER_RE.match(x.text.strip())][:2]
+        end_ln = nseg[ext["end"]]
+        notes.append({"page_1based": nseg[i].page, "line_1based": nseg[i].line_no, "header": head, **hd,
+                      "inserted_text": "\n".join(_clean(x.text) for x in blk),
+                      "inserted_last_line": _clean(blk[-1].text) if blk else "",
+                      "block_lines": ext["end"] - i + 1, "stop": ext["stop"], "extent_flags": ext["flags"],
+                      "last_page_1based": end_ln.page, "last_line_1based": end_ln.line_no,
+                      "last_line": _clean(end_ln.text), "after_2": after})
+        drop |= {id(x) for x in nseg[i:ext["end"] + 1]}
+    return notes, drop
+
+
+def extract_section(cleaned: Cleaned, starts: list, number: str, trace: Trace | None = None, bold=None,
+                    italic=None, edition: str | None = None) -> dict:
+    """italic (P09-35A-fix): a callable Line -> italic share (labels ignored). With it, every editor-note block
+    (header + extent) is removed from the body and kept in 'editor_notes'. Without it, nothing is removed."""
     loc = locate(cleaned.lines, starts, number, bold=bold)
     if loc["status"] != "FOUND":
         return loc
@@ -1136,7 +1191,13 @@ def extract_section(cleaned: Cleaned, starts: list, number: str, trace: Trace | 
     seg = lines[loc["internal_line_idx0_start"]:loc["internal_line_idx0_end"]]
     p0, p1 = loc["pages_1based"][0], loc["pages_1based"][-1]
     numbers = footnote_numbers(cleaned.notes, p0, p1)
-    editor = editor_note_candidates(seg)                                   # P09-35: listed, not cut
+    editor = editor_note_candidates(seg)                                   # P09-35: listed
+    ed_notes, n_removed = [], 0
+    if italic is not None:                                                 # P09-35A-fix: remove from the body
+        ed_notes, drop = section_editor_notes(lines[loc["internal_heading_line_idx0"]:loc["internal_line_idx0_end"]],
+                                              italic, edition)
+        n_removed = sum(1 for x in seg if id(x) in drop)
+        seg = [x for x in seg if id(x) not in drop]
     seg, m_dropped, m_unres, inline_found = apply_markers(seg, numbers)    # P09-29 / P09-41
     texts, rows, unresolved, table_map = apply_tables(seg, trace)          # R5
     out, idx_map, joins, not_joined = normalise_lines(texts, trace)        # R4
@@ -1171,6 +1232,7 @@ def extract_section(cleaned: Cleaned, starts: list, number: str, trace: Trace | 
                 "symbol_notes": sum(1 for e in entries if e.get("symbol")),
                 "body_symbol_lines": sum(1 for ln in seg if SYMBOL_RE.match(ln.text)),
                 "editor_note_candidates": editor, "brackets": brackets,
+                "editor_notes": ed_notes, "editor_note_lines_removed": n_removed,
                 "hyphen_joins": joins, "hyphen_not_joined": not_joined})
     return loc
 
@@ -1350,6 +1412,109 @@ class FontView:
         return line_share(line.text, self.codes(line), "italic", ignore_labels=True)
 
 
+# ---------------------------------------------------------------- v9 Q-B: '[' -> marker by PDF position
+
+def page_runs_with_offsets(page_obj) -> tuple:
+    """(joined visitor text, runs) for one pypdf page; each run = effective_run() + 'raw' text + 'offset' (its first
+    character's index in the joined text)."""
+    runs, parts = [], []
+
+    def vis(text, cm, tm, font_dict, font_size):
+        if text:
+            r = effective_run(text, cm, tm, font_size)
+            r["raw"], r["offset"] = text, sum(len(x) for x in parts)
+            parts.append(text)
+            runs.append(r)
+    page_obj.extract_text(visitor_text=vis)
+    return "".join(parts), runs
+
+
+def offset_to_line_col(page_text: str):
+    """A function: character offset in page_text -> (line_1based, col) per page_text.splitlines()."""
+    import bisect
+    starts, pos = [], 0
+    for ln in page_text.splitlines(keepends=True):
+        starts.append(pos)
+        pos += len(ln)
+
+    def f(off):
+        k = bisect.bisect_right(starts, off) - 1
+        return k + 1, off - starts[k]
+    return f
+
+
+def link_brackets_by_position(runs: list, page_text: str) -> dict:
+    """Q-B: {(line_1based, col): link} for every '[' on a page. A '[' that starts a run (only spaces before it in the
+    run) is linked to the nearest marker run (text '\\d+[a-z]?', size ratio <= 0.85 or raised) to its LEFT within
+    MARKER_DX_BODIES x body size and 0 .. MARKER_DY_BODIES x body size ABOVE it; else reason 'no_marker_left'. A '['
+    inside a run has no position of its own: reason 'bracket_mid_run'."""
+    loc = offset_to_line_col(page_text)
+    real = [r for r in runs if r["s"]]
+    body = mark_runs(real)
+    out = {}
+    for r in real:
+        for k, ch in enumerate(r["raw"]):
+            if ch != "[":
+                continue
+            key = loc(r["offset"] + k)
+            if r["raw"][:k].strip():
+                out[key] = {"reason": "bracket_mid_run"}
+                continue
+            cands = [q for q in real if q is not r and MARKER_RUN_RE.fullmatch(q["s"])
+                     and (q["ratio"] <= CONFIRM_RATIO or q["raised"]) and q["x"] < r["x"]
+                     and r["x"] - q["x"] <= MARKER_DX_BODIES * body and 0 <= q["y"] - r["y"] <= MARKER_DY_BODIES * body]
+            if not cands:
+                out[key] = {"reason": "no_marker_left"}
+                continue
+            q = min(cands, key=lambda q: r["x"] - q["x"])
+            lead = len(q["raw"]) - len(q["raw"].lstrip())
+            out[key] = {"reason": "linked", "marker_token": q["s"], "marker_line_1based": loc(q["offset"] + lead)[0],
+                        "dx": round(r["x"] - q["x"], 1), "dy": round(q["y"] - r["y"], 1), "ratio": round(q["ratio"], 2)}
+    return out
+
+
+class BracketView:
+    """Lazy per-page Q-B links for one edition (positions and tokens only; no law text). Cache: one file per page
+    under BRACKET_CACHE_DIR, created once, never overwritten. preset {page_1based: {(line, col): link}} for tests."""
+
+    def __init__(self, pdf: Path | None = None, pages: list | None = None, cache_dir: Path = BRACKET_CACHE_DIR,
+                 preset: dict | None = None):
+        self.pdf, self.pages, self.cache_dir = pdf, pages, cache_dir
+        self._mem = dict(preset or {})
+        self._reader, self._dir = None, None
+        self.built, self.read, self.mismatch_pages = 0, 0, set()
+
+    def links(self, page: int) -> dict:
+        if page in self._mem:
+            return self._mem[page]
+        if self.pdf is None:
+            self._mem[page] = {}
+            return {}
+        if self._dir is None:
+            self._dir = self.cache_dir / f"{file_sha256(self.pdf)}__pypdf-{pypdf_version()}"
+        path = self._dir / f"p{page}.json"
+        if path.exists():
+            rec = json.loads(path.read_text(encoding="utf-8"))
+            if rec.get("page_1based") != page or rec.get("bracket_cache_version") != BRACKET_CACHE_VERSION:
+                raise RuntimeError(f"bracket cache {path} is inconsistent; not overwriting it")
+            self.read += 1
+        else:
+            if self._reader is None:
+                from pypdf import PdfReader
+                self._reader = PdfReader(str(self.pdf))
+            joined, runs = page_runs_with_offsets(self._reader.pages[idx0_from_page(page)])
+            mismatch = joined != self.pages[idx0_from_page(page)]
+            links = {} if mismatch else link_brackets_by_position(runs, joined)
+            rec = {"page_1based": page, "bracket_cache_version": BRACKET_CACHE_VERSION, "pypdf_version": pypdf_version(),
+                   "mismatch": mismatch, "links": [[k[0], k[1], v] for k, v in sorted(links.items())]}
+            _write_json_new(path, rec)
+            self.built += 1
+        if rec["mismatch"]:
+            self.mismatch_pages.add(page)
+        self._mem[page] = {(a, b): v for a, b, v in rec["links"]}
+        return self._mem[page]
+
+
 # ---------------------------------------------------------------- inputs
 
 def latest_raw_dir() -> Path:
@@ -1402,17 +1567,28 @@ class EditionView:
     cleaned: Cleaned
     starts: list
     fonts: FontView | None = None
+    brackets: BracketView | None = None
 
 
 def edition_view(raw: Path, key: str, trace: Trace | None = None) -> EditionView:
     pages = load_pages(raw / f"{key}.pdf")
     kept, dropped = drop_duplicate_pages(pages)
     cleaned = clean_pages(kept, trace)
-    return EditionView(key, pages, dropped, cleaned, find_starts(cleaned.lines), FontView(raw / f"{key}.pdf", pages))
+    return EditionView(key, pages, dropped, cleaned, find_starts(cleaned.lines), FontView(raw / f"{key}.pdf", pages),
+                       BracketView(raw / f"{key}.pdf", pages))
 
 
 def _bold(v: EditionView):
     return v.fonts.bold if v.fonts is not None else None
+
+
+def _italic(v: EditionView):
+    return v.fonts.italic if v.fonts is not None else None
+
+
+def extract_view(v: EditionView, number: str, trace: Trace | None = None) -> dict:
+    """extract_section() with the edition's bold (P09-55) and italic (P09-35A-fix) tests."""
+    return extract_section(v.cleaned, v.starts, number, trace, bold=_bold(v), italic=_italic(v), edition=v.key)
 
 
 def locate_view(v: EditionView, number: str) -> dict:
@@ -1511,6 +1687,27 @@ def _quote_outputs(views: list) -> tuple:
         moved = sum(e["lines_moved"] for e in v.cleaned.quote_log if e["status"].startswith("moved"))
         summary.append(f"{v.key:<15} open-at-page-end={len(v.cleaned.quote_log):>3} lines moved={moved:>4} "
                        + " ".join(f"{k}={n}" for k, n in sorted(counts.items())))
+    return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
+
+
+def _symbol_outputs(views: list) -> tuple:
+    """v9 Finding 3: (SYMBOL-FOOTNOTES.tsv, printed summary). Section = the last section start before the line
+    (heading line, page order); RECORD-SCOPE membership marked."""
+    scope = record_scope()
+    act_of = {k: a for a in EDITIONS for k in EDITIONS[a]}
+    tsv = ["edition\tpage_1based\tline_1based\tsection\tin_record_scope\ttext"]
+    summary = []
+    for v in views:
+        heads = sorted((v.cleaned.lines[s.heading_idx].page, v.cleaned.lines[s.heading_idx].line_no, s.number)
+                       for s in v.starts)
+        n_scope = 0
+        for p, ln, text in v.cleaned.symbol_starts:
+            prev = [h[2] for h in heads if (h[0], h[1]) <= (p, ln)]
+            sec = prev[-1] if prev else "-"
+            ins = sec in scope[act_of[v.key]]
+            n_scope += ins
+            tsv.append(f"{v.key}\t{p}\t{ln}\t{sec}\t{'yes' if ins else 'no'}\t{_tsv_cell(text)}")
+        summary.append(f"{v.key:<15} symbol footnote starts={len(v.cleaned.symbol_starts):>3} in RECORD-SCOPE={n_scope}")
     return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
 
 
@@ -1843,13 +2040,22 @@ def section_apparatus(v: EditionView, r: dict, conv: dict) -> list:
     out = []
     for s in bracket_spans(seg, codes):
         ln = seg[s["li"]]
-        label = link.get(s["marker"]) if s["marker"] else None
+        pos = v.brackets.links(ln.page).get((ln.line_no, s["col"])) if v.brackets is not None else None
+        label, method, marker, reason = None, "none", None, (pos or {}).get("reason", "no_position")
+        if pos and pos["reason"] == "linked":                          # Q-B: position first
+            marker = pos["marker_token"]
+            label = link.get((marker, ln.page, pos["marker_line_1based"]))
+            method, reason = ("position", "linked") if label else ("none", "marker_not_in_links")
+        if label is None and s["marker"]:                              # fallback: marker glued in the text
+            tl = link.get(s["marker"])
+            if tl:
+                label, method, marker, reason = tl, "text", s["marker"][0], "linked"
         fn = parse_footnote(labels[label]["text"]) if label in labels else {
             "kind": None, "act": None, "wef_as_printed": None, "old_text": None}
         out.append({"page_1based": ln.page, "line_1based": ln.line_no, "col": s["col"], "depth": s["depth"],
                     "closed": s["closed"], "weight": s["weight"], "act_class": act_class(s["weight"], conv),
-                    "span_text": _clean(s["text"]), "marker": s["marker"][0] if s["marker"] else None,
-                    "footnote": label, **fn})
+                    "span_text": _clean(s["text"]), "marker": marker, "footnote": label, "link_method": method,
+                    "link_reason": reason, "dx": (pos or {}).get("dx"), "dy": (pos or {}).get("dy"), **fn})
     return out
 
 
@@ -1871,17 +2077,33 @@ def compare_apparatus(cur: list, prev: list | None, prev_body: str | None) -> No
                                        "yes" if fold_plain(e["old_text"]) in pb else "no")})
 
 
-def boundary_lines(body: str) -> tuple:
-    ls = [x for x in body.splitlines() if x.strip()]
-    return ls[:2], ls[-2:]
+def boundary_windows(body: str, n: int = BOUNDARY_WORDS) -> tuple:
+    """Q-C: (first n, last n) words of fold_plain(body)."""
+    w = fold_plain(body).split()
+    return w[:n], w[-n:]
 
 
-def _explained(line: str, spans: list) -> bool:
-    """P09-55: a boundary mismatch is explained when the line holds a bracket or overlaps an apparatus span."""
-    if "[" in line or "]" in line:
-        return True
-    f = fold_plain(line)
-    return any(sp and ((len(sp) >= 12 and sp in f) or (len(f) >= 12 and f in sp)) for sp in spans)
+def window_verdict(prev: list, cur: list, spans: list, edge: str) -> str:
+    """Q-C with the owner's correction: 'same' when equal; 'explained' only when EVERY differing chunk (word-level
+    diff of the two windows) lies inside a bracket span / apparatus entry of either edition (its words, in order,
+    occur in a span's folded words); else 'MISMATCH'. edge = 'first' | 'last': a pure insert / delete touching the
+    window's cut edge (end of a first window, start of a last window) is the window shift, not a difference."""
+    if prev == cur:
+        return "same"
+    span_txt = [" " + " ".join(sp.split()) + " " for sp in spans if sp]
+    real = 0
+    for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, prev, cur, autojunk=False).get_opcodes():
+        if tag == "equal":
+            continue
+        if tag in ("insert", "delete"):
+            at_cut = (i2 == len(prev) and j2 == len(cur)) if edge == "first" else (i1 == 0 and j1 == 0)
+            if at_cut:
+                continue
+        real += 1
+        for chunk in (prev[i1:i2], cur[j1:j2]):
+            if chunk and not any(" " + " ".join(chunk) + " " in t for t in span_txt):
+                return "MISMATCH"
+    return "explained" if real else "same"
 
 
 def _md(s) -> str:
@@ -1889,32 +2111,22 @@ def _md(s) -> str:
 
 
 def collect_editor_notes(views: list, scope: dict, sect) -> list:
-    """P09-35A over RECORD-SCOPE sections x editions. sect(edition, section) -> cached extract_section result."""
+    """P09-35A over RECORD-SCOPE sections x editions. sect(edition, section) -> cached extract_view() result, whose
+    'editor_notes' were removed from its body (P09-35A-fix); realization scores against the CLEANED later bodies."""
     byk = {v.key: v for v in views}
     notes = []
     for act in ("1961", "2025"):
         order = [k for k in EDITIONS[act] if k in byk]
         for key in order:
-            v = byk[key]
-            italic = v.fonts.italic if v.fonts is not None else (lambda ln: None)
             for sec in scope[act]:
                 r = sect(key, sec)
                 if r["status"] != "FOUND":
                     continue
-                seg = v.cleaned.lines[r["internal_heading_line_idx0"]:r["internal_line_idx0_end"]]
-                for i, _ in _editor_note_blocks(seg):
-                    ov = EDITOR_NOTE_OVERRIDES.get((key, seg[i].page, seg[i].line_no), {})
-                    ext = note_extent(seg, i, italic, ov.get("header_only", False))
-                    hd = parse_note_header(" ".join(_clean(x.text) for x in seg[i:ext["h"] + 1]))
-                    if ov.get("target"):
-                        hd["target"] = ov["target"]
-                    blk = [x for x in seg[ext["h"] + 1:ext["end"] + 1] if not BARE_MARKER_RE.match(x.text.strip())]
-                    inserted = "\n".join(_clean(x.text) for x in blk)
-                    after = [_clean(x.text) for x in seg[ext["end"] + 1:]
-                             if not BARE_MARKER_RE.match(x.text.strip())][:2]
-                    tm = TARGET_SECTION_RE.match(hd["target"] or "")
+                for en in r.get("editor_notes", []):
+                    inserted = en["inserted_text"]
+                    tm = TARGET_SECTION_RE.match(en["target"] or "")
                     tsec = tm.group(1) if tm else sec
-                    needle, source, last_line = inserted, "inserted_text", (_clean(blk[-1].text) if blk else "")
+                    needle, source, last_line = inserted, "inserted_text", en["inserted_last_line"]
                     if not inserted and tm:                                   # Q2 (a): header-only, 'section X'
                         own = sect(key, tsec)
                         needle = own["body"] if own["status"] == "FOUND" else ""
@@ -1923,17 +2135,14 @@ def collect_editor_notes(views: list, scope: dict, sect) -> list:
                     for k in order[order.index(key) + 1:]:
                         t = sect(k, tsec)
                         later.append((k, t["body"] if t["status"] == "FOUND" else None))
+                    after = en["after_2"]
                     rz = realization(needle, later, last_line, after[0] if (after and inserted) else "")
-                    end_ln = seg[ext["end"]]
-                    notes.append({"id": f"E{len(notes) + 1}", "edition": key, "act": act, "section": sec,
-                                  "page_1based": seg[i].page, "line_1based": seg[i].line_no,
-                                  "header": " ".join(_clean(x.text) for x in seg[i:ext["h"] + 1]), **hd,
-                                  "inserted_text": inserted, "target_section": tsec, "needle_source": source,
-                                  "block_lines": ext["end"] - i + 1, "stop": ext["stop"],
-                                  "last_page_1based": end_ln.page, "last_line_1based": end_ln.line_no,
-                                  "last_line": _clean(end_ln.text), "after_2": after,
+                    rec = {k: val for k, val in en.items() if k not in ("extent_flags", "inserted_last_line")}
+                    notes.append({"id": f"E{len(notes) + 1}", "edition": key, "act": act, "section": sec, **rec,
+                                  "target_section": tsec, "needle_source": source,
                                   "realized_in": rz["realized_in"], "match_score": rz["match_score"],
-                                  "status": rz["status"], "scores": rz["scores"], "flags": ext["flags"] + rz["flags"]})
+                                  "status": rz["status"], "scores": rz["scores"],
+                                  "flags": en["extent_flags"] + rz["flags"]})
     return notes
 
 
@@ -1968,8 +2177,7 @@ def v8_reports(views: list, out_dir: Path) -> str:
 
     def sect(key, sec):
         if (key, sec) not in cache:
-            v = byk[key]
-            cache[(key, sec)] = extract_section(v.cleaned, v.starts, sec, bold=_bold(v))
+            cache[(key, sec)] = extract_view(byk[key], sec)
         return cache[(key, sec)]
     summary = [f"P09-56 RECORD-SCOPE: 1961={len(scope['1961'])} 2025={len(scope['2025'])}"]
     _write_new(out_dir / "RECORD-SCOPE.json", json.dumps(
@@ -2037,7 +2245,8 @@ def v8_reports(views: list, out_dir: Path) -> str:
                     app[(key, sec)] = cur
                 prev_key = key
     cols = ("page_1based", "line_1based", "depth", "closed", "weight", "act_class", "marker", "footnote", "kind", "act",
-            "wef_as_printed", "old_text", "span_text", "expected_change", "observed_change", "status", "old_text_in_prev")
+            "wef_as_printed", "old_text", "span_text", "expected_change", "observed_change", "status", "old_text_in_prev",
+            "link_method", "link_reason", "dx", "dy")
     tsv = ["edition\tsection\t" + "\t".join(cols)]
     for (key, sec), es in app.items():
         for e in es:
@@ -2051,6 +2260,11 @@ def v8_reports(views: list, out_dir: Path) -> str:
             for val in vals:
                 c[f"{f}={val}"] = sum(1 for e in es if e[f] == val)
         c["linked"] = sum(1 for e in es if e["footnote"])
+        for val in ("position", "text"):
+            c[f"link_method={val}"] = sum(1 for e in es if e["link_method"] == val)
+        c["unlinked"] = c["spans"] - c["linked"]
+        for val in ("bracket_mid_run", "no_marker_left", "marker_not_in_links", "no_position"):
+            c[f"unlinked:{val}"] = sum(1 for e in es if not e["footnote"] and e["link_reason"] == val)
         return c
     hdr = list(counts([]).keys())
     am = ["# AMENDMENT APPARATUS (P09-35B; report only; never a date source)", "",
@@ -2068,43 +2282,37 @@ def v8_reports(views: list, out_dir: Path) -> str:
         c = counts(es)
         am.append(f"| {sec} | {key} | " + " | ".join(str(c[h]) for h in hdr) + " |")
     _write_new(out_dir / "AMENDMENT-APPARATUS.md", "\n".join(am) + "\n")
-    # ---- P09-55 boundary agreement
-    ba = ["# BOUNDARY AGREEMENT (P09-55; folded first 2 / last 2 body lines per RECORD-SCOPE section x edition)", "",
-          "Compared with the previous edition of the same Act where the section is FOUND. MISMATCH = differs and not "
-          "explained by an apparatus entry (a bracket on the line, or overlap with a bracket span of either edition).",
-          "", "| act | section | edition | first 1 | first 2 | last 1 | last 2 | vs previous |",
-          "|---|---|---|---|---|---|---|---|"]
-    n_mis = n_exp = 0
+    # ---- P09-55 boundary agreement (Q-C: first / last 30 folded words; owner correction on 'explained')
+    ba = [f"# BOUNDARY AGREEMENT (P09-55 / Q-C; first and last {BOUNDARY_WORDS} folded words per RECORD-SCOPE section "
+          "x edition)", "",
+          "Words = fold v2 of the body after removing glued markers and square brackets. Compared with the previous "
+          "edition of the same Act where the section is FOUND, by a word-level diff of the two windows. explained = "
+          "EVERY differing chunk lies inside a bracket span / apparatus entry of either edition; MISMATCH otherwise. "
+          "A pure insert/delete at the window's cut edge is the window shift and is ignored.", "",
+          "| act | section | edition | first words | last words | F30 vs previous | L30 vs previous |",
+          "|---|---|---|---|---|---|---|"]
+    tally = {"same": 0, "explained": 0, "MISMATCH": 0}
     for act in ("1961", "2025"):
         for sec in scope[act]:
             prev = None
             for key in [k for k in EDITIONS[act] if k in byk]:
                 r = sect(key, sec)
                 if r["status"] != "FOUND":
-                    ba.append(f"| {act} | {sec} | {key} | {r['status']} | | | | - |")
+                    ba.append(f"| {act} | {sec} | {key} | {r['status']} | | - | - |")
                     continue
-                f2, l2 = boundary_lines(r["body"])
-                cur = (f2 + [""] * 2)[:2] + ([""] * 2 + l2)[-2:]
-                verdict = "no_neighbour"
+                fw, lw = boundary_windows(r["body"])
+                vf = vl = "no_neighbour"
                 if prev is not None:
                     spans = [fold_plain(e["span_text"]) for e in app.get((key, sec), []) + app.get((prev[0], sec), [])]
-                    marks = []
-                    for name, x, y in zip(("F1", "F2", "L1", "L2"), cur, prev[1]):
-                        if fold_plain(x) == fold_plain(y):
-                            continue
-                        if _explained(x, spans) or _explained(y, spans):
-                            n_exp += 1
-                            marks.append(f"{name} explained")
-                        else:
-                            n_mis += 1
-                            marks.append(f"{name} MISMATCH")
-                    verdict = ", ".join(marks) or "same"
-                ba.append(f"| {act} | {sec} | {key} | " + " | ".join(_md(fold_plain(x)[:70]) for x in cur)
-                          + f" | {verdict} |")
-                prev = (key, cur)
-    ba += ["", f"unexplained mismatches: {n_mis}; explained: {n_exp}"]
+                    vf = window_verdict(prev[1], fw, spans, "first")
+                    vl = window_verdict(prev[2], lw, spans, "last")
+                    tally[vf] += 1
+                    tally[vl] += 1
+                ba.append(f"| {act} | {sec} | {key} | {_md(' '.join(fw)[:90])} | {_md(' '.join(lw)[-90:])} | {vf} | {vl} |")
+                prev = (key, fw, lw)
+    ba += ["", "windows compared: " + "  ".join(f"{k}={v}" for k, v in tally.items())]
     _write_new(out_dir / "BOUNDARY-AGREEMENT.md", "\n".join(ba) + "\n")
-    summary.append(f"P09-55 boundary agreement: MISMATCH={n_mis} explained={n_exp}")
+    summary.append("Q-C boundary agreement (30 words): " + " ".join(f"{k}={v}" for k, v in tally.items()))
     # ---- P09-35A editor notes
     notes = collect_editor_notes(views, scope, sect)
     _write_new(out_dir / "EDITOR-NOTES.json", json.dumps(notes, indent=2, ensure_ascii=False) + "\n")
@@ -2116,6 +2324,12 @@ def v8_reports(views: list, out_dir: Path) -> str:
                    + "; 2025: " + " -> ".join(EDITIONS["2025"]))
     summary.append(f"P09-35A editor notes={len(notes)} " + " ".join(f"{k}={v}" for k, v in sorted(st.items()))
                    + f" flagged={sum(1 for n in notes if n['flags'])}")
+    summary.append("P09-35A-fix editor-note lines removed from RECORD-SCOPE bodies: " + ", ".join(
+        f"{v.key}={sum(cache[(v.key, sec)].get('editor_note_lines_removed', 0) for sec in scope[a] if (v.key, sec) in cache)}"
+        for a in EDITIONS for v in views if v.key in EDITIONS[a]))
+    summary.append("bracket positions: " + ", ".join(
+        f"{v.key} built={v.brackets.built} read={v.brackets.read} mismatch={len(v.brackets.mismatch_pages)}"
+        for v in views if v.brackets is not None))
     summary.append("fonts: " + ", ".join(f"{v.key} built={v.fonts.built} read={v.fonts.read} "
                                          f"mismatch={len(v.fonts.mismatch_pages)}" for v in views if v.fonts is not None))
     return "\n".join(summary) + "\n"
@@ -2160,11 +2374,14 @@ def run_locate_all(raw: Path, out_dir: Path) -> int:
             + "\nP09-52 QUOTE CONTINUATIONS\n" + qc_sum)
     st_tsv, st_sum = _structural_tails_outputs(views)
     text += "\nP09-53 STRUCTURAL TAILS (SECTION-LIST sections)\n" + st_sum
+    sy_tsv, sy_sum = _symbol_outputs(views)
+    text += "\nv9 Finding 3 SYMBOL FOOTNOTE STARTS\n" + sy_sum
     print(text, end="")
     _write_new(out_dir / "LOCATE-ALL.txt", text)
     _write_new(out_dir / "MOVED-BLOCKS.tsv", mb_tsv)
     _write_new(out_dir / "QUOTE-CONTINUATIONS.tsv", qc_tsv)
     _write_new(out_dir / "STRUCTURAL-TAILS.tsv", st_tsv)
+    _write_new(out_dir / "SYMBOL-FOOTNOTES.tsv", sy_tsv)
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
     _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
@@ -2180,7 +2397,7 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
             v = edition_view(raw, key, trace)
             views.append(v)
             for sec in secs:
-                r = extract_section(v.cleaned, v.starts, sec, trace, bold=_bold(v))
+                r = extract_view(v, sec, trace)
                 r.update({"act": act, "section": sec, "edition": key})
                 stem = f"{act}__s{sec}__{key}"
                 r["stem"] = stem
@@ -2216,6 +2433,9 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
     _write_new(out_dir / "QUOTE-CONTINUATIONS.tsv", qc_tsv)
     st_tsv, st_sum = _structural_tails_outputs(views)
     _write_new(out_dir / "STRUCTURAL-TAILS.tsv", st_tsv)
+    sy_tsv, sy_sum = _symbol_outputs(views)
+    _write_new(out_dir / "SYMBOL-FOOTNOTES.tsv", sy_tsv)
+    print("v9 Finding 3 symbol footnote starts:\n" + sy_sum, end="")
     print("P09-49 moved blocks (current FOOTNOTE_START vs v4):\n" + mb_sum + fl_sum
           + "P09-52 quote continuations:\n" + qc_sum + "P09-53 structural tails (SECTION-LIST sections):\n" + st_sum, end="")
     mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers\tmatch"]
