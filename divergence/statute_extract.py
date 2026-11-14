@@ -152,6 +152,18 @@ Extractor v9 changes (owner decisions P09-35A-fix, Q-B (a), Q-C (a) with the own
   Finding 3 a kept line among a page's last 5 kept lines starting with '*', '†' or '‡' followed by a capital letter
       starts a footnote block even without a numbered block; each case is logged (SYMBOL-FOOTNOTES.tsv).
 
+Extractor v10 changes (owner decisions P09-58, note-line skip, Q-C (c) with Q1 (a), Q2 (a) = M8, Q3 (a)):
+  P09-58  bracket spans are 'amendment' or 'reference' (REFERENCE_RE: '[Table: ...', '[See ...'; found: 'Table:' only);
+      only amendment spans enter the apparatus cross-check; reference spans are listed separately.
+  skip    bracket spans are collected without the editor-note lines removed from the body.
+  Q-C (c) boundary agreement = containment on a comparison skeleton (lowercase letters + digits; never stored):
+      truncation (possible_early_cut) and over-capture (possible_extra_text) checks per start / end window, with
+      amendment spans, linked footnote old text and realized notes as witnesses; <= 10% residual = explained.
+  M8      a line 'N.' glued directly to a capital letter ('147A.Notwithstanding') is also a section start when a heading
+      precedes it (find_starts only); every such start is listed (NEW-STARTS-M8.tsv).
+  Q3      inside a footnote block, 'N.' glued to a capital letter ('4.Word ...') is also a footnote number; every such
+      line is listed (FOOTNOTE-NUMBERS-GLUED.tsv).
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -178,7 +190,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v9"
+EXTRACTOR_VERSION = "v10"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -251,6 +263,8 @@ SUBSECTION_LINE_RE = re.compile(r"^\[?\(\d+[A-Z]*\)\s")                       # 
 BARE_MARKER_RE = re.compile(r"^\d+[a-z]?(?: \d+[a-z]?)*$")                    # P09-29 (on the stripped line)
 INLINE_MARKER_RE = re.compile(r"\b(\d+[a-z]?)(?=\[)")                         # P09-41
 FOOTNOTE_NUMBER_RE = re.compile(r"^\s*(\d+[a-z]?)\.\s")                       # P09-29b (inside footnote blocks)
+FOOTNOTE_NUMBER_GLUED_RE = re.compile(r"^\s*(\d+[a-z]?)\.(?=[A-Z])")           # v10 Q3: 'N.Capital' in a block
+START_M8_RE = re.compile(r"^\s*(\d{1,3}[A-Z]{0,5})\.(?=[A-Z])")               # v10 M8: '147A.Notwithstanding'
 DIVIDER_RE = re.compile(r"^[_\-—]{3,}$")                                      # P09-32 (on the stripped line)
 HYPHEN_END_RE = re.compile(r"[^\W\d_]-$")                                     # P09-33b: ASCII '-' after a letter
 EDITOR_NOTE_RE = re.compile(r"shall be (?:inserted|substituted|omitted|renumbered)")   # P09-35
@@ -307,6 +321,13 @@ BRACKET_CACHE_VERSION = 1
 MARKER_RUN_RE = re.compile(r"\d+[a-z]?")
 MARKER_DX_BODIES, MARKER_DY_BODIES = 3.0, 0.8                                     # Q-B window (x body size)
 BOUNDARY_WORDS = 30                                                              # Q-C
+# ---------------------------------------------------------------- v10 patterns (P09-58, Q-C (c))
+REFERENCE_RE = re.compile(r"^\s*(?:Table\s*:|See\b)")                           # P09-58 (patterns found: Table:)
+CONTAIN_MIN, RESIDUAL_MAX = 0.90, 0.10                                           # Q-C (c), Q1 (a)
+BOUNDARY_OWNER_EXPLAINED = {                                # owner eye checks: (section, edition, edge, check)
+    ("158B", "ita1961_2024n2", "end", "possible_extra_text"):
+        "owner eye check p.796: new block-assessment text; Chapter-level bracket '72[CHAPTER XIV-B' spans sections",
+}
 
 
 # ---------------------------------------------------------------- data
@@ -342,6 +363,7 @@ class Start:
     number: str
     heading: str
     heading_idx: int
+    rule: str = "R1"          # v10: "M8" when only START_M8_RE matched
 
 
 @dataclass
@@ -575,7 +597,7 @@ def _open_quotations(foot: list) -> list:
     out, cur, number = [], None, None
     for ln in foot:
         t = ln.text
-        mnum = FOOTNOTE_NUMBER_RE.match(t) or FOOTNOTE_RANGE_RE.match(t)
+        mnum = fn_number(t) or FOOTNOTE_RANGE_RE.match(t)
         if mnum:
             number = mnum.group(0).strip().rstrip(".").strip()
         if cur is not None and cur["state"] == "await_open":
@@ -746,12 +768,14 @@ def find_starts(lines: list) -> list:
     stop = schedules_from(lines)
     starts = []
     for i, ln in enumerate(lines[:stop]):
-        m = START_RE.match(ln.text)
+        m, rule = START_RE.match(ln.text), "R1"
+        if not m:
+            m, rule = START_M8_RE.match(ln.text), "M8"             # v10 M8: 'N.' glued to a capital letter
         if not m or i in marks or footnote_start_match(ln.text) or PART_NUMBER_RE.match(ln.text):
             continue
         h = _heading_before(lines, i)
         if h:
-            starts.append(Start(i, m.group(1), h[0], h[1]))
+            starts.append(Start(i, m.group(1), h[0], h[1], rule))
     return starts
 
 
@@ -846,13 +870,19 @@ def footnote_numbers(notes: dict, p_first: int, p_last: int) -> set:
     out = set()
     for p in range(p_first, p_last + 2):
         for ln in notes.get(p, []):
-            m = FOOTNOTE_NUMBER_RE.match(ln)
+            m = fn_number(ln)
             if m:
                 out.add(m.group(1))
             rng = _footnote_range(ln)
             if rng:
                 out.update(rng[1])                          # P09-50: a range entry covers N..M
     return out
+
+
+def fn_number(line: str):
+    """The leading footnote number of a line INSIDE a footnote block: 'N. ' (P09-29b) or, v10 Q3, 'N.' glued to a
+    capital letter ('4.Word ...')."""
+    return FOOTNOTE_NUMBER_RE.match(line) or FOOTNOTE_NUMBER_GLUED_RE.match(line)
 
 
 def _footnote_range(line: str):
@@ -875,7 +905,7 @@ def footnotes_raw(notes: dict, p_first: int, p_last: int) -> list:
     out, prev = [], ""
     for p in range(p_first, p_last + 2):
         for ln in notes.get(p, []):
-            m, sm, rng = FOOTNOTE_NUMBER_RE.match(ln), SYMBOL_RE.match(ln), _footnote_range(ln)
+            m, sm, rng = fn_number(ln), SYMBOL_RE.match(ln), _footnote_range(ln)
             first = ln.lstrip()[:1]
             starts_new = (not out or m or sm or rng
                           or (prev.endswith(".") and not ln.lstrip().startswith(QUOTE_OR_PAREN)
@@ -1175,7 +1205,8 @@ def section_editor_notes(nseg: list, italic, edition: str | None) -> tuple:
                       "inserted_last_line": _clean(blk[-1].text) if blk else "",
                       "block_lines": ext["end"] - i + 1, "stop": ext["stop"], "extent_flags": ext["flags"],
                       "last_page_1based": end_ln.page, "last_line_1based": end_ln.line_no,
-                      "last_line": _clean(end_ln.text), "after_2": after})
+                      "last_line": _clean(end_ln.text), "after_2": after,
+                      "lines_1based": [[x.page, x.line_no] for x in nseg[i:ext["end"] + 1]]})
         drop |= {id(x) for x in nseg[i:ext["end"] + 1]}
     return notes, drop
 
@@ -1711,6 +1742,27 @@ def _symbol_outputs(views: list) -> tuple:
     return "\n".join(tsv) + "\n", "\n".join(summary) + "\n"
 
 
+def _review_outputs(views: list) -> tuple:
+    """v10 M8 / Q3: (NEW-STARTS-M8.tsv, FOOTNOTE-NUMBERS-GLUED.tsv, printed summary), edition-wide, for owner review."""
+    m8 = ["edition\tnumber\tpage_1based\tline_1based\theading\tbold_share\tstart_line"]
+    gl = ["edition\tpage_1based\tline_1based\tnumber\ttext"]
+    summary = []
+    for v in views:
+        rows = [s_ for s_ in v.starts if s_.rule == "M8"]
+        for s_ in rows:
+            h, ln = v.cleaned.lines[s_.heading_idx], v.cleaned.lines[s_.idx]
+            b = v.fonts.bold(h) if v.fonts is not None else None
+            m8.append(f"{v.key}\t{s_.number}\t{h.page}\t{h.line_no}\t{_tsv_cell(s_.heading[:80])}\t"
+                      f"{'-' if b is None else round(b, 2)}\t{_tsv_cell(ln.text.strip()[:100])}")
+        glued = [x for x in v.cleaned.foot_line_objs
+                 if FOOTNOTE_NUMBER_GLUED_RE.match(x.text) and not FOOTNOTE_NUMBER_RE.match(x.text)]
+        for x in glued:
+            gl.append(f"{v.key}\t{x.page}\t{x.line_no}\t{FOOTNOTE_NUMBER_GLUED_RE.match(x.text).group(1)}\t"
+                      f"{_tsv_cell(x.text.strip()[:120])}")
+        summary.append(f"{v.key:<15} M8 starts={len(rows):>3}  glued footnote numbers={len(glued):>3}")
+    return "\n".join(m8) + "\n", "\n".join(gl) + "\n", "\n".join(summary) + "\n"
+
+
 def _structural_tails_outputs(views: list) -> tuple:
     """P09-53: (STRUCTURAL-TAILS.tsv over all SECTION-LIST sections x editions, printed summary)."""
     sl = json.loads((STATUTES_DIR / "SECTION-LIST.json").read_text(encoding="utf-8"))
@@ -1947,12 +1999,13 @@ def fold_plain(s: str) -> str:
     return fold_for_diff(re.sub(r"[\[\]]", " ", INLINE_MARKER_RE.sub("", s)))
 
 
-def bracket_spans(seg: list, codes) -> list:
+def bracket_spans(seg: list, codes, skip=None) -> list:
     """P09-35B: bracket spans opened inside seg (bare-number lines skipped; lines joined with one space).
     [{li, col, depth, text, closed, weight ('bold' | 'medium' | 'unknown'), marker (token, page, line) | None}]."""
     stream = []
+    skip = skip or set()
     for li, ln in enumerate(seg):
-        if BARE_MARKER_RE.match(ln.text.strip()):
+        if BARE_MARKER_RE.match(ln.text.strip()) or (ln.page, ln.line_no) in skip:   # v10: note lines skipped
             continue
         if stream:
             stream.append((li, -1, " "))
@@ -2037,8 +2090,9 @@ def section_apparatus(v: EditionView, r: dict, conv: dict) -> list:
     link = {(x["token"], x["page_1based"], x["line_1based"]): x["footnote"]
             for x in r["marker_links"]["links"] if x["footnote"]}
     labels = _entry_labels(r["footnotes_raw"])
+    skip = {(a, b) for n in r.get("editor_notes", []) for a, b in n.get("lines_1based", [])}
     out = []
-    for s in bracket_spans(seg, codes):
+    for s in bracket_spans(seg, codes, skip):
         ln = seg[s["li"]]
         pos = v.brackets.links(ln.page).get((ln.line_no, s["col"])) if v.brackets is not None else None
         label, method, marker, reason = None, "none", None, (pos or {}).get("reason", "no_position")
@@ -2055,17 +2109,23 @@ def section_apparatus(v: EditionView, r: dict, conv: dict) -> list:
         out.append({"page_1based": ln.page, "line_1based": ln.line_no, "col": s["col"], "depth": s["depth"],
                     "closed": s["closed"], "weight": s["weight"], "act_class": act_class(s["weight"], conv),
                     "span_text": _clean(s["text"]), "marker": marker, "footnote": label, "link_method": method,
-                    "link_reason": reason, "dx": (pos or {}).get("dx"), "dy": (pos or {}).get("dy"), **fn})
+                    "link_reason": reason, "dx": (pos or {}).get("dx"), "dy": (pos or {}).get("dy"), **fn,
+                    "span_class": "reference" if REFERENCE_RE.match(_clean(s["text"])) else "amendment"})
     return out
 
 
 def compare_apparatus(cur: list, prev: list | None, prev_body: str | None) -> None:
-    """P09-35B correction (2), in place: expected_change = (span, Act, kind) is new vs the previous edition's
-    apparatus; observed_change = the span's folded text is absent from the previous body; agree iff equal;
-    no_neighbour without a previous edition; old_text_in_prev yes / no / na."""
-    keys = {(fold_plain(e["span_text"]), e["act"], e["kind"]) for e in prev} if prev is not None else set()
+    """P09-35B correction (2), in place, AMENDMENT spans only (P09-58): expected_change = (span, Act, kind) is new vs
+    the previous edition's amendment apparatus; observed_change = the span's folded text is absent from the previous
+    body; agree iff equal; no_neighbour without a previous edition; old_text_in_prev yes / no / na. Reference spans get
+    status 'reference' and are never compared."""
+    amend_prev = [e for e in prev if e.get("span_class", "amendment") == "amendment"] if prev is not None else None
+    keys = {(fold_plain(e["span_text"]), e["act"], e["kind"]) for e in amend_prev} if amend_prev is not None else set()
     pb = fold_plain(prev_body) if prev_body is not None else None
     for e in cur:
+        if e.get("span_class", "amendment") == "reference":
+            e.update({"expected_change": None, "observed_change": None, "status": "reference", "old_text_in_prev": "na"})
+            continue
         if prev is None or pb is None:
             e.update({"expected_change": None, "observed_change": None, "status": "no_neighbour",
                       "old_text_in_prev": "na"})
@@ -2077,33 +2137,57 @@ def compare_apparatus(cur: list, prev: list | None, prev_body: str | None) -> No
                                        "yes" if fold_plain(e["old_text"]) in pb else "no")})
 
 
-def boundary_windows(body: str, n: int = BOUNDARY_WORDS) -> tuple:
-    """Q-C: (first n, last n) words of fold_plain(body)."""
-    w = fold_plain(body).split()
-    return w[:n], w[-n:]
+def skeleton(text: str) -> list:
+    """Q-C (c): comparison skeleton = lowercase letters + digits tokens of fold_plain(text). Comparison only; never
+    stored."""
+    return re.sub(r"[^a-z0-9]+", " ", fold_plain(text).lower()).split()
 
 
-def window_verdict(prev: list, cur: list, spans: list, edge: str) -> str:
-    """Q-C with the owner's correction: 'same' when equal; 'explained' only when EVERY differing chunk (word-level
-    diff of the two windows) lies inside a bracket span / apparatus entry of either edition (its words, in order,
-    occur in a span's folded words); else 'MISMATCH'. edge = 'first' | 'last': a pure insert / delete touching the
-    window's cut edge (end of a first window, start of a last window) is the window shift, not a difference."""
-    if prev == cur:
-        return "same"
-    span_txt = [" " + " ".join(sp.split()) + " " for sp in spans if sp]
-    real = 0
-    for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, prev, cur, autojunk=False).get_opcodes():
-        if tag == "equal":
-            continue
-        if tag in ("insert", "delete"):
-            at_cut = (i2 == len(prev) and j2 == len(cur)) if edge == "first" else (i1 == 0 and j1 == 0)
-            if at_cut:
-                continue
-        real += 1
-        for chunk in (prev[i1:i2], cur[j1:j2]):
-            if chunk and not any(" " + " ".join(chunk) + " " in t for t in span_txt):
-                return "MISMATCH"
-    return "explained" if real else "same"
+def covered(needle: list, hay: list) -> set:
+    """Q-C (c): needle token indices covered by difflib matching blocks lying near the longest block (within
+    len(needle) tokens; single-token blocks only for the longest one), as in match_score()."""
+    if not needle or not hay:
+        return set()
+    blocks = [m for m in difflib.SequenceMatcher(None, needle, hay, autojunk=False).get_matching_blocks() if m.size]
+    if not blocks:
+        return set()
+    big = max(blocks, key=lambda m: m.size)
+    lo, hi = big.b - len(needle), big.b + big.size + len(needle)
+    return {i for m in blocks if lo <= m.b and m.b + m.size <= hi and (m is big or m.size >= 2)
+            for i in range(m.a, m.a + m.size)}
+
+
+def containment_check(window: list, hay: list, witnesses: list) -> tuple:
+    """Q-C (c): ('ok' | 'explained' | 'flag', unexplained words). ok = window >= 0.90 covered in hay; explained = the
+    uncovered words lie inside the witnesses (skeletons) except <= 10% of the window (Q1 a)."""
+    if not window:
+        return "ok", []
+    cov = covered(window, hay)
+    if len(cov) / len(window) >= CONTAIN_MIN:
+        return "ok", []
+    rest = {i for i in range(len(window)) if i not in cov}
+    wcov = set()
+    for w in witnesses:
+        wcov |= covered(window, w) & rest
+    left = [i for i in sorted(rest) if i not in wcov]
+    return ("explained" if len(left) / len(window) <= RESIDUAL_MAX else "flag"), [window[i] for i in left]
+
+
+def boundary_checks(prev_body: str, cur_body: str, spans: list, olds: list, cut_notes: list, inserted: list,
+                    n: int = BOUNDARY_WORDS) -> list:
+    """Q-C (c): [(edge, check, status, words)] for edges start / end. Truncation ('possible_early_cut'): the previous
+    window must appear in the current body, else be inside an amendment span, a linked footnote's old text or a
+    realized omitted / substituted note's inserted text. Over-capture ('possible_extra_text'): the current window must
+    appear in the previous body, else be inside an amendment span or a realized note's inserted text."""
+    pb, cb = skeleton(prev_body), skeleton(cur_body)
+    sp, ol, cn, ins = ([skeleton(x) for x in group] for group in (spans, olds, cut_notes, inserted))
+    out = []
+    for edge, pw, cw in (("start", pb[:n], cb[:n]), ("end", pb[-n:], cb[-n:])):
+        st, words = containment_check(pw, cb, sp + ol + cn)
+        out.append((edge, "possible_early_cut", st, words))
+        st, words = containment_check(cw, pb, sp + ins)
+        out.append((edge, "possible_extra_text", st, words))
+    return out
 
 
 def _md(s) -> str:
@@ -2230,7 +2314,18 @@ def v8_reports(views: list, out_dir: Path) -> str:
     _write_new(out_dir / "ISOLATED-STARTS.md", "\n".join(iso) + "\n")
     summary.append(f"P09-55 isolated-start rows={n_iso} bold_unknown={n_unknown} changed spans={len(span_rows)}")
     summary += ["  " + x for x in span_rows]
-    # ---- P09-35B apparatus
+    # ---- P09-35A editor notes (collected first: realized notes are a Q-C witness)
+    notes = collect_editor_notes(views, scope, sect)
+    _write_new(out_dir / "EDITOR-NOTES.json", json.dumps(notes, indent=2, ensure_ascii=False) + "\n")
+    _write_new(out_dir / "EDITOR-NOTES.md", _editor_notes_md(notes))
+    st = {}
+    for n in notes:
+        st[n["status"]] = st.get(n["status"], 0) + 1
+    summary.append("P09-35A edition order: 1961: " + " -> ".join(EDITIONS["1961"])
+                   + "; 2025: " + " -> ".join(EDITIONS["2025"]))
+    summary.append(f"P09-35A editor notes={len(notes)} " + " ".join(f"{k}={v}" for k, v in sorted(st.items()))
+                   + f" flagged={sum(1 for n in notes if n['flags'])}")
+    # ---- P09-35B apparatus (P09-58: amendment spans only in the cross-check; note lines skipped)
     app = {}
     for act in ("1961", "2025"):
         for sec in scope[act]:
@@ -2244,9 +2339,9 @@ def v8_reports(views: list, out_dir: Path) -> str:
                     compare_apparatus(cur, app.get((prev_key, sec)) if ok else None, pr["body"] if ok else None)
                     app[(key, sec)] = cur
                 prev_key = key
-    cols = ("page_1based", "line_1based", "depth", "closed", "weight", "act_class", "marker", "footnote", "kind", "act",
-            "wef_as_printed", "old_text", "span_text", "expected_change", "observed_change", "status", "old_text_in_prev",
-            "link_method", "link_reason", "dx", "dy")
+    cols = ("span_class", "page_1based", "line_1based", "depth", "closed", "weight", "act_class", "marker", "footnote",
+            "kind", "act", "wef_as_printed", "old_text", "span_text", "expected_change", "observed_change", "status",
+            "old_text_in_prev", "link_method", "link_reason", "dx", "dy")
     tsv = ["edition\tsection\t" + "\t".join(cols)]
     for (key, sec), es in app.items():
         for e in es:
@@ -2254,25 +2349,28 @@ def v8_reports(views: list, out_dir: Path) -> str:
     _write_new(out_dir / "AMENDMENT-APPARATUS.tsv", "\n".join(tsv) + "\n")
 
     def counts(es):
-        c = {"spans": len(es)}
+        am_ = [e for e in es if e["span_class"] == "amendment"]
+        c = {"amendment": len(am_), "reference": len(es) - len(am_)}
         for f, vals in (("weight", ("bold", "medium", "unknown")), ("status", ("agree", "disagree", "no_neighbour")),
                         ("old_text_in_prev", ("yes", "no", "na"))):
             for val in vals:
-                c[f"{f}={val}"] = sum(1 for e in es if e[f] == val)
-        c["linked"] = sum(1 for e in es if e["footnote"])
+                c[f"{f}={val}"] = sum(1 for e in am_ if e[f] == val)
+        c["linked"] = sum(1 for e in am_ if e["footnote"])
         for val in ("position", "text"):
-            c[f"link_method={val}"] = sum(1 for e in es if e["link_method"] == val)
-        c["unlinked"] = c["spans"] - c["linked"]
+            c[f"link_method={val}"] = sum(1 for e in am_ if e["link_method"] == val)
+        c["unlinked"] = c["amendment"] - c["linked"]
         for val in ("bracket_mid_run", "no_marker_left", "marker_not_in_links", "no_position"):
-            c[f"unlinked:{val}"] = sum(1 for e in es if not e["footnote"] and e["link_reason"] == val)
+            c[f"unlinked:{val}"] = sum(1 for e in am_ if not e["footnote"] and e["link_reason"] == val)
         return c
     hdr = list(counts([]).keys())
-    am = ["# AMENDMENT APPARATUS (P09-35B; report only; never a date source)", "",
-          "expected_change = this entry (same span, same footnote Act and kind) is new vs the previous edition's "
-          "apparatus; observed_change = the span's folded text is absent from the previous edition's section body; "
-          "agree iff equal; no_neighbour = first edition of the Act (or section not found there).", "",
-          "## Per edition", "", "| edition | " + " | ".join(hdr) + " |", "|---" * (len(hdr) + 1) + "|"]
-    for key in [k for a in EDITIONS for k in EDITIONS[a] if k in byk]:
+    am = ["# AMENDMENT APPARATUS (P09-35B / P09-58; report only; never a date source)", "",
+          "Only AMENDMENT spans enter the cross-check; REFERENCE spans (pattern " + REFERENCE_RE.pattern + ") are listed "
+          "separately. Editor-note lines (removed from bodies) are skipped. expected_change = this entry (same span, "
+          "same footnote Act and kind) is new vs the previous edition's amendment apparatus; observed_change = the "
+          "span's folded text is absent from the previous edition's section body; agree iff equal; no_neighbour = "
+          "first edition of the Act (or section not found there). Counts other than 'reference' are amendment spans.",
+          "", "## Per edition", "", "| edition | " + " | ".join(hdr) + " |", "|---" * (len(hdr) + 1) + "|"]
+    for key in [k for a_ in EDITIONS for k in EDITIONS[a_] if k in byk]:
         c = counts([e for (k, _), es in app.items() if k == key for e in es])
         am.append(f"| {key} | " + " | ".join(str(c[h]) for h in hdr) + " |")
         summary.append(f"P09-35B {key}: " + " ".join(f"{h}={c[h]}" for h in hdr))
@@ -2281,49 +2379,68 @@ def v8_reports(views: list, out_dir: Path) -> str:
     for (key, sec), es in app.items():
         c = counts(es)
         am.append(f"| {sec} | {key} | " + " | ".join(str(c[h]) for h in hdr) + " |")
+    refs = [(key, sec, e) for (key, sec), es in app.items() for e in es if e["span_class"] == "reference"]
+    pats = {}
+    for _, _, e in refs:
+        m = REFERENCE_RE.match(e["span_text"])
+        pats[_clean(m.group(0))] = pats.get(_clean(m.group(0)), 0) + 1
+    am += ["", f"## Reference spans ({len(refs)}; not compared)", "",
+           "patterns found: " + (", ".join(f"'{k}' x{v}" for k, v in pats.items()) or "none"), "",
+           "| edition | section | page_1based | line_1based | span |", "|---|---|---|---|---|"]
+    am += [f"| {k} | {sec} | {e['page_1based']} | {e['line_1based']} | {_md(e['span_text'][:80])} |" for k, sec, e in refs]
     _write_new(out_dir / "AMENDMENT-APPARATUS.md", "\n".join(am) + "\n")
-    # ---- P09-55 boundary agreement (Q-C: first / last 30 folded words; owner correction on 'explained')
-    ba = [f"# BOUNDARY AGREEMENT (P09-55 / Q-C; first and last {BOUNDARY_WORDS} folded words per RECORD-SCOPE section "
-          "x edition)", "",
-          "Words = fold v2 of the body after removing glued markers and square brackets. Compared with the previous "
-          "edition of the same Act where the section is FOUND, by a word-level diff of the two windows. explained = "
-          "EVERY differing chunk lies inside a bracket span / apparatus entry of either edition; MISMATCH otherwise. "
-          "A pure insert/delete at the window's cut edge is the window shift and is ignored.", "",
-          "| act | section | edition | first words | last words | F30 vs previous | L30 vs previous |",
+    summary.append(f"P09-58 reference spans={len(refs)} patterns={pats}")
+    # ---- P09-55 boundary agreement, Q-C (c): containment on a comparison skeleton
+    real = {}
+    for n in notes:
+        if n["realized_in"]:
+            real.setdefault((n["realized_in"], n["target_section"]), []).append(n)
+    ba = [f"# BOUNDARY AGREEMENT (P09-55 / Q-C (c); first and last {BOUNDARY_WORDS} skeleton words per RECORD-SCOPE "
+          "section x edition)", "",
+          "Skeleton = lowercase letters + digits of fold_plain(body) (comparison only). Truncation: the previous "
+          "window must appear in the current body (>= 0.90), else lie inside an amendment span (either edition), a "
+          "linked footnote's old text or a realized omitted/substituted note -> else possible_early_cut. "
+          "Over-capture: the current window must appear in the previous body (>= 0.90), else lie inside an amendment "
+          "span or a realized note's inserted text -> else possible_extra_text. explained = <= 10% of the window "
+          "left. explained_by_owner = owner eye check.", "",
+          "| act | section | edition | start: early_cut | start: extra_text | end: early_cut | end: extra_text |",
           "|---|---|---|---|---|---|---|"]
-    tally = {"same": 0, "explained": 0, "MISMATCH": 0}
+    tally, remaining = {}, []
     for act in ("1961", "2025"):
         for sec in scope[act]:
             prev = None
             for key in [k for k in EDITIONS[act] if k in byk]:
                 r = sect(key, sec)
                 if r["status"] != "FOUND":
-                    ba.append(f"| {act} | {sec} | {key} | {r['status']} | | - | - |")
+                    ba.append(f"| {act} | {sec} | {key} | {r['status']} | | | |")
                     continue
-                fw, lw = boundary_windows(r["body"])
-                vf = vl = "no_neighbour"
-                if prev is not None:
-                    spans = [fold_plain(e["span_text"]) for e in app.get((key, sec), []) + app.get((prev[0], sec), [])]
-                    vf = window_verdict(prev[1], fw, spans, "first")
-                    vl = window_verdict(prev[2], lw, spans, "last")
-                    tally[vf] += 1
-                    tally[vl] += 1
-                ba.append(f"| {act} | {sec} | {key} | {_md(' '.join(fw)[:90])} | {_md(' '.join(lw)[-90:])} | {vf} | {vl} |")
-                prev = (key, fw, lw)
-    ba += ["", "windows compared: " + "  ".join(f"{k}={v}" for k, v in tally.items())]
+                if prev is None:
+                    ba.append(f"| {act} | {sec} | {key} | no_neighbour | | | |")
+                    prev = (key, r["body"])
+                    continue
+                ents = [e for e in app.get((key, sec), []) + app.get((prev[0], sec), []) if e["span_class"] == "amendment"]
+                rn = real.get((key, sec), [])
+                res = boundary_checks(prev[1], r["body"], [e["span_text"] for e in ents],
+                                      [e["old_text"] for e in ents if e.get("old_text")],
+                                      [n["inserted_text"] for n in rn if n["action"] in ("omitted", "substituted")],
+                                      [n["inserted_text"] for n in rn])
+                cells = []
+                for edge, check, st_, words in res:
+                    if st_ == "flag":
+                        st_ = ("explained_by_owner" if (sec, key, edge, check) in BOUNDARY_OWNER_EXPLAINED else check)
+                        remaining.append((sec, key, edge, check, st_, " ".join(words)))
+                    tally[st_] = tally.get(st_, 0) + 1
+                    cells.append(st_)
+                ba.append(f"| {act} | {sec} | {key} | " + " | ".join(cells) + " |")
+                prev = (key, r["body"])
+    ba += ["", "checks: " + "  ".join(f"{k}={v}" for k, v in sorted(tally.items())), "",
+           "## Remaining cases (section, edition, start/end, check, words left unexplained)", ""]
+    for sec, key, edge, check, st_, words in remaining:
+        why = f" [{BOUNDARY_OWNER_EXPLAINED[(sec, key, edge, check)]}]" if st_ == "explained_by_owner" else ""
+        ba.append(f"- s.{sec} | {key} | {edge} | {st_}{why} | {words[:160]}")
     _write_new(out_dir / "BOUNDARY-AGREEMENT.md", "\n".join(ba) + "\n")
-    summary.append("Q-C boundary agreement (30 words): " + " ".join(f"{k}={v}" for k, v in tally.items()))
-    # ---- P09-35A editor notes
-    notes = collect_editor_notes(views, scope, sect)
-    _write_new(out_dir / "EDITOR-NOTES.json", json.dumps(notes, indent=2, ensure_ascii=False) + "\n")
-    _write_new(out_dir / "EDITOR-NOTES.md", _editor_notes_md(notes))
-    st = {}
-    for n in notes:
-        st[n["status"]] = st.get(n["status"], 0) + 1
-    summary.append("P09-35A edition order: 1961: " + " -> ".join(EDITIONS["1961"])
-                   + "; 2025: " + " -> ".join(EDITIONS["2025"]))
-    summary.append(f"P09-35A editor notes={len(notes)} " + " ".join(f"{k}={v}" for k, v in sorted(st.items()))
-                   + f" flagged={sum(1 for n in notes if n['flags'])}")
+    summary.append("Q-C (c) boundary checks: " + " ".join(f"{k}={v}" for k, v in sorted(tally.items())))
+    summary += [f"  remaining: s.{sec} {key} {edge} {st_}: {words[:110]}" for sec, key, edge, check, st_, words in remaining]
     summary.append("P09-35A-fix editor-note lines removed from RECORD-SCOPE bodies: " + ", ".join(
         f"{v.key}={sum(cache[(v.key, sec)].get('editor_note_lines_removed', 0) for sec in scope[a] if (v.key, sec) in cache)}"
         for a in EDITIONS for v in views if v.key in EDITIONS[a]))
@@ -2376,12 +2493,16 @@ def run_locate_all(raw: Path, out_dir: Path) -> int:
     text += "\nP09-53 STRUCTURAL TAILS (SECTION-LIST sections)\n" + st_sum
     sy_tsv, sy_sum = _symbol_outputs(views)
     text += "\nv9 Finding 3 SYMBOL FOOTNOTE STARTS\n" + sy_sum
+    m8_tsv, gl_tsv, rv_sum = _review_outputs(views)
+    text += "\nv10 M8 STARTS / GLUED FOOTNOTE NUMBERS\n" + rv_sum
     print(text, end="")
     _write_new(out_dir / "LOCATE-ALL.txt", text)
     _write_new(out_dir / "MOVED-BLOCKS.tsv", mb_tsv)
     _write_new(out_dir / "QUOTE-CONTINUATIONS.tsv", qc_tsv)
     _write_new(out_dir / "STRUCTURAL-TAILS.tsv", st_tsv)
     _write_new(out_dir / "SYMBOL-FOOTNOTES.tsv", sy_tsv)
+    _write_new(out_dir / "NEW-STARTS-M8.tsv", m8_tsv)
+    _write_new(out_dir / "FOOTNOTE-NUMBERS-GLUED.tsv", gl_tsv)
     _write_new(out_dir / "DROPPED-PAGES.tsv", _dropped_tsv(views))
     _write_new(out_dir / "DROPPED-RULES.tsv", _rules_tsv(views))
     _write_new(out_dir / "PAGE-EDGE-DIGITS.tsv", _edge_tsv(views))
@@ -2436,6 +2557,10 @@ def run_pilot(raw: Path, out_dir: Path, trace: Trace | None = None) -> list:
     sy_tsv, sy_sum = _symbol_outputs(views)
     _write_new(out_dir / "SYMBOL-FOOTNOTES.tsv", sy_tsv)
     print("v9 Finding 3 symbol footnote starts:\n" + sy_sum, end="")
+    m8_tsv, gl_tsv, rv_sum = _review_outputs(views)
+    _write_new(out_dir / "NEW-STARTS-M8.tsv", m8_tsv)
+    _write_new(out_dir / "FOOTNOTE-NUMBERS-GLUED.tsv", gl_tsv)
+    print("v10 M8 starts / glued footnote numbers (whole editions):\n" + rv_sum, end="")
     print("P09-49 moved blocks (current FOOTNOTE_START vs v4):\n" + mb_sum + fl_sum
           + "P09-52 quote continuations:\n" + qc_sum + "P09-53 structural tails (SECTION-LIST sections):\n" + st_sum, end="")
     mk = ["file\tsection\ttype\tpage_1based\tline_1based\tnumbers\tmatch"]

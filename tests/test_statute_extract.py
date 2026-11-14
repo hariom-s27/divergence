@@ -1377,33 +1377,107 @@ def test_apparatus_marker_not_in_links():
     assert e["footnote"] is None and e["link_reason"] == "marker_not_in_links"
 
 
-# ---------------------------------------------------------------- v9: Q-C boundary words
+# ---------------------------------------------------------------- v10: Q-C (c) containment on a skeleton
 
-def test_boundary_windows_ignore_line_wrapping():
-    a = se.boundary_windows("7. Fake words one two\nthree four [five] six.\n", 4)
-    b = se.boundary_windows("7. Fake words\none two three four five six.\n", 4)
-    assert a == b == (["7.", "Fake", "words", "one"], ["three", "four", "five", "six."])
-    assert se.window_verdict(a[0], b[0], [], "first") == "same"
+FAKE_BODY = ("7. (1) Fake opening words of the invented section about fake things and more fake words here now then "
+             "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi omicron pi rho sigma tau upsilon "
+             "phi chi psi omega final closing words of the fake section.")
 
 
-def test_window_word_change_is_mismatch_unless_inside_a_span():
-    prev, cur = "7. fake old words here".split(), "7. fake new words here".split()
-    assert se.window_verdict(prev, cur, [], "first") == "MISMATCH"
-    assert se.window_verdict(prev, cur, ["fake new words"], "first") == "MISMATCH"     # "old" not in a span
-    assert se.window_verdict(prev, cur, ["fake new words", "fake old words"], "first") == "explained"
+def test_skeleton_is_lowercase_letters_and_digits():
+    assert se.skeleton("7. (1) Fake—Words, ₹ 5,000 [x]") == ["7", "1", "fake", "words", "rupee", "5", "000", "x"]
 
 
-def test_bracket_elsewhere_in_window_does_not_explain():
-    prev, cur = "7. fake old words here".split(), "7. fake new words here".split()
-    assert se.window_verdict(prev, cur, ["here"], "first") == "MISMATCH"
+def test_covered_full_partial_none():
+    assert se.covered(["a", "b", "c"], ["x", "a", "b", "c", "y"]) == {0, 1, 2}
+    assert se.covered(["a", "b", "q"], ["x", "a", "b", "c"]) == {0, 1}
+    assert se.covered(["q"], ["x"]) == set()
 
 
-def test_window_shift_at_cut_edge_is_ignored():
-    prev = "a b c d e".split()
-    cur = "a b x c d".split()                        # 'x' inserted (inside a span); 'e' pushed out of the window
-    assert se.window_verdict(prev, cur, ["b x c"], "first") == "explained"
-    assert se.window_verdict("v w a b c".split(), "w a b c d".split(), [], "last") == "MISMATCH"   # end differs
-    assert se.window_verdict("v a b c".split(), "a b c".split(), [], "last") == "same"               # cut edge
+def test_rewrapped_or_repunctuated_body_is_ok():
+    other = FAKE_BODY.replace(" ", "\n", 5).replace("(1)", "(1) ").replace(",", "")
+    res = se.boundary_checks(FAKE_BODY, other, [], [], [], [])
+    assert {st for _, _, st, _ in res} == {"ok"}
+
+
+def test_truncated_end_is_flagged():
+    cut = FAKE_BODY.split(" upsilon")[0]
+    res = {(e, c): (st, w) for e, c, st, w in se.boundary_checks(FAKE_BODY, cut, [], [], [], [])}
+    assert res[("end", "possible_early_cut")][0] == "flag"
+    assert "omega" in res[("end", "possible_early_cut")][1]
+
+
+def test_truncation_explained_by_footnote_old_text():
+    cut = FAKE_BODY.split(" upsilon")[0]
+    old = "upsilon phi chi psi omega final closing words of the fake section."
+    res = {(e, c): st for e, c, st, _ in se.boundary_checks(FAKE_BODY, cut, [], [old], [], [])}
+    assert res[("end", "possible_early_cut")] == "explained"
+
+
+def test_extra_text_flagged_unless_inside_span_or_realized_note():
+    extra = " fake new tail words added by an invented amendment act nineteen ninety nine."
+    longer = FAKE_BODY + extra
+    res = {(e, c): st for e, c, st, _ in se.boundary_checks(FAKE_BODY, longer, [], [], [], [])}
+    assert res[("end", "possible_extra_text")] == "flag"
+    res = {(e, c): st for e, c, st, _ in se.boundary_checks(FAKE_BODY, longer, [extra], [], [], [])}
+    assert res[("end", "possible_extra_text")] == "explained"
+    res = {(e, c): st for e, c, st, _ in se.boundary_checks(FAKE_BODY, longer, [], [], [], [extra])}
+    assert res[("end", "possible_extra_text")] == "explained"
+
+
+def test_owner_explained_table_entry():
+    assert ("158B", "ita1961_2024n2", "end", "possible_extra_text") in se.BOUNDARY_OWNER_EXPLAINED
+
+
+# ---------------------------------------------------------------- v10: P09-58 reference spans, note-line skip
+
+def test_reference_spans_are_not_compared():
+    prev = [{"span_text": "fake old words", "act": "Zeta Act, 2099", "kind": "Subs.", "old_text": None,
+             "span_class": "amendment"}]
+    cur = [{"span_text": "Table: Sl. No. 9(i)", "act": None, "kind": None, "old_text": None, "span_class": "reference"},
+           {"span_text": "fake new words", "act": "Eta Act, 2099", "kind": "Ins.", "old_text": None,
+            "span_class": "amendment"}]
+    se.compare_apparatus(cur, prev, "x fake old words y")
+    assert cur[0]["status"] == "reference" and cur[0]["expected_change"] is None
+    assert cur[1]["status"] == "agree" and cur[1]["expected_change"] is True
+
+
+def test_apparatus_classifies_table_reference(tmp_path):
+    page = "Fake heading seven.\n7. (1) Fake text [Table: Sl. No. 9(i)] and [fake inserted words] more."
+    cleaned, starts = view(page)
+    v = se.EditionView("fake_ed", [page], [], cleaned, starts, _fonts_for(page, set()), se.BracketView(preset={1: {}}))
+    r = se.extract_section(cleaned, starts, "7")
+    es = se.section_apparatus(v, r, CONV)
+    assert [(e["span_text"], e["span_class"]) for e in es] == [
+        ("Table: Sl. No. 9(i)", "reference"), ("fake inserted words", "amendment")]
+
+
+def test_bracket_on_note_line_is_skipped():
+    seg, fv = _seg([("[(1) fake outer start", "r"), ("[fake note bracket]", "i"), ("fake outer end]", "r")])
+    sp = se.bracket_spans(seg, fv.codes, skip={(1, 2)})
+    assert [(s["text"], s["closed"]) for s in sp] == [("(1) fake outer start fake outer end", True)]
+
+
+# ---------------------------------------------------------------- v10: M8 starts, glued footnote numbers
+
+def test_m8_start_glued_to_capital():
+    page = "Fake heading seven.\n7. Fake text.\nFake glued heading.\n7A.Notwithstanding fake words.\nNext heading.\n8. Fake."
+    cleaned, starts = view(page)
+    assert [(s_.number, s_.rule) for s_ in starts] == [("7", "R1"), ("7A", "M8"), ("8", "R1")]
+    assert se.locate(cleaned.lines, starts, "7")["internal_line_idx0_end"] == 2
+
+
+def test_m8_needs_a_heading_and_a_capital():
+    cleaned, starts = view("Fake heading seven.\n7. Fake text, not a heading\n7A.notwithstanding fake.\n7B.Fake.")
+    assert [s_.number for s_ in starts] == ["7"]
+
+
+def test_glued_footnote_number_inside_block():
+    assert se.fn_number("4.Word fake sub. for fake by the Zeta Act, 2099.").group(1) == "4"
+    assert se.fn_number("5. Ins. by the Zeta Act, 2099.").group(1) == "5"
+    assert se.fn_number("6.lowercase fake") is None
+    notes = {1: ["3. Ins. by the Zeta Act, 2099.", "4.Word fake sub. by the Zeta Act, 2099."]}
+    assert se.footnote_numbers(notes, 1, 1) == {"3", "4"}
 
 
 # ---------------------------------------------------------------- v9: Finding 3 symbol footnotes
