@@ -1500,3 +1500,66 @@ def test_symbol_line_with_space_before_capital_moves():
 def test_symbol_line_outside_tail_or_lowercase_stays(page):
     c = se.clean_pages([page])
     assert c.notes == {} and c.symbol_starts == []
+
+
+# ---------------------------------------------------------------- v11: Q4 fixes, covered() local re-match
+
+def test_normalise_act_spacing_zeros_and_the():
+    assert se.normalise_act("Act. No. 07 of 2099") == "Act No. 7 of 2099"
+    assert se.normalise_act("the Zeta Act, 2099") == "Zeta Act, 2099"
+    assert se.normalise_act(None) is None
+
+
+def test_alias_table_rows_and_mapping(monkeypatch):
+    assert len(se.ACT_ALIASES) == 3 and "Finance Act, 2023" not in se.ACT_ALIASES
+    monkeypatch.setitem(se.ACT_ALIASES, "Zeta Act, 2099", "Act No. 9 of 2099")
+    assert se.normalise_act("the Zeta Act, 2099") == "Act No. 9 of 2099"
+
+
+def test_footnote_act_with_dotted_act_no():
+    assert se.parse_footnote("90. Ins. by Act. No. 7 of 2099, w.e.f. 1-4-2099.")["act"] == "Act. No. 7 of 2099"
+
+
+def _star(words_in_fn=True):
+    fn = '3. Words "fake gone words" omtt. by the Zeta Act, 2099.' if words_in_fn else "3. Omtt. by the Zeta Act, 2099."
+    return {"span_text": "***", "act": "Zeta Act, 2099", "act_key": "Zeta Act, 2099", "kind": "Omitted",
+            "old_text": None, "span_class": "amendment", "fn_text": fn, "cmp_span": "***"}
+
+
+def test_star_span_observed_when_quoted_words_leave():
+    cur = [_star()]
+    se.compare_apparatus(cur, [], "x fake gone words y", "x *** y")
+    assert cur[0]["observed_change"] is True and cur[0]["status"] == "agree"
+
+
+def test_star_span_not_observed_without_words_or_when_words_stay():
+    a, b = [_star(False)], [_star()]
+    se.compare_apparatus(a, [], "x fake gone words y", "x y")
+    se.compare_apparatus(b, [], "x fake gone words y", "x fake gone words y")
+    assert a[0]["observed_change"] is False and a[0]["star_words"] == "none"
+    assert b[0]["observed_change"] is False
+
+
+def test_heading_stripped_before_comparing():
+    assert se.cmp_span("Fake heading. 7. Fake text.", "Fake heading.") == "7. Fake text."
+    e = {"span_text": "Fake heading. 7. Fake text.", "act": None, "kind": None, "old_text": None,
+         "span_class": "amendment", "cmp_span": "7. Fake text."}
+    se.compare_apparatus([e], [], "7. Fake text.", "x")
+    assert e["observed_change"] is False
+
+
+def test_covered_repeated_phrase_earlier_in_hay():
+    phrase = "zeta trust of fake undertaking act 2099".split()
+    hay = ["x"] * 5 + phrase + ["y"] * 60 + phrase + "and the closing fake words".split()
+    window = phrase + "and the closing fake words".split()
+    assert se.covered(window, hay) == set(range(len(window)))
+
+
+def test_disagreement_cause_labels():
+    prev_unlinked = [{"span_text": "fake words", "act": None, "act_key": None, "kind": None, "span_class": "amendment"}]
+    e = {"span_text": "fake words", "act": "Zeta Act, 2099", "act_key": "Zeta Act, 2099", "kind": "Ins.",
+         "expected_change": True, "observed_change": False, "span_class": "amendment"}
+    assert se.disagreement_cause(e, prev_unlinked) == "prev_entry_unlinked"
+    prev_other = [dict(prev_unlinked[0], act="Eta Act, 2099", act_key="Eta Act, 2099", kind="Ins.")]
+    assert se.disagreement_cause(e, prev_other) == "act_differs_not_aliased"
+    assert se.disagreement_cause(e, []) == "bracket_new_but_text_in_prev"

@@ -164,6 +164,15 @@ Extractor v10 changes (owner decisions P09-58, note-line skip, Q-C (c) with Q1 (
   Q3      inside a footnote block, 'N.' glued to a capital letter ('4.Word ...') is also a footnote number; every such
       line is listed (FOOTNOTE-NUMBERS-GLUED.tsv).
 
+Extractor v11 changes (owner decisions Q4 (1a), (2), (3), covered() Q1 (a)):
+  Q4 (1a) Act comparison key: 'Act. No.' -> 'Act No.', leading zeros dropped, owner alias table (Finance Act 2022 /
+      2025 / 2026 = Act No. 6 / 7 / 4; FA 2023 not aliased); the printed Act is kept.
+  Q4 (2)  '[***]' spans: observed_change = the footnote's quoted omitted words in the previous body and not in the current.
+  Q4 (3)  a span that begins with the section heading is compared without it.
+  Q1 (a)  covered() re-matches the window only against the hay slice around the longest block (two-pass), so a phrase
+      repeated earlier in the body cannot capture part of the window; match_score() is unchanged.
+  Remaining disagreements get a deterministic cause label (AMENDMENT-APPARATUS.md, report only).
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -190,7 +199,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v10"
+EXTRACTOR_VERSION = "v11"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -309,7 +318,14 @@ CONVENTION_RE = re.compile(                                                   # 
 CONVENTION_FIRST_PAGES = 30
 FN_KIND_RE = re.compile(r"^\s*\d+[a-z]?(?:-\d+)?\.\s*(?i:(Ins(?:erted)?|Subs?(?:tituted)?|Omitted|Omtt?|Omitt|"
                         r"Re-?numbered|Words?|See|Now|Prior to))\b")
-FN_ACT_RE = re.compile(r"Act No\.\s*\d+\s+of\s+\d{4}|(?:[A-Z(\d][\w().]*\s+){0,4}?Act,\s*\d{4}")
+FN_ACT_RE = re.compile(r"Act\.?\s*No\.\s*\d+\s+of\s+\d{4}|(?:[A-Z(\d][\w().]*\s+){0,4}?Act,\s*\d{4}")
+ACT_ALIASES = {                       # v11 Q4 (1a): owner-verified rows only (official file title page)
+    "Finance Act, 2022": "Act No. 6 of 2022",     # manual/fa_2022.pdf
+    "Finance Act, 2025": "Act No. 7 of 2025",     # _raw/2026-11-13/fa_2025.pdf
+    "Finance Act, 2026": "Act No. 4 of 2026",     # manual/fa_2026.pdf
+}
+STAR_SPANS = {"***", "* * *", "**", "* *"}                                      # v11 Q4 (2)
+QUOTED_WORDS_RE = re.compile(r"(?i)\bwords?\s*[\"“‘'](.+?)[\"”’']")
 FN_WEF_RE = re.compile(r"w\.(?:r\.)?e\.f\.\s*\d[\d\-.\s]*\d")
 FN_OLD_WORDS_RE = re.compile(r"\bfor (?:the )?words?\s*[\"“‘'](.+?)[\"”’']")
 GLUED_MARKER_RE = re.compile(r"\b(\d+[a-z]?)$")
@@ -2071,6 +2087,23 @@ def _entry_labels(entries: list) -> dict:
     return out
 
 
+def normalise_act(a):
+    """v11 Q4 (1a): comparison key for an Act as printed: 'Act. No.' -> 'Act No.', leading zeros dropped ('No. 08' ->
+    'No. 8'), a leading 'the' dropped, then the owner alias table (Finance Act, YYYY -> Act No. N of YYYY)."""
+    if not a:
+        return a
+    a = re.sub(r"\bAct\.\s*No\.", "Act No.", a)
+    a = re.sub(r"(No\.\s*)0+(\d)", r"\1\2", a)
+    a = re.sub(r"^the\s+", "", a.strip())
+    return ACT_ALIASES.get(a, a)
+
+
+def cmp_span(span_text: str, heading: str | None) -> str:
+    """v11 Q4 (3): folded span with a leading section heading stripped (whole-section brackets)."""
+    sp, head = fold_plain(span_text), fold_plain(heading or "")
+    return sp[len(head):].strip() if head and sp.startswith(head) else sp
+
+
 def act_class(weight: str, conv: dict) -> str:
     if conv.get("status") != "found" or weight == "unknown":
         return "unknown"
@@ -2106,22 +2139,32 @@ def section_apparatus(v: EditionView, r: dict, conv: dict) -> list:
                 label, method, marker, reason = tl, "text", s["marker"][0], "linked"
         fn = parse_footnote(labels[label]["text"]) if label in labels else {
             "kind": None, "act": None, "wef_as_printed": None, "old_text": None}
+        fn["act_key"] = normalise_act(fn["act"])
+        fn["fn_text"] = labels[label]["text"] if label in labels else None
         out.append({"page_1based": ln.page, "line_1based": ln.line_no, "col": s["col"], "depth": s["depth"],
                     "closed": s["closed"], "weight": s["weight"], "act_class": act_class(s["weight"], conv),
                     "span_text": _clean(s["text"]), "marker": marker, "footnote": label, "link_method": method,
                     "link_reason": reason, "dx": (pos or {}).get("dx"), "dy": (pos or {}).get("dy"), **fn,
-                    "span_class": "reference" if REFERENCE_RE.match(_clean(s["text"])) else "amendment"})
+                    "span_class": "reference" if REFERENCE_RE.match(_clean(s["text"])) else "amendment",
+                    "cmp_span": cmp_span(s["text"], r.get("heading")),
+                    "heading_stripped": cmp_span(s["text"], r.get("heading")) != fold_plain(s["text"])})
     return out
 
 
-def compare_apparatus(cur: list, prev: list | None, prev_body: str | None) -> None:
-    """P09-35B correction (2), in place, AMENDMENT spans only (P09-58): expected_change = (span, Act, kind) is new vs
-    the previous edition's amendment apparatus; observed_change = the span's folded text is absent from the previous
-    body; agree iff equal; no_neighbour without a previous edition; old_text_in_prev yes / no / na. Reference spans get
-    status 'reference' and are never compared."""
+def _key(e: dict) -> tuple:
+    return (e.get("cmp_span") or fold_plain(e["span_text"]), e.get("act_key", e["act"]), e["kind"])
+
+
+def compare_apparatus(cur: list, prev: list | None, prev_body: str | None, cur_body: str | None = None) -> None:
+    """P09-35B correction (2), in place, AMENDMENT spans only (P09-58). expected_change = (span, Act, kind) is new vs the
+    previous edition's amendment apparatus, with the span heading-stripped (v11 Q4 3) and the Act normalised (v11 Q4
+    1a); observed_change = the span's folded text is absent from the previous body, except for '[***]' spans (v11 Q4
+    2): the footnote's quoted omitted words (else its old text) are present in the previous body AND absent from the
+    current body. agree iff equal; no_neighbour without a previous edition; reference spans get status 'reference'."""
     amend_prev = [e for e in prev if e.get("span_class", "amendment") == "amendment"] if prev is not None else None
-    keys = {(fold_plain(e["span_text"]), e["act"], e["kind"]) for e in amend_prev} if amend_prev is not None else set()
+    keys = {_key(e) for e in amend_prev} if amend_prev is not None else set()
     pb = fold_plain(prev_body) if prev_body is not None else None
+    cb = fold_plain(cur_body) if cur_body is not None else None
     for e in cur:
         if e.get("span_class", "amendment") == "reference":
             e.update({"expected_change": None, "observed_change": None, "status": "reference", "old_text_in_prev": "na"})
@@ -2130,11 +2173,39 @@ def compare_apparatus(cur: list, prev: list | None, prev_body: str | None) -> No
             e.update({"expected_change": None, "observed_change": None, "status": "no_neighbour",
                       "old_text_in_prev": "na"})
             continue
-        exp = (fold_plain(e["span_text"]), e["act"], e["kind"]) not in keys
-        obs = fold_plain(e["span_text"]) not in pb
+        k = _key(e)
+        exp = k not in keys
+        if k[0] in STAR_SPANS:
+            m = QUOTED_WORDS_RE.search(e.get("fn_text") or "")
+            words = m.group(1) if m else e.get("old_text")
+            e["star_words"] = words or "none"
+            obs = bool(words) and fold_plain(words) in pb and (cb is None or fold_plain(words) not in cb)
+        else:
+            obs = k[0] not in pb
         e.update({"expected_change": exp, "observed_change": obs, "status": "agree" if exp == obs else "disagree",
                   "old_text_in_prev": ("na" if not e["old_text"] else
                                        "yes" if fold_plain(e["old_text"]) in pb else "no")})
+
+
+def disagreement_cause(e: dict, prev_entries: list) -> str:
+    """v11: deterministic label for a 'disagree' entry (report only)."""
+    k = _key(e)
+    same = [x for x in prev_entries if x.get("span_class", "amendment") == "amendment" and _key(x)[0] == k[0]]
+    if e["expected_change"] and not e["observed_change"]:
+        if k[0] in STAR_SPANS:
+            return "star_no_quoted_words" if e.get("star_words") in (None, "none") else "star_words_not_removed"
+        if not same:
+            return "bracket_new_but_text_in_prev"
+        if all(_key(x)[1] is None for x in same):
+            return "prev_entry_unlinked"
+        if k[1] is None:
+            return "cur_entry_unlinked"
+        if any(x["kind"] != e["kind"] for x in same):
+            return "kind_wording_differs"
+        return "act_differs_not_aliased"
+    if not e["expected_change"] and e["observed_change"]:
+        return "new_text_but_key_seen"
+    return "other"
 
 
 def skeleton(text: str) -> list:
@@ -2144,17 +2215,19 @@ def skeleton(text: str) -> list:
 
 
 def covered(needle: list, hay: list) -> set:
-    """Q-C (c): needle token indices covered by difflib matching blocks lying near the longest block (within
-    len(needle) tokens; single-token blocks only for the longest one), as in match_score()."""
+    """Q-C (c), v11 Q1 (a): needle token indices covered by a two-pass local re-match: find the longest matching
+    block, then match the needle again against ONLY the hay slice within len(needle) tokens of it (single-token blocks
+    count only for the longest one). A repeated phrase earlier in the hay can no longer capture part of the window."""
     if not needle or not hay:
         return set()
     blocks = [m for m in difflib.SequenceMatcher(None, needle, hay, autojunk=False).get_matching_blocks() if m.size]
     if not blocks:
         return set()
     big = max(blocks, key=lambda m: m.size)
-    lo, hi = big.b - len(needle), big.b + big.size + len(needle)
-    return {i for m in blocks if lo <= m.b and m.b + m.size <= hi and (m is big or m.size >= 2)
-            for i in range(m.a, m.a + m.size)}
+    lo, hi = max(0, big.b - len(needle)), big.b + big.size + len(needle)
+    sub = [m for m in difflib.SequenceMatcher(None, needle, hay[lo:hi], autojunk=False).get_matching_blocks() if m.size]
+    big2 = max(sub, key=lambda m: m.size)
+    return {i for m in sub if (m is big2 or m.size >= 2) for i in range(m.a, m.a + m.size)}
 
 
 def containment_check(window: list, hay: list, witnesses: list) -> tuple:
@@ -2326,7 +2399,7 @@ def v8_reports(views: list, out_dir: Path) -> str:
     summary.append(f"P09-35A editor notes={len(notes)} " + " ".join(f"{k}={v}" for k, v in sorted(st.items()))
                    + f" flagged={sum(1 for n in notes if n['flags'])}")
     # ---- P09-35B apparatus (P09-58: amendment spans only in the cross-check; note lines skipped)
-    app = {}
+    app, prev_of = {}, {}
     for act in ("1961", "2025"):
         for sec in scope[act]:
             prev_key = None
@@ -2336,16 +2409,22 @@ def v8_reports(views: list, out_dir: Path) -> str:
                     cur = section_apparatus(byk[key], r, conv[key])
                     pr = sect(prev_key, sec) if prev_key else None
                     ok = pr is not None and pr["status"] == "FOUND"
-                    compare_apparatus(cur, app.get((prev_key, sec)) if ok else None, pr["body"] if ok else None)
+                    compare_apparatus(cur, app.get((prev_key, sec)) if ok else None, pr["body"] if ok else None,
+                                      r["body"])
+                    for e in cur:
+                        if e["status"] == "disagree":
+                            e["cause"] = disagreement_cause(e, app.get((prev_key, sec), []))
                     app[(key, sec)] = cur
+                    prev_of[(key, sec)] = prev_key
                 prev_key = key
     cols = ("span_class", "page_1based", "line_1based", "depth", "closed", "weight", "act_class", "marker", "footnote",
-            "kind", "act", "wef_as_printed", "old_text", "span_text", "expected_change", "observed_change", "status",
-            "old_text_in_prev", "link_method", "link_reason", "dx", "dy")
+            "kind", "act", "act_key", "cmp_span", "heading_stripped", "wef_as_printed", "old_text", "span_text",
+            "expected_change", "observed_change", "status",
+            "old_text_in_prev", "link_method", "link_reason", "dx", "dy", "cause")
     tsv = ["edition\tsection\t" + "\t".join(cols)]
     for (key, sec), es in app.items():
         for e in es:
-            tsv.append(f"{key}\t{sec}\t" + "\t".join(_tsv_cell(str(e[c])[:300]) for c in cols))
+            tsv.append(f"{key}\t{sec}\t" + "\t".join(_tsv_cell(str(e.get(c, "-"))[:300]) for c in cols))
     _write_new(out_dir / "AMENDMENT-APPARATUS.tsv", "\n".join(tsv) + "\n")
 
     def counts(es):
@@ -2388,8 +2467,33 @@ def v8_reports(views: list, out_dir: Path) -> str:
            "patterns found: " + (", ".join(f"'{k}' x{v}" for k, v in pats.items()) or "none"), "",
            "| edition | section | page_1based | line_1based | span |", "|---|---|---|---|---|"]
     am += [f"| {k} | {sec} | {e['page_1based']} | {e['line_1based']} | {_md(e['span_text'][:80])} |" for k, sec, e in refs]
+    dis = [(k, sec, e) for (k, sec), es in app.items() for e in es if e["status"] == "disagree"]
+    by_cause, by_ed = {}, {}
+    for k, sec, e in dis:
+        by_cause[e["cause"]] = by_cause.get(e["cause"], 0) + 1
+        by_ed[k] = by_ed.get(k, 0) + 1
+    am += ["", f"## Disagreements ({len(dis)}; v11 cause labels, report only)", "",
+           "by cause: " + ", ".join(f"{c}={n}" for c, n in sorted(by_cause.items(), key=lambda x: -x[1])),
+           "by edition: " + ", ".join(f"{k}={n}" for k, n in by_ed.items()), "",
+           "| cause | edition | section | page_1based | span | act_key | kind | footnote | previous same-span entries |",
+           "|---|---|---|---|---|---|---|---|---|"]
+    for k, sec, e in dis:
+        prev_same = [(x.get("act_key"), x["kind"]) for x in app.get((prev_of.get((k, sec)), sec), [])
+                     if x.get("span_class") == "amendment" and _key(x)[0] == _key(e)[0]]
+        am.append(f"| {e['cause']} | {k} | {sec} | {e['page_1based']} | {_md(e['span_text'][:60])} | "
+                  f"{_md(e.get('act_key'))} | "
+                  f"{_md(e['kind'])} | {_md((e.get('fn_text') or '-')[:90])} | {_md(prev_same[:2] or 'none')} |")
     _write_new(out_dir / "AMENDMENT-APPARATUS.md", "\n".join(am) + "\n")
     summary.append(f"P09-58 reference spans={len(refs)} patterns={pats}")
+    summary.append(f"v11 disagreements={len(dis)} by cause: "
+                   + ", ".join(f"{c}={n}" for c, n in sorted(by_cause.items(), key=lambda x: -x[1])))
+    seen = {}
+    for k, sec, e in dis:
+        if seen.get(e["cause"], 0) >= 2 or sum(seen.values()) >= 10:
+            continue
+        seen[e["cause"]] = seen.get(e["cause"], 0) + 1
+        summary.append(f"  [{e['cause']}] {k} s.{sec} p{e['page_1based']} span={e['span_text'][:50]!r} "
+                       f"act_key={e.get('act_key')!r} footnote={(e.get('fn_text') or '-')[:70]!r}")
     # ---- P09-55 boundary agreement, Q-C (c): containment on a comparison skeleton
     real = {}
     for n in notes:
