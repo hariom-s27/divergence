@@ -944,3 +944,326 @@ def test_bracketed_schedule_starts_schedules_region():
     page = "Fake heading.\n7. Fake text.\n[SCHEDULE I\nFake item heading.\n8. Fake schedule item."
     cleaned, starts = view(page)
     assert se.schedules_from(cleaned.lines) == 2 and [s.number for s in starts] == ["7"]
+
+
+# ---------------------------------------------------------------- v8: fonts (P09-35A / P09-55), all text invented
+
+def _codes(text, label_len=0, rest="i", label="r"):
+    return label * label_len + rest * (len(text) - label_len)
+
+
+def test_font_code_names():
+    assert se.font_code("/ABCDEF+FakeSerif-BoldItalic") == "B"
+    assert se.font_code("FakeSans-Bold") == "b"
+    assert se.font_code("FakeSans-Oblique") == "i"
+    assert se.font_code("/FakeSans") == "r"
+    assert se.font_code(None) == "?"
+
+
+def test_line_share_ignores_label_words():
+    text = "Provided further fake italic words."
+    codes = _codes(text, len("Provided further"))
+    assert se.line_share(text, codes, "italic", ignore_labels=True) == 1.0
+    assert se.line_share(text, codes, "italic") < 0.6
+
+
+def test_line_share_label_only_line_measured_on_label():
+    assert se.line_share("Explanation.—", "i" * 13, "italic", ignore_labels=True) == 1.0
+
+
+def test_line_share_none_when_codes_missing_or_misaligned():
+    assert se.line_share("fake", None, "bold") is None
+    assert se.line_share("fake", "bb", "bold") is None
+    assert se.line_share("Fake Bold", "BBBB rrrr", "bold") == 0.5
+
+
+def test_split_codes_aligns_lines_and_flags_mismatch():
+    assert se.split_codes("ab\ncd", "ab\ncd", "rr?bb") == ["rr", "bb"]
+    assert se.split_codes("ab\ncd", "ab\ncX", "rr?bb") is None
+
+
+class _FakePage:
+    def __init__(self, runs):
+        self.runs = runs
+
+    def extract_text(self, visitor_text=None):
+        for t, f in self.runs:
+            visitor_text(t, None, None, {"/BaseFont": f}, 10)
+        return "".join(t for t, _ in self.runs)
+
+
+class _FakeReader:
+    def __init__(self, pages):
+        self.pages = pages
+
+
+def test_fontview_builds_once_then_reads_cache(tmp_path):
+    pdf = tmp_path / "fake.pdf"
+    pdf.write_bytes(b"not a real pdf")
+    page_text = "Fake heading.\n9. Fake text."
+    runs = [("Fake heading.", "/ABCDEF+FakeSerif-Bold"), ("\n", "/FakeSerif"), ("9. Fake text.", "/FakeSerif")]
+    fv = se.FontView(pdf, [page_text], cache_dir=tmp_path / "fonts")
+    fv._reader = _FakeReader([_FakePage(runs)])
+    assert fv.bold(se.Line(1, "Fake heading.", 1)) == 1.0
+    assert fv.bold(se.Line(1, "9. Fake text.", 2)) == 0.0
+    files = list((tmp_path / "fonts").rglob("p1.json"))
+    assert fv.built == 1 and len(files) == 1
+    before = files[0].read_bytes()
+    fv2 = se.FontView(pdf, [page_text], cache_dir=tmp_path / "fonts")
+    assert fv2.bold(se.Line(1, "Fake heading.", 1)) == 1.0
+    assert fv2.read == 1 and fv2.built == 0 and files[0].read_bytes() == before
+
+
+def test_fontview_mismatch_gives_none(tmp_path):
+    pdf = tmp_path / "fake.pdf"
+    pdf.write_bytes(b"not a real pdf")
+    fv = se.FontView(pdf, ["Fake other text."], cache_dir=tmp_path / "fonts")
+    fv._reader = _FakeReader([_FakePage([("Fake heading.", "/FakeSerif-Bold")])])
+    assert fv.bold(se.Line(1, "Fake other text.", 1)) is None
+    assert fv.mismatch_pages == {1}
+
+
+# ---------------------------------------------------------------- v8: P09-56 RECORD-SCOPE
+
+def test_record_scope_from_invented_tables(tmp_path):
+    (tmp_path / "SECTION-LIST.json").write_text(json.dumps({
+        "sections_1961": [{"section": "7"}, {"section": "9A"}],
+        "sections_2025_only": [{"section": "500"}]}), encoding="utf-8")
+    (tmp_path / "MAPPING.csv").write_text(
+        "section_1961,section_2025,operative_2025\n7,12,12\n9A,13;14,14\n7,12,12\n8,,\n9,500,500\n", encoding="utf-8")
+    assert se.record_scope(tmp_path) == {"1961": ["7", "9A"], "2025": ["500", "12", "14"]}
+
+
+# ---------------------------------------------------------------- v8: P09-57 convention note
+
+NOTE = ("Fake title page\n*Amendments made by the Zeta Act, 2099 and Eta Act, 2099, notwithstanding the dates from\n"
+        "which they come into effect, have been printed in italics and enclosed with bold square brackets.\n"
+        "Amendments made by the Theta Act, 2098, coming into force from 1-4-2099 have been printed in\n"
+        "italics and enclosed with medium square brackets.\n")
+
+
+def test_convention_note_parsed_as_printed():
+    c = se.convention_note(["Fake cover.", NOTE])
+    assert c["status"] == "found" and c["page_1based"] == 2 and c["line_1based"] == 2
+    assert c["latest_acts"] == ["the Zeta Act, 2099", "Eta Act, 2099"]
+    assert c["previous_acts"] == ["the Theta Act, 2098"] and c["previous_in_force_from"] == "1-4-2099"
+
+
+def test_convention_note_absent_and_garbled():
+    assert se.convention_note(["Fake cover.", "Fake page."]) == {"status": "no_note"}
+    assert se.convention_note(["Fake words about square brackets only."])["status"] == "parse_failed"
+
+
+# ---------------------------------------------------------------- v8: P09-55 bold starts
+
+PAGE55 = ("Fake heading seven.\n7. (1) Fake seven text.\nQuoted fake heading.\n3. Fake quoted section text.\n"
+          "Fake heading eight.\n8. Fake eight text.")
+
+
+def _bold_of(bold_texts, unknown=()):
+    def f(ln):
+        if ln.text in unknown:
+            return None
+        return 1.0 if ln.text in bold_texts else 0.0
+    return f
+
+
+def test_lower_numbered_bold_start_ends_section():
+    cleaned, starts = view(PAGE55)
+    r = se.locate(cleaned.lines, starts, "7",
+                  bold=_bold_of({"Fake heading seven.", "Quoted fake heading.", "Fake heading eight."}))
+    assert r["status"] == "FOUND" and r["ended_by"]["number"] == "3"
+    assert r["internal_line_idx0_end"] == 2
+    assert r["isolated_starts"][0]["used_as_end"] is True and r["isolated_starts"][0]["higher_number"] is False
+
+
+def test_non_bold_start_does_not_end_section():
+    cleaned, starts = view(PAGE55)
+    r = se.locate(cleaned.lines, starts, "7", bold=_bold_of({"Fake heading seven.", "Fake heading eight."}))
+    assert r["ended_by"]["number"] == "8" and r["internal_line_idx0_end"] == 4
+    assert [(x["number"], x["bold_heading"], x["used_as_end"]) for x in r["isolated_starts"]] == [("3", "no", False)]
+
+
+def test_duplicate_hits_resolved_by_bold():
+    page = "Fake heading seven.\n7. Fake.\nOther fake heading.\n7. Fake again.\nFake heading eight.\n8. Fake."
+    cleaned, starts = view(page)
+    assert se.locate(cleaned.lines, starts, "7")["status"] == "UNRESOLVED"
+    r = se.locate(cleaned.lines, starts, "7", bold=_bold_of({"Fake heading seven.", "Fake heading eight."}))
+    assert r["status"] == "FOUND" and r["internal_line_idx0_start"] == 1
+    assert [c["bold_heading"] for c in r["candidates"]] == ["yes", "no"]
+
+
+def test_unknown_bold_falls_back_to_v7_rule():
+    cleaned, starts = view(PAGE55)
+    r = se.locate(cleaned.lines, starts, "7", bold=_bold_of(
+        {"Fake heading seven."}, unknown={"Quoted fake heading.", "Fake heading eight."}))
+    assert r["ended_by"]["number"] == "8" and r["bold_unknown"] == 2
+
+
+def test_without_bold_locate_is_v7():
+    cleaned, starts = view(PAGE55)
+    r = se.locate(cleaned.lines, starts, "7")
+    assert r["internal_line_idx0_end"] == 4 and "ended_by" not in r and "isolated_starts" not in r
+
+
+# ---------------------------------------------------------------- v8: P09-35A editor-note extent
+
+HEAD = "Following clause (z) shall be inserted after clause (y) by the Fake Act, 2099, w.e.f. 1-4-2099:"
+
+
+def _seg(rows):
+    """rows = [(text, codes or 'i' / 'r' for a whole line)] -> (Lines on page 1, FontView preset)."""
+    lines, codes = [], []
+    for n, (t, c) in enumerate(rows, 1):
+        lines.append(se.Line(1, t, n))
+        codes.append(c * len(t) if len(c) == 1 else c)
+    return lines, se.FontView(preset={1: codes})
+
+
+def test_note_extent_stops_at_first_roman_line():
+    seg, fv = _seg([(HEAD, "i"), ("(z) fake inserted words;", "i"), ("fake more words;", "i"), ("(w) fake roman law.", "r")])
+    e = se.note_extent(seg, 0, fv.italic)
+    assert e["end"] == 2 and e["stop"].startswith("first mostly-roman line")
+
+
+def test_note_extent_label_words_do_not_break_block():
+    prov = "Provided further fake italic proviso."
+    seg, fv = _seg([(HEAD, "i"), (prov, _codes(prov, len("Provided further"))), ("(w) fake roman law.", "r")])
+    assert se.note_extent(seg, 0, fv.italic)["end"] == 1
+
+
+def test_note_extent_table_bridge_up_to_three_lines():
+    seg, fv = _seg([(HEAD, "i"), ("TABLE", "r"), ("FAKE TITLE", "r"), ("A B C", "r"), ("1. Fake italic row.", "i"),
+                    ("(w) fake roman law.", "r")])
+    e = se.note_extent(seg, 0, fv.italic)
+    assert e["end"] == 4 and e["bridged"] == 3 and "table_bridge_3" in e["flags"]
+
+
+def test_note_extent_four_furniture_lines_stop():
+    seg, fv = _seg([(HEAD, "i"), ("TABLE", "r"), ("FAKE TITLE", "r"), ("A B C", "r"), ("Sl. No. Fake column", "r"),
+                    ("1. Fake italic row.", "i")])
+    e = se.note_extent(seg, 0, fv.italic)
+    assert e["end"] == 0 and "header_only" in e["flags"]
+
+
+def test_note_extent_roman_non_furniture_is_not_bridged():
+    seg, fv = _seg([(HEAD, "i"), ("fake roman words here", "r"), ("fake italic again", "i")])
+    assert se.note_extent(seg, 0, fv.italic)["end"] == 0
+
+
+@pytest.mark.parametrize("stop_line,why", [
+    ("Following clause (q) shall be omitted by the Fake Act, 2099, w.e.f. 1-4-2099:", "next note header"),
+    ("[Omitted by the Fake Act, 2099]", "printed omission")])
+def test_note_extent_hard_stops(stop_line, why):
+    seg, fv = _seg([(HEAD, "i"), ("fake italic words", "i"), (stop_line, "i"), ("fake italic tail", "i")])
+    e = se.note_extent(seg, 0, fv.italic)
+    assert e["end"] == 1 and e["stop"] == why
+
+
+def test_note_extent_cap_and_bare_markers_skipped():
+    seg, fv = _seg([(HEAD, "i"), ("12", "r")] + [("fake italic words", "i")] * 45)
+    e = se.note_extent(seg, 0, fv.italic)
+    assert e["end"] == 40 and "cap_40" in e["flags"]
+
+
+def test_note_extent_header_only_override():
+    seg, fv = _seg([(HEAD, "i"), ("fake italic words", "i")])
+    e = se.note_extent(seg, 0, fv.italic, header_only=True)
+    assert e["end"] == 0 and "override" in e["flags"]
+    assert se.EDITOR_NOTE_OVERRIDES[("ita1961_2024n2", 898, 1)] == {"header_only": True, "target": "section 194T"}
+
+
+def test_parse_note_header_as_printed():
+    h = se.parse_note_header(HEAD)
+    assert h == {"action": "inserted", "target": "clause (z)", "instrument_as_printed": "Fake Act, 2099",
+                 "wef_pointer_as_printed": "w.e.f. 1-4-2099"}
+
+
+# ---------------------------------------------------------------- v8: P09-35A realization
+
+NEEDLE = "fake inserted words alpha beta gamma delta"
+
+
+def test_realization_first_edition_with_score_wins():
+    later = [("e2", "nothing alike here at all"), ("e3", "x " + NEEDLE + " y"), ("e4", NEEDLE)]
+    r = se.realization(NEEDLE, later)
+    assert r["status"] == "realized" and r["realized_in"] == "e3" and r["match_score"] == 1.0
+    assert list(r["scores"]) == ["e2", "e3", "e4"] and r["scores"]["e2"] < 0.5
+
+
+def test_realization_bands_and_no_later_edition():
+    assert se.realization(NEEDLE, [("e2", "fake inserted words alpha other tokens")])["status"] == "partial"
+    assert se.realization(NEEDLE, [("e2", "completely unrelated invented law text")])["status"] == "not_found"
+    assert se.realization(NEEDLE, [])["status"] == "no_later_edition"
+    assert se.realization(NEEDLE, [("e2", None)])["status"] == "not_found"
+    assert se.realization("", [("e2", "x")])["status"] == "no_inserted_text"
+
+
+def test_realization_tail_unmatched_and_after_mismatch():
+    needle = "aa bb cc dd ee ff\nqq rr ss"
+    r = se.realization(needle, [("e2", "zz aa bb cc dd ee ff yy")], last_line="qq rr ss")
+    assert r["status"] == "partial" and "tail_unmatched" in r["flags"]
+    ok = se.realization(NEEDLE, [("e2", NEEDLE + " right next words")], last_line="gamma delta",
+                        after_line="right next words")
+    assert ok["flags"] == []
+    bad = se.realization(NEEDLE, [("e2", NEEDLE + " wrong next words")], last_line="gamma delta",
+                         after_line="right next words")
+    assert bad["flags"] == ["after_mismatch"]
+
+
+# ---------------------------------------------------------------- v8: P09-35B apparatus
+
+CONV = {"status": "found", "latest_acts": ["Zeta Act, 2099"], "previous_acts": ["Theta Act, 2098"],
+        "previous_in_force_from": "1-4-2099"}
+
+
+def test_bracket_spans_weight_and_markers():
+    l1 = "12[fake inserted words] and more"
+    l3 = "[fake other words]"
+    seg, fv = _seg([(l1, "rrb" + "r" * (len(l1) - 3)), ("3", "r"), (l3, "r")])
+    sp = se.bracket_spans(seg, fv.codes)
+    assert [(s["text"], s["weight"], s["marker"]) for s in sp] == [
+        ("fake inserted words", "bold", ("12", 1, 1)), ("fake other words", "medium", ("3", 1, 2))]
+
+
+def test_act_class_from_convention_note():
+    assert se.act_class("bold", CONV) == "latest: Zeta Act, 2099"
+    assert se.act_class("medium", CONV) == "previous: Theta Act, 2098 (in force from 1-4-2099)"
+    assert se.act_class("bold", {"status": "no_note"}) == "unknown"
+
+
+def test_parse_footnote_fields():
+    f = se.parse_footnote("4. Ins. by the Finance (No. 2) Act, 2099, w.e.f. 1-4-2099.")
+    assert (f["kind"], f["act"], f["wef_as_printed"], f["old_text"]) == (
+        "Ins.", "Finance (No. 2) Act, 2099", "w.e.f. 1-4-2099", None)
+    g = se.parse_footnote('5. Subs. for the words "fake old words" by the Zeta Act, 2099, w.e.f. 1-4-2099.')
+    assert (g["kind"], g["act"], g["old_text"]) == ("Subs.", "Zeta Act, 2099", "fake old words")
+    h = se.parse_footnote('6. Prior to its substitution, clause (z) read as under: "(z) fake old clause;"')
+    assert h["kind"] == "Prior to" and h["old_text"] == "(z) fake old clause;"
+
+
+def _entry(span, act, kind, old=None):
+    return {"span_text": span, "act": act, "kind": kind, "old_text": old}
+
+
+def test_compare_apparatus_expected_vs_observed():
+    prev = [_entry("fake old words", "Zeta Act, 2099", "Subs.")]
+    cur = [_entry("fake old words", "Zeta Act, 2099", "Subs."),
+           _entry("fake new words", "Eta Act, 2099", "Ins.", old="gone fake text"),
+           _entry("fake old words", "Eta Act, 2099", "Subs.", old="fake old words")]
+    se.compare_apparatus(cur, prev, "x 12[fake old words] y")
+    assert [(e["expected_change"], e["observed_change"], e["status"], e["old_text_in_prev"]) for e in cur] == [
+        (False, False, "agree", "na"), (True, True, "agree", "no"), (True, False, "disagree", "yes")]
+
+
+def test_compare_apparatus_no_neighbour():
+    cur = [_entry("fake words", None, None)]
+    se.compare_apparatus(cur, None, None)
+    assert cur[0]["status"] == "no_neighbour" and cur[0]["old_text_in_prev"] == "na"
+
+
+def test_boundary_mismatch_explained_by_apparatus():
+    assert se._explained("(1) fake [bracketed] line", [])
+    assert se._explained("fake words of a long inserted span", ["fake words of a long inserted span here"])
+    assert not se._explained("fake unrelated line text", ["other span text entirely"])
+    assert se.boundary_lines("a\n\nb\nc\nd\n") == (["a", "b"], ["c", "d"])
