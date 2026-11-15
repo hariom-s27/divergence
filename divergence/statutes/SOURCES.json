@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "description": "P09 approved download list (prompt E3) and manual items. statute_fetch.py requests ONLY these URLs: base + slug, HTTP GET, one at a time, >= 5 s apart, no retries, no redirects, hard cap 15 requests per run.",
+  "host": "wm.incometaxindia.gov.in",
+  "base": "https://wm.incometaxindia.gov.in/documents/d/guest/",
+  "user_agent": "DIVERGENCE-research (github.com/hariom-s27/divergence)",
+  "items": [
+    {"key": "ita1961_2026", "item": "Income-tax Act, 1961, edition \"2026\"", "slug": "income-tax-document-income-tax-act-1961_2026_2026-06-05_05-35-21_3f20ac_en", "provenance": "read off button"},
+    {"key": "ita1961_2025", "item": "Income-tax Act, 1961, edition \"2025\"", "slug": "income-tax-document-income-tax-act-1961_2025_en", "provenance": "button"},
+    {"key": "ita1961_2024n2", "item": "Income-tax Act, 1961, edition \"2024 (No. 2)\"", "slug": "income-tax-document-income-tax-act-1961_2024-no-2-_en", "provenance": "button"},
+    {"key": "ita1961_2024n1", "item": "Income-tax Act, 1961, edition \"2024 (No. 1)\"", "slug": "income-tax-document-income-tax-act-1961_2024-no-1-_en", "provenance": "site data (verify)"},
+    {"key": "ita1961_2023", "item": "Income-tax Act, 1961, edition \"2023\"", "slug": "income-tax-document-income-tax-act-1961_2023_en", "provenance": "site data (verify)"},
+    {"key": "ita2025_2026", "item": "Income-tax Act, 2025, edition \"2026\"", "slug": "income-tax-document-income-tax-act-2025_2026_2026-05-29_05-47-30_5d8348_en", "provenance": "button"},
+    {"key": "ita2025_2025", "item": "Income-tax Act, 2025, edition \"2025\"", "slug": "income-tax-document-income-tax-act-2025_2025_en", "provenance": "button"},
+    {"key": "fa_2025", "item": "\"Finance Acts\" edition 2025 (expected: Finance Act, 2025)", "slug": "income-tax-document-finance-acts_2025_2026-08-18_04-01-45_804d70_en", "provenance": "button", "expect_text": "Finance Act, 2025"},
+    {"key": "tola_2026", "item": "Taxation and Other Laws (Amendment) Act, 2026", "slug": "income-tax-document-taxation-and-other-laws-amendment-act-2026_2026-08-26_01-49-39_5a97c0_en", "provenance": "built (verify)"},
+    {"key": "ord_2_2026", "item": "Income-tax (Amendment) Ordinance, 2026", "slug": "doc202665883801-pdf", "provenance": "built from an ITD document path (verify)"},
+    {"key": "n74_2022", "item": "Notification 74/2022", "slug": "notification-no-74-2022-pdf", "provenance": "built (verify)"},
+    {"key": "n75_2022", "item": "Notification 75/2022", "slug": "notification-no-75-2022-pdf", "provenance": "built (verify)"},
+    {"key": "c13_2022", "item": "Circular 13/2022 (194S(6) guidelines)", "slug": "circular-no-13-2022-pdf", "provenance": "built (verify)"},
+    {"key": "c14_2022", "item": "Circular 14/2022 (s.119 order, 194S)", "slug": "circular-14-2022-pdf", "provenance": "built (verify)"},
+    {"key": "n19_2026", "item": "Notification 19/2026", "slug": "notification-19-2026-pdf", "provenance": "built (verify)"}
+  ],
+  "manual": [
+    {"key": "fa_2022", "item": "Finance Act, 2022", "where": "eGazette, CG-DL-E-31032022-234693 (download button)"},
+    {"key": "fa_2026", "item": "Finance Act, 2026", "where": "eGazette ID CG-DL-E-31032026-271439 (ID seen only on a secondary copy); if not found: FA 2026 s.1 + the amending sections the code lists, from the ITD viewer (Print -> Save as PDF)"}
+  ],
+  "manual_rules": "Owner saves manual files in a browser into _local_text/_raw/<YYYY-MM-DD>/manual/ and writes one line per file in MANUAL-SOURCES.txt: file name, item, where found (URL or Gazette ID), date saved. Also manual: any item above that fails (non-200, 3xx, not a PDF, or failed content check) and any further amending Act listed in Part C."
+}
