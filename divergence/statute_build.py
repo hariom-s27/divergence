@@ -531,7 +531,8 @@ OMITTED_MARK_RE = re.compile(r"\s*\[\s*\*{2,}\s*\]")
 # Owner data: edition sections whose SOURCE does not print most letter-suffixed labels. The check skips them (B2 d).
 LABEL_GAP = {
     ("ita1961_2023", "2"): "owner eye check 2026-11-16: p.4, p.16 do not print letter-suffixed labels (source defect)",
-    ("ita1961_2024n1", "2"): "INFERENCE: identical s.2 body (64,270 chars) to ita1961_2023 per probe 2026-11-16",
+    ("ita1961_2024n1", "2"): "owner eye check 2026-11-16 p.4-5 (source defect)",
+    ("ita1961_2024n1", "56"): "owner eye check 2026-11-16 p.336 (source defect)",
     ("ita1961_2024n2", "56"): "owner eye check 2026-11-16 pp.301-305 (source defect)",
     ("ita1961_2023", "56"): "owner eye check 2026-11-16 p.466: (XII)/(XIII) not printed (source defect)",
 }

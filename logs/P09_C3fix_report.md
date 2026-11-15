@@ -108,3 +108,14 @@ ita1961_2023); no extractor change.
 - Guard PASS (code-column sha b7b8fa369ef0..., body sha aebe8deb174f...; C3fix-20261116-044921). Final regen:
   regen/AMENDMENT-EFFECTS.20261116-044706.csv. Phase checks: pytest 555; flake8 0; corpus_hash OK; gate0 CLEAR;
   statute_validate 0 errors; statute_tables --check 84 rejections, all empty owner_ok; CI replay equal.
+
+## Part B4 (2026-11-16): ita1961_2024n1 label gaps
+- LABEL_GAP: (ita1961_2024n1, 2) evidence now owner eye check p.4-5 (was INFERENCE); added (ita1961_2024n1, 56)
+  owner eye check p.336. Probe: s.56 clause text is present on p.336 (pypdf); only the two labels are unprinted.
+  Edge search missed that page, so eye checks should scroll to the page, not search.
+- Status change (regen 044706 -> 050804): fa_2022:s16(b)(i) fail -> ok (three gap editions skipped; checked in
+  ita1961_2025). Note-only: fa_2022:s16(a), s16(b)(ii), s16(b)(iii), fa_2023:s32(a)(ii), fa2_2024:s23.
+- check_status: ok 28 | fail 0 | no_edition 22 (no suitable edition 1, no_label 7, no_rule 14).
+- Guard PASS (code-column sha b7b8fa369ef0..., body sha aebe8deb174f...; C3fix-20261116-050941). Phase checks:
+  pytest 555; flake8 0; corpus_hash OK; gate0 CLEAR; statute_validate 0 errors; tables --check 84 rejections, all
+  empty owner_ok; CI replay equal. Final regen for Part C: regen/AMENDMENT-EFFECTS.20261116-050804.csv.
