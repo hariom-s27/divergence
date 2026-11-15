@@ -485,6 +485,7 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
     # versions
     commence = commencement_2025(sect)
     vrows, before_all, unplaced_all, sec_counts = [], {}, {}, []
+    eds_by, body_sha = {}, {}
     for act in ("1961", "2025"):
         for sec in ap.SPINE[act]:
             effs = by_sec.get((act, sec), [])
@@ -493,6 +494,7 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
                 pend = pending_effects(effs, k, sec, app, notes)
                 eds.append({"key": k, "knowledge": know[k]["date"], "found": sect(k, sec)["status"] == "FOUND",
                             "pending": pend})
+            eds_by[(act, sec)] = eds
             ins = [e for e in effs if _inserts_section(e) and e["wef"]]
             origin = min(e["wef"] for e in ins) if ins else (commence if act == "2025" else None)
             end = commence if act == "1961" else None
@@ -500,6 +502,10 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
                                                       repeal_day=commence if act == "1961" else None,
                                                       inserted=bool(ins))
             vrows += rows
+            for r in rows:                              # guard data (C3-fix B): sha of the body each version uses
+                if r.get("_text"):
+                    body = sect(r["_text"], sec)["body"]
+                    body_sha[r["record_key"]] = hashlib.sha256(body.encode("utf-8")).hexdigest()
             before_all[(act, sec)] = before
             unplaced_all[(act, sec)] = unplaced
             unexpl = sum(1 for r in ch_rows if r[0] == act and r[1] == sec and r[3] in UNEXPLAINED
@@ -513,9 +519,125 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
     s56 = s56_candidates(views["ita1961_2023"])
     sheets = write_sheets(out_dir, effects, know, pend_rows, diffs_md, ev_rows, ch_rows, vrows, before_all,
                           unplaced_all, s56, commence, hunks, ins_check)
+    checks = effect_checks(effects, eds_by, sect) if all("position" in e for e in effects) else {}
     return {"effects": effects, "know": know, "pend": pend_rows, "ev": ev_rows, "ch": ch_rows, "versions": vrows,
             "before": before_all, "counts": sec_counts, "s56": s56, "commence": commence, "sheets": sheets,
-            "unplaced": unplaced_all, "ins_check": ins_check}
+            "unplaced": unplaced_all, "ins_check": ins_check, "checks": checks, "body_sha": body_sha}
+
+
+# ---------------------------------------------------------------- per-row edition check (C3-fix B; owner rules 1-5)
+TOP_LABEL_RE = re.compile(r"\(\s*(\d+[A-Za-z]*)\s*\)")
+
+
+def _bound(label_re: str) -> re.Pattern:
+    """A label that starts a unit: at the start, after ; : . — ] or 'and'/'or', footnote marks allowed (rule 4)."""
+    return re.compile(r"(?:^|[;:.—–\]]\s*|\b(?:and|or)\s+)[’'”\"‘“]?\s*(?:\d{1,3}\s*)?\[?\s*" + label_re)
+
+
+def _paren(label: str) -> str:
+    return r"\(\s*" + re.escape(label.strip("()").strip()) + r"\s*\)"
+
+
+def container_segment(body: str, levels: list) -> tuple:
+    """(text, scope note) for rule 3: from the top container's digit-led label heading to the next digit-led heading;
+    the whole section when there is no such container or it is not found."""
+    b = ap.fold_ws(body)
+    top = TOP_LABEL_RE.search(levels[0]) if levels else None
+    if not top or not top.group(1)[0].isdigit():
+        return b, "section"
+    m = _bound(_paren(top.group(1))).search(b)
+    if not m:
+        return b, "section"
+    nxt = next((x for x in _bound(r"\(\s*(\d+[A-Za-z]*)\s*\)").finditer(b, m.end())
+                if x.group(1) != top.group(1)), None)
+    return b[m.start():nxt.start() if nxt else len(b)], f"container ({top.group(1)})"
+
+
+def _count(seg: str, unit: str) -> int:
+    if unit == "proviso":
+        return len(_bound(r"Provided\b").findall(seg))
+    if unit.startswith("Explanation"):
+        n = unit[len("Explanation"):].strip()
+        return len(_bound(r"Explanation\s*" + (re.escape(n) + r"\s*" if n else "") + r"\.?\s*[—–-]").findall(seg))
+    return len(_bound(_paren(unit)).findall(seg))
+
+
+def check_effect(e: dict, eds: list, body_of) -> tuple:
+    """(check_status, check_note) for one effect. eds: the section's editions in order ({key, knowledge, found,
+    pending}); body_of(edition) -> section body. Rule 1: 'after' = first FOUND edition with knowledge >= assent_date
+    that does not mark the effect pending; 'before' = last FOUND edition with knowledge < assent_date."""
+    if e.get("check_note", "").startswith("unparsed:"):
+        return e["check_status"], e["check_note"]
+    asn, eid = e["assent_date"], e["effect_id"]
+    known = [d for d in eds if d["knowledge"]]
+    levels = [x for x in e["target_unit"].split(" > ") if x]
+    item_level = e["target_unit"] == "" and e["operation"] == "insert" and e["position"] in ("after", "before")
+    if item_level:                                      # whole-section insert: the section itself is the new unit
+        if e["target_section"] not in e["new_units"].split(";"):
+            return "no_edition", "no_label: target section not among new_units"
+        aft = next((d for d in known if d["knowledge"] >= asn and eid not in d["pending"]), None)
+        bef = next((d for d in reversed(known) if d["knowledge"] < asn), None)
+        if aft is None:
+            return "no_edition", "no_edition: no edition after the effect"
+        if not aft["found"]:
+            return "fail", f"section {e['target_section']} not found in {aft['key']}"
+        if bef is not None and bef["found"]:
+            return "fail", f"section {e['target_section']} already found in {bef['key']}"
+        return "ok", f"section found in {aft['key']}" + (f", absent in {bef['key']}" if bef else "")
+    aft = next((d for d in known if d["found"] and d["knowledge"] >= asn and eid not in d["pending"]), None)
+    bef = next((d for d in reversed(known) if d["found"] and d["knowledge"] < asn), None)
+    op, scope, pos = e["operation"], e["scope"], e["position"]
+    if op == "insert" and scope == "unit" and e["new_units"]:
+        container = levels[:-1] if pos in ("after", "before") else levels
+        units = e["new_units"].split(";")
+        if aft is None:
+            return "no_edition", "no_edition: no edition after the effect"
+        sa, where = container_segment(body_of(aft["key"]), container)
+        sb_ = container_segment(body_of(bef["key"]), container)[0] if bef else None
+        bad = []
+        for u in dict.fromkeys(units):
+            need = units.count(u)
+            na = _count(sa, u)
+            nb = _count(sb_, u) if sb_ is not None else None
+            if u.startswith("(") and nb is None and na < 1:
+                bad.append(f"{u} absent in {aft['key']}")
+            elif u.startswith("(") and nb is not None and not (na >= 1 and nb == 0):
+                bad.append(f"{u} {aft['key']}:{na} {bef['key']}:{nb}")
+            elif not u.startswith("(") and (na < need if nb is None else na - nb < need):
+                bad.append(f"{u} count {aft['key']}:{na}" + (f" {bef['key']}:{nb}" if nb is not None else ""))
+        if bad:
+            return "fail", f"{where}: " + "; ".join(bad)
+        return "ok", f"{where}: new units in {aft['key']}" + (f", not in {bef['key']}" if bef else "")
+    if scope == "words" or (op == "omit" and scope == "unit"):
+        lab = re.search(r"\(\s*([0-9A-Za-z]+)\s*\)", levels[-1]) if levels else None
+        if lab is None:
+            return "no_edition", "no_label: anchor has no label"
+        if aft is None:
+            return "no_edition", "no_edition: no edition after the effect"
+        sa, where = container_segment(body_of(aft["key"]), levels[:-1])     # the anchor's parent container
+        na = _count(sa, lab.group(1))
+        if scope == "words":
+            nb = _count(container_segment(body_of(bef["key"]), levels[:-1])[0], lab.group(1)) if bef else None
+            if na < 1 or nb == 0:
+                return "fail", f"{where}: anchor ({lab.group(1)}) {aft['key']}:{na}" + (
+                    f" {bef['key']}:{nb}" if bef else "")
+            return "ok", f"{where}: anchor ({lab.group(1)}) present"
+        if na:
+            return "fail", f"{where}: omitted ({lab.group(1)}) still in {aft['key']} ({na})"
+        return "ok", f"{where}: omitted ({lab.group(1)}) absent in {aft['key']}"
+    return "no_edition", "no_rule: no check for this operation/scope"
+
+
+def effect_checks(effects: list, eds_by: dict, sect) -> dict:
+    """{effect_id: (check_status, check_note)} for spine effects; uses build()'s cached section text only."""
+    out = {}
+    for e in effects:
+        if e["target_section"] not in ap.SPINE.get(e["target_act"], []):
+            out[e["effect_id"]] = ("no_edition", "no_edition: not a spine section")
+            continue
+        out[e["effect_id"]] = check_effect(e, eds_by[(e["target_act"], e["target_section"])],
+                                           lambda k, s=e["target_section"]: sect(k, s)["body"])
+    return out
 
 
 INSERT_HEAD_RE = re.compile(r"^[‘'“\"]?\s*\d{1,3}[A-Z]{0,6}\s*\.\s*")
@@ -898,6 +1020,8 @@ def main(argv=None) -> int:
     ap_.add_argument("--dry-run", action="store_true", help="compute and print; write the local sheets only")
     ap_.add_argument("--effects", metavar="CSV", help="ledger file to use (default: the canonical AMENDMENT-EFFECTS.csv)")
     ap_.add_argument("--gazette-check", action="store_true", help="C3: Act 30 of 2025 Gazette vs ita2025_2025 + D3 map")
+    ap_.add_argument("--check-effects", action="store_true",
+                     help="C3-fix: per-row edition check; writes regen/AMENDMENT-EFFECTS.<stamp>.csv (never canonical)")
     a = ap_.parse_args(argv)
     if a.gazette_check:
         g = gazette_check(se.latest_raw_dir())
@@ -908,7 +1032,7 @@ def main(argv=None) -> int:
         print(rep, end="")
         print(f"sheet: {d / 'GAZETTE-CHECK.md'}")
         return 1 if g["missing"] else 0
-    if not (a.propose or a.counts or a.dry_run or a.gazette_check):
+    if not (a.propose or a.counts or a.dry_run or a.gazette_check or a.check_effects):
         ap_.print_help()
         return 2
     if a.counts:
@@ -946,6 +1070,19 @@ def main(argv=None) -> int:
     if a.propose:
         path, msg = ap.write_never_overwrite(VERSIONS_PATH, res["versions"], VERSION_COLUMNS, "record_key",
                                              owner=VERSION_OWNER, carry=owner_value)
+        print("\n".join(msg))
+    if a.check_effects:
+        if not res["checks"]:
+            print("--check-effects: the ledger has no position column (run act_parse --ledger first)")
+            return 1
+        rows = [dict(e, check_status=res["checks"][e["effect_id"]][0], check_note=res["checks"][e["effect_id"]][1])
+                for e in res["effects"]]
+        tally = {}
+        for r in rows:
+            n = r["check_note"].split(":")[0] if r["check_status"] == "no_edition" else r["check_status"]
+            tally[n] = tally.get(n, 0) + 1
+        print("check: " + ", ".join(f"{k} {v}" for k, v in sorted(tally.items())))
+        path, msg = ap.write_never_overwrite(ap.EFFECTS_PATH, rows, ap.EFFECT_COLUMNS, "effect_id")
         print("\n".join(msg))
     return 0
 

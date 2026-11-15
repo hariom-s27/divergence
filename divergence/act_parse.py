@@ -55,11 +55,15 @@ INSTRUMENT_KEYS = ["fa_2022", "fa_2023", "fa_2024", "fa2_2024", "fa_2025_gz", "f
 CORRIGENDA = {"fa_2022": "corr_fa2022", "fa_2023": "corr_fa2023", "fa_2026": "corr_fa2026"}
 
 EFFECT_COLUMNS = ["effect_id", "act_key", "instrument_provision", "target_act", "target_section", "target_unit",
-                  "operation", "commencement_source", "wef", "deemed_from", "assent_date",
-                  "applicability_note_present", "corrigendum_flag", "pdf_page", "quote_sha256", "owner_ok",
-                  "owner_note"]
-OWNER_COLUMNS = ("owner_ok", "owner_note")
+                  "position", "new_units", "scope", "operation", "commencement_source", "wef", "deemed_from",
+                  "assent_date", "applicability_note_present", "corrigendum_flag", "pdf_page", "quote_sha256",
+                  "check_status", "check_note", "owner_ok", "owner_note", "owner_target"]
+OWNER_COLUMNS = ("owner_ok", "owner_note", "owner_target")
 OPERATIONS = ("insert", "substitute", "omit", "renumber", "other")
+POSITIONS = ("in", "after", "before", "for")
+SCOPES = ("unit", "words")
+CHECK_STATUSES = ("ok", "fail", "no_edition")
+LOCATE_FIELDS = ("target_unit", "position", "new_units", "scope", "check_status", "check_note")
 COMMENCEMENT = ("item_deemed", "header_inherited", "s1_default", "notification", "unknown")
 QUOTE_LINE_CAP = 8
 LOOKAHEAD_MAX = 8
@@ -614,14 +618,201 @@ def parse_instrument(key: str, pages: list | None = None, meta: dict | None = No
             "bindings": bind_log, "item_log": item_log, "corr": corr}
 
 
-def _units(nodes: list) -> str:
+# ---------------------------------------------------------------- location (C3-fix B)
+# Positional phrases are location, not hierarchy: "in X" gives a container level; "after/before/for X" gives the anchor
+# and the position; "occurring ...", "below ...", "at the end", "at both the places ..." and "as so renumbered" only
+# describe where something sits and are dropped. Quoted words are replaced by Q before any unit is read.
+_ORD = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6}
+_LAB = r"(?:\(\s*[0-9A-Za-z]+\s*\))+(?:\s*(?:,|and)\s*\(\s*[0-9A-Za-z]+\s*\))*"
+_UNIT = (r"(?:(?P<ord>first|second|third|fourth|fifth|sixth)\s+)?(?P<unit>sub-sections?|sub-clauses?|clauses?|items?|"
+         r"provisos?|Explanation|Table|serial\s+number|columns?|opening\s+portion|long\s+line|marginal\s+heading|Note)"
+         r"(?:\s*(?P<lab>" + _LAB + r")|\s+(?P<num>\d{1,3}[A-Z]?)\b)?")
+PREP_UNIT_RE = re.compile(r"\b(?P<prep>in|after|before|for|against)\s+(?P<the>the\s+)?" + _UNIT)
+END_UNIT_RE = re.compile(r"(?:^|[,;—–]|\s)(?P<the>the\s+)?" + _UNIT + r"\s*,?\s*$")
+QUOTED_RE = re.compile(r"“[^”]*”|\"[^\"]*\"|‘[^’]*’|''.*?''|'[^']{1,400}'")
+LOCATOR_RES = [re.compile(p) for p in (
+    r"\boccurring\b[^,;—–]*", r"\bbelow\s+[^,;—–]*", r"\bat\s+the\s+end\b",
+    r"\bat\s+(?:both|all)\s+the\s+places\s+where\s+(?:it|they)\s+occurs?", r"\bwherever\s+(?:it|they)\s+occurs?",
+    r"\bas\s+so\s+(?:renumbered|re-numbered|omitted|relettered|re-lettered)\b", r"\bthereof\b",
+    r"\bwith\s+effect\s+from\s+the\s+\d{1,2}\s*(?:st|nd|rd|th)?\s+(?:day\s+of\s+)?" + _MON + r",?\s*\d{4}")]
+_WORDKIND = r"(?:words?|figures?|letters?|brackets?|signs?|symbols?|expressions?)"
+WORDS_RE = re.compile(r"(?:\b(?P<prep>for|after|before)\s+)?\bthe\s+" + _WORDKIND + r"(?:\s*,\s*|\s+and\s+|\s+)(?:"
+                      + _WORDKIND + r"(?:\s*,\s*|\s+and\s+|\s+))*Q")
+CUT_RE = re.compile(r"\bthe\s+following\b|\bnamely\b")
+LEAD_MARK_RE = re.compile(r"^\s*(?:\d{1,3}\s*\.\s*(?:\(\s*1\s*\)\s*)?)?(?:\(\s*[0-9A-Za-z]{1,5}\s*\)\s*)*")
+ITEM_POS_RE = re.compile(r"^\s*\d{1,3}\s*\.\s*(?:\(\s*1\s*\)\s*)?(After|Before|For)\s+(?:sections?|Chapter)\b")
+BOUNDARY = r"(?:^|[;:.—–]\s*|\b(?:and|or)\s+)[’'”\"‘“]?\s*"
+ROMAN_RE = re.compile(r"^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$")
+_ROMAN = [(1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"), (50, "L"), (40, "XL"), (10, "X"),
+          (9, "IX"), (5, "V"), (4, "IV"), (1, "I")]
+
+
+def _instr(text: str) -> str:
+    """Instruction words of one node: quotes -> Q, hyphens joined, cut before 'the following' / 'namely', locator
+    phrases dropped."""
+    s = QUOTED_RE.sub(" Q ", fold_ws(re.sub(r"\s*-\s*", "-", text)))
+    m = CUT_RE.search(s)
+    s = s[:m.start()] if m else s
+    for rx in LOCATOR_RES:
+        s = rx.sub(" ", s)
+    return fold_ws(s)
+
+
+def _unit_label(m) -> str:
+    unit = fold_ws(m.group("unit"))
+    if m.group("ord"):
+        unit += f"[{_ORD[m.group('ord')]}]"
+    elif unit == "proviso" and m.group("the") and not (m.group("lab") or m.group("num")):
+        unit += "[1]"                                    # "the proviso": the only proviso (owner decision 2)
+    if m.group("lab"):
+        unit += " " + re.sub(r"\s+", "", m.group("lab")).replace(",", " and ").replace("and(", " and (")
+    elif m.group("num"):
+        unit += " " + m.group("num")
+    return fold_ws(unit)
+
+
+def _to_roman(n: int) -> str:
+    out = ""
+    for v, r in _ROMAN:
+        while n >= v:
+            out, n = out + r, n - v
+    return out
+
+
+def _from_roman(s: str):
+    u = s.upper()
+    if not u or not ROMAN_RE.match(u) or s not in (u, u.lower()):
+        return None
+    vals = {"M": 1000, "D": 500, "C": 100, "L": 50, "X": 10, "V": 5, "I": 1}
+    total = sum(-vals[a] if vals[a] < vals[b] else vals[a] for a, b in zip(u, u[1:])) + vals[u[-1]]
+    return total if _to_roman(total) == u else None
+
+
+def successors(label: str) -> list:
+    """Labels that may follow `label` as the next sibling: last letter + 1, roman + 1, number + 1."""
     out = []
-    for nd in nodes:
-        for m in UNIT_RE.finditer(re.sub(r"\s*-\s*", "-", nd.own_text()).split("shall be")[0]):
-            u = fold_ws(m.group(1)) + (" " + re.sub(r"\s+", "", m.group(2)) if m.group(2) else "")
-            if not out or out[-1] != u:
-                out.append(u)
-    return " > ".join(out)[:120]
+    if label.isdigit():
+        out.append(str(int(label) + 1))
+    if label[-1].isalpha() and label[-1] not in "zZ":
+        out.append(label[:-1] + chr(ord(label[-1]) + 1))
+    r = _from_roman(label)
+    if r:
+        nxt = _to_roman(r + 1)
+        out.append(nxt if label.isupper() else nxt.lower())
+    return list(dict.fromkeys(out))
+
+
+def block_new_units(block: str) -> list:
+    """Units the inserted text creates at the insertion level, in order (owner decision 2: the leading labels): its
+    leading label and each next sibling label found at a clause break. Text that starts with 'Provided' gives one
+    'proviso' per 'Provided' at a break; text that starts with an Explanation gives one 'Explanation[ N]' per
+    Explanation heading at a break. A proviso or Explanation after a leading label is not listed: the flat text does
+    not show whether it sits inside that unit or beside it (owner_target decides)."""
+    b = fold_ws(block)
+    out = []
+    m = re.match(r"^[’'”\"‘“]?\s*(?:\(\s*([0-9A-Za-z]{1,6})\s*\)|(Provided)\b|(Explanation)\s*(\d*)\s*\.?\s*[—–-])", b)
+    if not m:
+        return out
+    if m.group(1):
+        cur, pos = m.group(1), m.end()
+        out.append(f"({cur})")
+        while True:
+            pats = [re.compile(BOUNDARY + r"\(\s*" + re.escape(c) + r"\s*\)") for c in successors(cur)]
+            hits = [h for h in (p.search(b, pos) for p in pats) if h]
+            if not hits:
+                break
+            h = min(hits, key=lambda x: x.start())
+            cur, pos = re.search(r"\(\s*([0-9A-Za-z]+)\s*\)", h.group(0)).group(1), h.end()
+            out.append(f"({cur})")
+    elif m.group(2):
+        out += ["proviso" for _ in re.finditer(BOUNDARY + r"Provided\b", b)]
+    else:
+        out += [fold_ws("Explanation " + e.group(1))
+                for e in re.finditer(BOUNDARY + r"Explanation\s*(\d*)\s*\.?\s*[—–-]", b)]
+    return out
+
+
+def _verb_segments(own: str) -> dict:
+    """{operation: the instruction words that belong to that verb} (text after the previous verb up to this one)."""
+    out, start = {}, 0
+    for m in VERB_RE.finditer(own):
+        out.setdefault(VERB_MAP[m.group(1)], own[start:m.start()])
+        start = m.end()
+    return out
+
+
+def locate(head_texts: list, own: str, op: str, block: str, item_level: bool, inner: list) -> dict:
+    """target_unit / position / new_units / scope (+ check_status=fail, check_note=unparsed:<why> when the rules can't
+    classify). head_texts: ancestors' own text, root first. inner: section headings inside the inserted text."""
+    res = dict.fromkeys(LOCATE_FIELDS, "")
+
+    def fail(why):
+        return dict(dict.fromkeys(LOCATE_FIELDS, ""), check_status="fail", check_note=f"unparsed:{why}")
+    if op not in OPERATIONS[:4]:
+        return fail("no_single_operation")
+    seg = _verb_segments(own).get(op)
+    if seg is None:
+        return fail("no_verb_segment")
+    levels = []
+    for h in head_texts:
+        for m in PREP_UNIT_RE.finditer(_instr(LEAD_MARK_RE.sub("", h, count=1))):
+            if m.group("prep") not in ("in", "against"):
+                return fail("positional_phrase_in_header")
+            levels.append(_unit_label(m))
+    m_item = ITEM_POS_RE.match(own)
+    if item_level and m_item and not head_texts:
+        res.update(target_unit="", position=m_item.group(1).lower(), scope="unit")
+        if op == "insert":
+            if not inner:
+                return fail("no_inserted_heading")
+            res["new_units"] = ";".join(inner)
+        return res
+    s = _instr(LEAD_MARK_RE.sub("", seg, count=1))
+    anchor, position = None, None
+    for m in PREP_UNIT_RE.finditer(s):
+        p = m.group("prep")
+        if p in ("in", "against"):
+            if anchor is None:
+                levels.append(_unit_label(m))
+        elif anchor is None:
+            anchor, position = _unit_label(m), p
+    words = list(WORDS_RE.finditer(s))
+    has_block = bool(block.strip())
+    if words:
+        if anchor is not None or has_block:
+            return fail("words_and_unit_object")
+        pos = next((w.group("prep") for w in words if w.group("prep")), None) or "in"
+        res.update(target_unit=" > ".join(levels), position=pos, scope="words")
+        return res
+    if anchor is None and op in ("omit", "renumber"):
+        m = END_UNIT_RE.search(s)
+        spans = [(p.start(), p.end()) for p in PREP_UNIT_RE.finditer(s)]
+        if m and not any(a <= m.start("unit") < b for a, b in spans):
+            anchor, position = _unit_label(m), "in"
+    if anchor is None:
+        if op == "insert" and has_block and levels:
+            position = "in"
+        else:
+            return fail("no_anchor")
+    res.update(target_unit=" > ".join(levels + ([anchor] if anchor else [])), position=position, scope="unit")
+    if op == "insert":
+        new = block_new_units(block)
+        if not new:
+            return fail("no_new_units")
+        res["new_units"] = ";".join(new)
+    return res
+
+
+def _inner_headings(root: "Node") -> list:
+    """Every section number whose heading starts a line inside the item's inserted blocks (spine or not)."""
+    found = []
+    for nd in [root] + [x for c in root.children for x in _walk(c)]:
+        for b in nd.blocks:
+            for x in b:
+                m = INNER_HEADING_RE.match(x.text)
+                if m and m.group(1) not in found:
+                    found.append(m.group(1))
+    return found
 
 
 def _inner_targets(root: Node, act: str) -> list:
@@ -705,17 +896,22 @@ def _rows_for_item(key, akey, n, root, tgt, s1, assent, corr) -> list:
         if src == "header_inherited":
             prefix = " ".join(a.own_text() for a in head_nodes if a.lines) + " "
         quote = fold_ws(prefix + " ".join(x.text for x in quote_lines))
+        heads = [a.own_text() for a in head_nodes if a.lines]
+        item_level = leaf is root
+        inner = _inner_headings(root)
+        loc_by_op = {o: locate(heads, own, o, leaf.block_text(), item_level, inner) for o in _verb_segments(own)}
+        loc = locate(heads, own, op, leaf.block_text(), item_level, inner)
         for sec in targets:
             path = "".join(f"({p})" for p in leaf.path())
             eid = f"{key}:s{n}{path}" + (f"/{sec}" if len(targets) > 1 else "")
             row = {"effect_id": eid, "act_key": akey, "instrument_provision": f"s.{n}{path}",
-                   "target_act": act, "target_section": sec, "target_unit": _units(head_nodes + [leaf]),
-                   "operation": op, "commencement_source": src, "wef": wef or "", "deemed_from": deemed_from,
+                   "target_act": act, "target_section": sec, **loc, "operation": op, "commencement_source": src,
+                   "wef": wef or "", "deemed_from": deemed_from,
                    "assent_date": assent or "", "applicability_note_present": "yes" if applic else "no",
                    "corrigendum_flag": "yes" if corr_hits else "no",
                    "pdf_page": str(leaf.lines[0].page if leaf.lines else (span[0].page if span else "")),
-                   "quote_sha256": quote_sha256(quote), "owner_ok": "", "owner_note": ""}
-            rv = {"effect_id": eid, "quote": quote, "flags": flags, "header_at": header_at,
+                   "quote_sha256": quote_sha256(quote), "owner_ok": "", "owner_note": "", "owner_target": ""}
+            rv = {"effect_id": eid, "quote": quote, "flags": flags, "header_at": header_at, "loc_by_op": loc_by_op,
                   "lines": [(x.page, x.line) for x in leaf.lines], "printed_page": leaf.lines[0].printed
                   if leaf.lines else None, "corrigenda": corr_hits,
                   "inserted_block_lines": sum(len(b) for b in leaf.blocks),
@@ -858,7 +1054,9 @@ def apply_owner_splits(result: dict, splits: dict | None = None) -> None:
         for op in sp["operations"]:
             eid = f"{row['effect_id']}/{op}"
             wef = sp["wef"]
-            rows.append(dict(row, effect_id=eid, operation=op, commencement_source="item_deemed", wef=wef,
+            loc = rv.get("loc_by_op", {}).get(op) or dict(dict.fromkeys(LOCATE_FIELDS, ""), check_status="fail",
+                                                          check_note="unparsed:no_verb_segment")
+            rows.append(dict(row, **loc, effect_id=eid, operation=op, commencement_source="item_deemed", wef=wef,
                              deemed_from=wef if row["assent_date"] and wef < row["assent_date"] else "",
                              owner_note=sp["owner_note"]))
             review.append(dict(rv, effect_id=eid, flags=[f for f in rv["flags"] if f != "multi_verb"]
