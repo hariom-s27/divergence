@@ -173,6 +173,9 @@ Extractor v11 changes (owner decisions Q4 (1a), (2), (3), covered() Q1 (a)):
       repeated earlier in the body cannot capture part of the window; match_score() is unchanged.
   Remaining disagreements get a deterministic cause label (AMENDMENT-APPARATUS.md, report only).
 
+Extractor v11.1 (P09 Part C0, row 71; data only): alias rows for Finance Act 2023 / Finance Act 2024 / Finance (No. 2)
+  Act 2024 = Act No. 8 of 2023 / 8 of 2024 / 15 of 2024, read by code from the Gazette title pages. No rule change.
+
 Mechanical fixes made during the Part B pilot and accepted by the owner as part of v1:
   M1  'N.(1)' with no space after the dot is a valid start.
   M2  the footer date pattern accepts 'm/d/yy, h:mm PM' as well as 'dd/mm/yyyy, h:mm am'.
@@ -199,7 +202,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-EXTRACTOR_VERSION = "v11"
+EXTRACTOR_VERSION = "v11.1"
 FOLD_VERSION = "v2"
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -321,6 +324,9 @@ FN_KIND_RE = re.compile(r"^\s*\d+[a-z]?(?:-\d+)?\.\s*(?i:(Ins(?:erted)?|Subs?(?:
 FN_ACT_RE = re.compile(r"Act\.?\s*No\.\s*\d+\s+of\s+\d{4}|(?:[A-Z(\d][\w().]*\s+){0,4}?Act,\s*\d{4}")
 ACT_ALIASES = {                       # v11 Q4 (1a): owner-verified rows only (official file title page)
     "Finance Act, 2022": "Act No. 6 of 2022",     # manual/fa_2022.pdf
+    "Finance Act, 2023": "Act No. 8 of 2023",     # v11.1: manual/244830.pdf (Gazette)
+    "Finance Act, 2024": "Act No. 8 of 2024",     # v11.1: manual/252143.pdf (Gazette)
+    "Finance (No. 2) Act, 2024": "Act No. 15 of 2024",   # v11.1: manual/256436.pdf (Gazette)
     "Finance Act, 2025": "Act No. 7 of 2025",     # _raw/2026-11-13/fa_2025.pdf
     "Finance Act, 2026": "Act No. 4 of 2026",     # manual/fa_2026.pdf
 }

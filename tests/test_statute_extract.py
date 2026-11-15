@@ -1511,9 +1511,20 @@ def test_normalise_act_spacing_zeros_and_the():
 
 
 def test_alias_table_rows_and_mapping(monkeypatch):
-    assert len(se.ACT_ALIASES) == 3 and "Finance Act, 2023" not in se.ACT_ALIASES
+    assert len(se.ACT_ALIASES) == 6                                  # v11.1: + FA 2023, FA 2024, F(No.2)A 2024
     monkeypatch.setitem(se.ACT_ALIASES, "Zeta Act, 2099", "Act No. 9 of 2099")
     assert se.normalise_act("the Zeta Act, 2099") == "Act No. 9 of 2099"
+
+
+def test_alias_number_year_collision(monkeypatch):
+    """Row 71: the alias key is (number, year), never the number alone."""
+    monkeypatch.setitem(se.ACT_ALIASES, "Zeta Act, 2098", "Act No. 8 of 2098")
+    monkeypatch.setitem(se.ACT_ALIASES, "Zeta Act, 2099", "Act No. 8 of 2099")
+    assert se.normalise_act("Zeta Act, 2098") != se.normalise_act("Zeta Act, 2099")
+    assert se.normalise_act("Act No. 08 of 2098") == se.normalise_act("the Zeta Act, 2098")
+    assert se.normalise_act("Finance Act, 2023") == "Act No. 8 of 2023"
+    assert se.normalise_act("Finance Act, 2024") == "Act No. 8 of 2024"
+    assert se.normalise_act("Finance (No. 2) Act, 2024") == "Act No. 15 of 2024"
 
 
 def test_footnote_act_with_dotted_act_no():
