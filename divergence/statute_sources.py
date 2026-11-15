@@ -85,8 +85,8 @@ HEADER_DATE_RE = re.compile(r"NEW DELHI,\s+[A-Z]+DAY,\s+" + _MON + r"\s+(\d{1,2}
 GAZETTE_ID_RE = re.compile(r"CG-DL-E-\d{8}-\d{6}")
 SHORT_TITLE_RE = re.compile(r"(?:Act|Ordinance) may be called the (.+?(?:Act|Ordinance),\s*\d{4})", re.I)
 PROMULGATE_RE = re.compile(r"President is pleased to promulgate", re.I)
-CORR_TARGET_RE = re.compile(r"(?:In the|The)\s+([^()\n]{3,120}?(?:Act|Ordinance),\s*\d{4})\s*\((\d+)\s+of\s+(\d{4})\)",
-                            re.I)
+CORR_TARGET_RE = re.compile(r"(?:In the|The)\s+([^\n]{3,160}?(?:Act|Ordinance),\s*\d{4})\s*\((\d+)\s+of\s+(\d{4})\)",
+                            re.I)    # C1 Q6: a title may contain parentheses ('X (Amendment of Provisions) Act, YYYY')
 NOTIF_NO_RE = re.compile(r"Notification No\.\s*(\d+)\s*/\s*(\d{4})", re.I)
 CORR_ROW_RE = re.compile(r"^\s*(\d{1,4})\s+(\d{1,3}(?:\s*[-–]\s*\d{1,3})?)\s+[“\"](.*)$")
 CORR_PROSE_RE = re.compile(r"page\s+(\d{1,4}),\s*(?:in\s+)?lines?\s+(\d{1,3}(?:\s*(?:-|–|and|to)\s*\d{1,3})?),?"

@@ -98,6 +98,16 @@ def test_title_facts_corrigendum_targets():
     assert f["gazette_date"] == "2099-03-03"
 
 
+def test_corrigendum_target_title_with_parentheses():
+    text = ("CORRIGENDA\nIn the Zeta (Amendment of Rules) Act, 2099 (9 of 2099), published,—\n"
+            "(i) in page 4, line 2, for “alfa”, read “alpha”;\n")
+    f = ss.title_facts([text])
+    assert f["corrigendum_targets"] == ["Zeta (Amendment of Rules) Act, 2099 (9 of 2099)"]
+    items = ss.corrigendum_items([text])
+    assert [(i["target"], i["gazette_page"], i["for"], i["read"]) for i in items] == [
+        ("Zeta (Amendment of Rules) Act, 2099 (9 of 2099)", "4", "alfa", "alpha")]
+
+
 def test_text_layer_threshold():
     assert ss.text_layer(["a", "b", " ", "c"]) == (3, 4, 75.0)
     assert ss.text_layer([]) == (0, 0, 0.0)
