@@ -693,10 +693,17 @@ def gazette_bounds(gi: dict, view, number: str) -> dict:
             "heading": r.get("heading")}
 
 
-def gazette_class(h: dict, corr: list) -> tuple:
-    """(class, detail) of a Gazette (old) vs ITD edition (new) hunk. corr: [(item number, item)]."""
+def gazette_class(h: dict, corr: list, number: str = "", last: int = -1) -> tuple:
+    """(class, detail) of a Gazette (old) vs ITD edition (new) hunk. corr: [(item number, item)]. number: the
+    section number (a leading 'N.' only in the edition is a boundary artefact); last: the Gazette span's word count
+    (a trailing deleted CHAPTER heading is a boundary artefact)."""
     if marks_only(h) or _alnum(h["old"]) == _alnum(h["new"]):
         return "format", ""
+    lead = re.compile(r"^\s*" + re.escape(number) + r"\s*\.\s*") if number else None
+    if lead and h["at"] == 0 and lead.match(h["new"]) and _alnum(lead.sub("", h["new"])) == _alnum(h["old"]):
+        return "boundary", "section number"
+    if not h["new"] and h["old"].startswith("CHAPTER ") and h["at"] + len(h["old"].split()) == last:
+        return "boundary", "next CHAPTER heading"
     if h["new"] != h["old"] and _alnum(h["old"]) == _alnum(ACT_NO_INLINE_RE.sub("", h["new"])):
         return "itd_addition", "Act number added"
     if _alnum(TABLE_FURNITURE_RE.sub("", h["old"])) == _alnum(TABLE_FURNITURE_RE.sub("", h["new"])):
@@ -730,8 +737,11 @@ def gazette_check(raw: Path) -> dict:
         w = se.fold_for_diff(b["body"]).split()
         hd = se.fold_for_diff(b["heading"] or "").split()
         ed = " ".join(w[len(hd):] if hd and w[:len(hd)] == hd else w)
-        hs = word_hunks(se.fold_for_diff(text), ed)
-        sections[sec] = {"pages": (pages[0], pages[-1]), "hunks": [(h, *gazette_class(h, inside)) for h in hs],
+        gtext = se.fold_for_diff(text)
+        hs = word_hunks(gtext, ed)
+        n_g = len(gtext.split())
+        sections[sec] = {"pages": (pages[0], pages[-1]),
+                         "hunks": [(h, *gazette_class(h, inside, sec, n_g)) for h in hs],
                          "corr": inside}
     missing = [s for s, b in bounds.items() if b["start"] is None or b["end"] is None]
     items = []
@@ -872,6 +882,7 @@ def main(argv=None) -> int:
     ap_.add_argument("--propose", action="store_true", help="diffs, cross-check, versions; write VERSION-DATES.csv")
     ap_.add_argument("--counts", action="store_true", help="print the per-section count table of the last proposal")
     ap_.add_argument("--dry-run", action="store_true", help="compute and print; write the local sheets only")
+    ap_.add_argument("--effects", metavar="CSV", help="ledger file to use (default: the canonical AMENDMENT-EFFECTS.csv)")
     ap_.add_argument("--gazette-check", action="store_true", help="C3: Act 30 of 2025 Gazette vs ita2025_2025 + D3 map")
     a = ap_.parse_args(argv)
     if a.gazette_check:
@@ -894,7 +905,8 @@ def main(argv=None) -> int:
         print(f"{runs[-1]}\n" + runs[-1].read_text(encoding="utf-8"), end="")
         return 0
     out_dir = ap.PARTC_DIR / f"C2-{ap.stamp()}"
-    effects = ap.run_ledger()[1] if a.dry_run else None          # dry run: the ledger computed in memory
+    effects = ap.run_ledger()[1] if a.dry_run else (ledger(Path(a.effects)) if a.effects else None)
+    print(f"ledger: {'in memory (dry run)' if a.dry_run else (a.effects or ap.EFFECTS_PATH)}")
     res = build(se.latest_raw_dir(), out_dir, effects)
     print(BUILD_VERSION)
     print("knowledge dates:")

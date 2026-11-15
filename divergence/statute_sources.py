@@ -53,6 +53,7 @@ INSTRUMENTS = {
                      "https://egazette.gov.in/WriteReadData/2026/269669.pdf"),
     "corr_fa2026": (MANUAL_REL, "271980.pdf", "corrigendum", "gazette_corrigendum",
                     "https://egazette.gov.in/WriteReadData/2026/271980.pdf"),
+    "ita2025_gz": (MANUAL_REL, "265620.pdf", "act", "gazette", None),      # C3 D5: owner's Gazette copy, Act 30 of 2025
     "fa_2025": (Path("2026-11-13"), "fa_2025.pdf", "act", "itd_reproduction", None),
     "tola_2026": (Path("2026-11-13"), "tola_2026.pdf", "act", "itd_reproduction", None),
     "ord_2_2026": (Path("2026-11-13"), "ord_2_2026.pdf", "ordinance", "itd_reproduction", None),
@@ -62,7 +63,7 @@ INSTRUMENTS = {
 }
 # MANUAL-SOURCES.txt: keys whose line is written in Part C, and the owner's tag (approved fix 4)
 MANUAL_LINE_KEYS = ["fa_2023", "fa_2024", "fa2_2024", "corr_fa2022", "corr_fa2023", "corr_ita2025", "corr_fa2026",
-                    "fa_2025_gz", "tola_2026_gz"]
+                    "fa_2025_gz", "tola_2026_gz", "ita2025_gz"]
 OWNER_DOWNLOADED_TAG = {"fa_2025_gz": "downloaded by owner from this URL, 2026-11-15",
                         "tola_2026_gz": "downloaded by owner from this URL, 2026-11-15"}
 # Fields written into SOURCES.json from --instruments and compared by --check-sources

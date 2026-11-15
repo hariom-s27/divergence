@@ -67,6 +67,12 @@ LOOKAHEAD_MAX = 8
 EFFECTS_PATH = se.STATUTES_DIR / "AMENDMENT-EFFECTS.csv"
 QUOTES_PATH = se.LOCAL_DIR / "quotes" / "EFFECT-QUOTES.csv"
 PARTC_DIR = se.CENSUS_DIR / "partC"
+REGEN_DIR = PARTC_DIR / "regen"                 # stamped regenerations (git-ignored); canonical files are never rewritten
+# Owner readings stored as data (dated). E3: one leaf with two coupled operations -> two effects.
+OWNER_SPLITS = {
+    "fa_2026:s84(c)": {"date": "2026-11-15", "wef": "2027-04-01", "operations": ["renumber", "insert"],
+                       "owner_note": "owner reading: coupled operations; ITD footnote agrees (secondary)"},
+}
 
 # ---------------------------------------------------------------- layout patterns
 DEVANAGARI = re.compile(r"[\u0900-\u097F]")
@@ -738,8 +744,10 @@ def read_csv(path: Path) -> list:
         return list(csv.DictReader(f))
 
 
-def merge_preview(old: list, new: list, key: str, columns: list, owner: tuple = OWNER_COLUMNS) -> tuple:
-    """(merged rows with the owner columns carried from old by key, preview lines)."""
+def merge_preview(old: list, new: list, key: str, columns: list, owner: tuple = OWNER_COLUMNS,
+                  carry=None) -> tuple:
+    """(merged rows with the owner columns carried from old by key, preview lines). carry(row, column) -> bool decides
+    whether an old owner value is a real owner value (default: any non-empty value); values not carried are named."""
     o = {r[key]: r for r in old}
     merged, lines = [], []
     added = changed = same = 0
@@ -751,7 +759,11 @@ def merge_preview(old: list, new: list, key: str, columns: list, owner: tuple = 
             lines.append(f"  + {r[key]}")
         else:
             for c in owner:
-                r[c] = prev.get(c, "")
+                v = prev.get(c, "")
+                if v and carry is not None and not carry(prev, c):
+                    lines.append(f"  ! {r[key]}: {c} {v!r} is not an owner value; not carried")
+                    v = ""
+                r[c] = v
             diff = [c for c in columns if c not in owner and prev.get(c, "") != r.get(c, "")]
             if diff:
                 changed += 1
@@ -760,24 +772,31 @@ def merge_preview(old: list, new: list, key: str, columns: list, owner: tuple = 
                 same += 1
         merged.append(r)
     gone = [k for k in o if k not in {r[key] for r in new}]
-    lines += [f"  - {k} (owner columns: " + ", ".join(f"{c}={o[k].get(c, '')!r}" for c in owner) + ")" for k in gone]
+    for k in gone:
+        vals = {c: o[k].get(c, "") for c in owner if o[k].get(c, "") and (carry is None or carry(o[k], c))}
+        lines.append(f"  - {k}" + (f" OWNER VALUES WOULD BE LOST: {vals}" if vals else " (no owner values)"))
     head = f"MERGE PREVIEW: unchanged {same}, changed {changed}, added {added}, removed {len(gone)}"
     return merged, [head] + lines
 
 
-def write_never_overwrite(path: Path, rows: list, columns: list, key: str) -> tuple:
-    """Write path if absent; else write path.<stamp>.csv with owner columns carried, and return the preview."""
+def write_never_overwrite(path: Path, rows: list, columns: list, key: str, owner: tuple = OWNER_COLUMNS,
+                          carry=None, regen_dir: Path | None = None) -> tuple:
+    """Write the canonical file if absent. Otherwise never touch it: write regen/<name>.<stamp>.csv (git-ignored) with
+    the owner columns carried, and return the merge preview. Merging into the canonical file is a separate step
+    (statute_tables --merge) after the owner's yes."""
     path.parent.mkdir(parents=True, exist_ok=True)
     if not path.exists():
         with open(path, "x", encoding="utf-8", newline="") as f:
             f.write(csv_text(rows, columns))
         return path, [f"wrote new file {path.name} ({len(rows)} rows)"]
-    owner = tuple(c for c in OWNER_COLUMNS if c in columns)
-    merged, preview = merge_preview(read_csv(path), rows, key, columns, owner)
-    alt = path.with_name(f"{path.stem}.{stamp()}{path.suffix}")
+    owner = tuple(c for c in owner if c in columns)
+    merged, preview = merge_preview(read_csv(path), rows, key, columns, owner, carry)
+    regen = regen_dir or REGEN_DIR
+    regen.mkdir(parents=True, exist_ok=True)
+    alt = regen / f"{path.stem}.{stamp()}{path.suffix}"
     with open(alt, "x", encoding="utf-8", newline="") as f:
         f.write(csv_text(merged, columns))
-    return alt, [f"{path.name} exists: not overwritten; wrote {alt.name}"] + preview
+    return alt, [f"{path.name} exists: not overwritten; wrote {alt}"] + preview
 
 
 def _md(s) -> str:
@@ -825,8 +844,32 @@ def review_md(results: list) -> str:
     return "\n".join(md) + "\n"
 
 
+def apply_owner_splits(result: dict, splits: dict | None = None) -> None:
+    """Replace a row named in OWNER_SPLITS by one row per operation (effect_id + '/' + operation), with the owner's
+    w.e.f. (commencement_source item_deemed: the date printed in the item) and owner_note. In place."""
+    splits = OWNER_SPLITS if splits is None else splits
+    rows, review = [], []
+    for row, rv in zip(result["rows"], result["review"]):
+        sp = splits.get(row["effect_id"])
+        if not sp:
+            rows.append(row)
+            review.append(rv)
+            continue
+        for op in sp["operations"]:
+            eid = f"{row['effect_id']}/{op}"
+            wef = sp["wef"]
+            rows.append(dict(row, effect_id=eid, operation=op, commencement_source="item_deemed", wef=wef,
+                             deemed_from=wef if row["assent_date"] and wef < row["assent_date"] else "",
+                             owner_note=sp["owner_note"]))
+            review.append(dict(rv, effect_id=eid, flags=[f for f in rv["flags"] if f != "multi_verb"]
+                               + [f"owner_split {sp['date']}"]))
+    result["rows"], result["review"] = rows, review
+
+
 def run_ledger(keys: list = INSTRUMENT_KEYS) -> tuple:
     results = [parse_instrument(k) for k in keys]
+    for r in results:
+        apply_owner_splits(r)
     rows = [row for r in results for row in r["rows"]]
     ids = [r["effect_id"] for r in rows]
     dup = sorted({i for i in ids if ids.count(i) > 1})
