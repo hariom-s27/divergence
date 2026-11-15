@@ -58,3 +58,38 @@ Phase checks (key unset)
 
 Safety: no network, no model/API calls, no commit/push, no keys, no deletes; canonical CSVs and frozen items
 unchanged (git diff vs HEAD / 3fbc388 empty for them).
+
+## Part B2 (2026-11-16): per-row check rules, check code only
+
+PLAIN SUMMARY
+- WHAT HAPPENED: Tightened the edition check. A "label" now has to start a unit (not "... and (3) of"), an
+  omission marker "[***]" counts as absent, an insert passes when the label count rises, and editions whose source
+  does not print letter-suffixed labels are skipped (owner data LABEL_GAP).
+- WHAT IT MEANS: 9 rows move fail -> ok; 3 rows (s.56) still fail and await the owner eye check. Body text,
+  extractor and versions are unchanged (guard: sha-equal).
+- PROBLEMS: none new. The ita1961_2023 s.2 label gap is a source defect (owner eye check, p.4, p.16); version
+  act:1961:2:v1 uses that edition's text.
+- DECISION NEEDED: owner eye check of s.56 (ita1961_2023 (XII)/(XIII); ita1961_2024n2 (viib)/(xii)).
+
+Changes (REPO, uncommitted): divergence/statute_build.py (`_bound`, `_count`, `_pick`, `check_effect`,
+`_check_labels`, OMITTED_MARK_RE, LABEL_GAP); tests/test_effect_check.py (+5 tests).
+- LABEL_GAP: (ita1961_2023, 2) = owner eye check 2026-11-16 p.4, p.16; (ita1961_2024n1, 2) = INFERENCE
+  (identical s.2 body, 64,270 chars). A skipped edition adds "skipped:<edition>:source_label_gap" to check_note.
+
+Status changes (final regen B1 040252 -> B2 043254; n=50; deterministic)
+- fail -> ok, gap editions skipped (after edition = ita1961_2024n2): fa_2022:s3(a), fa_2022:s3(b), fa_2022:s3(c),
+  fa_2023:s3(a), fa_2023:s3(c).
+- fail -> ok, rule (a) container no longer cut at "and (3) of": fa_2023:s3(b).
+- fail -> ok, rule (b) "[***]" marker: fa2_2024:s3(a)(II) (also skips the gap editions as before-editions),
+  fa_2026:s35(b)(A) (with rule (a) for a reference "(e) and (f)").
+- fail -> ok, rule (c) count rose 1 -> 2: fa_2025_gz:s3(b)(ii).
+- Still fail (s.56; awaiting eye check): fa_2022:s16(b)(i), fa_2023:s32(a)(i), fa_2023:s32(b).
+- Note-only changes (same status): 11 rows (skipped notes or "count rose from" wording).
+- check_status now: ok 25 | fail 3 | no_edition 22 = no suitable edition 1 + no_label 7 + no_rule 14.
+
+Guard: PASS. Version code columns sha canonical = baseline = regen (b7b8fa369ef0...); body sha baseline = regen
+(aebe8deb174f...). Files: regen/AMENDMENT-EFFECTS.20261116-043254.csv; census/partC/C3fix-20261116-043418/.
+Phase checks (key unset): pytest 555 passed; flake8 strict 0; corpus_hash OK; gate0 CLEAR; statute_validate 0
+errors; statute_tables --check 84 rejections, all empty owner_ok; CI replay facts/missing/attacked equal.
+Probe tooling: PyMuPDF / pdfplumber / pdfminer were used only for diagnosis (all four extractors miss the labels on
+ita1961_2023); no extractor change.

@@ -100,6 +100,48 @@ def test_substitute_unit_has_no_rule_and_unparsed_kept():
     assert run(e, {}) == ("fail", "unparsed:no_anchor")
 
 
+# ---------------------------------------------------------------- B2 rules (a)-(d)
+
+def test_b2a_reference_with_and_does_not_end_container_or_count():
+    body = "(24) omega includes— (i) one, see sub-sections (2) and (3) of section 17 ; (xviic) a sum; (25) psi."
+    seg, where = sb.container_segment(body, ["clause (24)"])
+    assert where == "container (24)" and "(xviic)" in seg and "(25)" not in seg
+    assert sb._count("(a) see regulation 2(1)(e) and (f) of the Code; (g) rho.", "f") == 0
+    assert sb._count("(c) one; and (d) two.", "d") == 1                   # '; and (d)' is still a heading
+
+
+def test_b2b_omitted_marker_counts_as_absent():
+    e = eff(operation="omit", position="in", target_unit="clause (22) > item (iv)", new_units="")
+    after = "(22) gamma: (iii) three; (iv) [***] (v) five; (23) delta."
+    before = "(22) gamma: (iii) three; (iv) four; (v) five; (23) delta."
+    assert run(e, {"e1": before, "e2": after})[0] == "ok"
+
+
+def test_b2c_insert_passes_when_count_rises():
+    e = eff(target_unit="clause (22) > Explanation 3 > clause (b)", new_units="(c)")
+    before = "(22) x: (a) one; (b) two; (c) three. Explanation 3.—(a) p; (b) q. (23) y."
+    after = "(22) x: (a) one; (b) two; (c) three. Explanation 3.—(a) p; (b) q; (c) r. (23) y."
+    assert run(e, {"e1": before, "e2": after})[0] == "ok"
+    assert run(e, {"e1": before, "e2": before})[0] == "fail"
+
+
+def test_b2d_label_gap_edition_skipped_with_note(monkeypatch):
+    monkeypatch.setattr(sb, "LABEL_GAP", {("gap1", "7"): "test"})
+    three = eds(("e0", "2098-06-01", True, ()), ("gap1", "2099-05-01", True, ()), ("e2", "2099-06-01", True, ()))
+    st, note = run(eff(), {"e0": B_OLD, "gap1": B_OLD, "e2": B_NEW}, three)
+    assert st == "ok" and "e2" in note and note.endswith("skipped:gap1:source_label_gap")
+    only_gap = eds(("e0", "2098-06-01", True, ()), ("gap1", "2099-05-01", True, ()))
+    st, note = run(eff(), {"e0": B_OLD, "gap1": B_OLD}, only_gap)
+    assert st == "no_edition" and "skipped:gap1:source_label_gap" in note
+    before_gap = eds(("gap1", "2098-06-01", True, ()), ("e2", "2099-06-01", True, ()))
+    st, note = run(eff(), {"gap1": B_NEW, "e2": B_NEW}, before_gap)
+    assert st == "ok" and "skipped:gap1:source_label_gap" in note       # no usable before edition
+
+
+def test_b2d_label_gap_pairs_are_owner_data():
+    assert set(sb.LABEL_GAP) == {("ita1961_2023", "2"), ("ita1961_2024n1", "2")}
+
+
 def test_effect_checks_non_spine_section():
     e = eff(target_section="999Z")
     assert sb.effect_checks([e], {}, None)["zz:s3(c)"][0] == "no_edition"

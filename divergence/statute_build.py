@@ -527,11 +527,18 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
 
 # ---------------------------------------------------------------- per-row edition check (C3-fix B; owner rules 1-5)
 TOP_LABEL_RE = re.compile(r"\(\s*(\d+[A-Za-z]*)\s*\)")
+OMITTED_MARK_RE = re.compile(r"\s*\[\s*\*{2,}\s*\]")
+# Owner data: edition sections whose SOURCE does not print most letter-suffixed labels. The check skips them (B2 d).
+LABEL_GAP = {
+    ("ita1961_2023", "2"): "owner eye check 2026-11-16: p.4, p.16 do not print letter-suffixed labels (source defect)",
+    ("ita1961_2024n1", "2"): "INFERENCE: identical s.2 body (64,270 chars) to ita1961_2023 per probe 2026-11-16",
+}
 
 
 def _bound(label_re: str) -> re.Pattern:
-    """A label that starts a unit: at the start, after ; : . — ] or 'and'/'or', footnote marks allowed (rule 4)."""
-    return re.compile(r"(?:^|[;:.—–\]]\s*|\b(?:and|or)\s+)[’'”\"‘“]?\s*(?:\d{1,3}\s*)?\[?\s*" + label_re)
+    """A label that starts a unit: at the start or after ; : . — ] (optionally then 'and'/'or'); footnote marks
+    allowed (rule 4; B2 a: a free-standing 'and (3)' / '(e) and (f)' is a reference, not a heading)."""
+    return re.compile(r"(?:^|[;:.—–\]]\s*(?:(?:and|or)\s+)?)[’'”\"‘“]?\s*(?:\d{1,3}\s*)?\[?\s*" + label_re)
 
 
 def _paren(label: str) -> str:
@@ -559,7 +566,21 @@ def _count(seg: str, unit: str) -> int:
     if unit.startswith("Explanation"):
         n = unit[len("Explanation"):].strip()
         return len(_bound(r"Explanation\s*" + (re.escape(n) + r"\s*" if n else "") + r"\.?\s*[—–-]").findall(seg))
-    return len(_bound(_paren(unit)).findall(seg))
+    return sum(1 for m in _bound(_paren(unit)).finditer(seg)       # B2 b: '(iv) [***]' marks an omitted unit
+               if not OMITTED_MARK_RE.match(seg, m.end()))
+
+
+def _pick(eds: list, section: str, want, reverse: bool = False) -> tuple:
+    """(edition or None, skipped gap editions): the first edition satisfying want(), in order or reversed, passing
+    over editions listed in LABEL_GAP for this section (B2 d)."""
+    skipped = []
+    for d in (reversed(eds) if reverse else eds):
+        if want(d):
+            if (d["key"], section) in LABEL_GAP:
+                skipped.append(d["key"])
+                continue
+            return d, skipped
+    return None, skipped
 
 
 def check_effect(e: dict, eds: list, body_of) -> tuple:
@@ -584,8 +605,15 @@ def check_effect(e: dict, eds: list, body_of) -> tuple:
         if bef is not None and bef["found"]:
             return "fail", f"section {e['target_section']} already found in {bef['key']}"
         return "ok", f"section found in {aft['key']}" + (f", absent in {bef['key']}" if bef else "")
-    aft = next((d for d in known if d["found"] and d["knowledge"] >= asn and eid not in d["pending"]), None)
-    bef = next((d for d in reversed(known) if d["found"] and d["knowledge"] < asn), None)
+    sec = e["target_section"]
+    aft, sk_a = _pick(known, sec, lambda d: d["found"] and d["knowledge"] >= asn and eid not in d["pending"])
+    bef, sk_b = _pick(known, sec, lambda d: d["found"] and d["knowledge"] < asn, reverse=True)
+    skip = "".join(f"; skipped:{k}:source_label_gap" for k in sk_a + sk_b)
+    st, note = _check_labels(e, levels, aft, bef, body_of)
+    return st, note + skip
+
+
+def _check_labels(e: dict, levels: list, aft, bef, body_of) -> tuple:
     op, scope, pos = e["operation"], e["scope"], e["position"]
     if op == "insert" and scope == "unit" and e["new_units"]:
         container = levels[:-1] if pos in ("after", "before") else levels
@@ -601,13 +629,13 @@ def check_effect(e: dict, eds: list, body_of) -> tuple:
             nb = _count(sb_, u) if sb_ is not None else None
             if u.startswith("(") and nb is None and na < 1:
                 bad.append(f"{u} absent in {aft['key']}")
-            elif u.startswith("(") and nb is not None and not (na >= 1 and nb == 0):
+            elif u.startswith("(") and nb is not None and not na > nb:          # B2 c: the count must rise
                 bad.append(f"{u} {aft['key']}:{na} {bef['key']}:{nb}")
             elif not u.startswith("(") and (na < need if nb is None else na - nb < need):
                 bad.append(f"{u} count {aft['key']}:{na}" + (f" {bef['key']}:{nb}" if nb is not None else ""))
         if bad:
             return "fail", f"{where}: " + "; ".join(bad)
-        return "ok", f"{where}: new units in {aft['key']}" + (f", not in {bef['key']}" if bef else "")
+        return "ok", f"{where}: new units in {aft['key']}" + (f", count rose from {bef['key']}" if bef else "")
     if scope == "words" or (op == "omit" and scope == "unit"):
         lab = re.search(r"\(\s*([0-9A-Za-z]+)\s*\)", levels[-1]) if levels else None
         if lab is None:
