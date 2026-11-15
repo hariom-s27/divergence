@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import hashlib
 import json
 import re
 import sys
@@ -39,11 +40,50 @@ from divergence import statute_sources as ss
 BUILD_VERSION = "statute_build v1"
 REASON_CODES = ("unprinted_intermediate", "retro_knowledge", "repeal_day_unsettled", "applicability_unclear",
                 "corrigendum_open", "before_coverage")
-VERSION_COLUMNS = ["record_key", "in_force_from", "in_force_to", "state", "effect_ids", "reason_codes",
+VERSION_COLUMNS = ["record_key", "in_force_from", "in_force_to", "state", "effect_ids", "reason_codes", "code_note",
                    "applies_from_tax_year", "applies_to_tax_year", "basis_category", "basis", "owner_ok", "owner_note"]
+VERSION_OWNER = ("applies_from_tax_year", "applies_to_tax_year", "basis_category", "basis", "owner_ok", "owner_note")
+STATES = ("in_force", "repealed_saved", "never_operative", "prospective", "omitted", "")   # D78 status; "" = no text
+BASIS_CATEGORIES = ("charging_ay_rule", "procedural", "penalty_default_date", "transaction_date", "ita2025_tax_year",
+                    "unclear")
+
+
+def owner_value(row: dict, column: str) -> bool:
+    """Merge carry rule for VERSION-DATES: basis_category only from the owner's closed list; basis only with a valid
+    basis_category; other owner columns as written."""
+    if column == "basis_category":
+        return row.get(column, "") in BASIS_CATEGORIES
+    if column == "basis":
+        return row.get("basis_category", "") in BASIS_CATEGORIES
+    return True
+
+
 VERSIONS_PATH = se.STATUTES_DIR / "VERSION-DATES.csv"
 REPEAL_NOTE = "same-day repeal by s.536 of the 2025 Act; legal status unsettled"
-OWNER_CHOICES = {}          # (edition, section) -> chosen start page; s.56 ita1961_2023: pending owner choice (Q1)
+# (edition, section) -> owner's choice of start page for an UNRESOLVED section (data, not a rule)
+OWNER_CHOICES = {
+    ("ita1961_2023", "56"): {"page": 461, "date": "2026-11-15",
+                             "note": "owner eye check: p.461 is the full s.56; p.862 is a partial reprint (C2 D1 = A)"},
+}
+# Owner relabels of edition changes (C3 E2, 2026-11-15), keyed by (act, section, newer edition, hunk_key) - hash keys,
+# no law text. Applied after the rule label; the rule label is kept in the detail.
+_E2 = "owner 2026-11-15"
+OWNER_RELABELS = {
+    **{("1961", "158B", "ita1961_2024n2", k): ("effect", f"{_E2}: fa2_2024:s49 (Chapter XIV-B substituted)") for k in (
+        "bfb078fa6a1ceeb5", "8c5ea80fff3446a9", "3455acda137262aa", "4bdb3050f6bedf67", "189f27bc58cdc09e",
+        "eb461e132bb43742", "5ef4ba4364eda50f", "ad26bf6ef6f1256c", "77feacb88c77c55d", "4b3aff305dd82e84",
+        "7f67ba59530e9afe", "f9375b27ae1c3134", "8c5e708d09e10a44", "3e6e6f21ba1bfbd2")},
+    ("1961", "158B", "ita1961_2025", "c8b6d8f8b998691b"): ("publisher_change", f"{_E2}: spelling"),
+    ("2025", "393", "ita2025_2026", "d39d354bce4ede77"): ("publisher_change", f"{_E2}: 2026 edition restores Gazette text"),
+    ("2025", "393", "ita2025_2026", "b92a3652bf44c2b6"): ("publisher_change", f"{_E2}: 2026 edition restores Gazette text"),
+    ("2025", "393", "ita2025_2026", "de849e4b2ad22c44"): ("layout", f"{_E2}: table header moved"),
+    ("2025", "393", "ita2025_2026", "880d9faaf9a7abfc"): ("layout", f"{_E2}: table furniture moved"),
+    ("2025", "393", "ita2025_2026", "b5c496581f486773"): ("corrigendum", f"{_E2}: corr_ita2025 item 34 (+ glued word)"),
+    ("2025", "393", "ita2025_2026", "73016e7da4b200de"): ("corrigendum", f"{_E2}: corr_ita2025 item 33"),
+    ("2025", "393", "ita2025_2026", "0106d8a7d004771f"): ("effect", f"{_E2}: fa_2026:s84(d) (sub-section (7) substituted)"),
+}
+OWNER_EYE_CHECK = {("1961", "56", "ita1961_2024n2", "50ff389378ea6be5"), ("2025", "393", "ita2025_2026", "9c43db25fc8bf60c"),
+                   ("2025", "393", "ita2025_2026", "b3c5a81ebbbec24c")}
 PENDING_RE = re.compile(r"(?i)shall\s+be\s+(ins(?:erted|\.)|sub(?:stituted|s?\.)|om(?:itted|tt?\.|it\.)|"
                         r"re-?numbered|renum(?:bered|\.))")
 FN_DATE_RE = re.compile(r"w\.(?:r\.)?e\.f\.\s*(\d{1,2})\s*-\s*(\d{1,2})\s*-\s*(\d{4})")
@@ -53,7 +93,9 @@ ALNUM_RE = re.compile(r"[^a-z0-9]")
 GLUED_DIGITS_RE = re.compile(r"(?<=[A-Za-z]{2})\d{1,3}\b")
 LABEL_RE = re.compile(r"^\[?\(?(?:\d{1,3}[A-Z]{0,4}|[a-z]{1,6}|[A-Z]{1,4})\)\]?$")
 RECALL_YEARS = range(2022, 2027)
-UNEXPLAINED = ("publisher_change", "amendment_not_in_ledger", "older_act_span", "span_unlinked")
+CTX_WORDS = 3
+UNEXPLAINED = ("publisher_change", "amendment_not_in_ledger", "older_act_span", "span_unlinked",
+               "owner_eye_check_pending")
 
 
 # ---------------------------------------------------------------- knowledge dates
@@ -129,14 +171,36 @@ def pending_rule(fn_text: str | None, knowledge: str | None) -> tuple:
 
 # ---------------------------------------------------------------- diffs
 
-def word_hunks(old: str, new: str) -> list:
-    """Word hunks between two folded bodies: (op, old_words, new_words, old_index)."""
+def word_hunks(old: str, new: str, ctx: int = CTX_WORDS) -> list:
+    """Word hunks between two folded bodies: op, old/new words, old index, ctx words before/after on each side
+    (ob/oa, nb/na) and 'key' = sha256 of op|old|new|ob|oa (16 hex; stores owner relabels without any law text)."""
     a, b = old.split(), new.split()
     out = []
     for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
         if op != "equal":
-            out.append({"op": op, "old": " ".join(a[i1:i2]), "new": " ".join(b[j1:j2]), "at": i1})
+            h = {"op": op, "old": " ".join(a[i1:i2]), "new": " ".join(b[j1:j2]), "at": i1,
+                 "ob": " ".join(a[max(0, i1 - ctx):i1]), "oa": " ".join(a[i2:i2 + ctx]),
+                 "nb": " ".join(b[max(0, j1 - ctx):j1]), "na": " ".join(b[j2:j2 + ctx])}
+            h["key"] = hunk_key(h)
+            out.append(h)
     return out
+
+
+def hunk_key(h: dict) -> str:
+    raw = "|".join((h["op"], h["old"], h["new"], h.get("ob", ""), h.get("oa", "")))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
+
+
+def corr_explains(c: dict, h: dict) -> bool:
+    """A corrigendum item explains a hunk when, on the hunk with its context words (glued words folded: letters and
+    digits only), the 'for' words occur on the old side and the 'read' words on the new side, and the change is real:
+    'read' is absent from the old side or 'for' is absent from the new side."""
+    f, r = _alnum(c.get("for") or ""), _alnum(c.get("read") or "")
+    if not f or not r:
+        return False
+    old = _alnum(" ".join((h.get("ob", ""), h["old"], h.get("oa", ""))))
+    new = _alnum(" ".join((h.get("nb", ""), h["new"], h.get("na", ""))))
+    return f in old and r in new and (r not in old or f not in new)
 
 
 def marks_only(h: dict) -> bool:
@@ -168,8 +232,7 @@ def explain_hunk(h: dict, spans: list, ledger_acts: set, corr: list, realised: l
             _alnum(" ".join(w for w in h["new"].split() if not LABEL_RE.match(w.strip(";,.:")))):
         return "label_only", "clause labels only"
     for c in corr:
-        if c.get("read") and se.fold_for_diff(c["read"]).strip("\"' ") in h["new"] and \
-                se.fold_for_diff(c["for"]).strip("\"' ") in h["old"]:
+        if corr_explains(c, h):
             return "corrigendum", f"page {c['gazette_page']} line {c['gazette_lines']}"
     best = None
     deletion = not _alnum(MARKS_ONLY_RE.sub("", h["new"]))          # deleted, or replaced by a '[***]' mark
@@ -240,13 +303,17 @@ def propose_versions(act: str, section: str, effects: list, editions: list, orig
     rows, before, covered = [], [], False
     n = 0
 
-    def row(frm, to, state, ids, reasons, cat, basis, text=None):
+    def row(frm, to, state, ids, reasons, cat, note, text=None):
         nonlocal n
         n += 1
+        if state == "never_operative":                  # V07: never_operative has no in-force dates
+            note = f"zero-length at {frm}; {note}"
+            frm = to = None
         return {"record_key": f"act:{act}:{section}:v{n}", "in_force_from": frm or "", "in_force_to": to or "",
                 "state": state, "effect_ids": ";".join(ids), "reason_codes": ";".join(reasons),
-                "applies_from_tax_year": "", "applies_to_tax_year": "", "basis_category": cat, "basis": basis,
-                "owner_ok": "", "owner_note": "", "_text": text}          # _text: local only, not a CSV column
+                "code_note": f"{cat}; {note}", "applies_from_tax_year": "", "applies_to_tax_year": "",
+                "basis_category": "", "basis": "", "owner_ok": "", "owner_note": "",
+                "_text": text}                          # _text: local only, not a CSV column
     if zero_at_origin:
         rows.append(row(origin, origin, "never_operative", [], [], "zero_length",
                         f"original text: effects start on the commencement day {origin}"))
@@ -278,7 +345,7 @@ def propose_versions(act: str, section: str, effects: list, editions: list, orig
             if not covered:
                 before.append({"from": p, "to": nxt, "state": sorted(state)})
                 continue
-            rows.append(row(p, nxt, "AMBIGUOUS", new, ["unprinted_intermediate"] + reasons, cat,
+            rows.append(row(p, nxt, "", new, ["unprinted_intermediate"] + reasons, cat,
                             "no edition prints this state"))
             continue
         covered = True
@@ -318,7 +385,7 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
             r = se.extract_view(views[k], sec)
             choice = OWNER_CHOICES.get((k, sec))
             if r["status"] == "UNRESOLVED" and choice:
-                r = next(b for p, b in candidate_bodies(views[k], sec) if p == choice)
+                r = next(b for p, b in candidate_bodies(views[k], sec) if p == choice["page"])
             cache[(k, sec)] = r
         return cache[(k, sec)]
     assent = assent_by_act()
@@ -399,6 +466,7 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
                 for h in hunks.get((k, sec), []):
                     spans = [x for x in app.get((k, sec), []) if x.get("span_class") == "amendment"]
                     lab, det = explain_hunk(h, spans, acts, corr2025 if act == "2025" else [], realised, window)
+                    lab, det = owner_label((act, sec, k, h["key"]), lab, det)
                     ch_rows.append((act, sec, k, lab, det, h))
     # versions
     commence = commencement_2025(sect)
@@ -420,8 +488,10 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
             vrows += rows
             before_all[(act, sec)] = before
             unplaced_all[(act, sec)] = unplaced
-            unexpl = sum(1 for r in ch_rows if r[0] == act and r[1] == sec and r[3] in UNEXPLAINED)
-            sec_counts.append((act, sec, len(effs), len(rows), sum(r["state"] == "AMBIGUOUS" for r in rows),
+            unexpl = sum(1 for r in ch_rows if r[0] == act and r[1] == sec and r[3] in UNEXPLAINED
+                         and not r[4].startswith("owner "))
+            unprinted = sum("unprinted_intermediate" in r["reason_codes"] for r in rows)
+            sec_counts.append((act, sec, len(effs), len(rows), unprinted,
                                sum(r["state"] == "never_operative" for r in rows),
                                sum("repeal_day_unsettled" in r["reason_codes"] for r in rows),
                                sum("retro_knowledge" in r["reason_codes"] for r in rows), len(before), unexpl))
@@ -478,6 +548,16 @@ def insertion_checks(effects: list, vrows: list, sect) -> list:
     return out
 
 
+def owner_label(key: tuple, lab: str, det: str) -> tuple:
+    """Owner relabel (data) over the rule label; eye-check rows get 'owner_eye_check_pending'."""
+    if key in OWNER_RELABELS:
+        new, note = OWNER_RELABELS[key]
+        return new, f"{note}; rule label {lab}"
+    if key in OWNER_EYE_CHECK:
+        return "owner_eye_check_pending", f"rule label {lab}: {det}"
+    return lab, det
+
+
 def _inserts_section(e: dict) -> bool:
     """A whole-section insertion: an item-level insert ('After section X ... inserted', no sub-item, no unit)."""
     return e["operation"] == "insert" and e["target_unit"] == "" and "(" not in e["instrument_provision"]
@@ -515,6 +595,191 @@ def s56_candidates(v) -> dict:
                   "old": h["old"][:120], "new": h["new"][:120]} for h in hs[:3]]
         out.update({"identical": a == b, "hunks": len(hs), "first": first})
     return out
+
+
+# ---------------------------------------------------------------- Gazette check (C3 steps 5-6)
+
+GAZETTE_KEY = "ita2025_gz"
+ACT_NO_INLINE_RE = re.compile(r"\(\s*\d{1,3}\s+of\s+\d{4}\s*\)")
+TABLE_FURNITURE_RE = re.compile(r"\[Table \d+ Sl\. \d+\]|\b(?:[A-E] ){1,4}[A-E]\b")
+MARGIN_SENTENCE_RE = re.compile(r"^(?:[A-Z][^.]{0,70}\.\s*){1,3}$")
+
+
+def gazette_index(pages: list) -> dict:
+    """Cleaned Gazette lines after the enacting formula, with a skeleton-token index (letters/digits, lower case)."""
+    lines = ap.clean_instrument(pages).lines
+    start = next((i for i, x in enumerate(lines) if "BE it enacted" in x.text), 0)
+    lines = lines[start:]
+    toks, tline = [], []
+    for i, x in enumerate(lines):
+        for t in se.skeleton(x.text):
+            toks.append(t)
+            tline.append(i)
+    return {"lines": lines, "toks": toks, "tline": tline}
+
+
+def _find_tokens(gi: dict, needle: list, from_line: int = 0):
+    """Line indexes where the token sequence starts, in order, at or after from_line (generator)."""
+    toks, tline, n = gi["toks"], gi["tline"], len(needle)
+    first = next((k for k, li in enumerate(tline) if li >= from_line), len(toks))
+    for k in range(first, len(toks) - n + 1):
+        if toks[k] == needle[0] and toks[k:k + n] == needle:
+            yield tline[k]
+
+
+def opening_tokens(body: str, heading, number: str) -> list:
+    """The body's skeleton tokens with its heading, leading number / '(1)' tokens and ITD-added '(N of YYYY)' Act
+    numbers dropped (the Gazette does not print them)."""
+    w, h = se.skeleton(ACT_NO_INLINE_RE.sub(" ", body)), se.skeleton(heading or "")
+    if h and w[:len(h)] == h:
+        w = w[len(h):]
+    k = 0
+    while k < len(w) and (w[k].isdigit() or w[k] == number.lower()):
+        k += 1
+    return w[k:]
+
+
+def _number_line(gi: dict, number: str, hit: int, floor: int):
+    """A line at hit or up to 3 lines before it where 'N.' starts the line or follows a sentence end (a glued
+    marginal heading)."""
+    num_re = re.compile(r"(?:^|[.;:]\s+)" + re.escape(number) + r"\s*\.(?:\s|\(|$)")
+    for li in range(hit, max(floor, hit - 3) - 1, -1):
+        if num_re.search(gi["lines"][li].text.strip()):
+            return li
+    return None
+
+
+def locate_gazette(gi: dict, number: str, body: str, heading, from_line: int = 0) -> dict:
+    """{'start': line index | None, 'how'}: the first occurrence of the body's opening words that has the 'N.' line
+    at or up to 3 lines before it; without any such occurrence the first hit line (how = 'no_number_line')."""
+    w = opening_tokens(body, heading, number)
+    for n in (10, 7, 5):
+        if len(w) < n:
+            continue
+        hits = list(_find_tokens(gi, w[:n], from_line))
+        for hit in hits:
+            li = _number_line(gi, number, hit, from_line)
+            if li is not None:
+                return {"start": li, "how": f"number line ({len(hits)} hit(s) of {n} opening words)"}
+        if hits:
+            return {"start": hits[0], "how": f"no_number_line ({len(hits)} hit(s) of {n} opening words)"}
+    return {"start": None, "how": "opening words not found"}
+
+
+def gazette_bounds(gi: dict, view, number: str) -> dict:
+    """Start and end line of a section in the Gazette: end = the start of section N+1 (opening words, else the first
+    line beginning 'N+1.' after the start)."""
+    r = se.extract_view(view, number)
+    if r["status"] != "FOUND":
+        return {"start": None, "end": None, "how": f"edition {r['status']}"}
+    st = locate_gazette(gi, number, r["body"], r.get("heading"))
+    if st["start"] is None:
+        return {"start": None, "end": None, "how": st["how"]}
+    nxt = str(int(number) + 1)
+    rn = se.extract_view(view, nxt)
+    end = None
+    if rn["status"] == "FOUND":
+        end = locate_gazette(gi, nxt, rn["body"], rn.get("heading"), st["start"] + 1)["start"]
+    how = "next section opening words"
+    if end is None:
+        num_re = re.compile(r"^\s*" + re.escape(nxt) + r"\s*\.(?:\s|\()")
+        end = next((i for i in range(st["start"] + 1, len(gi["lines"])) if num_re.match(gi["lines"][i].text)), None)
+        how = "next number line" if end is not None else "NOT FOUND"
+    if end is None:                                     # last section: the first Schedule heading after the start
+        end = next((i for i in range(st["start"] + 1, len(gi["lines"]))
+                    if se.SCHEDULE_LINE_RE.match(gi["lines"][i].text.strip().upper())), None)
+        how = "first Schedule heading" if end is not None else "NOT FOUND"
+    return {"start": st["start"], "end": end, "how": f"start {st['how']}; end {how}", "body": r["body"],
+            "heading": r.get("heading")}
+
+
+def gazette_class(h: dict, corr: list) -> tuple:
+    """(class, detail) of a Gazette (old) vs ITD edition (new) hunk. corr: [(item number, item)]."""
+    if marks_only(h) or _alnum(h["old"]) == _alnum(h["new"]):
+        return "format", ""
+    if h["new"] != h["old"] and _alnum(h["old"]) == _alnum(ACT_NO_INLINE_RE.sub("", h["new"])):
+        return "itd_addition", "Act number added"
+    if _alnum(TABLE_FURNITURE_RE.sub("", h["old"])) == _alnum(TABLE_FURNITURE_RE.sub("", h["new"])):
+        return "itd_addition", "table furniture"
+    if not h["new"] and MARGIN_SENTENCE_RE.match(h["old"]):
+        return "itd_addition", "Gazette marginal heading text"
+    for i, c in corr:
+        if corr_explains(c, h):
+            return "corrigendum", f"corr_ita2025 item {i}"
+    return "content", ""
+
+
+def gazette_check(raw: Path) -> dict:
+    gpath = se.RAW_DIR / ss.INSTRUMENTS[GAZETTE_KEY][0] / ss.INSTRUMENTS[GAZETTE_KEY][1]
+    gi = gazette_index(ss.pdf_pages(gpath))
+    v5, v6 = se.edition_view(raw, "ita2025_2025"), se.edition_view(raw, "ita2025_2026")
+    folder, fname = ss.INSTRUMENTS["corr_ita2025"][:2]
+    corr = [c for c in ss.corrigendum_items(ss.pdf_pages(se.RAW_DIR / folder / fname))
+            if c["parsed"] and (c["target"] or "").startswith("Income-tax Act, 2025")]
+    corr_n = list(enumerate(corr, 1))
+    bounds, sections = {}, {}
+    for sec in ap.SPINE["2025"]:
+        b = gazette_bounds(gi, v5, sec)
+        bounds[sec] = b
+        if b["start"] is None or b["end"] is None:
+            continue
+        span = gi["lines"][b["start"]:b["end"]]
+        text = re.sub(r"^\s*" + re.escape(sec) + r"\s*\.\s*", "", " ".join(x.text for x in span))
+        pages = sorted({x.page for x in span})
+        inside = [(i, c) for i, c in corr_n if int(c["gazette_page"]) in pages and _alnum(c["for"]) in _alnum(text)]
+        w = se.fold_for_diff(b["body"]).split()
+        hd = se.fold_for_diff(b["heading"] or "").split()
+        ed = " ".join(w[len(hd):] if hd and w[:len(hd)] == hd else w)
+        hs = word_hunks(se.fold_for_diff(text), ed)
+        sections[sec] = {"pages": (pages[0], pages[-1]), "hunks": [(h, *gazette_class(h, inside)) for h in hs],
+                         "corr": inside}
+    missing = [s for s, b in bounds.items() if b["start"] is None or b["end"] is None]
+    items = []
+    for i, c in corr_n:
+        sec = next((s for s, d in sections.items() if any(j == i for j, _ in d["corr"])), None)
+        row = {"item": i, "page": c["gazette_page"], "lines": c["gazette_lines"], "for": c["for"], "read": c["read"],
+               "section": sec}
+        if sec:
+            a = se.fold_for_diff(se.extract_view(v5, sec)["body"])
+            b = se.fold_for_diff(se.extract_view(v6, sec)["body"])
+            m = [h for h in word_hunks(a, b) if corr_explains(c, h)]
+            row.update({"match": bool(m), "hunk_keys": [h["key"] for h in m],
+                        "ed2025_read": _alnum(c["read"]) in _alnum(a), "ed2026_read": _alnum(c["read"]) in _alnum(b)})
+        items.append(row)
+    content = {s: [h for h, k, _ in d["hunks"] if k == "content"] for s, d in sections.items()}
+    if missing:
+        proposal = "none (bounds missing: " + ", ".join(missing) + ")"
+    elif any(content.values()):
+        proposal = "none (ITD-vs-Gazette content differences listed for the census)"
+    else:
+        proposal = "as enacted, Act 30 of 2025"
+    return {"bounds": bounds, "sections": sections, "missing": missing, "items": items, "content": content,
+            "proposal": proposal, "n_corr": len(corr)}
+
+
+def gazette_report(g: dict) -> str:
+    out = [f"# GAZETTE CHECK (Act 30 of 2025, {GAZETTE_KEY}) vs ita2025_2025, spine sections; local only", "",
+           "## Bounds", ""]
+    out += [f"- s.{s}: start line {b['start']} end line {b['end']} ({b['how']})" for s, b in g["bounds"].items()]
+    out += ["", "## Per section (class counts; content and corrigendum hunks listed)", ""]
+    for s, d in g["sections"].items():
+        cnt = {}
+        for _, k, _ in d["hunks"]:
+            cnt[k] = cnt.get(k, 0) + 1
+        out.append(f"### s.{s} (Gazette pp.{d['pages'][0]}-{d['pages'][1]}): hunks {len(d['hunks'])} {cnt}"
+                   f"{' IDENTICAL' if not d['hunks'] else ''}")
+        out += [f"- {k} {det} | {h['op']} @{h['at']}: {_md(h['old'][:140])} => {_md(h['new'][:140])}"
+                for h, k, det in d["hunks"] if k in ("content", "corrigendum")]
+        out.append("")
+    out += [f"## D3: corr_ita2025 items (n={g['n_corr']})", "",
+            "| item | Gazette page/line | section | for | read | match (2025->2026 hunk) | 2025 ed has read | "
+            "2026 ed has read |", "|---|---|---|---|---|---|---|---|"]
+    for r in g["items"]:
+        out.append(f"| {r['item']} | {r['page']}/{r['lines']} | {r['section'] or 'not in a spine section'} | "
+                   f"{_md(r['for'])} | {_md(r['read'])} | {r.get('match', '-')} | {r.get('ed2025_read', '-')} | "
+                   f"{r.get('ed2026_read', '-')} |")
+    out += ["", f"ita2025_2025 knowledge proposal: {g['proposal']}"]
+    return "\n".join(out) + "\n"
 
 
 # ---------------------------------------------------------------- sheets and tables
@@ -587,14 +852,15 @@ def write_sheets(out_dir, effects, know, pend_rows, diffs_md, ev_rows, ch_rows, 
          f"{commence}", "", "| record_key | from | to | state | effect_ids | reasons | basis |",
          "|---|---|---|---|---|---|---|"]
     v += [f"| {r['record_key']} | {r['in_force_from']} | {r['in_force_to']} | {r['state']} | {r['effect_ids']} | "
-          f"{r['reason_codes']} | {_md(r['basis'])} |" for r in vrows]
+          f"{r['reason_codes']} | {_md(r['code_note'])} |" for r in vrows]
     v += ["", "## before_coverage (not written as rows)"]
     v += [f"- {a} s.{s}: {b}" for (a, s), b in before_all.items() if b]
     v += ["", "## Effects without a date (not placed on the timeline)"]
     v += [f"- {a} s.{s}: {u}" for (a, s), u in unplaced_all.items() if u]
     v += ["", "## Whole-section insertions: Act text vs first edition text (report only)"]
     v += [f"- {x}" for x in ins_check]
-    v += ["", "## s.56 ita1961_2023 candidates (Q1; pending owner choice)", "", f"- {s56}"]
+    v += ["", "## s.56 ita1961_2023 candidates (Q1)", "", f"- owner choice: "
+          f"{OWNER_CHOICES.get(('ita1961_2023', '56'), 'pending')}", f"- {s56}"]
     for name, lines in (("PENDING-23.md", p), ("DIFFS.md", d), ("CROSSCHECK.md", c), ("VERSIONS.md", v)):
         se._write_new(out_dir / name, "\n".join(lines) + "\n")
         files.append(out_dir / name)
@@ -606,8 +872,18 @@ def main(argv=None) -> int:
     ap_.add_argument("--propose", action="store_true", help="diffs, cross-check, versions; write VERSION-DATES.csv")
     ap_.add_argument("--counts", action="store_true", help="print the per-section count table of the last proposal")
     ap_.add_argument("--dry-run", action="store_true", help="compute and print; write the local sheets only")
+    ap_.add_argument("--gazette-check", action="store_true", help="C3: Act 30 of 2025 Gazette vs ita2025_2025 + D3 map")
     a = ap_.parse_args(argv)
-    if not (a.propose or a.counts or a.dry_run):
+    if a.gazette_check:
+        g = gazette_check(se.latest_raw_dir())
+        rep = gazette_report(g)
+        d = ap.PARTC_DIR / f"C3-{ap.stamp()}"
+        d.mkdir(parents=True, exist_ok=False)
+        se._write_new(d / "GAZETTE-CHECK.md", rep)
+        print(rep, end="")
+        print(f"sheet: {d / 'GAZETTE-CHECK.md'}")
+        return 1 if g["missing"] else 0
+    if not (a.propose or a.counts or a.dry_run or a.gazette_check):
         ap_.print_help()
         return 2
     if a.counts:
@@ -642,7 +918,8 @@ def main(argv=None) -> int:
         print(f"  {x}")
     print("sheets: " + ", ".join(str(f) for f in res["sheets"]))
     if a.propose:
-        path, msg = ap.write_never_overwrite(VERSIONS_PATH, res["versions"], VERSION_COLUMNS, "record_key")
+        path, msg = ap.write_never_overwrite(VERSIONS_PATH, res["versions"], VERSION_COLUMNS, "record_key",
+                                             owner=VERSION_OWNER, carry=owner_value)
         print("\n".join(msg))
     return 0
 
