@@ -139,7 +139,8 @@ def test_b2d_label_gap_edition_skipped_with_note(monkeypatch):
 
 
 def test_b2d_label_gap_pairs_are_owner_data():
-    assert set(sb.LABEL_GAP) == {("ita1961_2023", "2"), ("ita1961_2024n1", "2")}
+    assert set(sb.LABEL_GAP) == {("ita1961_2023", "2"), ("ita1961_2024n1", "2"), ("ita1961_2024n2", "56"),
+                                 ("ita1961_2023", "56")}
 
 
 def test_effect_checks_non_spine_section():

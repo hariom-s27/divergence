@@ -93,3 +93,18 @@ Phase checks (key unset): pytest 555 passed; flake8 strict 0; corpus_hash OK; ga
 errors; statute_tables --check 84 rejections, all empty owner_ok; CI replay facts/missing/attacked equal.
 Probe tooling: PyMuPDF / pdfplumber / pdfminer were used only for diagnosis (all four extractors miss the labels on
 ita1961_2023); no extractor change.
+
+## Part B3 (2026-11-16): s.56 source label gaps
+- LABEL_GAP += (ita1961_2024n2, 56) owner eye check pp.301-305; (ita1961_2023, 56) owner eye check p.466. Source
+  defects (labels not printed), like s.2 in ita1961_2023. Check code data only.
+- Status changes (regen 043254 -> 044706): fa_2023:s32(a)(i) fail -> ok, fa_2023:s32(b) fail -> ok (ita1961_2024n2
+  skipped; checked in ita1961_2025). Note-only: fa_2022:s16(a), s16(b)(i), s16(b)(ii), s16(b)(iii), fa_2023:s32(a)(ii).
+- Still fail: fa_2022:s16(b)(i), now checked in ita1961_2024n1 s.56, which also lacks the two labels. INFERENCE: same
+  source defect (label census 92/23 vs 92/24); not added without an owner eye check.
+- check_status: ok 27 | fail 1 | no_edition 22 (no suitable edition 1, no_label 7, no_rule 14).
+- Versions whose body comes from a gap edition (REPO, VERSION-DATES code_note): act:1961:56:v1 2023-04-01..2024-04-01
+  (ita1961_2023); act:1961:56:v2 2024-04-01..2025-04-01 (ita1961_2024n2); act:1961:2:v1 2023-04-01..2024-04-01
+  (ita1961_2023). Their bodies lack the unprinted labels (source defect); versions themselves unchanged.
+- Guard PASS (code-column sha b7b8fa369ef0..., body sha aebe8deb174f...; C3fix-20261116-044921). Final regen:
+  regen/AMENDMENT-EFFECTS.20261116-044706.csv. Phase checks: pytest 555; flake8 0; corpus_hash OK; gate0 CLEAR;
+  statute_validate 0 errors; statute_tables --check 84 rejections, all empty owner_ok; CI replay equal.
