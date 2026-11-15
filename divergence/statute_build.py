@@ -82,8 +82,16 @@ OWNER_RELABELS = {
     ("2025", "393", "ita2025_2026", "73016e7da4b200de"): ("corrigendum", f"{_E2}: corr_ita2025 item 33"),
     ("2025", "393", "ita2025_2026", "0106d8a7d004771f"): ("effect", f"{_E2}: fa_2026:s84(d) (sub-section (7) substituted)"),
 }
-OWNER_EYE_CHECK = {("1961", "56", "ita1961_2024n2", "50ff389378ea6be5"), ("2025", "393", "ita2025_2026", "9c43db25fc8bf60c"),
-                   ("2025", "393", "ita2025_2026", "b3c5a81ebbbec24c")}
+_E2b = "owner 2026-11-16"
+OWNER_RELABELS.update({
+    ("1961", "56", "ita1961_2024n2", "50ff389378ea6be5"): (
+        "publisher_change", f"{_E2b}: official title SEBI (Alternative Investment Funds) Regulations, 2012"),
+    ("2025", "393", "ita2025_2026", "9c43db25fc8bf60c"): (
+        "publisher_change", f"{_E2b}: Gazette 265620 p.412 has no 'and'; 2026 edition restores the Gazette text"),
+    ("2025", "393", "ita2025_2026", "b3c5a81ebbbec24c"): (
+        "effect", f"{_E2b}: fa_2026:s84(b)(ii) (item (iv) substituted; Gazette 271439 p.56)"),
+})
+OWNER_EYE_CHECK = set()                     # rows 16, 22, 23 resolved by the owner (2026-11-16)
 PENDING_RE = re.compile(r"(?i)shall\s+be\s+(ins(?:erted|\.)|sub(?:stituted|s?\.)|om(?:itted|tt?\.|it\.)|"
                         r"re-?numbered|renum(?:bered|\.))")
 FN_DATE_RE = re.compile(r"w\.(?:r\.)?e\.f\.\s*(\d{1,2})\s*-\s*(\d{1,2})\s*-\s*(\d{4})")
@@ -300,6 +308,7 @@ def propose_versions(act: str, section: str, effects: list, editions: list, orig
         st = printed_state(placed, ed["knowledge"], ed.get("pending", set()))
         if st is not None and ed["found"]:
             states.setdefault(st, ed["key"])
+    know_of = {ed["key"]: ed["knowledge"] for ed in editions}
     rows, before, covered = [], [], False
     n = 0
 
@@ -349,6 +358,11 @@ def propose_versions(act: str, section: str, effects: list, editions: list, orig
                             "no edition prints this state"))
             continue
         covered = True
+        if p is None and know_of.get(text):         # M2: open start -> coverage start (not commencement)
+            rows.append(row(know_of[text], nxt, "in_force", new, reasons, "coverage_start",
+                            f"coverage start, not commencement (knowledge date of {text}); before_coverage applies "
+                            f"to earlier dates; text = {text}", text))
+            continue
         rows.append(row(p, nxt, "in_force", new, reasons, cat, f"text = {text}", text))
     return rows, before, unplaced
 

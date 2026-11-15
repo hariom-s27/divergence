@@ -31,7 +31,7 @@ def test_unprinted_intermediate_state_is_ambiguous():
     rows, before, _ = sb.propose_versions("1961", "7", effs, eds, None, None)
     assert before == []
     states = [(r["in_force_from"], r["state"], r["reason_codes"]) for r in rows]
-    assert states == [("", "in_force", ""), ("2099-04-01", "", "unprinted_intermediate"),
+    assert states == [("2099-01-01", "in_force", ""), ("2099-04-01", "", "unprinted_intermediate"),
                       ("2099-10-01", "in_force", "")]
 
 
@@ -228,3 +228,13 @@ def test_gazette_classes():
     c = [(5, {"for": "on after", "read": "on or after"})]
     h = sb.word_hunks("applies on after the date", "applies on or after the date")[0]
     assert k(h, c) == ("corrigendum", "corr_ita2025 item 5")
+
+
+def test_open_start_gets_coverage_start_not_commencement():
+    rows, before, _ = sb.propose_versions("1961", "7", [], [ed("e1", "2099-03-31"), ed("e2", "2100-03-31")], None,
+                                          "2101-04-01")
+    r = rows[0]
+    assert (r["in_force_from"], r["in_force_to"], r["state"], r["reason_codes"]) == (
+        "2099-03-31", "2101-04-01", "in_force", "")
+    assert r["code_note"].startswith("coverage_start; coverage start, not commencement (knowledge date of e1)")
+    assert "before_coverage applies to earlier dates" in r["code_note"] and before == []
