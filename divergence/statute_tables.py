@@ -17,9 +17,10 @@ applicability (P09-23):
 - AMENDMENT-EFFECTS: owner_ok in {yes, fix}; fix needs owner_note; the local quote hashes to quote_sha256 and appears
   verbatim (whitespace-only fold; at most 4 pieces in order, for header-inherited quotes) in the instrument's cleaned
   text on the stated page or the page before; dates ISO; deemed_from set iff wef < assent (and equal to wef); enums.
-- VERSION-DATES: owner_ok in {yes, fix}; state in the D78 list or empty; dates ISO and from <= to; tax years 'YYYY-YY';
+- VERSION-DATES: owner_ok in {yes, fix}; state in the D78 list or empty; dates ISO; tax years 'YYYY-YY';
   basis_category in the closed list and basis one line when owner_ok is set; basis_category 'unclear' => applies_*
-  empty; in_force / repealed_saved rows need applies_from_tax_year or 'unclear'; D78 V05-V08 on the row as a record.
+  empty; in_force / repealed_saved rows need applies_from_tax_year or 'unclear'; D78 V05-V08 after the shared
+  record-date projection (strict from < to; raw repeal-day equality remains in the canonical table).
 """
 from __future__ import annotations
 
@@ -37,6 +38,7 @@ from divergence import statute_build as sb
 from divergence import statute_extract as se
 from divergence import statute_sources as ss
 from divergence import statute_validate as sv
+from divergence.statute_records import project_dates
 from divergence.statute_schema import parse_date, tax_year_start
 
 TABLES_VERSION = "table_check v1"
@@ -319,21 +321,25 @@ def check_effects(rows: list, quotes: dict, text_of=_instrument_text) -> list:
     return out
 
 
-def _record(r: dict, effects: dict) -> dict:
-    """A VERSION-DATES row as a record dict for the D78 V05-V08 checks ('' -> None; state -> status)."""
+def _record(r: dict, effects: dict, dates: dict | None = None) -> dict:
+    """Record checks use the shared date projection; malformed raw dates stay reportable."""
     rec = {"act": r["record_key"].split(":")[1], "status": r.get("state") or None}
     for c in ("in_force_from", "in_force_to", "applies_from_tax_year", "applies_to_tax_year"):
         rec[c] = r.get(c) or None
+    if dates is None and all(_iso_ok(r.get(c, "")) for c in ("in_force_from", "in_force_to")):
+        sources = json.loads(ss.SOURCES_PATH.read_text(encoding="utf-8"))
+        dates = project_dates([r], list(effects.values()), sources)[r["record_key"]]
+    if dates is not None:
+        rec.update(dates)
     effs = [effects[e] for e in r.get("effect_ids", "").split(";") if e in effects]
-    retro = [e for e in effs if e.get("deemed_from")]
-    if "retro_knowledge" in r.get("reason_codes", "") and retro:
-        rec["retrospective_from"] = min(e["deemed_from"] for e in retro)
-        rec["enacted_on"] = max(e["assent_date"] for e in retro)
-        rec["amended_by"] = sorted({e["act_key"] for e in retro})
+    rec["amended_by"] = sorted({e["act_key"] for e in effs})
     return rec
 
 
 def check_versions(rows: list, effects: dict) -> list:
+    sources = json.loads(ss.SOURCES_PATH.read_text(encoding="utf-8"))
+    valid_dates = [r for r in rows if all(_iso_ok(r.get(c, "")) for c in ("in_force_from", "in_force_to"))]
+    dates = project_dates(valid_dates, list(effects.values()), sources)
     out = []
     for r in rows:
         why = []
@@ -364,7 +370,7 @@ def check_versions(rows: list, effects: dict) -> list:
         if r.get("state") in ("in_force", "repealed_saved") and r.get("owner_ok") in OWNER_OK and \
                 not r.get("applies_from_tax_year") and cat != "unclear":
             why.append("in force: applies_from_tax_year needed, or basis_category unclear")
-        rec = _record(r, effects)
+        rec = _record(r, effects, dates.get(r["record_key"]))
         for fn in (sv.check_v05_dates, sv.check_v06_act2025, sv.check_v07_status, sv.check_v08_retrospective):
             for level, msg in fn(rec, {}):
                 if level == "ERROR":

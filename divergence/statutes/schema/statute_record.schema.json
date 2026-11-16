@@ -53,7 +53,7 @@
     },
     "status": {
       "type": "string",
-      "enum": ["in_force", "repealed_saved", "never_operative", "prospective", "omitted"]
+      "enum": ["in_force", "repealed_saved", "never_operative", "prospective", "omitted", "unprinted"]
     },
     "in_force_from": {"$ref": "#/$defs/date_or_null"},
     "in_force_to": {"$ref": "#/$defs/date_or_null"},
@@ -89,14 +89,29 @@
     "gazette_published": {"type": "string", "enum": ["yes", "no", "unknown"]},
     "source_acknowledgement": {"type": "string", "minLength": 1, "pattern": "\\S"},
     "storage_mode": {"type": "string", "enum": ["local_only", "public_verbatim"]},
-    "body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "body_chars": {"type": "integer", "minimum": 0},
+    "body": {"type": ["string", "null"], "description": "Optional in-memory body; omit when persisting local_only metadata."},
+    "body_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "body_chars": {"type": ["integer", "null"], "minimum": 0},
+    "lookup_flags": {"type": "array", "uniqueItems": true, "items": {"enum": ["repeal_day_unsettled", "corrigendum_open"]}},
+    "basis_category": {"$ref": "#/$defs/basis_category"},
+    "basis_exceptions": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["effect_id", "category"],
+        "properties": {"effect_id": {"type": "string", "minLength": 1}, "category": {"$ref": "#/$defs/basis_category"}}
+      }
+    },
     "original_note": {"type": ["string", "null"]},
     "amendment_note": {"type": ["string", "null"]},
     "notes": {"type": ["string", "null"]},
     "fixture": {"type": "boolean", "default": false}
   },
   "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "unprinted"}}, "required": ["status"]},
+      "then": {"properties": {"body": {"type": "null"}, "body_sha256": {"type": "null"}, "body_chars": {"type": "null"}}},
+      "else": {"properties": {"body": {"type": "string"}, "body_sha256": {"type": "string"}, "body_chars": {"type": "integer"}}}
+    },
     {
       "if": {
         "properties": {
@@ -114,6 +129,9 @@
     }
   ],
   "$defs": {
+    "basis_category": {
+      "enum": ["charging_ay_rule", "procedural", "penalty_default_date", "transaction_date", "ita2025_tax_year", "unclear"]
+    },
     "source_kind": {
       "type": "string",
       "enum": ["act", "rule", "notification", "circular"]
@@ -152,6 +170,7 @@
         "ref": {"type": "string", "minLength": 1},
         "kind": {"$ref": "#/$defs/amendment_kind"},
         "url": {"type": "string"},
+        "operation": {"enum": ["substitute", "insert", "omit", "renumber"]},
         "enacted_on": {"$ref": "#/$defs/date_or_null"}
       }
     },
@@ -173,7 +192,8 @@
       "properties": {
         "ref": {"type": "string", "minLength": 1},
         "source": {"type": "string", "enum": ["CBDT_official", "SECONDARY"]},
-        "source_url": {"type": "string"}
+        "source_url": {"type": "string"},
+        "notes": {"type": "string"}
       }
     },
     "gold_span": {

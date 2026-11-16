@@ -1,5 +1,66 @@
 """Tests for divergence/statute_build.py (P09 Part C2). INVENTED data only; no real law text, no network."""
+import pytest
+
 from divergence import statute_build as sb
+
+
+def _synthetic_build(monkeypatch):
+    """All edition/PDF dependencies are synthetic; the existing sheet serializer stays real."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(sb.se, "record_scope", lambda: {"1961": ["7"], "2025": ["7"]})
+    monkeypatch.setattr(sb.ap, "SPINE", {"1961": ["7"], "2025": ["7"]})
+    monkeypatch.setattr(sb.se, "EDITIONS", {"1961": ["ita1961_2023"], "2025": ["ita2025_2025"]})
+    monkeypatch.setattr(sb.se, "edition_view", lambda *a: SimpleNamespace(pages=[]))
+    monkeypatch.setattr(sb.se, "extract_view", lambda *a: {"status": "FOUND", "body": "FAKE FIXTURE - NOT LAW"})
+    monkeypatch.setattr(sb, "assent_by_act", lambda: {})
+    monkeypatch.setattr(sb.se, "convention_note", lambda *a: {})
+    monkeypatch.setattr(sb, "printed_amended_by", lambda *a: [])
+    monkeypatch.setattr(sb, "edition_knowledge", lambda *a: {
+        "date": "2026-03-30", "source": "FAKE", "acts": [], "printed_acts": [], "mismatch": False})
+    monkeypatch.setattr(sb.se, "section_apparatus", lambda *a: [])
+    monkeypatch.setattr(sb.se, "collect_editor_notes", lambda *a: [])
+    monkeypatch.setattr(sb.ss, "pdf_pages", lambda *a: [])
+    monkeypatch.setattr(sb.ss, "corrigendum_items", lambda *a: [])
+    monkeypatch.setattr(sb, "commencement_2025", lambda *a: "2026-04-01")
+    monkeypatch.setattr(sb, "pending_effects", lambda *a: set())
+    monkeypatch.setattr(sb, "s56_candidates", lambda *a: "FAKE")
+    monkeypatch.setattr(sb, "insertion_checks", lambda *a: [])
+
+
+def test_build_no_write_creates_nothing(tmp_path, monkeypatch):
+    _synthetic_build(monkeypatch)
+    folder = tmp_path / "absent"
+    monkeypatch.setattr(sb, "write_sheets", lambda *a: pytest.fail("writer called by write=False"))
+    result = sb.build(tmp_path / "fake_raw", folder, effects=[], write=False)
+    assert not folder.exists() and result["sheets"] == []
+    assert result["know"] and result["versions"] and result["body_sha"]
+
+
+def test_build_write_true_preserves_files_and_hashes(tmp_path, monkeypatch):
+    import hashlib
+    _synthetic_build(monkeypatch)
+    writer, captured = sb.write_sheets, []
+
+    def capture(*args):
+        captured.append(args)
+        return writer(*args)
+
+    monkeypatch.setattr(sb, "write_sheets", capture)
+    default = sb.build(tmp_path / "fake_raw", tmp_path / "default", effects=[])
+    explicit = sb.build(tmp_path / "fake_raw", tmp_path / "explicit", effects=[], write=True)
+    memory = sb.build(tmp_path / "fake_raw", tmp_path / "absent", effects=[], write=False)
+    # Existing, unchanged serializer supplies the reference output directly.
+    writer(tmp_path / "reference", *captured[0][1:])
+
+    def hashes(folder):
+        return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(folder.iterdir())}
+
+    reference = hashes(tmp_path / "reference")
+    assert set(reference) == {"PENDING-23.md", "DIFFS.md", "CROSSCHECK.md", "VERSIONS.md"}
+    assert hashes(tmp_path / "default") == hashes(tmp_path / "explicit") == reference
+    assert {k: v for k, v in default.items() if k != "sheets"} == {
+        k: v for k, v in explicit.items() if k != "sheets"} == {k: v for k, v in memory.items() if k != "sheets"}
+    assert not (tmp_path / "absent").exists()
 
 
 def eff(eid, wef, assent="2099-03-30", **kw):

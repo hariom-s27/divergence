@@ -1,4 +1,4 @@
-"""Tests for divergence/statute_tables.py (P09 Part C3). INVENTED data only; no real law text, no network."""
+"""P09 table checks: invented data plus committed C4-B metadata; no local corpus reads or network."""
 import json
 
 import pytest
@@ -14,6 +14,7 @@ PAGE = "3. In section 7 of the Zeta Act,— (a) in clause (4), with effect from 
 
 def eff(**kw):
     r = {"effect_id": "zz_2099:s3(b)", "act_key": "Act No. 9 of 2099", "operation": "substitute",
+         "target_act": "1961", "target_section": "7",
          "commencement_source": "s1_default", "wef": "2099-04-01", "deemed_from": "", "assent_date": "2099-03-30",
          "applicability_note_present": "no", "corrigendum_flag": "no", "pdf_page": "2",
          "quote_sha256": ap.quote_sha256(QUOTE), "owner_ok": "yes", "owner_note": ""}
@@ -86,9 +87,60 @@ def test_version_d78_v07_never_operative_dates():
 
 def test_version_v08_from_effects():
     effs = {"zz_2099:s3(b)": eff(wef="2098-04-01", deemed_from="2098-04-01")}
-    rec = st._record(ver(reason_codes="retro_knowledge"), effs)
+    rec = st._record(ver(in_force_from="2098-04-01", reason_codes="retro_knowledge"), effs)
     want = ("2098-04-01", "2099-03-30", ["Act No. 9 of 2099"])
     assert (rec["retrospective_from"], rec["enacted_on"], rec["amended_by"]) == want
+
+
+def _real_metadata():
+    rows = ap.read_csv(sb.VERSIONS_PATH)
+    effects = ap.read_csv(ap.EFFECTS_PATH)
+    sources = json.loads(st.ss.SOURCES_PATH.read_text(encoding="utf-8"))
+    return rows, effects, sources
+
+
+@pytest.mark.parametrize("record_id", ["act:1961:2:v6", "act:1961:285BAA:v1"])
+def test_real_repeal_day_rows_pass_table_check(record_id):
+    rows, effects, _ = _real_metadata()
+    raw = next(r for r in rows if r["record_key"] == record_id)
+    assert raw["in_force_from"] == raw["in_force_to"] == "2026-04-01"
+    result = dict(st.check_versions(rows, {e["effect_id"]: e for e in effects}))
+    assert result[record_id] == []
+    assert raw["in_force_to"] == "2026-04-01"  # checker never mutates the canonical input
+
+
+def test_non_repeal_equal_dates_remain_rejected():
+    row = ver(in_force_from="2099-04-01", in_force_to="2099-04-01")
+    errors = dict(st.check_versions([row], {"zz_2099:s3(b)": eff()}))[row["record_key"]]
+    assert any(message.startswith("V05:") for message in errors)
+    assert row["in_force_from"] == row["in_force_to"]
+
+
+def test_all_34_checker_dates_match_project():
+    from divergence.statute_records import project, project_dates
+    rows, effects, sources = _real_metadata()
+    mapping = ap.read_csv(sb.se.STATUTES_DIR / "MAPPING.csv")
+    dates = project_dates(rows, effects, sources)
+    records = project(rows, effects, sources, mapping, knowledge=None, fetch_log=None)
+    index = {r["record_key"]: r for r in rows}
+    effect_index = {e["effect_id"]: e for e in effects}
+    assert len(dates) == len(records) == 34
+    for record in records:
+        fields = dates[record["record_id"]]
+        checked = st._record(index[record["record_id"]], effect_index, fields)
+        assert fields == {key: record[key] for key in fields}
+        assert fields == {key: checked[key] for key in fields}
+
+
+def test_shared_projection_moves_retro_predecessor_ends():
+    import copy
+    from divergence.statute_records import project_dates
+    rows, effects, sources = _real_metadata()
+    original = copy.deepcopy(rows)
+    dates = project_dates(rows, effects, sources)
+    assert dates["act:1961:2:v2"]["in_force_to"] == dates["act:1961:2:v3"]["in_force_from"] == "2024-08-16"
+    assert dates["act:1961:158B:v2"]["in_force_to"] == dates["act:1961:158B:v3"]["in_force_from"] == "2025-03-29"
+    assert rows == original
 
 
 def test_merge_takes_current_owner_columns_and_sha_guard(tmp_path):

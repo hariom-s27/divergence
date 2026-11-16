@@ -24,7 +24,7 @@ from divergence.statute_schema import (
     DEFAULT_ROOT,
     LAST_1961_TAX_YEAR,
     MODIFIER_KINDS,
-    REPEAL_LAST_DAY,
+    REPEAL_DAY,
     build_record_id,
     parse_date,
     record_filename,
@@ -103,8 +103,8 @@ def check_v03_filename(rec, ctx):
 def check_v05_dates(rec, ctx):
     out = []
     f, t = _date(rec, "in_force_from"), _date(rec, "in_force_to")
-    if f and t and f > t:
-        out.append(("ERROR", f"in_force_from {f} > in_force_to {t}"))
+    if f and t and f >= t:
+        out.append(("ERROR", f"in_force_from {f} must be < in_force_to {t}"))
     starts = {}
     for key in ("applies_from_tax_year", "applies_to_tax_year"):
         v = rec.get(key)
@@ -142,8 +142,8 @@ def check_v07_status(rec, ctx):
     elif s == "repealed_saved":
         if rec.get("act") != "1961":
             out.append("repealed_saved needs act 1961")
-        if t is None or t > REPEAL_LAST_DAY:
-            out.append(f"repealed_saved needs in_force_to <= {REPEAL_LAST_DAY}")
+        if t is None or t > REPEAL_DAY:
+            out.append(f"repealed_saved needs in_force_to <= {REPEAL_DAY}")
         at = _ty(rec.get("applies_to_tax_year"))
         if at is None or at > tax_year_start(LAST_1961_TAX_YEAR):
             out.append(f"repealed_saved needs applies_to_tax_year <= {LAST_1961_TAX_YEAR}")
@@ -158,6 +158,12 @@ def check_v07_status(rec, ctx):
     elif s == "omitted":
         if t is None:
             out.append("omitted needs in_force_to")
+    elif s == "unprinted":
+        if f is None:
+            out.append("unprinted needs a dated in_force_from (in_force_to may be open)")
+        for key in ("body", "body_sha256", "body_chars"):
+            if rec.get(key) is not None:
+                out.append(f"unprinted needs {key} null")
     return [("ERROR", m) for m in out]
 
 
@@ -210,6 +216,10 @@ def check_v10_body(rec, ctx):
         return []
     bp = body_path(ctx.root, rec, ctx.path)
     rel_body = bp.relative_to(ctx.root).as_posix()
+    if rec.get("status") == "unprinted":
+        if bp.exists():
+            return [("ERROR", f"unprinted must have no body file: {rel_body}")]
+        return []
     if not bp.is_file():
         if mode == "local_only":
             return [("WARN", f"body_absent_local {rel_body}")]

@@ -16,7 +16,7 @@ SCHEMA_VERSION = 1
 
 SOURCE_KINDS = ("act", "rule", "notification", "circular")
 ACTS = ("1961", "2025")
-STATUSES = ("in_force", "repealed_saved", "never_operative", "prospective", "omitted")
+STATUSES = ("in_force", "repealed_saved", "never_operative", "prospective", "omitted", "unprinted")
 STORAGE_MODES = ("local_only", "public_verbatim")
 GAZETTE_VALUES = ("yes", "no", "unknown")
 AMENDMENT_KINDS = ("finance_act", "amendment_act", "ordinance", "notification", "other")
@@ -33,11 +33,41 @@ DEFAULT_ROOT = PACKAGE_DIR / "statutes"
 SCHEMA_PATH = DEFAULT_ROOT / "schema" / "statute_record.schema.json"
 
 # 1961 Act repealed from 1 April 2026; it still applies to tax years up to 2025-26 (s.536 savings).
-REPEAL_LAST_DAY = date(2026, 3, 31)
+REPEAL_DAY = date(2026, 4, 1)
 LAST_1961_TAX_YEAR = "2025-26"
 # 2025 Act: first tax year 2026-27; s.1(3) commencement 1 April 2026 "save as otherwise provided".
 ACT2025_FIRST_TAX_YEAR = "2026-27"
 ACT2025_COMMENCEMENT = date(2026, 4, 1)
+CORPUS_CHECKED_THROUGH = date(2026, 11, 15)
+
+BASIS_CATEGORIES = ("charging_ay_rule", "procedural", "penalty_default_date", "transaction_date",
+                    "ita2025_tax_year", "unclear")
+LOOKUP_FLAGS = ("repeal_day_unsettled", "corrigendum_open")
+REASON_CLASS = {
+    "repeal_day_unsettled": "LEGAL", "corrigendum_open": "LEGAL", "overlap": "LEGAL",
+    "applicability_unclear_row": "LEGAL", "midyear_effect": "QUERY",
+    "unprinted_intermediate": "CORPUS", "outstanding_effect": "CORPUS",
+    "unknown_enactment_date": "CORPUS", "beyond_corpus_horizon": "CORPUS",
+    "before_coverage": "CORPUS", "known_text_not_in_corpus": "CORPUS",
+    "never_operative": "NO_LAW", "prospective": "NO_LAW", "before_commencement": "NO_LAW",
+    "after_repeal": "NO_LAW", "no_version_covers_point": "NO_LAW",
+}
+
+
+def reason_class(code: str) -> str:
+    """Return the declared class; an unknown reason is an error, never a default."""
+    return REASON_CLASS[code]
+
+
+def covers_date(start: date | None, end: date | None, point: date) -> bool:
+    """Coverage of [start, end); null start never covers, null end is open."""
+    return start is not None and start <= point and (end is None or point < end)
+
+
+def intersects_dates(start: date | None, end: date | None, lo: date, hi: date) -> bool:
+    """Whether a dated half-open interval intersects [lo, hi)."""
+    return start is not None and start < hi and (end is None or lo < end)
+
 
 _schema_cache: dict | None = None
 
@@ -80,9 +110,9 @@ def tax_year_start(tax_year: str) -> int:
 
 
 def tax_year_bounds(tax_year: str) -> tuple[date, date]:
-    """First and last day of the tax year: 1 April .. 31 March (inclusive)."""
+    """Half-open tax-year bounds: 1 April .. next 1 April (exclusive)."""
     y = tax_year_start(tax_year)
-    return date(y, 4, 1), date(y + 1, 3, 31)
+    return date(y, 4, 1), date(y + 1, 4, 1)
 
 
 def parse_date(value: str | None) -> date | None:

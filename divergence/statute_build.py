@@ -385,9 +385,10 @@ def candidate_bodies(v, number: str) -> list:
     return out
 
 
-def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
+def build(raw: Path, out_dir: Path, effects: list | None = None, *, write: bool = True) -> dict:
     """All C2 computations; writes the local sheets in out_dir; returns the public rows and the printed summary.
-    effects: the ledger rows (default: AMENDMENT-EFFECTS.csv)."""
+    effects: the ledger rows (default: AMENDMENT-EFFECTS.csv).
+    write=False returns the same computations without creating any sheets or directories."""
     effects = ledger() if effects is None else effects
     scope = se.record_scope()
     secs = {act: sorted(set(scope[act]) | set(ap.SPINE[act]), key=se.section_key) for act in ("1961", "2025")}
@@ -517,8 +518,8 @@ def build(raw: Path, out_dir: Path, effects: list | None = None) -> dict:
                                sum("retro_knowledge" in r["reason_codes"] for r in rows), len(before), unexpl))
     ins_check = insertion_checks(effects, vrows, sect)
     s56 = s56_candidates(views["ita1961_2023"])
-    sheets = write_sheets(out_dir, effects, know, pend_rows, diffs_md, ev_rows, ch_rows, vrows, before_all,
-                          unplaced_all, s56, commence, hunks, ins_check)
+    sheets = (write_sheets(out_dir, effects, know, pend_rows, diffs_md, ev_rows, ch_rows, vrows, before_all,
+                           unplaced_all, s56, commence, hunks, ins_check) if write else [])
     checks = effect_checks(effects, eds_by, sect) if all("position" in e for e in effects) else {}
     return {"effects": effects, "know": know, "pend": pend_rows, "ev": ev_rows, "ch": ch_rows, "versions": vrows,
             "before": before_all, "counts": sec_counts, "s56": s56, "commence": commence, "sheets": sheets,

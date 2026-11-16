@@ -176,7 +176,7 @@ release), divergence/statutes/README.md line 4, .gitignore line 18. statutes/rec
 ### Step 8: lines C4-B must change (half-open dates and D9-D11)
 - divergence/statute_lookup.py:132 (`as_of <= end`), :161 and :163 (mid-year tests); steps 3-11 (lines 101-180)
   replaced per D9.
-- divergence/statute_schema.py:19 (STATUSES + unprinted), :36 (REPEAL_LAST_DAY -> REPEAL_DAY 2026-04-01);
+- divergence/statute_schema.py:19 (STATUSES + unprinted), :36 (replace former repeal-last-day constant with REPEAL_DAY 2026-04-01);
   new CORPUS_CHECKED_THROUGH, REASON_CLASS, reason_class().
 - divergence/statute_validate.py:27 (import), :103 (V05 strict from < to), :135-153 (V07 REPEAL_DAY; unprinted rule),
   :207-226 (V10: null body only for unprinted).
@@ -219,3 +219,357 @@ statute_validate on the real root (no --freeze); the 32 cases on the real record
    matched nothing; re-run per file. (c) Step 4 counts by effect_id prefix instead of act_key (labels).
 8. No law text, keys or personal data in this report.
 9. Auto mode: off during the runs.
+
+## C4-B: baseline and STOP before implementation (16 Nov 2026)
+
+### PLAIN SUMMARY
+- What happened: owner approved the implementation plan and all 20 per-file edit requests. Baseline collection and
+  both lint commands completed. A subsequent source read used an unverified path and failed; implementation stopped.
+- What it means: no code, schema, test, fixture, protected input, or real record was changed. C4-B remains incomplete.
+- Problems: `Get-Content divergence/statutes/FETCH-LOG.json` reported that the path does not exist. PowerShell treated
+  this as a non-terminating error, so the already-submitted command finished its remaining read-only statements.
+  No retry, alternate path, or further implementation was attempted after receiving the result.
+- Decision needed: owner instruction to resume with read-only discovery of the actual FETCH-LOG location.
+- Next message: owner authorizes that discovery and continuation; existing per-file approvals remain recorded.
+
+### Baseline and requested STOP evidence
+- Branch: feat/p09-ingest; HEAD: 80bafc62612c30a86694d14e31bd260c152b1120; initial git status clean.
+- Collected tests: before 613; after not run. Full pytest: not run.
+- CI-selected flake8: before 0, exit 0; after not run.
+- Full CI flake8: before 740 findings, exit 0 under the pre-existing --exit-zero warning policy; after not run.
+- Commands used: `python -B -m pytest --collect-only -q -p no:cacheprovider`;
+  `python -B -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics`;
+  `python -B -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics`.
+- statute_guard --code: not run; module not created. Real body guard: not run (reserved for C4-C).
+- gate0 / corpus_hash --verify / statute_validate / statute_tables --check: not run because of STOP.
+- Former repeal-last-day constant occurrences printed before any edits: statute_schema.py:36; statute_validate.py:27,145,146;
+  logs/P09_C4_report.md:179 (historical C4-A reference). No replacements made yet.
+- Added owner requirements retained: all 34 supersedes links tested; existing C2 repeal-day assertions unchanged;
+  report per-file diff totals, collection/lint before and after, guards, protected hashes, and all gate results.
+- Expected future projection: 34 records (20/6/5/3), retro 2, cumulative amendments 127, empty URLs 53;
+  expected future test total approximately 681 including the added supersedes invariant. None asserted yet.
+
+Protected input SHA-256 values (before; after re-read at this STOP):
+
+| Input | Before | After |
+|---|---|---|
+| VERSION-DATES.csv | 572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4 | same SHA, independently verified |
+| AMENDMENT-EFFECTS.csv | b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c | same SHA, independently verified |
+| SOURCES.json | 45c3fcd4fa2279da006d40f46b7d306cde76f173b6d288733286acb234d43073 | same SHA, independently verified |
+
+Only this appended report section and the ignored scratch handoff are written for STOP reporting. Exact per-file
+diff totals and file hashes are supplied in the handoff and owner-facing STOP message after this append.
+
+### SELF-AUDIT (C4-B baseline STOP)
+1. Plan gate: kept yes; explicit APPROVED received before runs/writes, then each file edit separately approved.
+2. No commit/push: kept yes; only read-only git inspection; owner-only commit commands prepared in the STOP message.
+3. Protected inputs: kept yes; no code/test/fixture/body/table edits, no freeze, no real records, no body guard.
+4. Offline/no dependencies/secrets: kept yes; no network, model/API calls, dependency installation, key or environment reads.
+5. Write locations: kept yes; only approved committed report and scratch/C4_handoff_B.md for reporting.
+6. Determinism and STOP: kept yes; failed source read disclosed, no retry or improvised recovery; only STOP reporting follows.
+7. Report format/public content: kept yes; PLAIN SUMMARY first, details, SELF-AUDIT; no keys, personal data or law text.
+8. Handoff: kept yes; scratch/C4_handoff_B.md records files, hashes, counts and open questions.
+
+Automatic approval review is configured as auto_review; explicit owner approval was still obtained and respected.
+
+### C4-B resumed implementation and final STOP (16 Nov 2026)
+
+#### PLAIN SUMMARY
+- What happened: resumed on explicit owner approval, read C4-A first, verified the supplied FETCH-LOG SHA, implemented
+  the approved files and 68 additional tests, then ran the required checks sequentially. The final tables check failed.
+- What it means: code and tests are reviewable but C4-B is incomplete; no commit, push, real records or body-guard run.
+- Problems: statute_tables.check_versions delegates raw VERSION-DATES dates to the newly strict V05. The two preserved
+  equal-date repeal-day rows are rejected, while D3 requires their projected records to end on the following day.
+  Full lint also has three additional advisory findings. No code or test expectations were changed after this failure.
+- Decision needed: owner approval of a follow-up compatibility plan for the table checker, outside the original edit list.
+  Preserve strict record V05, protected tables and C2 assertions; do not suppress these rejections or change expectations.
+- Next message: owner directs/approves the table-checker follow-up. Existing working changes remain uncommitted.
+
+#### Implementation and evidence
+- D78 amendment written separately; original DECISION-D78.md unchanged. Horizon 2026-11-15 and evidence recorded.
+- Half-open helpers, REPEAL_DAY, complete reason classes, D9 lookup order, schema and D11 validator implemented.
+- Pure project(vd, effects, sources, mapping, knowledge, fetch_log=None): no implicit local reads. CI uses committed
+  tables/SOURCES only, synthetic or None knowledge, and no real FETCH-LOG. Printed bodies are not manufactured.
+- Registered assent fallback verified as 2025-08-21. Real-table tests pass: 34 records, statuses 20/6/5/3, retro 2,
+  amended_by 127, empty URLs 53, and all 34 immediate-predecessor supersedes links (None for v1).
+- All 32 fixed C4-A spec cases pass. URL preflight counts were 53 empty both without and with FETCH-LOG; expectations
+  were not changed. Projection tests include cumulative provenance, clause-only owner targets, exceptions and sources.
+- FETCH-LOG verified at the owner-supplied _local_text/_raw/2026-11-13/FETCH-LOG.json path:
+  43476df6fd7b9f72f453a48bdb83f831b1cd30be140b39f2f399dade2ca1423e, before and after.
+- All four code users of the former repeal-last-day constant were printed before editing and replaced; historical
+  report references updated. Existing C2 repeal-day test function is AST-identical to HEAD (all assertions retained).
+- build(write=False) creates nothing; synthetic default/write=True outputs match the existing serializer's four files
+  and hashes. Guard body tests stub build and do not read the corpus; historical body-hash serialization retained.
+
+#### Required check results
+
+| Check | Before | After / result |
+|---|---|---|
+| pytest collection | 613 | 681 (+68) |
+| Full pytest | not run as a baseline (collection baseline only) | 680 passed, 1 skipped, 62.53 s, exit 0 |
+| CI flake8 selection | 0, exit 0 | 0, exit 0 |
+| Full CI flake8 | 740 findings, configured exit 0 | 743 findings, configured exit 0 |
+| gate0 | not rerun as baseline | 0 blockers, 7 warnings, exit 0 |
+| corpus_hash --verify | not rerun as baseline | 17 frozen / 17 current, no drift, exit 0 |
+| statute_validate | not rerun as baseline | 0 records, 0 errors, 0 warnings, exit 0 |
+| statute_tables --check | not rerun as baseline | effects accepted 50/rejected 0; versions accepted 32/rejected 2, exit 1 |
+
+The skipped existing test is test_v14_not_a_git_repo_warn: the mandated scratch tmp_path is inside the repository's
+Git work tree. Full lint remains advisory exactly as the checked-in CI command; the increase is one C901, one E305,
+and one E501 finding. No lint selection/threshold was weakened and no skip was added.
+
+Code guard output (exit 0):
+
+    statute_guard --code: 34 rows sha256 b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7 PASS
+
+Failing check output (exit 1):
+
+    AMENDMENT-EFFECTS.csv: accepted 50, rejected 0
+    VERSION-DATES.csv: accepted 32, rejected 2
+      REJECTED act:1961:2:v6: V05: in_force_from 2026-04-01 must be < in_force_to 2026-04-01
+      REJECTED act:1961:285BAA:v1: V05: in_force_from 2026-04-01 must be < in_force_to 2026-04-01
+
+Protected SHA-256 values before AND after (identical, independently re-read):
+
+- VERSION-DATES.csv: 572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4
+- AMENDMENT-EFFECTS.csv: b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c
+- SOURCES.json: 45c3fcd4fa2279da006d40f46b7d306cde76f173b6d288733286acb234d43073
+- Expected body guard remains aebe8deb174f8c1a7f13058d1b2200c0b4c910e826508f055bf587f18be97a4d; NOT RUN.
+
+#### Per-file implementation diff (+ / - relative to HEAD; new files counted in full)
+
+| File | + | - |
+|---|---:|---:|
+| divergence/DECISION-D78-AMENDMENT-2026-11-16.md | 89 | 0 |
+| divergence/statute_schema.py | 33 | 4 |
+| divergence/statutes/schema/statute_record.schema.json | 24 | 4 |
+| divergence/statute_validate.py | 15 | 5 |
+| divergence/statute_lookup.py | 100 | 42 |
+| divergence/statute_records.py | 170 | 0 |
+| divergence/statute_guard.py | 44 | 0 |
+| divergence/statute_build.py | 5 | 4 |
+| tests/test_statute_schema.py | 45 | 1 |
+| tests/test_statute_lookup.py | 123 | 3 |
+| tests/test_statute_validate.py | 52 | 0 |
+| tests/test_statute_build.py | 61 | 0 |
+| tests/test_statute_records.py | 198 | 0 |
+| tests/test_statute_guard.py | 38 | 0 |
+| tests/fixtures/statutes/records/2025/act__2025__sFAKE5__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE2__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE4__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE4__v2.json | 1 | 1 |
+
+logs/P09_C4_report.md is also modified (this section); its final diff count and SHA, all implementation file SHAs,
+and the scratch handoff state are recorded in C4_handoff_B.md after this append. No other committed paths edited.
+
+#### SELF-AUDIT (C4-B resumed STOP)
+1. Plan gate: kept yes; resume explicitly approved and all 20 per-file confirmations retained; no new edit scope added.
+2. No commit/push: kept yes; changes remain uncommitted; only owner-prepared commit commands supplied at STOP.
+3. Protected files: kept yes; table/source/FETCH hashes identical; original D78, real bodies, owner files, frozen corpus,
+   replay cache, runs, pre-registration, QA scorer and TEST files not edited; no real freeze or real records written.
+4. Offline/no new dependencies/secrets: kept yes; no network/model/API calls, installs or environment/key reads.
+   PYTHONDONTWRITEBYTECODE was set, not read, to prevent subprocess bytecode writes.
+5. Write scope: kept yes; only the 19 approved committed paths and scratch artifacts; pytest basetemp under scratch.
+6. Deterministic STOP: kept yes; statute_tables failure stopped implementation immediately; no fix, retry, expected-result
+   edit or weakened check followed; only mandatory STOP evidence and report/handoff writes followed.
+7. Report/public content: kept yes; summaries/details/audits present; no keys, personal data or substantive law text.
+8. Handoff: kept yes; C4_handoff_B.md extended with latest files, SHAs, counts and blocking question at STOP.
+
+### C4-B option (a) fix and default-temp STOP (16 Nov 2026)
+
+#### PLAIN SUMMARY
+- What happened: owner approved the shared date-conversion fix, all six file edits and a narrow exception for the
+  requested default-temp pytest run. Applied the fix and five regression cases. Scratch pytest passed; default-temp
+  pytest failed during fixture setup with WinError 5 (Access is denied) while enumerating its temporary directory.
+- What it means: the shared-helper changes are tested under scratch, but C4-B is still incomplete. The requested
+  zero-skip default-temp run and the remaining verification sequence have not completed. Nothing committed or pushed.
+- Problems: runtime filesystem access to pytest's default temporary directory. No test assertion caused this error.
+  No retry, permission changes, new basetemp workaround, or remaining check was run after receiving the failure.
+- Decision needed: owner instruction for a permission-reviewed default-temp retry, then the remaining approved checks.
+- Next message: owner authorizes the recovery path and continuation; no further implementation changes proposed.
+
+#### Changes (option a)
+- statute_records.project_dates(vd, effects, sources) now holds the single repeal-day/retro date conversion, including
+  predecessor ends. project() and statute_tables.check_versions/_record both use it. Canonical tables are not changed.
+- Removed the table checker's separate retro conversion. Malformed raw date rejection and strict record V05 remain.
+- New regression cases: both real repeal-day rows accepted (two cases); ordinary equal-date row still rejected;
+  all 34 shared temporal projections match project(); retro predecessor end moves preserved (five cases total).
+- The existing synthetic retro test now supplies its raw deemed-date start as required by D5; its expected values
+  are unchanged. Synthetic effects carry target_act/target_section. No expected result was edited or skip added.
+- Original C2 repeal-day test function remains AST-identical to HEAD; all existing C2 assertions are retained.
+- E305 blank line and E501 wrapping edits applied. The former new C901 was project, complexity 18; date, row and
+  knowledge-link helpers were mechanically extracted. Final flake8 count and complexity verification are pending.
+
+#### Check results and pending work
+
+| Check | Original / previous result | This attempt |
+|---|---|---|
+| Collection | 613 original; 681 before fix | 686 (+5 fix cases; +73 overall) |
+| Scratch full pytest | 680 passed, 1 skipped | 685 passed, 1 skipped, 32.45 s, exit 0 |
+| Pytest without basetemp | not run | 20 passed, 1 setup error, 1.31 s, exit 1; stopped at first error |
+| CI-selected flake8 | 0 before / 0 last run | not rerun: STOP occurred first |
+| Full CI flake8 | 740 original / 743 last run | not rerun; target 740 is not yet verified |
+| statute_guard --code | 34 rows, approved SHA, PASS | not rerun after fix |
+| gate0 | 0 blockers, 7 warnings, exit 0 | not rerun after fix |
+| corpus_hash --verify | 17/17 match, exit 0 | not rerun after fix |
+| statute_validate | 0 records/errors/warnings, exit 0 | not rerun after fix |
+| statute_tables --check | effects 50/0, versions 32/2, exit 1 before fix | not rerun after fix; target 50/0 and 34/0 remains required |
+
+The scratch skip is the unchanged test_v14_not_a_git_repo_warn because its tmp_path lies inside the repository.
+The default-temp error occurred at setup of test_csv_never_overwritten_and_owner_columns_kept. Temporary directory
+enumeration was denied before its test body ran. No personal temporary path is included in this public report.
+
+Commands actually run:
+
+    python -B -m pytest --collect-only -q -p no:cacheprovider
+    python -B -m pytest -q -x -p no:cacheprovider --basetemp=divergence/statutes/_local_text/scratch/C4-B-fix-pytest
+    python -B -m pytest -q -x -p no:cacheprovider
+
+PYTHONDONTWRITEBYTECODE was set (not read) for both test processes. The default-temp exception was explicitly
+approved by the owner; no source edits occurred outside the workspace and no permission changes were attempted.
+
+Last measured code guard output (before this fix; not presented as a rerun):
+
+    statute_guard --code: 34 rows sha256 b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7 PASS
+
+Protected hashes before AND after this fix (identical, independently re-read for STOP evidence):
+
+- VERSION-DATES.csv: 572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4
+- AMENDMENT-EFFECTS.csv: b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c
+- SOURCES.json: 45c3fcd4fa2279da006d40f46b7d306cde76f173b6d288733286acb234d43073
+- FETCH-LOG: 43476df6fd7b9f72f453a48bdb83f831b1cd30be140b39f2f399dade2ca1423e
+- Real body guard not run; first real run remains C4-C. No real records or law bodies written.
+
+#### Updated per-file implementation totals (+ / - relative to HEAD)
+
+| File | + | - |
+|---|---:|---:|
+| divergence/DECISION-D78-AMENDMENT-2026-11-16.md | 89 | 0 |
+| divergence/statute_schema.py | 34 | 4 |
+| divergence/statutes/schema/statute_record.schema.json | 24 | 4 |
+| divergence/statute_validate.py | 15 | 5 |
+| divergence/statute_lookup.py | 100 | 42 |
+| divergence/statute_records.py | 211 | 0 |
+| divergence/statute_guard.py | 44 | 0 |
+| divergence/statute_build.py | 5 | 4 |
+| tests/test_statute_schema.py | 45 | 1 |
+| tests/test_statute_lookup.py | 123 | 3 |
+| tests/test_statute_validate.py | 52 | 0 |
+| tests/test_statute_build.py | 61 | 0 |
+| tests/test_statute_records.py | 198 | 0 |
+| tests/test_statute_guard.py | 38 | 0 |
+| tests/fixtures/statutes/records/2025/act__2025__sFAKE5__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE2__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE4__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE4__v2.json | 1 | 1 |
+| divergence/statute_tables.py | 16 | 10 |
+| tests/test_statute_tables.py | 54 | 2 |
+
+The report is also modified; its final SHA and diff totals, all 21 changed-file SHAs, and this STOP's pending work
+are recorded in scratch/C4_handoff_B.md after this append. The report and all implementation changes stay uncommitted.
+
+#### SELF-AUDIT (option a STOP)
+1. Plan gate: kept yes; follow-up plan, all six file approvals and the default-temp exception received before changes.
+2. No commit/push: kept yes; owner-only commands prepared, never executed.
+3. Protected files: kept yes; hashes identical; no protected input, body, owner, freeze, cache, runs, preregistration,
+   QA scorer or TEST-set file edited; strict V05 unchanged and C2 assertions retained.
+4. Offline/dependencies/secrets: kept yes; no network/model/API calls, installs or environment/key reads.
+5. Write scope: kept yes; approved workspace files/scratch, plus only the explicitly approved pytest default-temp exception.
+6. STOP/determinism: kept yes; default-temp PermissionError stopped execution; no retries, weakened checks, new skips,
+   expected-result edits or code fixes followed. Only mandatory STOP reporting/evidence was produced afterwards.
+7. Report/public content: kept yes; summary, details and audit; no keys, personal data or substantive law text.
+8. Handoff: kept yes; updated at STOP with final files, hashes, counts and pending verification.
+
+### C4-B remaining checks and whitespace STOP (16 Nov 2026)
+
+#### PLAIN SUMMARY
+- What happened: owner prohibited any default-temp retry and assigned plain pytest to himself. Ran only the
+  authorized remaining checks sequentially. Scratch pytest and every runtime/lint/hash check passed. git diff --check
+  then failed because this report had a new blank line at EOF (line 482), introduced in the previous report append.
+- What it means: shared projection/table-check behavior is verified, including real effects 50/0 and versions 34/0.
+  C4-B remains at STOP because the final diff check failed; git status --short was not run after that failure.
+- Problems: report-only EOF whitespace. This mandatory STOP append consumes the former trailing blank as a section
+  separator and ends with a single newline; that is not presented as a successful recheck. No implementation changed.
+- Decision needed: owner instruction to run the final git diff --check and git status --short after this report update.
+- Next message: owner authorizes those two checks. Plain pytest remains owner-run; no temp retry or permission change.
+
+#### Final runtime/check table
+
+| Check | Before C4-B | Latest result |
+|---|---|---|
+| Collected tests | 613 | 686 (+73; measured before this unchanged-code run) |
+| Scratch pytest | collection baseline only | 685 passed, 1 skipped, 31.85 s, exit 0 |
+| CI-selected flake8 | 0 | 0, exit 0 |
+| Full CI flake8 | 740 | 740, configured warning exit 0; all three new findings removed |
+| statute_guard --code | approved reference SHA | 34 rows, identical approved SHA, PASS, exit 0 |
+| gate0 | not rerun as baseline | 0 blockers, 7 warnings, exit 0 |
+| corpus_hash --verify | frozen manifest unchanged | 17 frozen / 17 current, no drift, exit 0 |
+| statute_validate | no real records | 0 records, 0 errors, 0 warnings, exit 0 |
+| statute_tables --check | 50 effects / 34 version rows | effects accepted 50/rejected 0; versions accepted 34/rejected 0; exit 0 |
+| Protected hashes | approved reference values below | all four match, exit 0 |
+| git diff --check | previously passed before last report append | exit 1: logs/P09_C4_report.md:482: new blank line at EOF |
+| git status --short | previously recorded 21 changed paths | not run after failure |
+
+The existing scratch skip is test_v14_not_a_git_repo_warn, because scratch tmp_path is in the Git work tree.
+No test or skip was changed. Plain pytest was not retried, no default temporary folder accessed by this run,
+and no permissions were changed. The owner will run plain pytest himself.
+
+Current code guard output:
+
+    statute_guard --code: 34 rows sha256 b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7 PASS
+
+Current real-table integration output:
+
+    AMENDMENT-EFFECTS.csv: accepted 50, rejected 0
+    VERSION-DATES.csv: accepted 34, rejected 0
+
+Protected SHA-256 values before AND after (identical; all four checked against approved references):
+
+- VERSION-DATES.csv: 572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4
+- AMENDMENT-EFFECTS.csv: b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c
+- SOURCES.json: 45c3fcd4fa2279da006d40f46b7d306cde76f173b6d288733286acb234d43073
+- FETCH-LOG: 43476df6fd7b9f72f453a48bdb83f831b1cd30be140b39f2f399dade2ca1423e
+
+Shared-helper regression/spec tests pass: repeal-day rows accepted; non-repeal equality rejected by strict V05;
+retro/predecessor conversion shared; 32 spec cases; all 34 supersedes links; statuses 20/6/5/3, retro 2,
+amended_by 127, empty URLs 53. Real body guard remains NOT RUN (C4-C). No real records written.
+
+#### Updated implementation per-file totals (+ / - relative to HEAD)
+
+| File | + | - |
+|---|---:|---:|
+| divergence/DECISION-D78-AMENDMENT-2026-11-16.md | 89 | 0 |
+| divergence/statute_schema.py | 34 | 4 |
+| divergence/statutes/schema/statute_record.schema.json | 24 | 4 |
+| divergence/statute_validate.py | 15 | 5 |
+| divergence/statute_lookup.py | 100 | 42 |
+| divergence/statute_records.py | 211 | 0 |
+| divergence/statute_guard.py | 44 | 0 |
+| divergence/statute_build.py | 5 | 4 |
+| tests/test_statute_schema.py | 45 | 1 |
+| tests/test_statute_lookup.py | 123 | 3 |
+| tests/test_statute_validate.py | 52 | 0 |
+| tests/test_statute_build.py | 61 | 0 |
+| tests/test_statute_records.py | 198 | 0 |
+| tests/test_statute_guard.py | 38 | 0 |
+| tests/fixtures/statutes/records/2025/act__2025__sFAKE5__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE2__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE4__v1.json | 1 | 1 |
+| tests/fixtures/statutes/records/1961/act__1961__sFAKE4__v2.json | 1 | 1 |
+| divergence/statute_tables.py | 16 | 10 |
+| tests/test_statute_tables.py | 54 | 2 |
+
+The report is also modified. Its final diff totals and SHA, all changed-file hashes, and this STOP's state
+are recorded in scratch/C4_handoff_B.md after this append. All changes remain uncommitted.
+
+#### SELF-AUDIT (remaining-checks STOP)
+1. Plan gate: kept yes; owner explicitly approved remaining checks; prior report/handoff edit approvals retained.
+2. No commit/push: kept yes; no state-changing git command executed, owner-only commit lines prepared.
+3. Protected files: kept yes; four protected hashes match; no real bodies, records, owner/freeze/cache/run/
+   preregistration/QA scorer/TEST-file edits; strict V05 and C2 assertions unchanged.
+4. Offline/dependencies/secrets: kept yes; no network/model/API calls, installs or environment/key reads.
+5. Write scope: kept yes; only scratch pytest output and the approved report/handoff; no default-temp retry.
+6. STOP/determinism: kept yes; whitespace check failure stopped the sequence immediately, no subsequent checks,
+   source changes, retries or permission changes. Only mandatory STOP reporting/evidence followed.
+7. Report/public content: kept yes; summary/details/audit; no keys, personal data or substantive law text.
+8. Handoff: kept yes; updated with latest runtime results, file hashes, counts and the two pending git checks.
