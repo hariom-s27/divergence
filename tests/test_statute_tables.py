@@ -1,4 +1,6 @@
 """Tests for divergence/statute_tables.py (P09 Part C3). INVENTED data only; no real law text, no network."""
+import json
+
 import pytest
 
 from divergence import act_parse as ap
@@ -327,3 +329,144 @@ def test_regeneration_carries_canonical_owner_and_merge_code_stays_sha_guarded(t
     assert canonical.read_bytes() == canonical_bytes
     assert st.main(["--merge", str(stamped), "--into", str(canonical), "--canonical-sha", sha]) == 0
     assert ap.read_csv(canonical) == generated
+
+
+@pytest.mark.parametrize("kind", ["effect", "version"])
+def test_owner_only_merge_applies_exact_report_and_keeps_sha_guard(tmp_path, kind):
+    canonical, decisions, columns, _, _ = owner_files(tmp_path, kind)
+    original = canonical.read_bytes()
+    original_rows = ap.read_csv(canonical)
+    stamped, _, _, _ = st.apply_owner(decisions, canonical, tmp_path / "regen")
+    report_path = st.owner_report_path(stamped)
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    key, owner, _ = st.canonical_spec(canonical)
+    assert report["changes"] == st.owner_cell_changes(ap.read_csv(canonical), ap.read_csv(stamped), key, owner)
+    assert report["decisions_sha256"] == st.sha256_path(decisions)
+    args = ["--into", str(canonical), "--owner-only", "--owner-report-sha", st.sha256_path(report_path)]
+    assert st.main(["--merge-preview", str(stamped)] + args) == 0
+    assert canonical.read_bytes() == original
+    assert st.main(["--merge", str(stamped), "--canonical-sha", "0" * 64] + args) == 1
+    assert canonical.read_bytes() == original
+    assert st.main(["--merge", str(stamped), "--canonical-sha", st.sha256_path(canonical)] + args) == 0
+    assert canonical.read_bytes() == stamped.read_bytes()
+    assert st.non_owner_hashes(ap.read_csv(canonical), columns, owner) == \
+        st.non_owner_hashes(original_rows, columns, owner)
+
+
+@pytest.mark.parametrize("case, message", [
+    ("missing_report_sha", "owner report SHA missing or changed"),
+    ("changed_report_sha", "owner report SHA missing or changed"),
+    ("missing_report", "REFUSED:"),
+    ("stale_canonical", "does not match the current canonical"),
+    ("changed_regen", "regen SHA mismatch"),
+    ("code_change", "non-owner hash guard"),
+    ("extra_cell", "owner-cell guard"),
+    ("missing_cell", "owner-cell guard"),
+    ("different_id_same_count", "owner-cell guard"),
+    ("different_column_same_count", "owner-cell guard"),
+    ("different_value_same_count", "owner-cell guard"),
+    ("row_order", "identical columns, keys and row order"),
+    ("columns", "identical columns, keys and row order"),
+])
+def test_owner_only_merge_refuses_mismatches_without_writing(tmp_path, capsys, case, message):
+    canonical, decisions, columns, _, _ = owner_files(tmp_path)
+    stamped, _, _, _ = st.apply_owner(decisions, canonical, tmp_path / "regen")
+    report_path = st.owner_report_path(stamped)
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    report_sha = st.sha256_path(report_path)
+    rows = ap.read_csv(stamped)
+    if case == "missing_report_sha":
+        report_sha = None
+    elif case == "changed_report_sha":
+        report_path.write_text(report_path.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+    elif case == "missing_report":
+        stamped = tmp_path / "AMENDMENT-EFFECTS.without-report.csv"
+    elif case == "stale_canonical":
+        original_rows = ap.read_csv(canonical)
+        original_rows[1]["owner_note"] = "invented intervening edit"
+        canonical.write_text(ap.csv_text(original_rows, columns), encoding="utf-8")
+    else:
+        if case == "changed_regen":
+            rows[0]["owner_note"] = "invented changed value"
+        elif case == "code_change":
+            rows[0]["target_unit"] = "invented forbidden code edit"
+        elif case == "extra_cell":
+            rows[1]["owner_note"] = "invented extra cell"
+        elif case == "missing_cell":
+            rows[0]["owner_target"] = ""
+        elif case == "different_id_same_count":
+            rows[1]["owner_target"], rows[0]["owner_target"] = rows[0]["owner_target"], ""
+        elif case == "different_column_same_count":
+            rows[0]["owner_target"], rows[1]["owner_note"] = "", rows[0]["owner_target"]
+        elif case == "different_value_same_count":
+            rows[0]["owner_target"] = "invented different target"
+        elif case == "row_order":
+            rows.reverse()
+        elif case == "columns":
+            columns = list(reversed(columns))
+        stamped.write_text(ap.csv_text(rows, columns), encoding="utf-8")
+        if case != "changed_regen":
+            # Even a report with a matching file SHA must name the exact changed cells and values.
+            report["regen_sha256"] = st.sha256_path(stamped)
+            report_path.write_text(json.dumps(report), encoding="utf-8")
+            report_sha = st.sha256_path(report_path)
+    original = canonical.read_bytes()
+    args = ["--merge", str(stamped), "--into", str(canonical), "--owner-only",
+            "--canonical-sha", st.sha256_path(canonical)]
+    if report_sha is not None:
+        args += ["--owner-report-sha", report_sha]
+    assert st.main(args) == 1
+    assert message in capsys.readouterr().out
+    assert canonical.read_bytes() == original
+
+
+def test_owner_only_merge_ten_invented_decisions_reports_exact_21_cells(tmp_path, capsys):
+    canonical = tmp_path / "AMENDMENT-EFFECTS.csv"
+    original = [eff(effect_id=f"zz_2099:s{i}", owner_ok="", owner_note="", owner_target="") for i in range(10)]
+    canonical.write_text(ap.csv_text(original, ap.EFFECT_COLUMNS), encoding="utf-8")
+    canonical_bytes = canonical.read_bytes()
+    decision_rows = [{"effect_id": row["effect_id"], "owner_ok": "yes", "owner_note": "invented reviewed row",
+                      "owner_target": ""} for row in original]
+    decision_rows[-1].update(owner_ok="fix", owner_target="clause (8)")
+    decisions = tmp_path / "OWNER-EFFECTS-invented.csv"
+    decisions.write_text(ap.csv_text(decision_rows, ["effect_id"] + list(ap.OWNER_COLUMNS)), encoding="utf-8")
+    stamped, _, _, _ = st.apply_owner(decisions, canonical, tmp_path / "regen")
+    report_path = st.owner_report_path(stamped)
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    expected = [(row["effect_id"], col) for row in decision_rows for col in ap.OWNER_COLUMNS if row[col]]
+    assert [(cell["key"], cell["column"]) for cell in report["changes"]] == expected
+    assert len(report["changes"]) == 21
+    assert st.main(["--merge-preview", str(stamped), "--into", str(canonical), "--owner-only",
+                    "--owner-report-sha", st.sha256_path(report_path)]) == 0
+    out = capsys.readouterr().out
+    assert 'rows changed 10; cells by column {"owner_note": 10, "owner_ok": 10, "owner_target": 1}' in out
+    assert "owner cells exactly match apply-owner report: PASS" in out
+    assert canonical.read_bytes() == canonical_bytes
+
+
+@pytest.mark.parametrize("owner_ok, exit_code", [("yes", 0), ("", 1)])
+def test_check_cli_reports_invented_accepted_and_rejected_rows(tmp_path, monkeypatch, capsys, owner_ok, exit_code):
+    effects = tmp_path / "AMENDMENT-EFFECTS.csv"
+    versions = tmp_path / "VERSION-DATES.csv"
+    quotes = tmp_path / "EFFECT-QUOTES.csv"
+    effects.write_text(ap.csv_text([eff(owner_ok=owner_ok)], ap.EFFECT_COLUMNS), encoding="utf-8")
+    versions.write_text(ap.csv_text([ver(owner_ok=owner_ok)], sb.VERSION_COLUMNS), encoding="utf-8")
+    quotes.write_text(ap.csv_text([{"effect_id": "zz_2099:s3(b)", "quote": QUOTE}], ["effect_id", "quote"]),
+                      encoding="utf-8")
+    monkeypatch.setattr(ap, "EFFECTS_PATH", effects)
+    monkeypatch.setattr(ap, "QUOTES_PATH", quotes)
+    monkeypatch.setattr(sb, "VERSIONS_PATH", versions)
+    monkeypatch.setitem(st.ss.INSTRUMENTS, "zz_2099", ("x", "y", "act", "gazette", None))
+    check_effects = st.check_effects
+
+    def invented_text_check(rows, quote_map):
+        return check_effects(rows, quote_map, text_of=lambda key, page: PAGE)
+
+    monkeypatch.setattr(st, "check_effects", invented_text_check)
+    assert st.main(["--check"]) == exit_code
+    output = capsys.readouterr().out
+    accepted, rejected = (1, 0) if owner_ok else (0, 1)
+    for name in (effects.name, versions.name):
+        assert f"{name}: accepted {accepted}, rejected {rejected}" in output
+    if not owner_ok:
+        assert output.count("owner_ok '' not in yes/fix") == 2

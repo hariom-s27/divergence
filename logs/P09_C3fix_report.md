@@ -176,3 +176,43 @@ SELF-AUDIT
 - Earlier targeted tests: sandbox temp denial, then escalated retry 48 passed. Initial owner-emptiness failure stopped
   work until owner-authorized diagnosis corrected the rule. No further failures; git diff --check clean.
 - No network, live model/API calls, keys printed, deletion, reset, Auto mode, commit or push; owner runs commit commands.
+
+## b01 (2026-11-16): first owner decisions batch
+
+PLAIN SUMMARY
+- WHAT HAPPENED: Applied OWNER-EFFECTS-b01.csv to regen, then merged after APPROVED MERGE: 9 yes, 1 fix.
+- WHAT IT MEANS: 10 effects accepted; 74 owner rejections remain (40 effects, 34 versions), all empty owner_ok.
+- PROBLEMS: Initial --check crashed because a local report variable shadowed report(); stopped, then fixed after
+  APPROVED FIX AND RESUME CHECKS. Two invented-data CLI regression cases now cover accepted/rejected --check output.
+- DECISION NEEDED: None for b01. NEXT MESSAGE: owner sends batch 2; no batch 2 work started.
+
+Tool and merge (REPO/LOCAL)
+- Added explicit --owner-only merge plus --owner-report-sha. Ordinary merge behavior is unchanged.
+- apply-owner writes a regen CSV and .owner.json report; merge requires pinned canonical/report/regen SHAs,
+  identical row keys/order/schema, unchanged non-owner hashes, and exactly the reported owner cells and values.
+- Independent comparison: decisions-derived cells = apply-owner report = regen changes; 10 rows / 21 cells:
+  owner_ok 10, owner_note 10, owner_target 1 (fa_2022:s16(b)(ii)); all 50 non-owner rows unchanged.
+- Approved regeneration: AMENDMENT-EFFECTS.20261116-054542.csv; canonical rows 50 -> 50.
+- Canonical SHA before: ebcf9fa45ecf721982b73505627130dc5b658bd2794f4d46abac726711ec853c
+- Canonical SHA after:  92c637e96b2f2964170757fedaef09a4df99f48ada63fd5f20b4b5f301c0495c (exact regen byte match).
+- Owner report SHA: 22a1c23387ec97d51ec61e4f77ad240a032ecc3ad4e50a6362067a9bd2bb5c48
+- Non-owner code SHA unchanged: dabf38f9e8a3f99283052221a1f75404063b54ac0ce0bab2a26434ebf12ac8c6
+
+Validation (LOCAL; FEATHERLESS_API_KEY unset)
+- Added 18 invented-data test cases for b01 (16 merge/report guards + 2 CLI regression cases).
+- Targeted CLI regression: 2 passed, 64 deselected. Full suite once after fix: 613 passed in 35.50s
+  (python -m pytest -p no:cacheprovider -q --tb=line).
+- statute_tables --check: effects accepted 10/rejected 40; versions accepted 0/rejected 34; exit 1 expected.
+- Strict flake8: 0. gate0: GATE 0 CLEAR, 0 blockers / 7 existing warnings. corpus_hash --verify: 17/17 match.
+- statute_validate: 0 records, 0 errors, 0 warnings; no manifest, --verify not applicable.
+- guard_b.py: PASS, 0 differences; versions 34/34, bodies 26/26; C3fix-20261116-055900/GUARD.md.
+  Version code SHA b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7;
+  body SHA aebe8deb174f8c1a7f13058d1b2200c0b4c910e826508f055bf587f18be97a4d (baseline = regen).
+- CI replay: facts/missing/attacked equal frozen records field by field; provider/all node markers replay, 0 API calls.
+  Output: _local_text/scratch/C3fix/PartC-b01-ci-replay-684dfd5f23.json (outside runs/).
+
+SELF-AUDIT
+- Changes: statute_tables.py, tests/test_statute_tables.py, AMENDMENT-EFFECTS.csv, this report; owner CSV untracked.
+- Frozen paths unchanged vs 3fbc388; TEST seal not edited, no holdout contents inspected; _local_text tracked files 0.
+- No hand edits to code cells, network/model/API calls, keys printed, deletion, reset, Auto mode, commit or push.
+- Stopped after b01; commit commands provided separately, including OWNER-EFFECTS-b01.csv and tool/test changes.

@@ -8,6 +8,9 @@ after the owner's yes naming the stamped file:
     --merge STAMPED --into CANONICAL --canonical-sha SHA
 The merge refuses when the canonical file changed since the preview (sha differs); owner columns are taken from the
 CURRENT canonical file by key (VERSION-DATES: basis_category only from the closed list, basis only with it).
+Owner decisions use --apply-owner DECISIONS, which writes a regen CSV and an .owner.json change report.
+After owner approval, --merge STAMPED --owner-only --owner-report-sha SHA --into CANONICAL --canonical-sha SHA
+accepts exactly the reported owner-cell changes and refuses every non-owner difference.
 
 Checks (C3 rules; rows 81, 82). Rejected rows are listed with reasons; nothing is auto-fixed and code never fills
 applicability (P09-23):
@@ -100,6 +103,62 @@ def _owner_keys(rows: list, key: str, label: str) -> dict:
     return found
 
 
+def owner_cell_changes(original: list, updated: list, key: str, owner: tuple) -> list:
+    """An ordered, value-bearing list of the exact owner cells changed by a batch."""
+    return [{"key": a[key], "column": c, "before": a.get(c, ""), "after": b.get(c, "")}
+            for a, b in zip(original, updated) for c in owner if a.get(c, "") != b.get(c, "")]
+
+
+def owner_report_path(stamped: Path) -> Path:
+    return Path(stamped).with_suffix(".owner.json")
+
+
+def owner_change_summary(changes: list) -> str:
+    counts = {c: sum(cell["column"] == c for cell in changes) for c in sorted({x["column"] for x in changes})}
+    return f"rows changed {len({cell['key'] for cell in changes})}; cells by column {json.dumps(counts)}"
+
+
+def merge_owner_only(stamped: Path, canonical: Path, report_sha: str | None) -> tuple:
+    """Accept only the exact apply-owner report pinned by its separately approved SHA."""
+    report_path = owner_report_path(stamped)
+    if not report_sha or sha256_path(report_path) != report_sha:
+        raise ValueError("owner report SHA missing or changed; --owner-report-sha must match apply-owner's report")
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    if not isinstance(report, dict):
+        raise ValueError("owner report must be a JSON object")
+    key, owner, _ = canonical_spec(canonical)
+    if (report.get("format") != "apply-owner-v1" or report.get("key") != key or
+            report.get("canonical_sha256") != sha256_path(canonical)):
+        raise ValueError("owner report does not match the current canonical table")
+    if report.get("regen_sha256") != sha256_path(stamped):
+        raise ValueError("owner report regen SHA mismatch")
+    original, columns = _read_owner_csv(canonical)
+    updated, new_columns = _read_owner_csv(stamped)
+    old_keys = list(_owner_keys(original, key, "canonical"))
+    new_keys = list(_owner_keys(updated, key, "regen"))
+    if columns != new_columns or old_keys != new_keys:
+        raise ValueError("owner-only merge requires identical columns, keys and row order")
+    before = non_owner_hashes(original, columns, owner)
+    if non_owner_hashes(updated, columns, owner) != before:
+        raise ValueError("non-owner hash guard: owner-only merge cannot change code columns")
+    changes = owner_cell_changes(original, updated, key, owner)
+    if changes != report.get("changes"):
+        raise ValueError("owner-cell guard: changed keys, columns, counts or values differ from apply-owner report")
+    changed_keys = {cell["key"] for cell in changes}
+    for row in updated:
+        if row[key] in changed_keys:
+            _validate_owner_row(row, key, columns)
+    serialized = list(csv.DictReader(io.StringIO(ap.csv_text(updated, columns))))
+    if (non_owner_hashes(serialized, columns, owner) != before or
+            owner_cell_changes(original, serialized, key, owner) != changes):
+        raise ValueError("owner-only serialization guard: cells changed; nothing written")
+    preview = ["OWNER-ONLY PREVIEW: " + owner_change_summary(changes),
+               "owner cells exactly match apply-owner report: PASS (keys, columns, counts and values)",
+               f"non-owner row hashes unchanged {len(before)}"]
+    preview += [f"  owner cell: {cell['key']} | {cell['column']}" for cell in changes]
+    return updated, columns, preview
+
+
 def _validate_owner_row(row: dict, key: str, columns: list) -> None:
     label = row[key]
     if row["owner_ok"] not in OWNER_OK:
@@ -134,6 +193,7 @@ def apply_owner(decisions: Path, canonical: Path | None = None, regen_dir: Path 
     table_key, owner, _ = canonical_spec(canonical)
     if table_key != key:
         raise ValueError(f"decision key {key} does not match canonical key {table_key}")
+    canonical_sha = sha256_path(canonical)
     original, columns = _read_owner_csv(canonical)
     required = ({key, "owner_ok", "owner_note", "owner_target"} if key == "effect_id" else
                 {key, "applies_from_tax_year", "applies_to_tax_year", "basis_category", "basis", "owner_ok"})
@@ -164,11 +224,22 @@ def apply_owner(decisions: Path, canonical: Path | None = None, regen_dir: Path 
     serialized = list(reader)
     if reader.fieldnames != columns or non_owner_hashes(serialized, columns, owner) != before:
         raise ValueError("non-owner hash guard: serialized code columns changed; nothing written")
+    if sha256_path(canonical) != canonical_sha:
+        raise ValueError("canonical file changed during apply-owner; nothing written")
+    report = {"format": "apply-owner-v1", "key": key, "canonical_sha256": canonical_sha,
+              "regen_sha256": hashlib.sha256(payload.encode("utf-8")).hexdigest(),
+              "decisions_sha256": sha256_path(decisions),
+              "changes": owner_cell_changes(original, serialized, key, owner)}
     regen = Path(regen_dir) if regen_dir is not None else ap.REGEN_DIR
     output = regen / f"{canonical.stem}.{ap.stamp()}.csv"
+    report_path = owner_report_path(output)
+    if output.exists() or report_path.exists():
+        raise FileExistsError(f"regen output or owner report already exists: {output}")
     regen.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8", newline="") as f:
         f.write(payload)
+    with report_path.open("x", encoding="utf-8", newline="") as f:
+        f.write(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     return output, len(original), len(batch), before
 
 
@@ -319,7 +390,13 @@ def main(argv=None) -> int:
     g.add_argument("--apply-owner", metavar="DECISIONS")
     a.add_argument("--into", metavar="CANONICAL")
     a.add_argument("--canonical-sha")
+    a.add_argument("--owner-only", action="store_true", help="merge exactly the apply-owner report's owner cells")
+    a.add_argument("--owner-report-sha", help="SHA256 of the apply-owner .owner.json report approved by the owner")
     args = a.parse_args(argv)
+    if args.owner_only and not (args.merge or args.merge_preview):
+        a.error("--owner-only requires --merge or --merge-preview")
+    if args.owner_report_sha and not args.owner_only:
+        a.error("--owner-report-sha requires --owner-only")
     if args.apply_owner:
         try:
             output, rows, changed, hashes = apply_owner(Path(args.apply_owner),
@@ -328,6 +405,13 @@ def main(argv=None) -> int:
             print(f"REFUSED: {e}")
             return 1
         print(f"wrote {output}; rows {rows}; decisions {changed}; non-owner row hashes unchanged {len(hashes)}")
+        report_path = owner_report_path(output)
+        owner_report = json.loads(report_path.read_text(encoding="utf-8"))
+        print(owner_change_summary(owner_report["changes"]))
+        for cell in owner_report["changes"]:
+            print(f"  owner cell: {cell['key']} | {cell['column']}")
+        print(f"regen sha256 {sha256_path(output)}")
+        print(f"owner report {report_path}; sha256 {sha256_path(report_path)}")
         return 0
     if args.counts:
         print(counts(ap.EFFECTS_PATH))
@@ -345,7 +429,14 @@ def main(argv=None) -> int:
     if not args.into:
         raise SystemExit("--into CANONICAL is required")
     canonical = Path(args.into)
-    merged, columns, preview = merge(stamped, canonical)
+    if args.owner_only:
+        try:
+            merged, columns, preview = merge_owner_only(stamped, canonical, args.owner_report_sha)
+        except (ValueError, OSError) as e:
+            print(f"REFUSED: {e}")
+            return 1
+    else:
+        merged, columns, preview = merge(stamped, canonical)
     print("\n".join(preview))
     sha = sha256_path(canonical)
     print(f"canonical {canonical.name} sha256 {sha}")
@@ -354,8 +445,12 @@ def main(argv=None) -> int:
     if args.canonical_sha != sha:
         print("REFUSED: the canonical file changed since the preview (or --canonical-sha missing)")
         return 1
+    payload = ap.csv_text(merged, columns)
+    if args.owner_only and hashlib.sha256(payload.encode("utf-8")).hexdigest() != sha256_path(stamped):
+        print("REFUSED: owner-only output differs from the report's regen file; nothing written")
+        return 1
     with open(canonical, "w", encoding="utf-8", newline="") as f:
-        f.write(ap.csv_text(merged, columns))
+        f.write(payload)
     print(f"merged into {canonical.name}; new sha256 {sha256_path(canonical)}")
     return 0
 
