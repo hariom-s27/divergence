@@ -487,3 +487,48 @@ SELF-AUDIT
 - Effects/code/tests unchanged; frozen paths unchanged vs 3fbc388; TEST seal not edited; no holdout contents read.
 - _local_text tracked files 0. No code cells hand-edited, network/model/API calls, deletion, reset, Auto mode,
   commit or push. Stopped after versions b03; commit commands provided separately.
+
+## Owner fill complete (2026-11-16): versions b04, final batch
+
+PLAIN SUMMARY
+- WHAT HAPPENED: Applied OWNER-VERSIONS-b04.csv (4 yes, key record_key) to regen, then merged after APPROVED MERGE.
+- WHAT IT MEANS: C3 check passes with 0 rejections: all 50 effects and all 34 versions accepted; owner fill complete.
+- PROBLEMS: None new; gate0 retains 7 existing warnings, no blockers. C4 date conversion remains deferred.
+- DECISION NEEDED: None for C3 owner fill. NEXT MESSAGE: owner's C4 instructions when ready.
+
+Final merge and guards (LOCAL)
+- apply-owner and check_versions validation PASS; all 34 proposed versions passed before merge. Three-way comparison
+  PASS: decisions-derived cells = apply-owner report = actual regen changes, including keys, columns and values.
+- Exact final-batch changes: 4 rows / 19 cells; applies_from_tax_year 3, applies_to_tax_year 0, basis_category 4,
+  basis 4, owner_ok 4, owner_note 4. One unclear/empty-years row and three open-ended-to ranges preserved.
+- All 34 non-owner rows unchanged; keys/order/schema and in-force dates preserved. Rows remain 34.
+- Regen: VERSION-DATES.20261116-070959.csv; pinned report SHA:
+  078168903dc50fa91fdb9f6a3608c1242d85dde0cee0cf87334e44dd27be63e0
+- Canonical VERSION-DATES SHA before: 6df577400152c13acd4ac96d4b5dd0d5605b4af4da14b9c1d8c827926ae13c6d
+- Canonical VERSION-DATES SHA after:  572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4
+  (exact approved regen byte match); decisions file hash still matches the approved report.
+- Final owner_ok: effects 48 yes / 2 fix / 0 empty; versions 34 yes / 0 empty. All 84 rows have owner decisions.
+- Canonical effects unchanged: b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c
+- Version code-column SHA unchanged (guard projection):
+  b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7
+
+C4 note retained (owner decision; no conversion now)
+- VERSION-DATES end = exclusive (next start); record lookup end = inclusive; repeal-day rows start = end.
+  Owner decides conversion in C4. No code, schema, in-force date or date-semantics change in this final batch.
+
+Final phase checks (LOCAL; FEATHERLESS_API_KEY unset)
+- python -m divergence.statute_tables --check: effects accepted 50/rejected 0; versions accepted 34/rejected 0;
+  exit 0. C3 CHECK PASS, 0 OWNER REJECTIONS LEFT.
+- Full suite once: python -m pytest -p no:cacheprovider -q --tb=line: 613 passed in 32.03s.
+- Strict flake8: 0. gate0: GATE 0 CLEAR, 0 blockers / 7 warnings. corpus_hash --verify: 17/17 match.
+- statute_validate: 0 records, 0 errors, 0 warnings; no manifest, --verify not applicable.
+- guard_b.py: PASS, 0 differences; versions 34/34, bodies 26/26; C3fix-20261116-071448/GUARD.md.
+  Body SHA aebe8deb174f8c1a7f13058d1b2200c0b4c910e826508f055bf587f18be97a4d (baseline = regen).
+- CI replay: facts/missing/attacked equal frozen records field by field; provider/all node markers replay, 0 API calls.
+  Output: _local_text/scratch/C3fix/PartC-owner-fill-complete-ci-replay-b665015470.json (outside runs/).
+
+SELF-AUDIT
+- Changed this batch: VERSION-DATES.csv and this report; OWNER-VERSIONS-b04.csv included in commit commands.
+- Effects/code/tests unchanged; frozen paths unchanged vs 3fbc388; TEST seal not edited; no holdout contents read.
+- _local_text tracked files 0. No code cells hand-edited, network/model/API calls, deletion, reset, Auto mode,
+  commit or push. Stopped at C3 owner fill complete; commit commands provided separately; C4 not started.
