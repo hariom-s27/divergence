@@ -21,7 +21,11 @@ applicability (P09-23):
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
+import io
+import json
+import re
 import sys
 from pathlib import Path
 
@@ -66,6 +70,106 @@ def merge(stamped: Path, canonical: Path) -> tuple:
     merged, preview = ap.merge_preview(ap.read_csv(canonical), new, key, columns,
                                        tuple(c for c in owner if c in columns), carry)
     return merged, columns, preview
+
+
+def _read_owner_csv(path: Path) -> tuple:
+    with Path(path).open(encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        columns = reader.fieldnames or []
+        rows = list(reader)
+    if not columns or len(set(columns)) != len(columns):
+        raise ValueError(f"{path.name}: missing or duplicate column names")
+    if any(None in r or any(v is None for v in r.values()) for r in rows):
+        raise ValueError(f"{path.name}: row width does not match header")
+    return rows, columns
+
+
+def non_owner_hashes(rows: list, columns: list, owner: tuple) -> list:
+    """One digest per row, including names and values of every non-owner column."""
+    return [hashlib.sha256(json.dumps([(c, r[c]) for c in columns if c not in owner],
+                                     ensure_ascii=False).encode("utf-8")).hexdigest() for r in rows]
+
+
+def _owner_keys(rows: list, key: str, label: str) -> dict:
+    found = {}
+    for r in rows:
+        value = r[key]
+        if not value.strip() or value in found:
+            raise ValueError(f"{label}: empty or duplicate {key} {value!r}")
+        found[value] = r
+    return found
+
+
+def _validate_owner_row(row: dict, key: str, columns: list) -> None:
+    label = row[key]
+    if row["owner_ok"] not in OWNER_OK:
+        raise ValueError(f"{label}: owner_ok must be yes or fix")
+    if row["owner_ok"] == "fix" and "owner_note" in columns and not row["owner_note"].strip():
+        raise ValueError(f"{label}: owner_ok fix needs owner_note")
+    if key == "effect_id":
+        return
+    applies = [row[c] for c in ("applies_from_tax_year", "applies_to_tax_year")]
+    for value in applies:
+        if value and (not re.fullmatch(r"[0-9]{4}-[0-9]{2}", value) or
+                      (int(value[:4]) + 1) % 100 != int(value[-2:])):
+            raise ValueError(f"{label}: tax year {value!r} must be YYYY-YY with consecutive years")
+    if row["basis_category"] not in sb.BASIS_CATEGORIES:
+        raise ValueError(f"{label}: basis_category must be in the closed list")
+    if row["basis_category"] == "unclear" and any(applies):
+        raise ValueError(f"{label}: unclear requires empty applies_from/to")
+    if row["state"] in ("never_operative", "") and any(applies):
+        raise ValueError(f"{label}: never_operative / empty state requires empty applies_from/to")
+
+
+def apply_owner(decisions: Path, canonical: Path | None = None, regen_dir: Path | None = None) -> tuple:
+    """Validate a decision batch, guard all code cells, then write only a new regen file."""
+    decisions = Path(decisions)
+    batch, fields = _read_owner_csv(decisions)
+    keys = [k for k in ("effect_id", "record_key") if k in fields]
+    if len(keys) != 1:
+        raise ValueError("decisions need exactly one key column: effect_id or record_key")
+    key = keys[0]
+    canonical = Path(canonical) if canonical is not None else (ap.EFFECTS_PATH if key == "effect_id"
+                                                            else sb.VERSIONS_PATH)
+    table_key, owner, _ = canonical_spec(canonical)
+    if table_key != key:
+        raise ValueError(f"decision key {key} does not match canonical key {table_key}")
+    original, columns = _read_owner_csv(canonical)
+    required = ({key, "owner_ok", "owner_note", "owner_target"} if key == "effect_id" else
+                {key, "applies_from_tax_year", "applies_to_tax_year", "basis_category", "basis", "owner_ok"})
+    if not required.issubset(fields):
+        raise ValueError(f"decisions missing columns: {', '.join(sorted(required - set(fields)))}")
+    allowed = {key} | (set(owner) & set(columns))
+    if set(fields) - allowed:
+        raise ValueError(f"unknown or unavailable decision columns: {', '.join(sorted(set(fields) - allowed))}")
+    if not batch:
+        raise ValueError("decisions contain no rows")
+    current = _owner_keys(original, key, "canonical")
+    changes = _owner_keys(batch, key, "decisions")
+    if changes.keys() - current.keys():
+        raise ValueError(f"unknown {key}: {', '.join(sorted(changes.keys() - current.keys()))}")
+    before = non_owner_hashes(original, columns, owner)
+    updated = []
+    for row in original:
+        row = dict(row)
+        decision = changes.get(row[key])
+        if decision is not None:
+            row.update({c: decision[c] for c in fields if c != key})
+            _validate_owner_row(row, key, columns)
+        updated.append(row)
+    if non_owner_hashes(updated, columns, owner) != before:
+        raise ValueError("non-owner hash guard: code columns changed; nothing written")
+    payload = ap.csv_text(updated, columns)
+    reader = csv.DictReader(io.StringIO(payload))
+    serialized = list(reader)
+    if reader.fieldnames != columns or non_owner_hashes(serialized, columns, owner) != before:
+        raise ValueError("non-owner hash guard: serialized code columns changed; nothing written")
+    regen = Path(regen_dir) if regen_dir is not None else ap.REGEN_DIR
+    output = regen / f"{canonical.stem}.{ap.stamp()}.csv"
+    regen.mkdir(parents=True, exist_ok=True)
+    with output.open("x", encoding="utf-8", newline="") as f:
+        f.write(payload)
+    return output, len(original), len(batch), before
 
 
 # ---------------------------------------------------------------- checks
@@ -212,9 +316,19 @@ def main(argv=None) -> int:
     g.add_argument("--check", action="store_true")
     g.add_argument("--merge-preview", metavar="STAMPED")
     g.add_argument("--merge", metavar="STAMPED")
+    g.add_argument("--apply-owner", metavar="DECISIONS")
     a.add_argument("--into", metavar="CANONICAL")
     a.add_argument("--canonical-sha")
     args = a.parse_args(argv)
+    if args.apply_owner:
+        try:
+            output, rows, changed, hashes = apply_owner(Path(args.apply_owner),
+                                                       Path(args.into) if args.into else None)
+        except (ValueError, OSError) as e:
+            print(f"REFUSED: {e}")
+            return 1
+        print(f"wrote {output}; rows {rows}; decisions {changed}; non-owner row hashes unchanged {len(hashes)}")
+        return 0
     if args.counts:
         print(counts(ap.EFFECTS_PATH))
         print(counts(sb.VERSIONS_PATH))

@@ -119,3 +119,60 @@ ita1961_2023); no extractor change.
 - Guard PASS (code-column sha b7b8fa369ef0..., body sha aebe8deb174f...; C3fix-20261116-050941). Phase checks:
   pytest 555; flake8 0; corpus_hash OK; gate0 CLEAR; statute_validate 0 errors; tables --check 84 rejections, all
   empty owner_ok; CI replay equal. Final regen for Part C: regen/AMENDMENT-EFFECTS.20261116-050804.csv.
+
+## Part C (2026-11-16): owner-decision tool and approved effects merge
+
+PLAIN SUMMARY
+- WHAT HAPPENED: Added --apply-owner for both tables, with validation and a per-row non-owner hash guard.
+  After APPROVED MERGE, merged only AMENDMENT-EFFECTS.20261116-050804.csv; 50 rows before and after.
+- WHAT IT MEANS: Owner decisions produce a reviewable regen CSV; code cells cannot change through this tool.
+  The existing --merge behavior and canonical-sha protection are unchanged.
+- PROBLEMS: No new blockers. Gate0 has 7 existing warnings; 84 owner rejections remain expected.
+- DECISION NEEDED: None for Part C; owner approvals still need filling. NEXT MESSAGE: none required.
+
+Implementation (REPO, uncommitted)
+- divergence/statute_tables.py: --apply-owner; strict headers/keys, owner_ok/fix notes, consecutive YYYY-YY,
+  closed basis categories, unclear/never_operative/empty-state applicability validation; failures write nothing.
+- Output is exclusively a new regen CSV; canonical columns are preserved and only existing owner columns change.
+  Non-owner row hashes are checked before/after updates and CSV serialization, before any output write.
+- VERSION-DATES key is record_key (not version_id); owner_note already exists, so fix requires a note there too.
+- tests/test_statute_tables.py: 40 invented-data cases added (8 -> 48): valid/invalid batches, no partial writes,
+  hash-guard trips, existing/missing version note column, regeneration owner carry and unchanged merge SHA guard.
+
+Owner-approved pre-merge correction (LOCAL)
+- The two owner_note cells on fa_2026:s84(c)/renumber and /insert were already present and identical in both files:
+  "owner reading: coupled operations; ITD footnote agrees (secondary)". All other owner cells are empty.
+- Replaced the erroneous all-empty rule with cell-by-cell owner equality and owner_target empty everywhere.
+- Precheck PASS: 50 identical effect_ids in identical order; target_unit changed 22 cells; new_units populated 16.
+  Every other original canonical column unchanged. New position/scope/check_status/check_note populated 50 each;
+  owner_target populated 0. Candidate checks: ok 28 / fail 0 / no_edition 22. b01 application skipped per addendum.
+
+Merge counts and hashes (LOCAL; exact approved candidate byte match, no line-ending difference)
+- Effects rows: 50 -> 50; VERSION-DATES remains 34 rows. Merge preview: 50 changed, 0 added, 0 removed.
+- Canonical file before: 215704d51101722f42018a2e803513cc5cc05edc88e4e8192e1f008ff02f4686
+- Canonical file after:  ebcf9fa45ecf721982b73505627130dc5b658bd2794f4d46abac726711ec853c
+- Code columns before: cea378c5bde68200c510ef31cff75d17c15d617c016984eee4357527d721a947
+- Code columns after:  dabf38f9e8a3f99283052221a1f75404063b54ac0ce0bab2a26434ebf12ac8c6
+  Code hash = SHA256 of compact UTF-8 JSON of ordered rows of (column name, value), excluding owner columns.
+
+Phase checks (LOCAL; FEATHERLESS_API_KEY unset; no network/model/API calls)
+- python -m pytest -p no:cacheprovider -q --tb=line: 595 passed in 43.43s; full suite run once after merge.
+- python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics: 0.
+- divergence/: python gate0_check.py: GATE 0 CLEAR (0 blockers, 7 existing warnings).
+- divergence/: python corpus_hash.py --verify: all 17 frozen Tier A hashes match.
+- python -m divergence.statute_validate: 0 records, 0 errors, 0 warnings; no manifest, so --verify not applicable.
+- python -m divergence.statute_tables --check: effects rejected 50, versions rejected 34; exit 1 expected.
+  All 84 reasons are "owner_ok '' not in yes/fix"; --counts confirms all owner_ok empty.
+- guard_b.py: PASS, 0 differences; versions 34/34, bodies 26/26; output C3fix-20261116-053057/GUARD.md.
+  Version code SHA b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7;
+  body SHA aebe8deb174f8c1a7f13058d1b2200c0b4c910e826508f055bf587f18be97a4d (baseline = regen).
+- Offline CI replay: facts/missing/attacked equal frozen records field by field; provider and all node markers replay.
+  Output: _local_text/scratch/C3fix/PartC-ci-replay-0d67b150fd.json (outside frozen runs/).
+
+SELF-AUDIT
+- Changed: statute_tables.py, tests/test_statute_tables.py, AMENDMENT-EFFECTS.csv, this report; no code cells hand-edited.
+- Frozen corpus/replay_cache/runs, named preregistration docs and existing DECISION-D*.md unchanged vs 3fbc388.
+- TEST seal not edited; no holdout contents inspected. _local_text tracked files: 0; outputs remain ignored/untracked.
+- Earlier targeted tests: sandbox temp denial, then escalated retry 48 passed. Initial owner-emptiness failure stopped
+  work until owner-authorized diagnosis corrected the rule. No further failures; git diff --check clean.
+- No network, live model/API calls, keys printed, deletion, reset, Auto mode, commit or push; owner runs commit commands.
