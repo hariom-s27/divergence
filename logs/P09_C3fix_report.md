@@ -251,3 +251,38 @@ SELF-AUDIT
 - Tool/tests unchanged this batch; frozen paths unchanged vs 3fbc388; TEST seal not edited; no holdout contents read.
 - _local_text tracked files 0. No hand edits to code cells, network/model/API calls, deletion, reset, Auto mode,
   commit or push. Stopped after b02; commit commands provided separately.
+
+## b03 (2026-11-16): third owner decisions batch
+
+PLAIN SUMMARY
+- WHAT HAPPENED: Applied OWNER-EFFECTS-b03.csv (10 yes) to regen, then owner-only merged after APPROVED MERGE.
+- WHAT IT MEANS: Effects accepted 30/rejected 20; versions accepted 0/rejected 34; 54 owner rejections remain.
+- PROBLEMS: None new; gate0 retains 7 existing warnings, no blockers.
+- DECISION NEEDED: None for b03. NEXT MESSAGE: owner supplies the next batch.
+
+Merge and guards (LOCAL)
+- Three-way comparison PASS: decisions-derived cells = apply-owner report = actual regen changes, including values.
+- Exact changes: 10 rows / 20 cells; owner_ok 10, owner_note 10, owner_target 0. All 50 non-owner rows unchanged.
+- Regen: AMENDMENT-EFFECTS.20261116-061219.csv; pinned report SHA:
+  f4784a73e829dbf9fae483905cc67b2733cb9e1f20e13c5913747e124f69c689
+- Canonical SHA before: 8bd3479597a0890d62a8b04ea9c89341aa06b03d15383ceaf5fa097f4b823c0d
+- Canonical SHA after:  f5eba8d044d9a7fde7b11c20ad6c191a47cacc0b85080cff4b180640868bbb4c (exact approved regen match).
+- Code-column SHA unchanged: dabf38f9e8a3f99283052221a1f75404063b54ac0ce0bab2a26434ebf12ac8c6
+- Canonical rows remain 50; cumulative owner_ok: 29 yes, 1 fix, 20 empty. Decisions file hash still matches report.
+
+Phase checks (LOCAL; FEATHERLESS_API_KEY unset)
+- statute_tables --check: 54 rejections, all "owner_ok '' not in yes/fix"; exit 1 expected.
+- Full suite once: python -m pytest -p no:cacheprovider -q --tb=line: 613 passed in 31.81s.
+- Strict flake8: 0. gate0: GATE 0 CLEAR, 0 blockers / 7 warnings. corpus_hash --verify: 17/17 match.
+- statute_validate: 0 records, 0 errors, 0 warnings; no manifest, --verify not applicable.
+- guard_b.py: PASS, 0 differences; versions 34/34, bodies 26/26; C3fix-20261116-061654/GUARD.md.
+  Version code SHA b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7;
+  body SHA aebe8deb174f8c1a7f13058d1b2200c0b4c910e826508f055bf587f18be97a4d (baseline = regen).
+- CI replay: facts/missing/attacked equal frozen records field by field; provider/all node markers replay, 0 API calls.
+  Output: _local_text/scratch/C3fix/PartC-b03-ci-replay-97e3a3a0da.json (outside runs/).
+
+SELF-AUDIT
+- This batch changed the canonical effects CSV and this report; OWNER-EFFECTS-b03.csv is included in commit commands.
+- Tool/tests unchanged this batch; frozen paths unchanged vs 3fbc388; TEST seal not edited; no holdout contents read.
+- _local_text tracked files 0. No hand edits to code cells, network/model/API calls, deletion, reset, Auto mode,
+  commit or push. Stopped after b03; commit commands provided separately.
