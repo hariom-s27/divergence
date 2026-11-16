@@ -573,3 +573,193 @@ are recorded in scratch/C4_handoff_B.md after this append. All changes remain un
    source changes, retries or permission changes. Only mandatory STOP reporting/evidence followed.
 7. Report/public content: kept yes; summary/details/audit; no keys, personal data or substantive law text.
 8. Handoff: kept yes; updated with latest runtime results, file hashes, counts and the two pending git checks.
+
+## C4-C: deterministic canonical records built and verified
+
+### PLAIN SUMMARY
+- What happened: built 34 real records and 31 local bodies twice with identical bytes. Validator and 32 real-record spec cases pass. After the owner-approved empty-root test fix, full pytest passes 729 tests with 1 existing skip; all remaining lint, gate, corpus, replay, table and hash checks pass.
+- What it means: C4-C is complete and ready for owner review/commit; bodies remain local and protected inputs are unchanged.
+- Problems: no C4-C blockers. Gate0 retains 7 existing warnings; full flake8 retains its 740-finding baseline with 0 C4-C findings. Five Gazette headings remain an explicit Part D eye-check item before D80.
+- Decision needed: none for C4-C; owner decides review/commit and Part D sequencing. No commit/push or freeze was performed.
+- Next message: owner review/commit result or Part D instructions.
+
+### Implementation and source decisions
+- New command: python -B -m divergence.statute_records --build. It reuses project(), project_dates(), build(write=False), extraction owner choices and the validator body-path resolver. It preflights metadata and all destination conflicts, writes UTF-8/LF deterministic JSON and local bodies, and reuses identical outputs without overwriting.
+- Existing projection/date logic, canonical tables, schema, lookup, validator, extracted bodies and protected corpus/cache/run files are unchanged. New JSON omits printed body text; unprinted body metadata is null, and never-operative bodies are empty and hashed.
+- First real body guard: 26 bodies, aebe8deb174f8c1a7f13058d1b2200c0b4c910e826508f055bf587f18be97a4d PASS. Guard now uses latest_raw_dir() and prints the folder; seven PDF probes passed in _raw/2026-11-13.
+- The five never-operative originals use registered ita2025_2025/FETCH-LOG source fields and headings, retain successor-based text_current_as_of=2026-03-30, and carry the registered full Gazette SHA note plus heading_not_gazette_checked. Their source_amended_up_to is null, matching the C2 unknown edition date.
+- C3-20261115-211035 contains one GAZETTE-CHECK.md with 11 bounds and comparison hunks, no independent heading fields or complete body blocks. Applied the owner's explicit fallback; no new Gazette extraction.
+- OPEN FOR PART D, BEFORE D80 FREEZE: owner eye check of 5 Gazette headings (2025 s.2, 393, 400, 446, 536).
+- Real-record spec fixture reads only committed record JSON; no local-body access, skip or xfail. All 32 expected cases are unchanged. Owner-approved option (c) preserves the exact 0/0/0 assertion on an explicit empty temporary root and adds a real-default-root test for 34 records, 0 errors and exit 0 without asserting warnings (CI has no local bodies).
+
+### Counts on REAL saved records
+
+| Measurement | Expected | Actual |
+|---|---|---|
+| Records | 34 | 34 |
+| in_force / repealed_saved / never_operative / unprinted | 20 / 6 / 5 / 3 | 20 / 6 / 5 / 3 |
+| Retro | 2 | 2 |
+| repeal_day_unsettled / corrigendum_open | 2 / 1 | 2 / 1 |
+| source_label_gap notes | 3 | 3 |
+| amended_by items / empty URLs | 127 / 53 | 127 / 53 |
+| Counterpart filled, 1961 only | 17 | 17 |
+| Printed / empty / absent body files | 26 / 5 / 3 | 26 / 5 / 3 |
+| heading_not_gazette_checked notes | 5 | 5 |
+
+### Check results
+
+| Check | Actual result |
+|---|---|
+| Knowledge dates computed in process vs C2 sheet | all 7 entries equal; no sheet/body text printed |
+| First real body guard | 26 bodies, approved SHA, PASS |
+| Synthetic ingest and guard tests | 15 passed in 0.84 s |
+| First build / second build | 65 files created / 0 files created |
+| Byte identity | 34 JSON + 31 body files identical |
+| Real-record validator | 34 records, 0 errors, 0 warnings; warning list: none |
+| Real-record spec cases | 32 passed, 41 deselected, 0.24 s |
+| Round-trip code columns | b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7 PASS |
+| Full VERSION-DATES rejoin | 572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4 PASS |
+| Saved printed-body hashes vs guard map | 26/26 equal |
+| Canonical tables | effects 50 accepted/0 rejected; versions 34 accepted/0 rejected |
+| Full scratch pytest | 729 passed, 1 existing skip, 102.96 s, exit 0; total 730 |
+| Strict / full flake8 counts | 0 / 740, both exit 0; 0 findings in C4-C source/test/verifier paths |
+| gate0 | 0 blockers, 7 existing warnings, exit 0 |
+| corpus_hash --verify | 17 frozen / 17 current, no drift, exit 0 |
+| Guarded replay | facts/missing/attacked equal; all replay markers true; 0 live calls; all 5 cache hashes identical, exit 0 |
+| Requested table/guard reruns | tables 50/0 and 34/0; code guard 34 rows, approved b7b8fa36 SHA; body guard 26 bodies, approved aebe8deb SHA; all exit 0 |
+
+Round-trip recovers record dates/status (including retro predecessor ends and repeal-day equality), rejoins unchanged table-only fields by key, and verifies code/full CSV hashes. Shared projection fields are compared to the saved JSON. No owner columns or expected hashes were edited.
+
+### Commands actually completed in the build/check phase
+
+```powershell
+python -B divergence/statutes/_local_text/scratch/C4_C_verify.py preflight --out divergence/statutes/_local_text/census/partC/C4-20261116-225408
+python -B -m pytest tests/test_statute_ingest.py tests/test_statute_guard.py -q -x -p no:cacheprovider --basetemp=divergence/statutes/_local_text/scratch/C4-C-ingest-pytest
+python -B -m divergence.statute_records --build
+python -B divergence/statutes/_local_text/scratch/C4_C_verify.py snapshot --out divergence/statutes/_local_text/census/partC/C4-20261116-225408
+python -B -m divergence.statute_records --build
+python -B divergence/statutes/_local_text/scratch/C4_C_verify.py identical --out divergence/statutes/_local_text/census/partC/C4-20261116-225408
+python -B -m divergence.statute_validate
+python -B -m pytest tests/test_statute_records.py -k test_real_spec_case -q -x -p no:cacheprovider --basetemp=divergence/statutes/_local_text/scratch/C4-C-spec-pytest
+python -B divergence/statutes/_local_text/scratch/C4_C_verify.py roundtrip --out divergence/statutes/_local_text/census/partC/C4-20261116-225408
+python -B -m divergence.statute_guard --code
+python -B divergence/statutes/_local_text/scratch/C4_C_verify.py protected --out divergence/statutes/_local_text/census/partC/C4-20261116-225408
+python -B -m divergence.statute_tables --check
+python -B -m pytest -q -x -p no:cacheprovider --basetemp=divergence/statutes/_local_text/scratch/C4-C-pytest-r2
+python -B -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+python -B -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+python -B divergence/gate0_check.py
+python -B divergence/corpus_hash.py --verify
+python -B divergence/statutes/_local_text/scratch/C4_C_verify.py replay --out divergence/statutes/_local_text/census/partC/C4-20261116-225408
+python -B -m divergence.statute_tables --check
+python -B -m divergence.statute_guard --code
+python -B -m divergence.statute_guard --body
+```
+
+Python bytecode writes were disabled, pytest cache disabled, and all pytest basetemps were dedicated scratch paths. Plain/default-temp pytest was not run. Guarded replay executed with network/provider/key/cache-write paths set to abort immediately; no such attempt occurred. The sole existing skip is test_v14_not_a_git_repo_warn because its temporary path is inside this Git work tree. No skip/xfail was added.
+
+### Per-record metadata (34 real records; no body text)
+
+Intervals are half-open; null dates never cover. SHA column is the first 12 hex characters of body_sha256; full hashes are in record JSON. Notes: label_gap=source_label_gap, heading_pending=heading_not_gazette_checked.
+
+| Record ID | Status | From | To | Retro from | Applies TY | Basis | Knowledge | Edition | Flags | Amendments | Body chars | Body SHA prefix | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| act:1961:115BBH:v1 | repealed_saved | 2023-04-01 | 2026-04-01 | ? | 2022-23..2025-26 | charging_ay_rule | 2023-03-31 | ita1961_2023 | ? | 1 | 1342 | 10f8d8055627 | ? |
+| act:1961:158B:v1 | in_force | 2023-03-31 | 2024-09-01 | ? | ? | unclear | 2023-03-31 | ita1961_2023 | ? | 0 | 1266 | bf01191553bb | ? |
+| act:1961:158B:v2 | in_force | 2024-09-01 | 2025-03-29 | ? | 2024-25..2024-25 | transaction_date | 2024-08-16 | ita1961_2024n2 | ? | 1 | 1588 | 7a931bde29de | ? |
+| act:1961:158B:v3 | repealed_saved | 2025-03-29 | 2026-04-01 | 2025-02-01 | 2024-25..2025-26 | transaction_date | 2025-03-29 | ita1961_2025 | ? | 2 | 1642 | 55234ff1d2b5 | ? |
+| act:1961:194S:v1 | in_force | 2022-07-01 | 2025-04-01 | ? | 2022-23..2024-25 | transaction_date | 2023-03-31 | ita1961_2023 | ? | 1 | 3134 | f3d03f14889c | ? |
+| act:1961:194S:v2 | repealed_saved | 2025-04-01 | 2026-04-01 | ? | 2025-26..2025-26 | transaction_date | 2025-03-29 | ita1961_2025 | ? | 2 | 3142 | c26f2379d6fe | ? |
+| act:1961:285BAA:v1 | in_force | 2026-04-01 | 2026-04-02 | ? | ? | unclear | 2025-03-29 | ita1961_2025 | repeal_day_unsettled | 1 | 2159 | 4c28b245a127 | ? |
+| act:1961:2:v1 | in_force | 2023-04-01 | 2024-04-01 | ? | 2022-23..2022-23 | charging_ay_rule | 2023-03-31 | ita1961_2023 | ? | 6 | 64271 | 3a304eadfea8 | label_gap |
+| act:1961:2:v2 | unprinted | 2024-04-01 | 2024-08-16 | ? | ? | unclear | 2026-03-30 | ita1961_2026 | ? | 8 | null | null | ? |
+| act:1961:2:v3 | unprinted | 2024-08-16 | 2024-10-01 | 2024-07-23 | ? | unclear | 2026-03-30 | ita1961_2026 | ? | 13 | null | null | ? |
+| act:1961:2:v4 | in_force | 2024-10-01 | 2025-04-01 | ? | 2024-25..2024-25 | transaction_date | 2024-08-16 | ita1961_2024n2 | ? | 15 | 65253 | d0097d8fe9be | ? |
+| act:1961:2:v5 | repealed_saved | 2025-04-01 | 2026-04-01 | ? | 2024-25..2024-25 | charging_ay_rule | 2025-03-29 | ita1961_2025 | ? | 17 | 66552 | 3e34f6c01908 | ? |
+| act:1961:2:v6 | in_force | 2026-04-01 | 2026-04-02 | ? | 2025-26..2025-26 | charging_ay_rule | 2026-03-30 | ita1961_2026 | repeal_day_unsettled | 20 | 67100 | eba9234847f3 | ? |
+| act:1961:3:v1 | repealed_saved | 2023-03-31 | 2026-04-01 | ? | 2022-23..2025-26 | charging_ay_rule | 2023-03-31 | ita1961_2023 | ? | 0 | 500 | eb1bf6ea93e2 | ? |
+| act:1961:56:v1 | in_force | 2023-04-01 | 2024-04-01 | ? | 2022-23..2022-23 | charging_ay_rule | 2023-03-31 | ita1961_2023 | ? | 5 | 19309 | 309999cb8b8d | label_gap |
+| act:1961:56:v2 | in_force | 2024-04-01 | 2025-04-01 | ? | 2023-24..2023-24 | charging_ay_rule | 2024-08-16 | ita1961_2024n2 | corrigendum_open | 7 | 21124 | 18a6eee0f418 | label_gap |
+| act:1961:56:v3 | repealed_saved | 2025-04-01 | 2026-04-01 | ? | 2024-25..2025-26 | charging_ay_rule | 2025-03-29 | ita1961_2025 | ? | 8 | 21344 | 1ddea0ea86f4 | ? |
+| act:2025:194:v1 | in_force | 2026-04-01 | open | ? | 2026-27..open | ita2025_tax_year | 2026-03-30 | ita2025_2026 | ? | 0 | 6124 | 33cdfdaee294 | ? |
+| act:2025:1:v1 | in_force | 2026-04-01 | open | ? | 2026-27..open | ita2025_tax_year | 2026-03-30 | ita2025_2026 | ? | 0 | 187 | c1c5f4532885 | ? |
+| act:2025:2:v1 | never_operative | null | null | ? | ? | unclear | 2026-03-30 | ita2025_2025 | ? | 0 | 0 | e3b0c44298fc | heading_pending |
+| act:2025:2:v2 | in_force | 2026-04-01 | open | ? | 2026-27..open | ita2025_tax_year | 2026-03-30 | ita2025_2026 | ? | 4 | 59370 | 4399ccd118fe | ? |
+| act:2025:301:v1 | in_force | 2026-04-01 | open | ? | 2026-27..open | transaction_date | 2026-03-30 | ita2025_2026 | ? | 0 | 1713 | 9787f22bc599 | ? |
+| act:2025:393:v1 | never_operative | null | null | ? | ? | unclear | 2026-03-30 | ita2025_2025 | ? | 0 | 0 | e3b0c44298fc | heading_pending |
+| act:2025:393:v2 | in_force | 2026-04-01 | 2027-04-01 | ? | 2026-27..2026-27 | transaction_date | 2026-03-30 | ita2025_2026 | ? | 4 | 40384 | b448b2d07355 | ? |
+| act:2025:393:v3 | unprinted | 2027-04-01 | open | ? | ? | unclear | 2026-03-30 | ita2025_2026 | ? | 6 | null | null | ? |
+| act:2025:3:v1 | in_force | 2026-04-01 | open | ? | 2026-27..open | ita2025_tax_year | 2026-03-30 | ita2025_2026 | ? | 0 | 485 | e106d9a73f72 | ? |
+| act:2025:400:v1 | never_operative | null | null | ? | ? | unclear | 2026-03-30 | ita2025_2025 | ? | 0 | 0 | e3b0c44298fc | heading_pending |
+| act:2025:400:v2 | in_force | 2026-04-01 | open | ? | 2026-27..open | procedural | 2026-03-30 | ita2025_2026 | ? | 1 | 1477 | d9a47c256829 | ? |
+| act:2025:446:v1 | never_operative | null | null | ? | ? | unclear | 2026-03-30 | ita2025_2025 | ? | 0 | 0 | e3b0c44298fc | heading_pending |
+| act:2025:446:v2 | in_force | 2026-04-01 | open | ? | 2026-27..open | penalty_default_date | 2026-03-30 | ita2025_2026 | ? | 1 | 681 | d0663e95f202 | ? |
+| act:2025:509:v1 | in_force | 2026-04-01 | open | ? | 2026-27..open | procedural | 2026-03-30 | ita2025_2026 | ? | 0 | 2188 | 473187baa637 | ? |
+| act:2025:536:v1 | never_operative | null | null | ? | ? | unclear | 2026-03-30 | ita2025_2025 | ? | 0 | 0 | e3b0c44298fc | heading_pending |
+| act:2025:536:v2 | in_force | 2026-04-01 | open | ? | 2026-27..open | procedural | 2026-03-30 | ita2025_2026 | ? | 4 | 11906 | 451d3e66ed80 | ? |
+| act:2025:92:v1 | in_force | 2026-04-01 | open | ? | 2026-27..open | ita2025_tax_year | 2026-03-30 | ita2025_2026 | ? | 0 | 8152 | ff4d35394113 | ? |
+
+### Protected-file hashes before/after
+
+- Equality: PASS; all protected hashes and the frozen cache file set are unchanged. Replay-specific before/after maps also match all 5 current frozen cache files.
+
+| File | Before SHA-256 | After SHA-256 |
+|---|---|---|
+| divergence/corpus/FREEZE-HASHES.json | 4a839ee99b74b14c86f1f5ef6a3cc18324c2a4aa6919f3baf495f33f9e767538 | 4a839ee99b74b14c86f1f5ef6a3cc18324c2a4aa6919f3baf495f33f9e767538 |
+| divergence/replay_cache/01096fd4bb6f1f5ea12355d99d850bd11508c54bd698bddf3e2939c96e4e3148.json | f407b26bec1b99df18d5b9af4d41b387d64f50dc159d48317da948e5949b3098 | f407b26bec1b99df18d5b9af4d41b387d64f50dc159d48317da948e5949b3098 |
+| divergence/replay_cache/477b65700f77a23e8128fd99166ebcc72441940b013d1534c6394656e2281e37.json | 45c18d1cfe88bdba37d4b82f4fd4ad4df4dccfbe0a8e9003c23fdb42a27cfa72 | 45c18d1cfe88bdba37d4b82f4fd4ad4df4dccfbe0a8e9003c23fdb42a27cfa72 |
+| divergence/replay_cache/7e51ef4f4e8cb1ed7a71ab7e87291af8a47c87763662f95e1e36d5de57a963d6.json | a0cdd7fc301467470489b7426d882421764b8e055a063e6690c99b4f233ad16d | a0cdd7fc301467470489b7426d882421764b8e055a063e6690c99b4f233ad16d |
+| divergence/replay_cache/892dca8aa3f772263f11e6264b2ee5b85ea9de67db22807576f4e3746fbca1df.json | c061239da762cd3620a4ee9637ab34075a3225e159fa080b8d6d6faabfb34268 | c061239da762cd3620a4ee9637ab34075a3225e159fa080b8d6d6faabfb34268 |
+| divergence/replay_cache/f66dbeb4d9c554397f728f5830a97a44e55d1d9ba456918a5c9377b5e2dfb3cd.json | d1a89686b33fcdd62682ca9231bef3ec7a79a44696f61aa521ca2aa3520a5793 | d1a89686b33fcdd62682ca9231bef3ec7a79a44696f61aa521ca2aa3520a5793 |
+| divergence/statutes/AMENDMENT-EFFECTS.csv | b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c | b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c |
+| divergence/statutes/MAPPING.csv | 192eba4d125dd181e3056e332806abffe189de905a8ff6e943868b1385603902 | 192eba4d125dd181e3056e332806abffe189de905a8ff6e943868b1385603902 |
+| divergence/statutes/SOURCES.json | 45c3fcd4fa2279da006d40f46b7d306cde76f173b6d288733286acb234d43073 | 45c3fcd4fa2279da006d40f46b7d306cde76f173b6d288733286acb234d43073 |
+| divergence/statutes/VERSION-DATES.csv | 572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4 | 572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4 |
+| divergence/statutes/_local_text/_raw/2026-11-13/FETCH-LOG.json | 43476df6fd7b9f72f453a48bdb83f831b1cd30be140b39f2f399dade2ca1423e | 43476df6fd7b9f72f453a48bdb83f831b1cd30be140b39f2f399dade2ca1423e |
+| divergence/statutes/_local_text/census/partC/C2-20261116-071401/PENDING-23.md | 5e0c17599b4ab5c6c051a2bacbba3ecab9241be288ca0634aa5bd9b9dd2b001d | 5e0c17599b4ab5c6c051a2bacbba3ecab9241be288ca0634aa5bd9b9dd2b001d |
+
+### Test scans and change scope
+
+- Literal _local_text scan of tests/test_statute_ingest.py: 0 matches.
+- Literal _local_text scan of tests/test_statute_records.py: 0 matches.
+- Literal _local_text scan of tests/test_statute_guard.py: 0 matches.
+- Added/updated root-test functions have 0 literal _local_text matches; the pre-existing synthetic fixture constant in that file is unchanged. The only validator-test changes are the owner-approved empty-root fixture and added real-root test.
+- Final completion scope: 42 paths (8 code/test/report paths and 34 JSON records), exactly matching expanded git status; 0 missing and 0 unexpected. No bodies or ignored local data. Exact SHA ledger, expanded status, 31 local body paths/hashes, and prepared commit commands are in the ignored handoff. No commit or push.
+
+### Short incident history
+- Earlier inspection search/path/filter errors were stopped and recorded; no retries or weakened checks followed without approval.
+- Guard raw-root issue was corrected with explicit approval and a regression test; first real guard passed.
+- Verifier relative-path display was normalized with explicit approval; existing census folder reused.
+- Never-operative provenance and missing independent Gazette headings were resolved by the owner's explicit source/fallback rules.
+- Prior STOP: the empty-default-root assumption failed; owner-approved option (c) now preserves the empty-root assertion and independently verifies the populated default root.
+
+
+### Warning detail and final Git evidence
+
+Validator warnings: none locally. Gate0's 7 existing warnings are: GST-CGST-50 missing s.74A text; IT-115BBH and IT-2-47A counterpart-number limitations; IT-439-8 unofficial-source limitation and unofficial source_type; ITR2026-RULE-247 missing s.514; SBI-TTBR-DATA community-archive limitation. Frozen files were not edited to close them.
+
+Both flake8 commands match the approved baseline (0 / 740). Full output is in the existing local census folder; no new C4-C findings. Protected table, SOURCES, FETCH-LOG, MAPPING, FREEZE-HASHES and replay-cache hashes are identical before/after. The replay compared facts, missing and attacked field by field and required all replay markers.
+
+Final git diff --stat (tracked diffs; 36 new untracked paths are additional):
+
+```text
+ divergence/statute_guard.py    |   4 +-
+ divergence/statute_records.py  |  16 ++++
+ logs/P09_C4_report.md          | 190 +++++++++++++++++++++++++++++++++++++++++
+ tests/test_statute_guard.py    |  20 +++++
+ tests/test_statute_records.py  |  14 ++-
+ tests/test_statute_validate.py |   8 +-
+ 6 files changed, 249 insertions(+), 3 deletions(-)
+```
+
+Final git diff --check: PASS. Expanded git status exactly matches the 42-path list (6 modified + 36 new); no bodies are in the list. Prepared commands are printed at STOP and in the ignored handoff. Owner eye check of 5 Gazette headings remains open for Part D before D80; no freeze is claimed.
+
+### SELF-AUDIT
+1. Plan gate kept yes: implementation/source/fallback/guard changes approved by exact path; remaining check failures stop work.
+2. No commit/push kept yes: read-only git evidence only; prepared 42-path completion commands never executed.
+3. Protected items kept yes: before/after hashes identical; no owner/table/extracted-body/corpus/cache/runs/preregistration/scorer/TEST-set edit; no freeze or cache builder.
+4. Offline/no secrets kept yes: no network/model/API calls, dependencies, environment/key inspection; only nonsecret bytecode controls set.
+5. Paths kept yes: Test-Path before unconfirmed reads; no scratch recursion/locked-folder access/deletion/permission changes; same census folder and dedicated pytest folders.
+6. Determinism/STOP kept yes: two builds and the final snapshot are byte-identical; prior failures stopped until explicit owner authorization. Full tests and every required final check now pass; no checks weakened or expected hashes edited.
+7. Public reporting kept yes in this phase: metadata/hash labels only, no law body text, secrets, personal data or 31-path body ledger; prior output incident disclosed above.
+8. Handoff kept yes: C4_handoff_C.md updated with all 42 changed-file SHAs, counts, final checks, the 31-body ledger, staging scope and Part D open item.

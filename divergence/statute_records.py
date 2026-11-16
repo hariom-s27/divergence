@@ -209,3 +209,19 @@ def project(vd, effects, sources, mapping, knowledge, fetch_log=None):
            for row in vd]
     _link_knowledge(out)
     return out
+
+
+def main(argv=None):
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Build canonical local-only statute records.")
+    parser.add_argument("--build", action="store_true", required=True)
+    parser.parse_args(argv)
+    from divergence.statute_ingest import build_records
+
+    build_records()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

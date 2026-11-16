@@ -1,9 +1,11 @@
 """C4-B guards: committed CSV only; body behavior uses a synthetic build stub."""
 import hashlib
+from pathlib import Path
 
 from divergence import act_parse as ap
 from divergence import statute_build as sb
 from divergence import statute_guard as guard
+from divergence import statute_extract as se
 
 
 def test_code_guard_equals_approved_hash():
@@ -34,5 +36,23 @@ def test_body_guard_stub_never_writes(monkeypatch, capsys):
         return {"body_sha": hashes}
 
     monkeypatch.setattr(sb, "build", fake_build)
+    monkeypatch.setattr(se, "latest_raw_dir", lambda: Path("synthetic-raw"))
     assert guard.main(["--body"]) == 1  # synthetic hash must not pass the approved real corpus guard
     assert len(calls) == 1 and "FAIL" in capsys.readouterr().out
+
+
+def test_body_guard_uses_latest_raw_dir(monkeypatch, capsys):
+    chosen = Path("synthetic-latest-raw")
+    calls = []
+    monkeypatch.setattr(se, "latest_raw_dir", lambda: chosen)
+
+    def fake_build(raw, out_dir, *, write):
+        assert raw == se.latest_raw_dir()
+        assert write is False
+        calls.append(raw)
+        return {"body_sha": {}}
+
+    monkeypatch.setattr(sb, "build", fake_build)
+    assert guard.main(["--body"]) == 1
+    assert calls == [chosen]
+    assert str(chosen) in capsys.readouterr().out

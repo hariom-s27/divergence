@@ -1,0 +1,98 @@
+{
+  "act": "1961",
+  "amended_by": [
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa2_2024:s23",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2022:s16(a)",
+      "url": ""
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2022:s16(b)(i)",
+      "url": ""
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2022:s16(b)(ii)",
+      "url": ""
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2022:s16(b)(iii)",
+      "url": ""
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "omit",
+      "ref": "fa_2023:s32(a)(i)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s32(a)(ii)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s32(b)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    }
+  ],
+  "applies_from_tax_year": "2024-25",
+  "applies_to_tax_year": "2025-26",
+  "basis_category": "charging_ay_rule",
+  "basis_exceptions": [],
+  "body_chars": 21344,
+  "body_sha256": "1ddea0ea86f470049ab67b06ed4c25100c502933ff5bc20a87f0f5a341aebbd4",
+  "chapter": null,
+  "counterpart": {
+    "ref": "act:2025:92",
+    "source": "SECONDARY",
+    "source_url": ""
+  },
+  "enacted_on": "2024-08-16",
+  "gazette_published": "no",
+  "heading": "Income from other sources.",
+  "in_force_from": "2025-04-01",
+  "in_force_to": "2026-04-01",
+  "lookup_flags": [],
+  "modified_by": [],
+  "outstanding_effects": [],
+  "record_id": "act:1961:56:v3",
+  "retrieved_at": "2026-11-13T06:40:26+05:30",
+  "retrospective_from": null,
+  "schema_version": 1,
+  "section": "56",
+  "source_acknowledgement": "Income Tax Department, Government of India",
+  "source_amended_up_to": "2025-03-29",
+  "source_kind": "act",
+  "source_page_act": "Income-tax Act, 1961, edition \"2025\"",
+  "source_page_year": "2025",
+  "source_url": "https://wm.incometaxindia.gov.in/documents/d/guest/income-tax-document-income-tax-act-1961_2025_en",
+  "status": "repealed_saved",
+  "storage_mode": "local_only",
+  "supersedes": "act:1961:56:v2",
+  "text_current_as_of": "2025-03-29",
+  "unit": "56",
+  "version_id": 3
+}

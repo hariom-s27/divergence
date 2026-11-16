@@ -59,10 +59,16 @@ def test_fixture_root_exits_0():
     assert "statute_validate: 10 records, 0 errors" in proc.stdout
 
 
+def test_empty_root_exits_0(capsys, tmp_path):
+    code, out = run(capsys, "--root", tmp_path)
+    assert code == 0
+    assert "statute_validate: 0 records, 0 errors, 0 warnings" in out
+
+
 def test_default_root_exits_0(capsys):
     code, out = run(capsys)
     assert code == 0
-    assert "statute_validate: 0 records, 0 errors, 0 warnings" in out
+    assert "statute_validate: 34 records, 0 errors," in out
 
 
 def test_default_root_allow_fixtures_exit_2(capsys):

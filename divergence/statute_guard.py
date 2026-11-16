@@ -32,7 +32,9 @@ def main(argv=None):
         actual, expected, count = code_sha(rows), CODE_SHA256, len(rows)
         label = "code"
     else:
-        result = sb.build(se.RAW_DIR, se.STATUTES_DIR / "_local_text" / "scratch" / "C4-body-no-write", write=False)
+        raw = se.latest_raw_dir()
+        print(f"statute_guard --body raw folder: {raw}")
+        result = sb.build(raw, se.STATUTES_DIR / "_local_text" / "scratch" / "C4-body-no-write", write=False)
         actual, expected, count = body_sha(result["body_sha"]), BODY_SHA256, len(result["body_sha"])
         label = "body"
     print(f"statute_guard --{label}: {count} {'rows' if args.code else 'bodies'} sha256 {actual} "

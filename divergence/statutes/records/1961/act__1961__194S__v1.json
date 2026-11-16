@@ -1,0 +1,50 @@
+{
+  "act": "1961",
+  "amended_by": [
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2022:s60",
+      "url": ""
+    }
+  ],
+  "applies_from_tax_year": "2022-23",
+  "applies_to_tax_year": "2024-25",
+  "basis_category": "transaction_date",
+  "basis_exceptions": [],
+  "body_chars": 3134,
+  "body_sha256": "f3d03f14889cb5c0cc6f157bd6f55b1240364cd58b208308ff76a2c4a21af189",
+  "chapter": null,
+  "counterpart": {
+    "notes": "official Act PDF, owner eye check",
+    "ref": "act:2025:393",
+    "source": "CBDT_official",
+    "source_url": ""
+  },
+  "enacted_on": "2022-03-30",
+  "gazette_published": "no",
+  "heading": "Payment on transfer of virtual digital asset.",
+  "in_force_from": "2022-07-01",
+  "in_force_to": "2025-04-01",
+  "lookup_flags": [],
+  "modified_by": [],
+  "outstanding_effects": [],
+  "record_id": "act:1961:194S:v1",
+  "retrieved_at": "2026-11-13T06:50:49+05:30",
+  "retrospective_from": null,
+  "schema_version": 1,
+  "section": "194S",
+  "source_acknowledgement": "Income Tax Department, Government of India",
+  "source_amended_up_to": "2023-03-31",
+  "source_kind": "act",
+  "source_page_act": "Income-tax Act, 1961, edition \"2023\"",
+  "source_page_year": "2023",
+  "source_url": "https://wm.incometaxindia.gov.in/documents/d/guest/income-tax-document-income-tax-act-1961_2023_en",
+  "status": "in_force",
+  "storage_mode": "local_only",
+  "supersedes": null,
+  "text_current_as_of": "2023-03-31",
+  "unit": "194S",
+  "version_id": 1
+}

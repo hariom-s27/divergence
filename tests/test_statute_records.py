@@ -1,4 +1,4 @@
-"""C4-B: committed metadata only. No test reads the real _local_text tree or law bodies."""
+"""C4: committed metadata only; no test reads local bodies or extraction evidence."""
 import copy
 import csv
 import json
@@ -76,6 +76,18 @@ def test_spec_case(records, case):
     kwargs = {mode: date.fromisoformat(point) if mode == "as_of" else point}
     result = lookup(records, act=act, unit=unit, as_known_on=date.fromisoformat(known) if known else None, **kwargs)
     assert result == LookupResult(expected_status, candidates[0] if status == "F" else None, candidates, reasons)
+
+
+@pytest.fixture(scope="module")
+def real_records():
+    paths = sorted((ROOT / "records").glob("*/*.json"))
+    assert len(paths) == 34
+    return [json.loads(path.read_text(encoding="utf-8")) for path in paths]
+
+
+@pytest.mark.parametrize("case", CASES, ids=[f"{n:02d}" for n in range(1, 33)])
+def test_real_spec_case(real_records, case):
+    test_spec_case(real_records, case)
 
 
 def test_project_counts_real_tables(records):

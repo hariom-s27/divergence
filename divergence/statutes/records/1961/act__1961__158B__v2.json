@@ -1,0 +1,49 @@
+{
+  "act": "1961",
+  "amended_by": [
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa2_2024:s49",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    }
+  ],
+  "applies_from_tax_year": "2024-25",
+  "applies_to_tax_year": "2024-25",
+  "basis_category": "transaction_date",
+  "basis_exceptions": [],
+  "body_chars": 1588,
+  "body_sha256": "7a931bde29deca13a9d3f30893902979344458b62295b089334680c4ece903b1",
+  "chapter": null,
+  "counterpart": {
+    "ref": "act:2025:301",
+    "source": "SECONDARY",
+    "source_url": ""
+  },
+  "enacted_on": "2024-08-16",
+  "gazette_published": "no",
+  "heading": "Deﬁnitions.",
+  "in_force_from": "2024-09-01",
+  "in_force_to": "2025-03-29",
+  "lookup_flags": [],
+  "modified_by": [],
+  "outstanding_effects": [],
+  "record_id": "act:1961:158B:v2",
+  "retrieved_at": "2026-11-13T06:46:44+05:30",
+  "retrospective_from": null,
+  "schema_version": 1,
+  "section": "158B",
+  "source_acknowledgement": "Income Tax Department, Government of India",
+  "source_amended_up_to": "2024-08-16",
+  "source_kind": "act",
+  "source_page_act": "Income-tax Act, 1961, edition \"2024 (No. 2)\"",
+  "source_page_year": "2024n2",
+  "source_url": "https://wm.incometaxindia.gov.in/documents/d/guest/income-tax-document-income-tax-act-1961_2024-no-2-_en",
+  "status": "in_force",
+  "storage_mode": "local_only",
+  "supersedes": "act:1961:158B:v1",
+  "text_current_as_of": "2024-08-16",
+  "unit": "158B",
+  "version_id": 2
+}
