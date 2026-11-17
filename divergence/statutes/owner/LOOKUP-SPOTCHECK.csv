@@ -1,0 +1,10 @@
+case_id,act,unit,as_of,tax_year,as_known_on,expected_status,expected_record,expected_reasons,why
+S1,1961,158B,2025-03-10,,2025-03-20,FOUND,act:1961:158B:v2,retro amendment not yet enacted,FA 2025 got assent on 29 Mar 2025 so on 20 Mar 2025 the v3 text was not yet law and v2 was the text in force
+S2,1961,158B,2025-03-10,,2025-06-01,FOUND,act:1961:158B:v3,retro,FA 2025 (assent 29 Mar 2025) amended s.158B with retrospective effect so as known on 1 Jun 2025 v3 covers 10 Mar 2025
+S3,1961,194S,2026-04-01,,,NO_APPLICABLE_VERSION,,repeal day,1961 Act repealed by s.536 of Income-tax Act 2025 from 1 Apr 2026; no 1961 s.194S version runs on that day
+S4,1961,2,2024-06-15,,,AMBIGUOUS,act:1961:2:v2,no printed text,15 Jun 2024 falls in v2 (1 Apr to 23 Jul 2024) but no printed consolidated text exists for that window
+S5,1961,115BBH,,2024-25,,FOUND,act:1961:115BBH:v1,,s.115BBH unchanged from 1 Apr 2023 to 1 Apr 2026 so v1 governs FY 2024-25 (AY 2025-26)
+S6,1961,194S,2024-11-20,,,FOUND,act:1961:194S:v1,,20 Nov 2024 falls in v1 (1 Jul 2022 to 1 Apr 2025)
+S7,1961,56,,2023-24,,FOUND,act:1961:56:v2,AY rule,FY 2023-24 income is assessed under the law in force on 1 Apr 2024 (AY 2024-25) so FA 2023 changes w.e.f. 1 Apr 2024 in v2 apply
+S8,2025,393,2026-09-01,,,FOUND,act:2025:393:v2,,1 Sep 2026 falls in v2 (1 Apr 2026 to 1 Apr 2027); v1 was never operative
+S9,2025,509,2026-02-01,,,NO_APPLICABLE_VERSION,,not yet in force,Income-tax Act 2025 comes into force on 1 Apr 2026 so s.509 had no operation on 1 Feb 2026
