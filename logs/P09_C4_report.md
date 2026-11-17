@@ -763,3 +763,329 @@ Final git diff --check: PASS. Expanded git status exactly matches the 42-path li
 6. Determinism/STOP kept yes: two builds and the final snapshot are byte-identical; prior failures stopped until explicit owner authorization. Full tests and every required final check now pass; no checks weakened or expected hashes edited.
 7. Public reporting kept yes in this phase: metadata/hash labels only, no law body text, secrets, personal data or 31-path body ledger; prior output incident disclosed above.
 8. Handoff kept yes: C4_handoff_C.md updated with all 42 changed-file SHAs, counts, final checks, the 31-body ledger, staging scope and Part D open item.
+
+## C4-D: owner spot-check S7 STOP (17 Nov 2026)
+
+### PLAIN SUMMARY
+- What happened: owner-approved preflight confirmed 34 real records, exactly 18 units and nine valid owner rows. All 32 existing real-record spec cases passed. Owner spot checks passed 8/9; S7 failed the exact status comparison.
+- What it means: C4-D is incomplete. S7 expects FOUND but the current record carries corrigendum_open, which the approved design propagates as an ambiguity reason. The expected record is the actual single candidate.
+- Problems: S7, 1961 s.56, tax year 2023-24: expected FOUND / act:1961:56:v2; actual AMBIGUOUS / [act:1961:56:v2] / [corrigendum_open]. No implementation, expected result, record or owner input was changed to make it pass.
+- Decision needed: owner decides whether the owner expectation, table or design should change, and authorizes continuation. The agent cannot edit the owner file or canonical tables.
+- Next message: owner decision for S7 and explicit authorization to resume. Sweep, formula test, mutations and phase checks remain pending.
+
+### Approval, scope and preflight
+
+The owner approved the plan and clarified: run all S1-S9 (pass n/9); expected_reasons is explanatory prose, retained as notes and never asserted; compare status exactly, FOUND's sole candidate exactly, AMBIGUOUS's supplied record by membership, and NO_APPLICABLE_VERSION's empty candidates. Owner clarification corrects the first plan's unit count to 18.
+
+Preflight checked owner headers, row shape, IDs S1-S9, query mode, dates, unit membership, expected status and record IDs. Actual unit set equals the supplied 7 units for 1961 and 11 for 2025. Status counts remain 20 in_force / 6 repealed_saved / 5 never_operative / 3 unprinted. The lookup consumes record JSON only; no law bodies were loaded for the cases or spot checks.
+
+Only scratch verification code and local census evidence were created before this STOP. No reusable sweep module, CI test, committed timeline or duplicate spec-case file was created. The only prepared staging path at this STOP is this report.
+
+### Commands and outcomes
+
+```powershell
+python -B divergence/statutes/_local_text/scratch/C4_D_verify.py preflight
+python -B -m pytest tests/test_statute_records.py -k test_real_spec_case -q -x -p no:cacheprovider --basetemp=divergence/statutes/_local_text/scratch/C4-D-spec-pytest
+python -B divergence/statutes/_local_text/scratch/C4_D_verify.py spotchecks
+```
+
+Preflight: exit 0, 34 records / 18 units / 9 rows. Pytest: 32 passed, 41 deselected, 0.12 s, exit 0; no test edits. Spot-check batch: 8/9 pass, exit 1; all nine required row comparisons were evaluated in the batch, then further implementation/checks stopped. Only mandatory STOP reporting and evidence followed.
+
+### Every owner row: expected versus actual
+
+Expected reasons are notes, not assertions. Empty candidate/reason lists are shown as [].
+
+| Row | Query | Expected status | Expected record | Actual status | Actual candidates | Actual reasons | Result | Owner reason notes |
+|---|---|---|---|---|---|---|---|---|
+| S1 | 1961 / 158B / 2025-03-10 / K=2025-03-20 | FOUND | act:1961:158B:v2 | FOUND | [act:1961:158B:v2] | [] | PASS | retro amendment not yet enacted |
+| S2 | 1961 / 158B / 2025-03-10 / K=2025-06-01 | FOUND | act:1961:158B:v3 | FOUND | [act:1961:158B:v3] | [] | PASS | retro |
+| S3 | 1961 / 194S / 2026-04-01 | NO_APPLICABLE_VERSION | empty | NO_APPLICABLE_VERSION | [] | [after_repeal] | PASS | repeal day |
+| S4 | 1961 / 2 / 2024-06-15 | AMBIGUOUS | act:1961:2:v2 | AMBIGUOUS | [act:1961:2:v2] | [unprinted_intermediate] | PASS | no printed text |
+| S5 | 1961 / 115BBH / TY 2024-25 | FOUND | act:1961:115BBH:v1 | FOUND | [act:1961:115BBH:v1] | [] | PASS | empty |
+| S6 | 1961 / 194S / 2024-11-20 | FOUND | act:1961:194S:v1 | FOUND | [act:1961:194S:v1] | [] | PASS | empty |
+| S7 | 1961 / 56 / TY 2023-24 | FOUND | act:1961:56:v2 | AMBIGUOUS | [act:1961:56:v2] | [corrigendum_open] | FAIL | AY rule |
+| S8 | 2025 / 393 / 2026-09-01 | FOUND | act:2025:393:v2 | FOUND | [act:2025:393:v2] | [] | PASS | empty |
+| S9 | 2025 / 509 / 2026-02-01 | NO_APPLICABLE_VERSION | empty | NO_APPLICABLE_VERSION | [] | [before_commencement] | PASS | not yet in force |
+
+### Diagnosis and remaining work
+
+S7's candidate matches the owner expectation. Its status differs because act:1961:56:v2 has lookup_flags=[corrigendum_open]. D9 step 9 adds lookup flags; step 11 returns AMBIGUOUS whenever a reason remains. D10 classifies corrigendum_open as LEGAL. The charging_ay_rule exception skips midyear_effect; it does not suppress owner flags. The unchanged fixed case 10 also expects this flag to produce AMBIGUOUS for this record. This is a reported expectation/design discrepancy, not an authorized fix.
+
+Actual sweep size: 0 queries (not run). Planned size: 18 x 2,192 = 39,456 daily queries; 18 x 7 = 126 tax-year queries; knowledge-clock boundary count not yet computed. Partition checks, reason-class census, timeline artifacts, the 24-row owner-years formula test and its expected 21 OK + 3 VD-4, and all mutation operators remain pending. Mutation killed/total: not measured; zero mutants run. No survivors can be classified before execution.
+
+Full scratch pytest, both flake8 counts, gate0/warning listing, corpus_hash --verify, statute_validate, statute_tables --check, code/body guards and git diff --check were not run in this phase because S7 stopped the sequence. C4-C results above are historical, not C4-D reruns. The five Gazette heading eye checks and eGazette check remain owner items before D80; no freeze is claimed.
+
+Local evidence: divergence/statutes/_local_text/census/partC/C4-20261117-114028/preflight.json and owner-spotchecks.json. Mandatory STOP evidence includes protected-after.json and C4_handoff_D.md, with SHA ledgers. The preflight snapshot covers 34 record JSON files, the owner CSV, four canonical/source/mapping inputs, FREEZE-HASHES, lookup, the existing real-case test and all five replay-cache JSON files. Other protected areas were not written; comprehensive phase verification remains pending.
+
+Git was clean before C4-D report reporting; scratch/census files are ignored. Git emits existing warnings about access to its global ignore and .pytest_cache; no permissions or directories were changed to suppress them. Bounded source inspection followed two truncated combined outputs; no expected result or check was weakened.
+
+Prepared commands only (never executed):
+
+```powershell
+git add -- logs/P09_C4_report.md
+git commit -m "P09 C4-D: report owner spot-check S7 mismatch" -m "Record 32 passing real-record cases and 8 of 9 owner spot checks; stop pending owner resolution of the corrigendum flag expectation."
+```
+
+### SELF-AUDIT
+1. Plan gate kept yes: first STOP preceded writes/runs; owner supplied APPROVED and exact S1-S9 comparison/count decisions before this phase.
+2. No commit/push kept yes: only read-only Git commands; prepared report-only commit lines were not executed.
+3. Protected items kept yes: no table, owner, record, body, freeze, cache, run, preregistration, scorer or TEST-set edits; no --freeze or replay-cache builder. Before/after snapshot evidence is in the handoff; broad phase guards remain pending.
+4. Offline/no secrets kept yes: no network, model/API calls, installs, environment/key reads or output. Python used -B; pytest cache was disabled.
+5. Paths kept yes: reads followed Test-Path; all writes are the approved report, scratch verifier/handoff or new timestamped census outputs. No scratch recursion, locked pytest folder access, deletion or permission changes.
+6. Determinism/STOP kept yes: exact owner status/candidate comparisons; prose reasons retained as notes. S7 stopped subsequent work; no source/case/input fixes, retries, skipped assertions or expected-result edits.
+7. Public reporting kept yes: this section starts with PLAIN SUMMARY, then details, then this audit; only metadata and short labels, no law text, personal data or keys.
+8. Handoff kept yes: C4_handoff_D.md records changed files, SHAs, counts, S7's expected/actual result, pending work and exact report-only staging scope. Auto mode was not shown.
+
+
+## C4-D resumed: sweep complete; mutation harness STOP (17 Nov 2026)
+
+### PLAIN SUMMARY
+- What happened: resumed with explicit owner authority; added reusable metadata sweep and 19 passing CI tests, completed 41,672 queries and the 24-row owner-years formula check. Mutation harness stopped at its third operator because its source anchor matched zero times.
+- What it means: sweep and formula evidence are valid; C4-D remains incomplete. Two mutants have trusted sweep kills, but no final killed/total result exists. Phase checks have not run.
+- Problems: two agent-introduced scratch-harness defects: LF-only multi-line mutation anchors do not match CRLF source; whole-object fixed-case comparison compares different module-local LookupResult classes and falsely labels all cases as killers. Discard those fixed-case killer lists.
+- Decision needed: owner approval to fix only the scratch mutation harness, rerun all ten operators using fresh scratch names, and continue phase checks. No lookup, existing cases, records, tables or owner inputs need changes.
+- Next message: APPROVED for the bounded scratch-harness correction and continuation below. No separate stop commit was made.
+
+### Owner resolution of S7 (unchanged inputs/design)
+Owner checks remain **8/9 pass + 1 explained mismatch (not a pass)**. S1-S6, S8 and S9 pass. Exact owner disposition:
+
+> MISMATCH - explained: same version (act:1961:56:v2); machine AMBIGUOUS because the record carries the open flag corrigendum_open (FA 2023 corrigendum not yet reviewed; review is a Part D item before the D80 freeze)
+
+The expected_status remains FOUND; actual remains AMBIGUOUS, candidates=[act:1961:56:v2], reasons=[corrigendum_open]. expected_reasons remains prose notes and is not asserted. The verifier recognizes only this exact owner-authorized mismatch for continuation and still records pass=false.
+
+### Completed implementation and checks
+- Added divergence/statute_census.py: metadata-only reusable sweep, static partition checks, result restrictions, reason-class checks, deterministic run-length CSV/Markdown output, explicit half-open bounds and optional lookup injection.
+- Added tests/test_statute_census.py: one-unit/one-year real-record CI sweep; negative controls for unprinted, flags, horizon, repeal, undeclared reasons and a partition gap; horizon+1 day across all eleven 2025 units; owner-years formula against VERSION-DATES using project_dates().
+- Existing 32 real-record cases passed earlier in this same C4-D task (32 passed / 41 deselected); no duplicates or expected-case edits. New focused test run: 19 passed in 0.17 s, exit 0.
+- Full daily range is [2022-04-01, 2028-04-01); tax years 2021-22 through 2027-28. Boundary probes include prior/on/following days of stored starts, retro starts and ends, with K=None plus distinct record/effect assent dates and assent +/-1 day.
+- Query counts: {'boundary': 2090, 'daily': 39456, 'tax_year': 126}; total 41672. Partitions: {'adjacencies': 11, 'retro_patterns': 2}. Timeline runs: 64.
+- Owner-years: 24 checked, 21 OK + 3 VD-4, zero DIFF. VD-4 IDs: act:1961:3:v1, act:1961:56:v3, act:1961:115BBH:v1. Charging rows map AY 1 April to preceding FY; event/procedural/2025 rows use the FY containing projected dates; final saved 1961 charging versions extend through FY 2025-26 under VD-4.
+- Mutation copies are standard-library imports under separate module names; the real lookup was never edited. Start strictness and end inclusivity mutations are applied at the lookup coverage call because the shared endpoint predicate itself lives in statute_schema.
+
+### Sweep reason and class census
+
+| Reason | Emissions | Class |
+|---|---|---|
+| after_repeal | 5395 | NO_LAW |
+| applicability_unclear_row | 3 | LEGAL |
+| before_commencement | 16335 | NO_LAW |
+| before_coverage | 3518 | CORPUS |
+| beyond_corpus_horizon | 5590 | CORPUS |
+| corrigendum_open | 411 | LEGAL |
+| known_text_not_in_corpus | 597 | CORPUS |
+| midyear_effect | 3 | QUERY |
+| overlap | 2 | LEGAL |
+| repeal_day_unsettled | 21 | LEGAL |
+| unknown_enactment_date | 108 | CORPUS |
+| unprinted_intermediate | 310 | CORPUS |
+
+Class emission totals: {'CORPUS': 10123, 'LEGAL': 437, 'NO_LAW': 21730, 'QUERY': 3}. Result totals: {'AMBIGUOUS': 7043, 'FOUND': 9381, 'NO_APPLICABLE_VERSION': 25248}. A result may emit multiple reasons; class emissions are not distinct-result counts. All emitted codes resolved through reason_class().
+
+### Every-record metadata census
+
+| Record ID | Status | From | To (exclusive) | Retro from | Flags | Flag classes |
+|---|---|---|---|---|---|---|
+| act:1961:115BBH:v1 | repealed_saved | 2023-04-01 | 2026-04-01 | none | none | none |
+| act:1961:158B:v1 | in_force | 2023-03-31 | 2024-09-01 | none | none | none |
+| act:1961:158B:v2 | in_force | 2024-09-01 | 2025-03-29 | none | none | none |
+| act:1961:158B:v3 | repealed_saved | 2025-03-29 | 2026-04-01 | 2025-02-01 | none | none |
+| act:1961:194S:v1 | in_force | 2022-07-01 | 2025-04-01 | none | none | none |
+| act:1961:194S:v2 | repealed_saved | 2025-04-01 | 2026-04-01 | none | none | none |
+| act:1961:285BAA:v1 | in_force | 2026-04-01 | 2026-04-02 | none | repeal_day_unsettled | LEGAL |
+| act:1961:2:v1 | in_force | 2023-04-01 | 2024-04-01 | none | none | none |
+| act:1961:2:v2 | unprinted | 2024-04-01 | 2024-08-16 | none | none | none |
+| act:1961:2:v3 | unprinted | 2024-08-16 | 2024-10-01 | 2024-07-23 | none | none |
+| act:1961:2:v4 | in_force | 2024-10-01 | 2025-04-01 | none | none | none |
+| act:1961:2:v5 | repealed_saved | 2025-04-01 | 2026-04-01 | none | none | none |
+| act:1961:2:v6 | in_force | 2026-04-01 | 2026-04-02 | none | repeal_day_unsettled | LEGAL |
+| act:1961:3:v1 | repealed_saved | 2023-03-31 | 2026-04-01 | none | none | none |
+| act:1961:56:v1 | in_force | 2023-04-01 | 2024-04-01 | none | none | none |
+| act:1961:56:v2 | in_force | 2024-04-01 | 2025-04-01 | none | corrigendum_open | LEGAL |
+| act:1961:56:v3 | repealed_saved | 2025-04-01 | 2026-04-01 | none | none | none |
+| act:2025:194:v1 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:1:v1 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:2:v1 | never_operative | null | open/null | none | none | none |
+| act:2025:2:v2 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:301:v1 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:393:v1 | never_operative | null | open/null | none | none | none |
+| act:2025:393:v2 | in_force | 2026-04-01 | 2027-04-01 | none | none | none |
+| act:2025:393:v3 | unprinted | 2027-04-01 | open/null | none | none | none |
+| act:2025:3:v1 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:400:v1 | never_operative | null | open/null | none | none | none |
+| act:2025:400:v2 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:446:v1 | never_operative | null | open/null | none | none | none |
+| act:2025:446:v2 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:509:v1 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:536:v1 | never_operative | null | open/null | none | none | none |
+| act:2025:536:v2 | in_force | 2026-04-01 | open/null | none | none | none |
+| act:2025:92:v1 | in_force | 2026-04-01 | open/null | none | none | none |
+
+Status counts: {'repealed_saved': 6, 'in_force': 20, 'unprinted': 3, 'never_operative': 5}. Flagged records: 3 (repeal_day_unsettled 2, corrigendum_open 1; all LEGAL). Retro records: 2; unprinted: 3; never_operative: 5. Null dates on never_operative rows confer no coverage.
+
+### Partial mutation evidence and diagnosis
+
+| Operator | Trusted sweep differences | Independent invariant | Status |
+|---|---|---|---|
+| coverage_start_strict | daily 28; boundary 515 | none | killed by sweep comparison |
+| coverage_end_inclusive | boundary 28 | FOUND at excluded end (158B / 2025-03-29 / K=2024-08-16) | killed by sweep comparison and invariant |
+| charging_skip_removed | not run: anchor precondition failed | not run | harness STOP |
+| remaining seven operators | not run | not run | pending |
+
+Partial coverage: 2 mutants attempted, 2 trusted sweep kills; 8 of 10 operators unexecuted. Final killed/total and survivor classification are not available. All printed fixed-case killer lists are invalid and must not be used: dataclass equality requires class identity across the original and scratch modules. The sweep compares result field signatures and is unaffected by that identity defect.
+Anchor evidence: LF matches 0; CRLF matches 1. The real file SHA before/after is 9c657cfa32b8ca6c31b1410077fdd002ba8185b008132ff09a39f8b21babe599 (identical). Neither defect was fixed or retried after failure.
+
+### Protected evidence, files and remaining checks
+- Before/after: 502 protected/scope files hash-identical, including owner CSVs, canonical inputs, 34 records, 31 saved local bodies, corpus/frozen run files, QA scorer and all five replay-cache JSON files. Exact path scope is in preflight.json and protected-after-stop.json; no cache builder, live calls or freeze command.
+- New census outputs: divergence/statutes/_local_text/census/partC/C4-20261117-115004/ (manifest, preflight, owner checks, sweep, assents, owner-years, partial mutation and protected snapshots). Previous STOP evidence remains preserved in C4-20261117-114028/.
+- TIMELINE.csv and TIMELINE.md contain metadata only. Committed copy divergence/statutes/census/C4_TIMELINE.md is byte-identical to local TIMELINE.md.
+- Pending: valid complete mutation run; full scratch pytest; CI-selected/full flake8 (target 0/740); gate0 with warning list; corpus_hash --verify; statute_validate (34/0); statute_tables --check (50/0,34/0); code/body guards; final protected snapshot; git diff --check. These were not run after the harness failure.
+- Owner review before D80 remains: FA 2023 corrigendum, five 2025 Gazette headings and eGazette check. No freeze is claimed.
+- Git status matches exactly four proposed add paths below; no source bodies or ignored files in staging scope. Nothing staged, committed or pushed.
+
+### Recovery plan gate (no correction applied)
+Files: only scratch/C4_D_verify.py for newline-aware anchors and field-based result comparison. Create fresh scratch mutation filenames; keep prior copies/evidence. Preflight all ten anchors before running mutants. Rerun all ten against the same cases and query grid; save per-operator evidence, including survivors. Then run the previously approved phase checks in order, stopping on any new failure. Append results to this report and update the handoff; do not commit this STOP separately.
+
+Prepared final-scope commands only:
+
+```powershell
+git add -- divergence/statute_census.py tests/test_statute_census.py divergence/statutes/census/C4_TIMELINE.md logs/P09_C4_report.md
+git commit -m "P09 C4-D: verify real-record lookup timelines" -m "Add metadata sweep and owner-years CI coverage; document owner checks, mutation evidence and phase verification results."
+```
+
+### SELF-AUDIT
+1. Plan gate kept yes: initial APPROVED plus explicit owner instruction to resume C4-D; this correction now awaits approval.
+2. No commit/push kept yes: prepared commands only, including no separate S7 STOP commit.
+3. Protected inputs kept yes: snapshot hashes identical; no owner/table/record/body/corpus/cache/run/preregistration/scorer/TEST-set edits, freeze or cache builder.
+4. Offline/no secrets kept yes: no network/model/API calls, dependencies, environment/key reads or printing. Only nonsecret bytecode suppression was set.
+5. Paths kept yes: Test-Path before unconfirmed reads; scratch files only under approved scratch; timestamped census outputs and approved committed paths; no scratch recursion or locked-folder access.
+6. STOP/determinism kept yes: strict anchor failure stopped the sequence; no corrective source edit, retry or remaining phase check. Mutation harness defects are disclosed, fixed-case killer claims discarded; no expected case was edited.
+7. Public reporting kept yes: PLAIN SUMMARY/details/audit, metadata and labels only; no law text, personal data or secrets.
+8. Handoff kept yes: C4_handoff_D.md updated with scope, SHA ledgers, counts, partial evidence, defects and next approval. Auto mode was not shown.
+
+
+## C4-D final: technical verification complete (17 Nov 2026)
+
+### PLAIN SUMMARY
+- What happened: completed the approved scratch-harness correction, all ten mutation operators and all phase checks. Sweep: 41,672 queries; owner-years: 21 OK + 3 VD-4, zero DIFF; full scratch pytest: 748 passed, 1 existing skip.
+- What it means: C4-D automated work is complete. Mutations: 10/10 KILLED, 0 SURVIVED, 0 INVALID. Owner checks remain 8/9 pass + 1 explained mismatch (S7, not a pass). No lookup, canonical input, owner file, record or body was changed.
+- Problems: no remaining automated-check failure. Seven existing gate0 warnings and the full-flake8 740-finding baseline remain. S7 retains the open corrigendum flag; owner source/legal review is still required before D80.
+- Decision needed: owner reviews the exact four-file staging scope and resolves the pre-D80 source-review items. No separate STOP commit was made and no commit/push/freeze was performed.
+- Next message: owner review/commit outcome and direction for the remaining owner source-review items.
+
+### Final implementation and output scope
+- divergence/statute_census.py: reusable offline metadata-only sweep, independent result restrictions and reason-class checks, date-partition checks, deterministic timeline writer and CLI. The day sweep loads no bodies.
+- tests/test_statute_census.py: 19 tests covering a small real-record CI sweep, unsafe FOUND/unknown-reason/gap negative controls, CORPUS_CHECKED_THROUGH + 1 day on every 2025 unit, and owner-years formulas reading VERSION-DATES with project_dates(). The existing 32 real-record cases were reused unchanged; no duplicate case file.
+- divergence/statutes/census/C4_TIMELINE.md: committed metadata-only copy of the local timeline, 64 runs; byte-identical to local TIMELINE.md.
+- logs/P09_C4_report.md: this report, including historical STOPs, every-record census, owner comparisons, corrected mutation evidence and final checks. The two earlier STOPs are historical; this final section supersedes their pending status.
+- New local census: divergence/statutes/_local_text/census/partC/C4-20261117-115004/. Scratch helper and mutant artifacts stay under scratch; neither local tree is in the add list.
+
+### Owner checks: 8/9 pass + 1 explained mismatch
+
+The owner file and design remain unchanged. expected_reasons is prose notes, never an assertion. Status and candidates were compared under the owner-supplied rules; every query/result is retained in owner-spotchecks.json.
+
+| Row | Result | Expected status / record | Actual status / candidates | Actual reasons |
+|---|---|---|---|---|
+| S1 | PASS | FOUND / act:1961:158B:v2 | FOUND / act:1961:158B:v2 | [] |
+| S2 | PASS | FOUND / act:1961:158B:v3 | FOUND / act:1961:158B:v3 | [] |
+| S3 | PASS | NO_APPLICABLE_VERSION / [] | NO_APPLICABLE_VERSION / [] | after_repeal |
+| S4 | PASS | AMBIGUOUS / act:1961:2:v2 | AMBIGUOUS / act:1961:2:v2 | unprinted_intermediate |
+| S5 | PASS | FOUND / act:1961:115BBH:v1 | FOUND / act:1961:115BBH:v1 | [] |
+| S6 | PASS | FOUND / act:1961:194S:v1 | FOUND / act:1961:194S:v1 | [] |
+| S7 | MISMATCH - explained (not a pass) | FOUND / act:1961:56:v2 | AMBIGUOUS / act:1961:56:v2 | corrigendum_open |
+| S8 | PASS | FOUND / act:2025:393:v2 | FOUND / act:2025:393:v2 | [] |
+| S9 | PASS | NO_APPLICABLE_VERSION / [] | NO_APPLICABLE_VERSION / [] | before_commencement |
+
+Exact owner disposition of S7:
+
+> MISMATCH - explained: same version (act:1961:56:v2); machine AMBIGUOUS because the record carries the open flag corrigendum_open (FA 2023 corrigendum not yet reviewed; review is a Part D item before the D80 freeze)
+
+### Sweep, applicability and record census
+
+| Measurement | Final result |
+|---|---|
+| Real records / distinct (act, unit) | 34 / 18 (7 for 1961, 11 for 2025); exact owner set |
+| Daily sweep | 39,456 = 18 x 2,192; 2022-04-01 through 2028-03-31 inclusive |
+| Tax-year sweep | 126 = 18 x 7; 2021-22 through 2027-28 |
+| Boundary knowledge sweep | 2,090 queries, including K=None and distinct record/effect assent dates +/-1 day, at version boundaries +/-1 day |
+| Total queries | 41,672 |
+| Partition | 11 adjacent pairs passed, including 2 D5 retro patterns |
+| Forbidden FOUND / unclassified emitted reasons | 0 / 0 |
+| Owner years, projected ends | 24 checked: 21 OK + 3 VD-4, DIFF none |
+| Timeline runs | 64; half-open from/to; unit, status, record IDs, reasons, classes |
+
+VD-4 records: act:1961:3:v1, act:1961:56:v3, act:1961:115BBH:v1. Both projected repeal-day rows were checked with their one-day projected interval; raw VERSION-DATES was never changed.
+Record status counts: {'repealed_saved': 6, 'in_force': 20, 'unprinted': 3, 'never_operative': 5}. Two retro records; three flagged records (repeal_day_unsettled 2, corrigendum_open 1; LEGAL). All 34 date/status/flag rows appear in the preceding Every-record metadata census and local RECORD-CENSUS.csv.
+Observed result counts: {'AMBIGUOUS': 7043, 'FOUND': 9381, 'NO_APPLICABLE_VERSION': 25248}. Reason-class emission counts: {'CORPUS': 10123, 'LEGAL': 437, 'NO_LAW': 21730, 'QUERY': 3}. These count reasons, so a query can contribute more than one class emission. Every emitted reason resolved through reason_class(). The full pytest suite also covers declared reason-class completeness.
+
+### Mutation results: 10 killed / 0 survived / 0 invalid
+
+All ten anchors were preflighted before mutation execution: exactly one match, actual text change, and compilable Python for every operator. An inapplicable/invalid operator is classified INVALID, excluded from killed/survived; none occurred. Newline normalization affected scratch copies only. Fixed-case comparison uses plain status, candidate and reason values; no dataclass identity comparison.
+
+Real statute_lookup.py SHA-256 before and after: 9c657cfa32b8ca6c31b1410077fdd002ba8185b008132ff09a39f8b21babe599 (identical). Each row below has a different SHA from that real file; the archived source bytes were rehashed after renaming and again during final verification.
+
+| Operator | Status | Named killing checks | Sweep differences | Mutant SHA-256 (differs from real) |
+|---|---|---|---|---|
+| coverage_start_strict | KILLED | real case 02, real case 04, real case 05, real case 06, real case 08, real case 10, real case 12, real case 16, real case 18; field-signature comparison on the fixed real-record sweep grid | boundary=515, daily=28 | 6873bb94ddd74da1ebb77281570195b3f09a56f9e6c63ecb9e715f675e084c39 |
+| coverage_end_inclusive | KILLED | excluded-end FOUND invariant; field-signature comparison on the fixed real-record sweep grid | boundary=28 | d09965324e34551ebe7ec4ca29b6ace6551aadd152cb56a4390e5e91028fd0e2 |
+| charging_skip_removed | KILLED | real case 22; field-signature comparison on the fixed real-record sweep grid | tax_year=1 | 06a0f6773544fe601c031814206c6000a237486575fe289c7437030bca5ca934 |
+| charging_skip_all | KILLED | real case 23, real case 25; field-signature comparison on the fixed real-record sweep grid | tax_year=3 | 7622a1ee406653c2574c037561f83bacd011e97417cadc907d0a5c91d3ad0323 |
+| horizon_removed | KILLED | real case 32; beyond-horizon FOUND invariant; field-signature comparison on the fixed real-record sweep grid | boundary=57, daily=5522, tax_year=11 | 889789b7bff6c324c26500f1ee6dac05819dab3cf9ac0236734513bcef9b8e00 |
+| repeal_one_day_late | KILLED | real case 11, real case 29; field-signature comparison on the fixed real-record sweep grid | boundary=95, daily=5, tax_year=7 | 9eaa7da7ff1d1c4cbc28a2b7d257e4a1c4ac33c68f314e53f5194ff279ef2b65 |
+| supersession_disabled | KILLED | real case 05, real case 12, real case 14; field-signature comparison on the fixed real-record sweep grid | boundary=63, daily=80 | 85717b2812fd53ccf06ab1e52e2db24a102b6019f5103d44b1cf8e109d509bc4 |
+| hindsight_removed | KILLED | real case 19; field-signature comparison on the fixed real-record sweep grid | boundary=30 | f745b3c3e05ccdd63b8db55a9d813959f68e9a86637e3052d317c21769dc3713 |
+| fallback_extra_year | KILLED | real case 27; field-signature comparison on the fixed real-record sweep grid | tax_year=1 | 2ef3da9a1800d53be41b9c50ba2c2a14adcb3e93f36ca1a1bb01b24ba2d07bda |
+| flag_omitted | KILLED | real case 10; flagged FOUND invariant; field-signature comparison on the fixed real-record sweep grid | boundary=45, daily=365, tax_year=1 | c702c449fa1eedf9d818cbc667698ae31d6bb026bab916d04de96ab911795db0 |
+
+The inclusive-end operator has no killer among the fixed 32 cases; knowledge-clock boundary queries kill it (28 differences), including a FOUND result at the excluded end for 1961/158B on 2025-03-29 with K=2024-08-16. No survivors require explanation. All ten operators ran against the same 41,672-query grid plus the fixed 32 cases (416,720 sweep comparisons and 320 fixed-case comparisons).
+The first partial run remains documented as invalid fixed-case evidence. Only mutations-r2.json and mutations-preflight-r2.json support the final result. The two old and ten fresh source copies are retained byte-for-byte as .py.txt artifacts; mutant-archive.json maps names and hashes. They were renamed within verified scratch paths to keep generated intentionally defective source out of repository-wide Python lint; no lint rule, configuration, ignore filter, baseline expectation or real source was changed.
+
+### Final phase checks
+
+| Check | Final outcome |
+|---|---|
+| Full pytest, scratch basetemp | 748 passed, 1 existing skip, 100.66 s, exit 0 |
+| Existing real-record spec cases | 32 passed in targeted run; included again in full pytest |
+| New census CI tests | 19 passed targeted; included again in full pytest |
+| Flake8 CI selection / full count | 0 / 740, exit 0; no findings in new committed code/tests or scratch verifier |
+| gate0 | 0 blockers, 7 existing warnings, exit 0 |
+| corpus_hash --verify | 17 frozen / 17 current, no drift, exit 0 |
+| statute_validate | 34 records, 0 errors, 0 warnings, exit 0 |
+| statute_tables --check | effects 50 accepted / 0 rejected; versions 34 accepted / 0 rejected; exit 0 |
+| statute_guard --code | 34 rows, approved b7b8fa36 SHA, PASS |
+| statute_guard --body | 26 bodies, approved aebe8deb SHA, PASS |
+| Protected snapshot | 502 paths unchanged; replay cache file set and all five hashes unchanged |
+| Timeline copies | byte-identical |
+| git diff --check | PASS before this final append; final STOP rerun and scope evidence recorded in handoff/local stop-verification.json |
+| Git scope | exact four-file add list below; no bodies or ignored local paths |
+
+Code guard full SHA: b7b8fa369ef009d2a32fa77452ee3b5b2e767a5a360d405fa3af17c182c71ab7. Body guard full SHA: aebe8deb174f8c1a7f13058d1b2200c0b4c910e826508f055bf587f18be97a4d. Body guard read the existing _raw/2026-11-13 edition folder with build(write=False). Exact 502-path before/after SHA scope is recorded in preflight.json and protected-final.json, and repeated in the handoff. No broader unmeasured hash claim is made.
+The sole existing pytest skip is test_v14_not_a_git_repo_warn because scratch tmp_path is inside the Git tree. No skips/xfails or expected cases were added/changed. Plain/default-temp pytest remains owner-run. Scratch-verifier lint fixes removed one unused import and corrected formatting; they did not alter tested mutation semantics. Full lint progressed 764 -> 744 -> 740 while resolving generated-artifact and verifier findings under the addendum authorization.
+
+Gate0 warning list (unchanged):
+1. GST-CGST-50: missing s.74A text.
+2. IT-115BBH: counterpart section number unconfirmed.
+3. IT-2-47A: counterpart section number unconfirmed.
+4. IT-439-8: unofficial full-text source limitation.
+5. IT-439-8: unofficial source_type.
+6. ITR2026-RULE-247: missing s.514 text.
+7. SBI-TTBR-DATA: community-archive source limitation.
+
+### Owner review still required before D80
+FA 2023 corrigendum review remains open (S7); also the five Gazette headings for 2025 ss.2, 393, 400, 446, 536 and the official eGazette check. These are owner source-review items, not automated passes. The five never-operative heading notes and all legal flags were preserved. No freeze was performed or claimed.
+
+### Prepared final commit commands (owner only; never executed)
+
+```powershell
+git add -- divergence/statute_census.py tests/test_statute_census.py divergence/statutes/census/C4_TIMELINE.md logs/P09_C4_report.md
+git commit -m "P09 C4-D: verify real-record lookup timelines" -m "Add reusable metadata sweep and owner-years CI checks; document 10 of 10 mutation kills, 8 of 9 owner passes plus one explained mismatch, and passing phase verification."
+```
+
+### SELF-AUDIT
+1. Plan gate kept yes: initial owner APPROVED covered C4-D; later explicit approval covered S7 continuation and scratch-harness newline/plain-value corrections, ten-anchor preflight and rerun. New lint findings were fixed under the addendum authorization.
+2. No commit/push kept yes: nothing staged/committed/pushed; no separate STOP commit. Exact owner-only four-file commands are printed above.
+3. Protected inputs kept yes: no canonical table, owner file, record, body, corpus, replay cache, frozen run, preregistration, QA scorer or TEST-set edit; 502 scoped hashes and cache file set unchanged; approved guard hashes match. No --freeze or replay-cache builder.
+4. Offline/no secrets kept yes: no network/model/API calls, new dependencies, environment/key reads or secret output. Only bytecode suppression was set for pytest subprocesses.
+5. Paths kept yes: explicit reads followed Test-Path; writes stayed in approved workspace code/test/report/timeline paths or scratch/new census. Mutant renames verified absolute source/destination containment and unchanged hashes. No manual scratch recursion or locked-folder access; required repository-wide pytest/flake8 ran with the approved commands.
+6. Determinism/STOP kept yes: historical failures stopped until owner approval; anchors preflighted, invalid policy explicit, results compared by values, all mutant/real SHAs verified. No check, expected result or baseline was weakened. No new unresolved automated failure remains.
+7. Public reporting kept yes: PLAIN SUMMARY/details/audit; metadata, IDs, reason labels and hashes only, no law text, personal data or keys.
+8. Handoff kept yes: C4_handoff_D.md refreshed with files, SHA ledgers, counts, owner mismatch, checks and open owner questions; final Git evidence is appended there. Auto mode was not shown.
