@@ -525,17 +525,12 @@ def corrigendum_items_v3(pages):  # noqa: C901 - audited parser compatibility
 def _required_page_cache(view, page, kind):
     if page in view._mem or view.pdf is None:
         return
-    directory = view._page_dir(
-
-    ) if kind == 'font' else view.cache_dir / f'{
-        se.file_sha256(
-            view.pdf
-        )
-    }__pypdf-{
-        se.pypdf_version(
-
-        )
-    }'
+    if kind == 'font':
+        directory = view._page_dir()
+    else:
+        pdf_sha = se.file_sha256(view.pdf)
+        version = se.pypdf_version()
+        directory = view.cache_dir / f'{pdf_sha}__pypdf-{version}'
     if not (directory / f'p{page}.json').is_file():
         raise ValueError(f'CACHE MISS: {view.pdf.name}; page={page}; kind={kind}')
 
