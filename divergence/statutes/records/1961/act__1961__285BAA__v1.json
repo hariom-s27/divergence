@@ -17,6 +17,7 @@
   "body_sha256": "4c28b245a127cf2a0056740f865882e5fc33e0dc7ce2aaa16b0180eb218bc2e8",
   "chapter": null,
   "counterpart": {
+    "notes": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19); corroborated by 2 secondary sources",
     "ref": "act:2025:509",
     "source": "SECONDARY",
     "source_url": ""

@@ -95,7 +95,7 @@ def test_original_source_preserves_empty_body_and_successor_clock():
     assert rec["source_url"] == fetch["ita2025_2025"]["url"]
     assert rec["retrieved_at"] == fetch["ita2025_2025"]["finished_at"]
     assert rec["source_amended_up_to"] is None and rec["source_page_year"] == "2025"
-    assert "b" * 64 in rec["notes"] and "heading_not_gazette_checked" in rec["notes"]
+    assert "b" * 64 in rec["notes"] and "heading Gazette-checked 2026-11-17 (owner)" in rec["notes"]
 
 
 def test_empty_original_body_uses_empty_hash():

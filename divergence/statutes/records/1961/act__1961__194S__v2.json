@@ -6,7 +6,7 @@
       "kind": "finance_act",
       "operation": "insert",
       "ref": "fa_2022:s60",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2025-03-29",
@@ -24,7 +24,7 @@
   "body_sha256": "c26f2379d6fe0e6c3db10b308e02857ca9f14578fb08a74159b968bf9896f41e",
   "chapter": null,
   "counterpart": {
-    "notes": "official Act PDF, owner eye check",
+    "notes": "official Act PDF, owner eye check; ITD utility (tool-assisted) also lists 393;397;400",
     "ref": "act:2025:393",
     "source": "CBDT_official",
     "source_url": ""

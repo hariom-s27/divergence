@@ -6,28 +6,28 @@
       "kind": "finance_act",
       "operation": "substitute",
       "ref": "fa_2026:s122(i)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
     },
     {
       "enacted_on": "2026-03-30",
       "kind": "finance_act",
       "operation": "substitute",
       "ref": "fa_2026:s122(ii)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
     },
     {
       "enacted_on": "2026-03-30",
       "kind": "finance_act",
       "operation": "substitute",
       "ref": "fa_2026:s122(iii)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
     },
     {
       "enacted_on": "2026-03-30",
       "kind": "finance_act",
       "operation": "substitute",
       "ref": "fa_2026:s122(iv)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
     }
   ],
   "applies_from_tax_year": "2026-27",
@@ -45,6 +45,7 @@
   "in_force_to": null,
   "lookup_flags": [],
   "modified_by": [],
+  "notes": "corrigendum_applied:corr_ita2025:p491l33 (pre_commencement, substantive)",
   "outstanding_effects": [],
   "record_id": "act:2025:536:v2",
   "retrieved_at": "2026-11-13T06:51:48+05:30",

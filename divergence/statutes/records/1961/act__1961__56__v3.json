@@ -13,28 +13,28 @@
       "kind": "finance_act",
       "operation": "insert",
       "ref": "fa_2022:s16(a)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2022-03-30",
       "kind": "finance_act",
       "operation": "insert",
       "ref": "fa_2022:s16(b)(i)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2022-03-30",
       "kind": "finance_act",
       "operation": "insert",
       "ref": "fa_2022:s16(b)(ii)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2022-03-30",
       "kind": "finance_act",
       "operation": "substitute",
       "ref": "fa_2022:s16(b)(iii)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2023-03-31",
@@ -66,6 +66,7 @@
   "body_sha256": "1ddea0ea86f470049ab67b06ed4c25100c502933ff5bc20a87f0f5a341aebbd4",
   "chapter": null,
   "counterpart": {
+    "notes": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19), which lists 2;92; operative 92 = owner reading; corroborated by 2 secondary sources",
     "ref": "act:2025:92",
     "source": "SECONDARY",
     "source_url": ""
@@ -77,6 +78,7 @@
   "in_force_to": "2026-04-01",
   "lookup_flags": [],
   "modified_by": [],
+  "notes": "corrigendum_applied:corr_fa2023:p29l1 (pre_commencement, typo)",
   "outstanding_effects": [],
   "record_id": "act:1961:56:v3",
   "retrieved_at": "2026-11-13T06:40:26+05:30",

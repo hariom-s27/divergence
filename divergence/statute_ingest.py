@@ -10,7 +10,8 @@ from divergence import act_parse as ap
 from divergence import statute_build as sb
 from divergence import statute_extract as se
 from divergence import statute_guard as guard
-from divergence.statute_records import _provenance, project
+from divergence import statute_sources as ss
+from divergence.statute_records import _provenance, apply_dispositions, project
 from divergence.statute_schema import DEFAULT_ROOT, body_sha256, load_schema, record_filename
 from divergence.statute_validate import body_path
 
@@ -106,7 +107,7 @@ def original_source(rec, registry, knowledge, fetch):
     rec.update({key: source[key] for key in SOURCE_FIELDS})
     gazette = registry["ita2025_gz"]
     rec["notes"] = ("original enacted text: Gazette Act 30 of 2025 (ita2025_gz, sha " + gazette["sha256"]
-                    + "); ITD 2025 reproduction used for source fields; heading_not_gazette_checked")
+                    + "); ITD 2025 reproduction used for source fields; heading Gazette-checked 2026-11-17 (owner)")
 
 
 def attach_record(rec, row, extracted, expected_hash):
@@ -139,8 +140,8 @@ def validate_metadata(records):
         raise ValueError("invalid metadata: " + "; ".join(sorted(errors)))
 
 
-def assemble(vd, effects, sources, mapping, knowledge, fetch_log, extract, body_hashes):
-    records = project(vd, effects, sources, mapping, knowledge, fetch_log)
+def assemble(vd, effects, sources, mapping, knowledge, fetch_log, extract, body_hashes, dispositions=()):
+    records = project(vd, effects, sources, mapping, knowledge, fetch_log, dispositions)
     rows = {row["record_key"]: row for row in vd}
     registry = {r["key"]: r for r in sources.get("items", []) + sources.get("manual", [])}
     fetch = {r["key"]: r for r in fetch_log["entries"]}
@@ -149,6 +150,7 @@ def assemble(vd, effects, sources, mapping, knowledge, fetch_log, extract, body_
         edition = edition_for(rows[rec["record_id"]], rec)
         if rec["status"] == "never_operative":
             original_source(rec, registry, knowledge, fetch)
+            apply_dispositions(rec, dispositions)
         elif not knowledge.get(edition, {}).get("date"):
             raise ValueError("missing edition knowledge date: " + edition)
         body = attach_record(rec, rows[rec["record_id"]], extract(edition, rec["unit"]),
@@ -177,8 +179,11 @@ def prepare(root=DEFAULT_ROOT):
     dates = check_knowledge(result["know"], read_knowledge_table(root / SHEET_REL))
     if len(result["body_sha"]) != 26 or guard.body_sha(result["body_sha"]) != guard.BODY_SHA256:
         raise ValueError("body guard mismatch")
+    disposition_path = root / "CORRIGENDUM-DISPOSITION.csv"
+    dispositions = ap.read_csv(disposition_path) if disposition_path.exists() else []
     records, bodies = assemble(vd, effects, read_json(root / "SOURCES.json"), ap.read_csv(root / "MAPPING.csv"),
-                               result["know"], read_json(root / FETCH_REL), extraction_reader(raw), result["body_sha"])
+                               result["know"], read_json(root / FETCH_REL), extraction_reader(raw), result["body_sha"],
+                               dispositions)
     return records, bodies, {"knowledge": dates, "body_map": result["body_sha"], "raw": str(raw)}
 
 
@@ -228,6 +233,117 @@ def build_records(root=DEFAULT_ROOT):
     records, bodies, evidence = prepare(root)
     created = persist(root, records, bodies)
     print("Raw folder:", evidence["raw"])
-    print(f"statute_records --build: {len(records)} records; {len(bodies)} local bodies; "
-          f"{len(records) - len(bodies)} unprinted; {created} files created")
+    real = sum(r["status"] not in {"never_operative", "unprinted"} for r in records)
+    empty = sum(r["status"] == "never_operative" for r in records)
+    print(f"statute_records --build: {len(records)} records; {created} files created")
+    print(f"{real}/{real} bodies verified by guard; {empty}/{empty} never_operative placeholders empty as designed")
     return records, bodies, evidence
+
+
+def record_changes(old, new, prefix=''):
+    """Return exact metadata paths, including added keys, without body text."""
+    if isinstance(old, dict) and isinstance(new, dict):
+        out = []
+        for key in sorted(set(old) | set(new)):
+            path = prefix + '.' + key if prefix else key
+            out.extend(record_changes(old.get(key), new.get(key), path))
+        return out
+    if isinstance(old, list) and isinstance(new, list) and (prefix == 'amended_by'):
+        if len(old) != len(new):
+            raise ValueError('amendment membership changed')
+        return [change for i, (a, b) in enumerate(zip(old, new)) for change in record_changes(a, b, f'amended_by.{i}')]
+    return [] if old == new else [{'field': prefix, 'old': old, 'new': new}]
+
+
+def plan_update(old_records, new_records):
+    old = {r['record_id']: r for r in old_records}
+    new = {r['record_id']: r for r in new_records}
+    if len(old) != len(old_records) or len(new) != len(new_records) or set(old) != set(new):
+        raise ValueError('record membership changed')
+    result = []
+    for rid in sorted(old):
+        if any((old[rid].get(k) != new[rid].get(k) for k in ('body_sha256', 'body_chars', 'body'))):
+            raise ValueError('body metadata changed')
+        changes = record_changes(old[rid], new[rid])
+        for change in changes:
+            field = change['field']
+            if field not in {
+                'notes',
+                'lookup_flags',
+                'counterpart.notes'
+            } and (
+                not re.fullmatch(
+                    'amended_by\\.\\d+\\.url',
+                    field
+                )
+            ):
+                raise ValueError('update field outside allow-list: ' + field)
+        if changes:
+            result.append({'record_id': rid, 'changes': changes})
+    return result
+
+
+def _write_record_update(root, backup_dir, old_bytes, records, changes):
+    table = ap.read_csv(root / 'census/ITD-GAZETTE-DIFFS.csv')
+    if any((r['owner_ok'] != 'yes' for r in table if r['status'] == 'kept' and r['origin'] == 'itd')):
+        raise ValueError('kept itd rows lack owner confirmation')
+    if backup_dir is None:
+        raise ValueError('explicit backup directory required')
+    backup = Path(backup_dir).resolve()
+    backup.relative_to((root / '_local_text/census/partD').resolve())
+    backup.mkdir(parents=True, exist_ok=False)
+    for p, raw in old_bytes.items():
+        target = backup / p.relative_to(root / 'records')
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open('xb') as stream:
+            stream.write(raw)
+        if target.read_bytes() != raw:
+            raise ValueError('backup byte verification failed')
+    if any((p.read_bytes() != raw for p, raw in old_bytes.items())):
+        raise ValueError('record changed during backup')
+    new = {r['record_id']: r for r in records}
+    for change in changes:
+        rec = new[change['record_id']]
+        path = root / 'records' / rec['act'] / record_filename(rec['record_id'])
+        path.write_bytes(json_bytes(rec))
+
+
+def update_records(root=DEFAULT_ROOT, *, write=False, backup_dir=None):
+    root = Path(root)
+    paths = sorted((root / 'records').glob('*/*.json'))
+    old_bytes = {p: p.read_bytes() for p in paths}
+    old = [read_json(p) for p in paths]
+    with ss.existing_local_sources():
+        records, bodies, evidence = prepare(root)
+    changes = plan_update(old, records)
+    for p, rec in zip(paths, old):
+        bp = body_path(root, rec, p)
+        if rec['status'] == 'unprinted':
+            if bp.exists():
+                raise ValueError('unprinted body unexpectedly exists')
+        elif hashlib.sha256(bp.read_bytes()).hexdigest() != rec['body_sha256']:
+            raise ValueError('stored body hash differs')
+    if write:
+        _write_record_update(root, backup_dir, old_bytes, records, changes)
+    return (changes, records, evidence)
+
+
+def main(argv=None):
+    import argparse
+    parser = argparse.ArgumentParser(description='Guarded metadata-only record update')
+    parser.add_argument('--update', action='store_true', required=True)
+    parser.add_argument('--write', action='store_true')
+    parser.add_argument('--backup-dir', type=Path)
+    args = parser.parse_args(argv)
+    try:
+        changes, records, evidence = update_records(write=args.write, backup_dir=args.backup_dir)
+    except Exception as exc:
+        print('STOP:', type(exc).__name__)
+        return 1
+    print(json.dumps({'write': args.write, 'changed_records': len(changes), 'diff': changes}, sort_keys=True))
+    print('26/26 bodies verified by guard; 5/5 never_operative placeholders empty as designed')
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

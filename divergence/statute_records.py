@@ -8,7 +8,7 @@ the ingest caller; no placeholder body is manufactured for a printed record.
 from __future__ import annotations
 
 import re
-from datetime import timedelta
+from datetime import date, timedelta
 
 from divergence.statute_build import LABEL_GAP
 from divergence.statute_extract import EDITIONS
@@ -57,6 +57,17 @@ def _amendment(effect, registry):
             "url": registered_url(item), "enacted_on": effect.get("assent_date") or None}
 
 
+COUNTERPART_NOTES = {
+    **{unit: "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19); "
+       "corroborated by 2 secondary sources" for unit in ("2", "3", "158B", "285BAA")},
+    "56": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19), which lists 2;92; "
+          "operative 92 = owner reading; corroborated by 2 secondary sources",
+    "115BBH": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19): Table Sl. No. 4; "
+              "corroborated by 2 secondary sources; not eye-checked in Act text",
+    "194S": "official Act PDF, owner eye check; ITD utility (tool-assisted) also lists 393;397;400",
+}
+
+
 def _counterpart(act, unit, mapping):
     if act != "1961":
         return None
@@ -65,10 +76,7 @@ def _counterpart(act, unit, mapping):
         raise ValueError(f"missing or duplicate counterpart for 1961:{unit}")
     out = {"ref": f"act:2025:{rows[0]['operative_2025']}",
            "source": "CBDT_official" if unit == "194S" else "SECONDARY", "source_url": ""}
-    if unit == "194S":
-        out["notes"] = "official Act PDF, owner eye check"
-    elif unit == "115BBH":
-        out["notes"] = "unverified"
+    out["notes"] = COUNTERPART_NOTES[unit]
     return out
 
 
@@ -195,7 +203,84 @@ def _link_knowledge(out):
             previous["text_current_as_of"] = rec["enacted_on"]
 
 
-def project(vd, effects, sources, mapping, knowledge, fetch_log=None):
+DISPOSITION_COLUMNS = ["item_key", "section", "unit", "record_ids", "old_sha16", "new_sha16",
+                       "corrigendum_date", "provision_commencement", "commencement_source", "timing",
+                       "class", "owner_ok", "owner_note"]
+CORRECTED_EFFECTS = {"corr_fa2023:p29l1": "fa_2023:s32(b)"}
+
+
+def disposition_touches(row, rec):
+    """An amending-instrument correction follows its effect, not every section version."""
+    effect = CORRECTED_EFFECTS.get(row["item_key"])
+    if effect:
+        return any(a["ref"] == effect for a in rec["amended_by"])
+    return rec["act"] == "2025" and rec["section"] == row["section"]
+
+
+def join_record_notes(existing, additions):
+    pieces = (existing or "").split("; corrigendum_applied:")
+    base = pieces[0]
+    generated = {"corrigendum_applied:" + p for p in pieces[1:]}
+    if base.startswith("corrigendum_applied:"):
+        generated.add(base)
+        base = ""
+    generated.update(additions)
+    return "; ".join(([base] if base else []) + sorted(generated))
+
+
+def validate_dispositions(rows):
+    seen = set()
+    for row in rows:
+        if row["item_key"] in seen:
+            raise ValueError("duplicate disposition item")
+        seen.add(row["item_key"])
+        timing = ("pre_commencement" if date.fromisoformat(row["corrigendum_date"])
+                  < date.fromisoformat(row["provision_commencement"]) else "post_commencement")
+        if row["timing"] != timing or row["class"] not in {"typo", "substantive"} or row["owner_ok"] != "yes":
+            raise ValueError("unapproved or inconsistent disposition")
+    return rows
+
+
+def apply_dispositions(rec, rows, *, uncovered_reason=False):
+    validate_dispositions(rows)
+    touching = [row for row in rows if disposition_touches(row, rec)]
+    flags = set(rec["lookup_flags"])
+    open_rows = [row for row in touching if row["timing"] == "post_commencement" and row["class"] == "substantive"]
+    if open_rows:
+        flags.add("corrigendum_open")
+    elif touching and not uncovered_reason:
+        flags.discard("corrigendum_open")
+    rec["lookup_flags"] = sorted(flags)
+    additions = [f"corrigendum_applied:{row['item_key']} ({row['timing']}, {row['class']})"
+                 for row in touching if row not in open_rows]
+    if additions:
+        rec["notes"] = join_record_notes(rec.get("notes", ""), additions)
+    return rec
+
+
+def make_dispositions(items, decisions, records, effects, act_commencement):
+    effect_index = {e["effect_id"]: e for e in effects}
+    dates = {"corr_ita2025_sep": "2025-09-03", "corr_ita2025": "2026-01-30", "corr_fa2023": "2023-04-12"}
+    if set(decisions) != {r["item_key"] for r in items}:
+        raise ValueError("disposition decision set differs")
+    result = []
+    for item in items:
+        key = item["item_key"]
+        effect = CORRECTED_EFFECTS.get(key)
+        commencement = effect_index[effect]["wef"] if effect else act_commencement
+        corr_date = dates[key.split(":", 1)[0]]
+        decision = decisions[key]
+        row = {k: item[k] for k in DISPOSITION_COLUMNS[:6]}
+        row.update(corrigendum_date=corr_date, provision_commencement=commencement,
+                   commencement_source="effect:" + effect if effect else "act_s1",
+                   timing="pre_commencement" if corr_date < commencement else "post_commencement",
+                   **decision)
+        row["record_ids"] = ";".join(sorted(r["record_id"] for r in records if disposition_touches(row, r)))
+        result.append(row)
+    return validate_dispositions(result)
+
+
+def project(vd, effects, sources, mapping, knowledge, fetch_log=None, dispositions=()):
     """Project exactly one record per version row; all local provenance is passed explicitly.
 
     With knowledge/fetch_log None the result is suitable for lookup tests, not
@@ -208,6 +293,8 @@ def project(vd, effects, sources, mapping, knowledge, fetch_log=None):
     out = [_project_row(row, effects, registry, mapping, knowledge, fetch, dates[row["record_key"]], effect_index)
            for row in vd]
     _link_knowledge(out)
+    for rec in out:
+        apply_dispositions(rec, dispositions)
     return out
 
 

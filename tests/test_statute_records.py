@@ -28,7 +28,7 @@ def inputs():
 
 @pytest.fixture(scope="module")
 def records(inputs):
-    return project(*inputs, knowledge=None, fetch_log=None)
+    return project(*inputs, knowledge=None, fetch_log=None, dispositions=_csv("CORRIGENDUM-DISPOSITION.csv"))
 
 
 # Exact C4-A Step 5 owner-approved results. Candidate versions, not merely status, are checked.
@@ -42,7 +42,7 @@ CASES = [
     ("1961", "2", "as_of", "2026-03-31", None, "F", (5,), ()),
     ("1961", "2", "as_of", "2026-04-01", None, "A", (6,), ("repeal_day_unsettled",)),
     ("1961", "2", "as_of", "2026-04-02", None, "N", (), ("after_repeal",)),
-    ("1961", "56", "as_of", "2024-04-01", None, "A", (2,), ("corrigendum_open",)),
+    ("1961", "56", "as_of", "2024-04-01", None, "F", (2,), ()),
     ("1961", "56", "as_of", "2026-04-01", None, "N", (), ("after_repeal",)),
     ("1961", "158B", "as_of", "2025-02-01", None, "F", (3,), ()),
     ("1961", "158B", "as_of", "2025-02-15", "2025-03-01", "F", (2,), ()),
@@ -97,7 +97,7 @@ def test_project_counts_real_tables(records):
     assert sum(bool(r["retrospective_from"]) for r in records) == 2
     amendments = [a for r in records for a in r["amended_by"]]
     assert len(amendments) == 127
-    assert sum(a["url"] == "" for a in amendments) == 53
+    assert sum(a["url"] == "" for a in amendments) == 0
 
 
 def test_all_34_supersedes_links(records):
@@ -205,6 +205,11 @@ def test_counterparts_label_gaps_and_flags(records):
             assert cp["source_url"] == ""
             assert cp["source"] == ("CBDT_official" if rec["unit"] == "194S" else "SECONDARY")
             if rec["unit"] == "194S":
-                assert cp["ref"] == "act:2025:393" and cp["notes"] == "official Act PDF, owner eye check"
+                assert cp["ref"] == "act:2025:393"
+                assert cp["notes"] == (
+                    "official Act PDF, owner eye check; ITD utility (tool-assisted) also lists 393;397;400")
             if rec["unit"] == "115BBH":
-                assert cp["ref"] == "act:2025:194" and cp["notes"] == "unverified"
+                assert cp["ref"] == "act:2025:194"
+                assert cp["notes"] == (
+                    "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19): Table Sl. No. 4; "
+                    "corroborated by 2 secondary sources; not eye-checked in Act text")

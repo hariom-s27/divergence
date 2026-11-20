@@ -6,21 +6,21 @@
       "kind": "finance_act",
       "operation": "substitute",
       "ref": "fa_2022:s3(a)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2022-03-30",
       "kind": "finance_act",
       "operation": "substitute",
       "ref": "fa_2022:s3(b)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2022-03-30",
       "kind": "finance_act",
       "operation": "insert",
       "ref": "fa_2022:s3(c)",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     },
     {
       "enacted_on": "2023-03-31",
@@ -67,6 +67,7 @@
   "body_sha256": null,
   "chapter": null,
   "counterpart": {
+    "notes": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19); corroborated by 2 secondary sources",
     "ref": "act:2025:2",
     "source": "SECONDARY",
     "source_url": ""

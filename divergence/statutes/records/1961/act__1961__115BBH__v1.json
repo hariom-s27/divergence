@@ -6,7 +6,7 @@
       "kind": "finance_act",
       "operation": "insert",
       "ref": "fa_2022:s28",
-      "url": ""
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
     }
   ],
   "applies_from_tax_year": "2022-23",
@@ -17,7 +17,7 @@
   "body_sha256": "10f8d805562799bf825b11a08e20441db414c916f1d08f90778827e35446ffb7",
   "chapter": null,
   "counterpart": {
-    "notes": "unverified",
+    "notes": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19): Table Sl. No. 4; corroborated by 2 secondary sources; not eye-checked in Act text",
     "ref": "act:2025:194",
     "source": "SECONDARY",
     "source_url": ""
