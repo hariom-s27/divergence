@@ -334,3 +334,53 @@ def test_missing_jsonschema_exit_2(root, capsys, monkeypatch):
     code = statute_validate.main(["--root", str(root), "--allow-fixtures"])
     assert code == 2
     assert "jsonschema is required" in capsys.readouterr().err
+
+
+def test_preview_hashes_existing_fixture_without_writing(root, capsys):
+    before = {p.relative_to(root): (p.stat().st_size, p.stat().st_mtime_ns)
+              for p in root.rglob("*") if p.is_file()}
+    code, out = run_root(capsys, root, "--preview")
+    assert code == 0
+    assert "preview: 19 files, 10 missing scope files" in out
+    for rel, digest in statute_validate.compute_manifest(root).items():
+        assert f"{digest[:16]}  {rel}" in out
+    after = {p.relative_to(root): (p.stat().st_size, p.stat().st_mtime_ns)
+             for p in root.rglob("*") if p.is_file()}
+    assert after == before
+    assert not (root / MANIFEST_NAME).exists()
+
+
+@pytest.mark.parametrize("other", ["--freeze", "--verify"])
+def test_preview_mode_exclusive(root, capsys, other):
+    assert run_root(capsys, root, "--preview", other)[0] == 2
+    assert not (root / MANIFEST_NAME).exists()
+
+
+@pytest.mark.parametrize("version", [None, 0, 2, True])
+def test_verify_manifest_version_mismatch(root, capsys, version):
+    assert run_root(capsys, root, "--freeze")[0] == 0
+    path = root / MANIFEST_NAME
+    document = json.loads(path.read_bytes())
+    if version is None:
+        document.pop("manifest_version")
+    else:
+        document["manifest_version"] = version
+    path.write_bytes((json.dumps(document) + "\n").encode("utf-8"))
+    code, out = run_root(capsys, root, "--verify")
+    assert code == 1 and "manifest_version_mismatch" in out
+
+
+def test_missing_scope_includes_records_pattern(tmp_path):
+    assert statute_validate.missing_scope_files(tmp_path) == sorted(
+        [*statute_validate.MANIFEST_FIXED, "records/*.json"])
+    assert not statute_validate.scope_findings(tmp_path, strict=False)
+
+
+def test_manifest_glob_depth_and_sorted_paths(tmp_path):
+    included = ("records/a/b/r.json", "text/a/b/t.txt", "schema/top.json", "owner/top.csv")
+    excluded = ("schema/nested/s.json", "owner/nested/o.csv", "unrelated.json")
+    for rel in included + excluded:
+        path = tmp_path / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"{}\n")
+    assert statute_validate.manifest_paths(tmp_path) == sorted(included)

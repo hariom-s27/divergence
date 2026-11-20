@@ -1,6 +1,7 @@
 """Deterministic C3-fix guards. --body computes in memory; it never writes build sheets."""
 import argparse
 import hashlib
+from pathlib import Path
 
 from divergence import act_parse as ap
 from divergence import statute_build as sb
@@ -26,13 +27,18 @@ def main(argv=None):
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--code", action="store_true")
     group.add_argument("--body", action="store_true")
+    parser.add_argument("--raw", type=Path, help="raw folder override (only with --body)")
     args = parser.parse_args(argv)
+    if args.raw is not None and not args.body:
+        parser.error("--raw is allowed only with --body")
+    if args.raw is not None and not args.raw.is_dir():
+        parser.error("--raw must be a folder")
     if args.code:
         rows = ap.read_csv(sb.VERSIONS_PATH)
         actual, expected, count = code_sha(rows), CODE_SHA256, len(rows)
         label = "code"
     else:
-        raw = se.latest_raw_dir()
+        raw = args.raw if args.raw is not None else se.latest_raw_dir()
         print(f"statute_guard --body raw folder: {raw}")
         result = sb.build(raw, se.STATUTES_DIR / "_local_text" / "scratch" / "C4-body-no-write", write=False)
         actual, expected, count = body_sha(result["body_sha"]), BODY_SHA256, len(result["body_sha"])

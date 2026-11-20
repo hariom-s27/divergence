@@ -1,11 +1,13 @@
 """C4-D: real metadata small sweep, owner applicability formulas and invariant sensitivity."""
 import csv
+import hashlib
 import json
 from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
 
+from divergence import statute_census as census
 from divergence.statute_census import check_partitions, check_result, load_records, sweep
 from divergence.statute_lookup import LookupResult, lookup
 from divergence.statute_records import project_dates
@@ -116,3 +118,100 @@ def test_owner_years_projected_ends():
     assert sum(r["status"] == "OK" for r in results) == 21
     assert {r["record_id"] for r in results if r["status"] == "VD-4"} == {
         "act:1961:3:v1", "act:1961:56:v3", "act:1961:115BBH:v1"}
+
+
+def test_serializers_equal_legacy_bytes(tmp_path):
+    result = sweep([])
+    out, committed = tmp_path / "legacy", tmp_path / "committed.md"
+    census.write_timeline(result, out, committed)
+    legacy_json = (json.dumps(result, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    legacy_markdown = census.timeline_markdown(result).encode("utf-8")
+    assert census.sweep_bytes(result) == legacy_json == (out / "sweep.json").read_bytes()
+    assert census.timeline_bytes(result) == legacy_markdown == (out / "TIMELINE.md").read_bytes()
+    assert committed.read_bytes() == legacy_markdown
+    with pytest.raises(FileExistsError):
+        census.write_timeline(result, out, committed)
+
+
+@pytest.fixture
+def golden_args(tmp_path):
+    records = tmp_path / "records"
+    records.mkdir()
+    return ["--records", str(records), "--golden-dir", str(tmp_path / "golden")]
+
+
+def test_update_check_and_no_check_writes(golden_args, tmp_path, capsys):
+    golden = tmp_path / "golden"
+    golden.mkdir()
+    c4 = golden / "C4_TIMELINE.md"
+    c4.write_bytes(b"existing metadata\n")
+    c4_before = c4.read_bytes(), c4.stat().st_mtime_ns
+    assert census.main([*golden_args, "--update"]) == 0
+    update_output = capsys.readouterr().out
+    assert update_output.count("old absent new ") == 2
+    assert (c4.read_bytes(), c4.stat().st_mtime_ns) == c4_before
+    before = {p.name: (p.read_bytes(), p.stat().st_mtime_ns) for p in golden.iterdir()}
+    before_dir = golden.stat().st_mtime_ns
+    assert census.main([*golden_args, "--check"]) == 0
+    output = capsys.readouterr().out
+    assert "golden sweep: OK sweep.json " in output and " D80_TIMELINE.md " in output
+    for name in ("sweep.json", "D80_TIMELINE.md"):
+        assert hashlib.sha256((golden / name).read_bytes()).hexdigest() in output
+    assert {p.name: (p.read_bytes(), p.stat().st_mtime_ns) for p in golden.iterdir()} == before
+    assert golden.stat().st_mtime_ns == before_dir
+    assert census.main([*golden_args, "--update"]) == 0
+    assert "old absent" not in capsys.readouterr().out
+    assert (c4.read_bytes(), c4.stat().st_mtime_ns) == c4_before
+
+
+def test_update_creates_only_two_golden_files(golden_args, tmp_path):
+    assert census.main([*golden_args, "--update"]) == 0
+    assert sorted(p.name for p in (tmp_path / "golden").iterdir()) == ["D80_TIMELINE.md", "sweep.json"]
+
+
+@pytest.mark.parametrize("name", ["sweep.json", "D80_TIMELINE.md"])
+def test_check_detects_changed_byte(golden_args, tmp_path, capsys, name):
+    assert census.main([*golden_args, "--update"]) == 0
+    capsys.readouterr()
+    path = tmp_path / "golden" / name
+    original = path.read_bytes()
+    path.write_bytes(b"!" + original[1:])
+    assert census.main([*golden_args, "--check"]) == 1
+    output = capsys.readouterr().out
+    assert f"golden sweep: MISMATCH {name} first differing line 1" in output
+    assert "golden:" in output and "computed:" in output and "P09C-25" in output
+    assert path.read_bytes() == b"!" + original[1:]
+
+
+def test_missing_golden_check_writes_nothing(golden_args, tmp_path, capsys):
+    before = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*"))
+    assert census.main([*golden_args, "--check"]) == 1
+    output = capsys.readouterr().out
+    assert output.count("first differing line 1") == 2
+    assert "<missing>" in output
+    assert sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*")) == before
+
+
+def test_legacy_cli_still_works(tmp_path, capsys):
+    records = tmp_path / "records"
+    records.mkdir()
+    out, committed = tmp_path / "legacy", tmp_path / "committed.md"
+    assert census.main(["--records", str(records), "--out", str(out), "--committed", str(committed)]) == 0
+    assert json.loads(capsys.readouterr().out)["records"] == 0
+    assert sorted(p.name for p in out.iterdir()) == ["TIMELINE.csv", "TIMELINE.md", "sweep.json"]
+    assert committed.read_bytes() == (out / "TIMELINE.md").read_bytes()
+
+
+@pytest.mark.parametrize("args", [[], ["--check", "--update"], ["--check", "--out", "unused"],
+                                  ["--update", "--committed", "unused"]])
+def test_census_rejects_mixed_or_incomplete_modes(args):
+    with pytest.raises(SystemExit) as error:
+        census.main(args)
+    assert error.value.code == 2
+
+
+def test_committed_golden_sweep_matches():
+    names = ("sweep.json", "D80_TIMELINE.md")
+    if not all((census.GOLDEN_DIR / name).is_file() for name in names):
+        pytest.skip("Committed D80 golden files do not exist yet; owner creates them in Step 3.")
+    assert census.main(["--check"]) == 0

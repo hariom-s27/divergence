@@ -3,14 +3,17 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
 
 from divergence.statute_lookup import FOUND, lookup
-from divergence.statute_schema import CORPUS_CHECKED_THROUGH, REPEAL_DAY, parse_date, reason_class
+from divergence.statute_schema import CORPUS_CHECKED_THROUGH, DEFAULT_ROOT, REPEAL_DAY, parse_date, reason_class
 
+DEFAULT_RECORDS = DEFAULT_ROOT / "records"
+GOLDEN_DIR = DEFAULT_ROOT / "census"
 DAY = timedelta(days=1)
 TIMELINE_FIELDS = ("unit", "from", "to", "status", "records", "reasons", "classes")
 
@@ -183,6 +186,14 @@ def timeline_markdown(result):
     return "\n".join(lines) + "\n"
 
 
+def sweep_bytes(result):
+    return (json.dumps(result, indent=2, sort_keys=True) + "\n").encode("utf-8")
+
+
+def timeline_bytes(result):
+    return timeline_markdown(result).encode("utf-8")
+
+
 def write_timeline(result, out, committed):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
@@ -190,21 +201,79 @@ def write_timeline(result, out, committed):
         writer = csv.DictWriter(stream, TIMELINE_FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(result["timeline"])
-    markdown = timeline_markdown(result)
     for path in (out / "TIMELINE.md", Path(committed)):
         path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("x", encoding="utf-8", newline="\n") as stream:
-            stream.write(markdown)
-    with (out / "sweep.json").open("x", encoding="utf-8", newline="\n") as stream:
-        stream.write(json.dumps(result, indent=2, sort_keys=True) + "\n")
+        with path.open("xb") as stream:
+            stream.write(timeline_bytes(result))
+    with (out / "sweep.json").open("xb") as stream:
+        stream.write(sweep_bytes(result))
+
+
+def golden_files(result):
+    return (("sweep.json", sweep_bytes(result)), ("D80_TIMELINE.md", timeline_bytes(result)))
+
+
+def first_differing_line(old, new):
+    old_lines = old.splitlines(keepends=True) if old is not None else []
+    new_lines = new.splitlines(keepends=True)
+    for index in range(max(len(old_lines), len(new_lines))):
+        left = old_lines[index] if index < len(old_lines) else None
+        right = new_lines[index] if index < len(new_lines) else None
+        if left != right:
+            return index + 1, left, right
+    return 1, None, None
+
+
+def check_golden(result, golden_dir):
+    mismatched = False
+    hashes = []
+    for name, expected in golden_files(result):
+        path = Path(golden_dir) / name
+        actual = path.read_bytes() if path.is_file() else None
+        hashes.extend((name, hashlib.sha256(expected).hexdigest()))
+        if actual != expected:
+            mismatched = True
+            line, old, new = first_differing_line(actual, expected)
+            print(f"golden sweep: MISMATCH {name} first differing line {line}")
+            for label, value in (("golden", old), ("computed", new)):
+                text = repr(value.decode("utf-8", errors="replace")) if value is not None else "<missing>"
+                print(f"{label}: {text}")
+    if mismatched:
+        print("golden files change only via --update under a named decision (P09C-25)")
+        return 1
+    print("golden sweep: OK " + " ".join(hashes))
+    return 0
+
+
+def update_golden(result, golden_dir):
+    golden_dir = Path(golden_dir)
+    golden_dir.mkdir(parents=True, exist_ok=True)
+    for name, data in golden_files(result):
+        path = golden_dir / name
+        old = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else "absent"
+        print(f"golden sweep: UPDATE {name} old {old} new {hashlib.sha256(data).hexdigest()}")
+        path.write_bytes(data)
+    return 0
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--records", type=Path, required=True)
-    parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--committed", type=Path, required=True)
+    parser.add_argument("--records", type=Path)
+    parser.add_argument("--out", type=Path)
+    parser.add_argument("--committed", type=Path)
+    parser.add_argument("--golden-dir", type=Path)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--check", action="store_true")
+    mode.add_argument("--update", action="store_true")
     args = parser.parse_args(argv)
+    if args.check or args.update:
+        if args.out is not None or args.committed is not None:
+            parser.error("--check/--update cannot be combined with --out/--committed")
+        result = sweep(load_records(args.records if args.records is not None else DEFAULT_RECORDS))
+        golden_dir = args.golden_dir if args.golden_dir is not None else GOLDEN_DIR
+        return check_golden(result, golden_dir) if args.check else update_golden(result, golden_dir)
+    if args.records is None or args.out is None or args.committed is None or args.golden_dir is not None:
+        parser.error("legacy mode requires --records, --out and --committed; --golden-dir needs --check/--update")
     result = sweep(load_records(args.records))
     write_timeline(result, args.out, args.committed)
     print(json.dumps({k: v for k, v in result.items() if k != "timeline"}, sort_keys=True))
