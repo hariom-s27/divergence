@@ -43,6 +43,12 @@ jobs:
       run: |
         cd divergence
         python corpus_hash.py --verify
+    - name: Statute records validation (D78)
+      run: |
+        python -m divergence.statute_validate
+    - name: Golden lookup sweep check (D80)
+      run: |
+        python -m divergence.statute_census --check
     - name: Prompt-injection scanner self-test
       run: |
         cd divergence
