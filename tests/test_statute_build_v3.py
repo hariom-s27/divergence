@@ -433,7 +433,7 @@ def test_cache_miss_refuses_original_extractor(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("image", [True, False])
-def test_r6_never_removes_row(monkeypatch, image):
+def test_r6_never_removes_row(monkeypatch, image, tmp_path):
     from pypdf import PdfReader
     import pypdf
     del PdfReader
@@ -441,6 +441,7 @@ def test_r6_never_removes_row(monkeypatch, image):
         {"/one": Resource({"/Subtype": "/Image"})} if image else {})})}
     monkeypatch.setattr(pypdf, "PdfReader", lambda path: SimpleNamespace(pages=[page]))
     monkeypatch.setattr(sb, "_v3_mapped_pages", lambda *args: [1])
+    monkeypatch.setattr(sb.se, "latest_raw_dir", lambda: tmp_path)
     entry = {"section": "77", "span": (0, 0), "hunk": {
         "key": "a" * 16, "old": "Q + R = S", "new": "", "ob": "", "oa": "", "nb": "", "na": ""}}
     stages = [("R" + str(i), [entry]) for i in range(1, 6)]
