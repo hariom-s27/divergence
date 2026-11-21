@@ -8,7 +8,7 @@ If a request conflicts with a rule here, stop and ask the owner.
 - Root: README.md (overview), SECURITY.md, design-process/ (early planning notes),
   tests/ (pytest), .github/workflows/ (CI).
 - divergence/: the code package and its docs. Start with divergence/START-HERE.md.
-  - Decision records: divergence/DECISION-D41.md … DECISION-D78.md (38 files).
+  - Decision records: divergence/DECISION-D41.md … DECISION-D80.md (39 files: D41–D78 and D80; D79 reserved).
   - Frozen: divergence/corpus/, divergence/replay_cache/, divergence/runs/.
 - Reports go IN the repo as logs/P##_report.md (public: no keys, no personal data). Owner decision PD-03, 13 Nov 2026.
 
