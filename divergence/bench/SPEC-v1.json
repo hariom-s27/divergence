@@ -1,0 +1,72 @@
+{
+  "abstain_categories": {
+    "CORPUS": "stale",
+    "LEGAL": "answer_unknown",
+    "NO_LAW": "false_premise",
+    "QUERY": "underspecified_intent"
+  },
+  "abstain_priority": [
+    "false_premise",
+    "stale",
+    "answer_unknown",
+    "underspecified_intent"
+  ],
+  "abstain_share_target": [
+    0.2,
+    0.3
+  ],
+  "as_known_on": "2026-11-15",
+  "decision_refs": [
+    "P10-04",
+    "P10-05",
+    "P10-07",
+    "P10-16"
+  ],
+  "dev": {
+    "pairs": 15,
+    "undated": 2
+  },
+  "frame_excluded_reasons": [
+    "before_coverage",
+    "unknown_enactment_date",
+    "unprinted_intermediate"
+  ],
+  "horizon_window": [
+    "2026-11-16",
+    "2027-03-31"
+  ],
+  "max_test_items_per_unit": 10,
+  "reserve_fraction": 0.2,
+  "seed": 20261121,
+  "spec_version": 1,
+  "strata": {
+    "abstain_boundary": 0.2,
+    "cross_act_counterpart": 0.2,
+    "cross_year_change": 0.25,
+    "proviso_condition": 0.1,
+    "version_lookup": 0.25
+  },
+  "strata_order": [
+    "version_lookup",
+    "proviso_condition",
+    "cross_act_counterpart",
+    "cross_year_change",
+    "abstain_boundary"
+  ],
+  "tax_years": [
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26",
+    "2026-27"
+  ],
+  "test": {
+    "pairs": 46,
+    "undated": 8
+  },
+  "undated_category": "underspecified_intent",
+  "window": [
+    "2022-04-01",
+    "2026-11-15"
+  ]
+}

@@ -17,3 +17,4 @@ __pycache__/
 .claude/
 # D78: statute bodies kept local (storage_mode local_only); never commit
 divergence/statutes/_local_text/
+divergence/bench/_local/

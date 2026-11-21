@@ -1,0 +1,301 @@
+{
+  "$id": "https://reverie.local/divergence/bench/schema/bench_item.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "dated": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "abstain_category": {
+            "const": "underspecified_intent"
+          },
+          "as_of": {
+            "type": "null"
+          },
+          "gold_record_id": {
+            "type": "null"
+          },
+          "gold_status": {
+            "type": "null"
+          },
+          "pair_id": {
+            "type": "null"
+          },
+          "should_abstain": {
+            "const": true
+          },
+          "stratum": {
+            "const": "undated"
+          },
+          "tax_year": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dated": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "oneOf": [
+          {
+            "properties": {
+              "as_of": {
+                "$ref": "#/$defs/date"
+              },
+              "tax_year": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "properties": {
+              "as_of": {
+                "type": "null"
+              },
+              "tax_year": {
+                "$ref": "#/$defs/tax_year"
+              }
+            }
+          }
+        ],
+        "properties": {
+          "gold_status": {
+            "enum": [
+              "FOUND",
+              "AMBIGUOUS",
+              "NO_APPLICABLE_VERSION"
+            ]
+          },
+          "pair_id": {
+            "type": "string"
+          },
+          "stratum": {
+            "not": {
+              "const": "undated"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "date": {
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "type": "string"
+    },
+    "nugget": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "match": {
+          "enum": [
+            "exact",
+            "regex",
+            "numeric"
+          ]
+        },
+        "quotes_gazette": {
+          "type": "boolean"
+        },
+        "record_id": {
+          "type": "string"
+        },
+        "sha16": {
+          "pattern": "^[0-9a-f]{16}$",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "record_id",
+        "start",
+        "end",
+        "sha16",
+        "match",
+        "quotes_gazette"
+      ],
+      "type": "object"
+    },
+    "tax_year": {
+      "pattern": "^[0-9]{4}-[0-9]{2}$",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "abstain_category": {
+      "enum": [
+        "stale",
+        "false_premise",
+        "answer_unknown",
+        "underspecified_intent",
+        null
+      ]
+    },
+    "abstain_source": {
+      "enum": [
+        "code",
+        "human"
+      ]
+    },
+    "act": {
+      "enum": [
+        "1961",
+        "2025"
+      ]
+    },
+    "act_post_cutoff": {
+      "type": "boolean"
+    },
+    "as_known_on": {
+      "$ref": "#/$defs/date"
+    },
+    "as_of": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/date"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "author": {
+      "enum": [
+        "owner",
+        "claude-draft"
+      ]
+    },
+    "created": {
+      "$ref": "#/$defs/date"
+    },
+    "dated": {
+      "type": "boolean"
+    },
+    "gold_reasons": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "gold_record_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gold_status": {
+      "enum": [
+        "FOUND",
+        "AMBIGUOUS",
+        "NO_APPLICABLE_VERSION",
+        null
+      ]
+    },
+    "item_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "nuggets": {
+      "items": {
+        "$ref": "#/$defs/nugget"
+      },
+      "maxItems": 3,
+      "type": "array"
+    },
+    "pair_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "question": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "should_abstain": {
+      "type": "boolean"
+    },
+    "slot_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "split": {
+      "enum": [
+        "dev",
+        "test"
+      ]
+    },
+    "stratum": {
+      "enum": [
+        "version_lookup",
+        "proviso_condition",
+        "cross_act_counterpart",
+        "cross_year_change",
+        "abstain_boundary",
+        "undated"
+      ]
+    },
+    "tax_year": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/tax_year"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unit": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "item_id",
+    "split",
+    "pair_id",
+    "slot_id",
+    "stratum",
+    "question",
+    "act",
+    "unit",
+    "as_of",
+    "tax_year",
+    "as_known_on",
+    "dated",
+    "gold_status",
+    "gold_record_id",
+    "gold_reasons",
+    "should_abstain",
+    "abstain_category",
+    "abstain_source",
+    "act_post_cutoff",
+    "nuggets",
+    "author",
+    "created",
+    "notes"
+  ],
+  "type": "object"
+}
