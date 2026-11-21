@@ -12,12 +12,12 @@ How numbers are written here. Every corpus count comes from `divergence/statutes
   - The corpus is frozen as `statutes-v1`: a hash manifest of 55 [facts: manifest.file_count] files, a golden lookup sweep of 41672 [facts: sweep.queries.total] queries, a code-computed facts file, and decision record D80. CI checks all of it on every push.
   - Part E re-ran the full phase gate (all green) and re-checked the local backup zip's sha256 (matches).
 - **What it means:** P10 (the benchmark) and the retriever can cite any lookup as `statutes-v1` + manifest sha + `record_id` + `as_of` + `as_known_on`, and anyone can check that the corpus has not drifted. For the resume: a reproducible, hash-anchored legal corpus with point-in-time lookup, an ITD-vs-Gazette audit, and every number tied to code.
-- **Problems:** No check failed. Open items: the old CI lint baseline "740" cannot be reproduced (see Phase gate); Python 3.10 in CI is past end of life; `LICENSE` is effectively empty; the scratch folder holds about 3.1 GB of working files [LOCAL]; 11 scratch folders cannot be opened by this account [LOCAL]. Two owner checks remain (O1, O2 below).
+- **Problems:** No check failed. Open items: the old CI lint baseline "740" cannot be reproduced (see Phase gate); Python 3.10 in CI is past end of life; `LICENSE` is effectively empty; the scratch folder holds about 3.1 GB of working files [LOCAL]; 11 scratch folders cannot be opened by this account [LOCAL]. One owner check remains (O2 below).
 - **Decision needed:** none for P09. P10 start: decide P09C-27 (Python / action versions), E-13 (main-branch ruleset), `LICENSE`, and scratch cleanup (with an exact list and the owner's yes).
 - **Next message:** the owner reviews this file and runs the commit lines at the end.
 
 ## Owner steps referenced in this report
-- **O1.** The v1.0-reverie release notes first said "built by me"; the owner corrected them to "within a 3-person team" [owner-reported]. Status here: corrected — see owner step O1.
+- **O1.** The v1.0-reverie release notes say 'built by me' [owner-reported]. Status here: release notes say 'built by me'; owner decision 21 Nov.
 - **O2.** Fixity of backup copy 2 (Google Drive account A, the `G:` drive copy). The agent did not read `G:`. Status here: owner check — see owner step O2.
 
 ## 1. Timeline
@@ -114,7 +114,7 @@ Not cited here: `manifest.present` (its value is a boolean; the manifest exists)
 |---|---|---|
 | Annotated tag | `statutes-v1` → `d2018a1` | owner screenshot [owner-reported] |
 | Immutable release "Statute corpus v1 (D80)" | assets: `STATUTE-HASHES.json` `5b163396…6033`; `sweep.json` `e503aece…b051`; `d80_facts.json` `07b07b47…8da3`; plus a release attestation | owner screenshot [owner-reported]; the manifest and sweep shas equal the facts keys above; the facts-file sha is `07b07b47f3f369a526d6bce116cd8e4c882d6a5faf59d66524ce803d88968da3` [REPO: logs/P09_C-B_report.md] |
-| Immutable release "Reverie Hacks 2026 submission (v1.0-reverie)" | → `92c6eda`; release notes corrected — see owner step O1 | [owner-reported] |
+| Immutable release "Reverie Hacks 2026 submission (v1.0-reverie)" | → `92c6eda`; release notes say 'built by me'; owner decision 21 Nov | [owner-reported] |
 | Tag ruleset "frozen tags" | targets `statutes-v*`, `v1.0-reverie`; restricts updates and deletions; blocks force pushes; bypass list empty | [owner-reported] |
 | GitHub Archive Program | on | [owner-reported] |
 | Software Heritage | save request accepted 21 Nov 2026; SWHID pending | [owner-reported] |
@@ -182,7 +182,7 @@ The caveats counts match the facts file: 3 amended span, 9 = 8 + 1 ITD, 15 label
 | S5 | Auto-mode notices in Claude Code sessions: at C-C step C1, and again at Part E step E1. CLAUDE.md forbids auto mode; no write was made before APPROVED in either part | recorded | [REPO: logs/P09_C-C_report.md D4]; this report |
 | S6 | C-B: a read-only helper probe script was written to the user's Temp folder, outside the workspace, before approval | recorded, not deleted | [REPO: logs/P09_C-B_report.md D1] |
 | S7 | An agent suggested a lightweight tag for `statutes-v1`; not used — the owner created an annotated tag | closed | [owner-reported] |
-| S8 | v1.0-reverie release notes first said "built by me" | corrected — see owner step O1 | [owner-reported] |
+| S8 | v1.0-reverie release notes first said "built by me" | release notes say 'built by me'; owner decision 21 Nov | [owner-reported] |
 | S9 | D80 wording slip: D80 cites "risk R02" for the copyright question | left unchanged (D80 is a frozen decision file; edits need a new decision); recorded here | [REPO: divergence/DECISION-D80.md]; [owner-reported] |
 | S10 | The D78 amendment still says "53 empty URLs"; the facts file gives 0 [facts: amended_by.empty_url]. D80 records the correction; the amendment file stays unchanged by rule | recorded | [REPO: logs/P09_C-C_report.md] |
 | S11 | Parts A, B and C0–C3 have no part report in `logs/`; only commit messages | recorded | [LOCAL: `Get-ChildItem logs`] |
