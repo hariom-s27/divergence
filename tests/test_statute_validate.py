@@ -59,15 +59,73 @@ def test_fixture_root_exits_0():
     assert "statute_validate: 10 records, 0 errors" in proc.stdout
 
 
+def test_empty_root_exits_0(capsys, tmp_path):
+    code, out = run(capsys, "--root", tmp_path)
+    assert code == 0
+    assert "statute_validate: 0 records, 0 errors, 0 warnings" in out
+
+
 def test_default_root_exits_0(capsys):
     code, out = run(capsys)
     assert code == 0
-    assert "statute_validate: 0 records, 0 errors, 0 warnings" in out
+    assert "statute_validate: 34 records, 0 errors," in out
 
 
 def test_default_root_allow_fixtures_exit_2(capsys):
     code, _ = run(capsys, "--allow-fixtures")
     assert code == 2
+
+
+# ---- C4-B half-open and unprinted rules ----
+def test_v05_equal_end_is_error():
+    rec = {"in_force_from": "2026-04-01", "in_force_to": "2026-04-01"}
+    assert statute_validate.check_v05_dates(rec, None)
+    rec["in_force_to"] = "2026-04-02"
+    assert statute_validate.check_v05_dates(rec, None) == []
+
+
+def test_v07_repeal_day_is_exclusive_limit():
+    rec = json.loads((FIXTURES / F2).read_text(encoding="utf-8"))
+    assert statute_validate.check_v07_status(rec, None) == []
+    rec["in_force_to"] = "2026-04-02"
+    assert statute_validate.check_v07_status(rec, None)
+    rec.update(in_force_to="2026-04-01", applies_to_tax_year="2026-27")
+    assert statute_validate.check_v07_status(rec, None)
+
+
+def test_unprinted_schema_null_body_equivalence():
+    from divergence.statute_schema import schema_errors
+    rec = json.loads((FIXTURES / F1).read_text(encoding="utf-8"))
+    rec.update(status="unprinted", body=None, body_sha256=None, body_chars=None)
+    assert schema_errors(rec) == []
+    for field, value in (("body", "FAKE"), ("body_sha256", "a" * 64), ("body_chars", 0)):
+        bad = dict(rec, **{field: value})
+        assert schema_errors(bad)
+    rec["status"] = "in_force"
+    assert schema_errors(rec)
+
+
+def test_unprinted_requires_start_allows_open_end():
+    rec = {"status": "unprinted", "in_force_from": "2026-04-01", "in_force_to": None,
+           "body": None, "body_sha256": None, "body_chars": None}
+    assert statute_validate.check_v07_status(rec, None) == []
+    rec["in_force_from"] = None
+    assert statute_validate.check_v07_status(rec, None)
+
+
+def test_unprinted_rejects_any_body_file(root, capsys):
+    edit(root, F1, lambda r: r.update(status="unprinted", body=None, body_sha256=None, body_chars=None))
+    code, out = run_root(capsys, root)
+    assert code == 1 and has(out, "ERROR", F1, "V10")
+    (root / F1_BODY).unlink()
+    code, out = run_root(capsys, root)
+    assert code == 0 and not has(out, "WARN", F1, "V10")
+
+
+def test_printed_record_rejects_null_body_metadata(root, capsys):
+    edit(root, F1, lambda r: r.update(body_sha256=None, body_chars=None))
+    code, out = run_root(capsys, root)
+    assert code == 1 and has(out, "ERROR", F1, "V01")
 
 
 # ---- one negative test per check ----
@@ -276,3 +334,53 @@ def test_missing_jsonschema_exit_2(root, capsys, monkeypatch):
     code = statute_validate.main(["--root", str(root), "--allow-fixtures"])
     assert code == 2
     assert "jsonschema is required" in capsys.readouterr().err
+
+
+def test_preview_hashes_existing_fixture_without_writing(root, capsys):
+    before = {p.relative_to(root): (p.stat().st_size, p.stat().st_mtime_ns)
+              for p in root.rglob("*") if p.is_file()}
+    code, out = run_root(capsys, root, "--preview")
+    assert code == 0
+    assert "preview: 19 files, 10 missing scope files" in out
+    for rel, digest in statute_validate.compute_manifest(root).items():
+        assert f"{digest[:16]}  {rel}" in out
+    after = {p.relative_to(root): (p.stat().st_size, p.stat().st_mtime_ns)
+             for p in root.rglob("*") if p.is_file()}
+    assert after == before
+    assert not (root / MANIFEST_NAME).exists()
+
+
+@pytest.mark.parametrize("other", ["--freeze", "--verify"])
+def test_preview_mode_exclusive(root, capsys, other):
+    assert run_root(capsys, root, "--preview", other)[0] == 2
+    assert not (root / MANIFEST_NAME).exists()
+
+
+@pytest.mark.parametrize("version", [None, 0, 2, True])
+def test_verify_manifest_version_mismatch(root, capsys, version):
+    assert run_root(capsys, root, "--freeze")[0] == 0
+    path = root / MANIFEST_NAME
+    document = json.loads(path.read_bytes())
+    if version is None:
+        document.pop("manifest_version")
+    else:
+        document["manifest_version"] = version
+    path.write_bytes((json.dumps(document) + "\n").encode("utf-8"))
+    code, out = run_root(capsys, root, "--verify")
+    assert code == 1 and "manifest_version_mismatch" in out
+
+
+def test_missing_scope_includes_records_pattern(tmp_path):
+    assert statute_validate.missing_scope_files(tmp_path) == sorted(
+        [*statute_validate.MANIFEST_FIXED, "records/*.json"])
+    assert not statute_validate.scope_findings(tmp_path, strict=False)
+
+
+def test_manifest_glob_depth_and_sorted_paths(tmp_path):
+    included = ("records/a/b/r.json", "text/a/b/t.txt", "schema/top.json", "owner/top.csv")
+    excluded = ("schema/nested/s.json", "owner/nested/o.csv", "unrelated.json")
+    for rel in included + excluded:
+        path = tmp_path / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"{}\n")
+    assert statute_validate.manifest_paths(tmp_path) == sorted(included)

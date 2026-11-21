@@ -1,5 +1,5 @@
 # START HERE — DIVERGENCE, the whole thing, in one file
-### The mental model, how to run every part of it, and all 38 decision documents (D41–D78) in one chronological read — D41–D74 summarised, D75–D78 linked by title — so you don't have to open thirty-eight separate files to see how this project actually got built.
+### The mental model, how to run every part of it, and all 39 decision documents (D41–D78 and D80; D79 is reserved for the evaluation protocol) in one chronological read — D41–D74 summarised, D75–D78 and D80 linked by title — so you don't have to open thirty-nine separate files to see how this project actually got built.
 ### Each entry below still links to its own full `DECISION-D*.md` file for the complete original text. Nothing here replaces those files; this is the fast, ordered path through them.
 
 ---
@@ -138,11 +138,11 @@ mechanics + data per node, plus the real model registry).
 
 # PART 3 — EVERY DECISION, IN ORDER
 
-Thirty-eight dated documents (D41–D78). D41 predates D42–D58 chronologically (it's been
+Thirty-nine dated documents (D41–D78 and D80; D79 is reserved for the evaluation protocol). D41 predates D42–D58 chronologically (it's been
 referenced throughout the project since before this numbered sequence
 started) but only got its own file on 21 August, alongside D57 and D58 —
 noted here so the numbering makes sense rather than looking like a gap.
-D41–D74 are summarised below; D75–D78 are listed by title, with links
+D41–D74 are summarised below; D75–D78 and D80 are listed by title, with links
 to their full text.
 
 ## [D41](DECISION-D41.md) — the adversarial checker must be a different model family from the resolvers
@@ -751,6 +751,9 @@ example, not hand-rounded.
 ## [D78](DECISION-D78.md) — versioned statute records: schema, validator and exact version lookup
 13 November 2026. Not summarised here yet; full record: [`DECISION-D78.md`](DECISION-D78.md).
 
+## [D80](DECISION-D80.md) — statute corpus v1 freeze: manifest, golden sweep, facts
+21 November 2026. Not summarised here yet; full record: [`DECISION-D80.md`](DECISION-D80.md).
+
 ---
 
 ## What the decisions add up to
@@ -766,4 +769,4 @@ own scope. The project's own central claim — that a confident answer
 resting on ground that quietly moved is worse than no answer, because you
 cannot tell it apart from a real one — is what these fourteen documents
 (D42–D55, the full set when this section was written on 21 August; there
-are now 38, D41–D78) are, applied to the project's own construction of itself.
+are now 39, D41–D78 and D80; D79 is reserved for the evaluation protocol) are, applied to the project's own construction of itself.

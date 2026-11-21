@@ -1,0 +1,8 @@
+item_key,section,unit,record_ids,old_sha16,new_sha16,corrigendum_date,provision_commencement,commencement_source,timing,class,owner_ok,owner_note
+corr_ita2025_sep:p339l15,301,(e),act:2025:301:v1,425dc3116e7e6b46,84d9ad50687101e5,2025-09-03,2026-04-01,act_s1,pre_commencement,typo,yes,duplicated word; one possible correction
+corr_ita2025_sep:p477l31,509,(1),act:2025:509:v1,3177e562f9cc10a3,4ddbce7f01f7b4fb,2025-09-03,2026-04-01,act_s1,pre_commencement,typo,yes,word order; one possible correction
+corr_ita2025:p5l13,2,(i),act:2025:2:v1;act:2025:2:v2,65a1553729e30faf,efb9a546200d9965,2026-01-30,2026-04-01,act_s1,pre_commencement,typo,yes,defined-term name; one possible correction
+corr_ita2025:p404l39,393,(2),act:2025:393:v1;act:2025:393:v2;act:2025:393:v3,e8f86d287b1b3ec2,240c98031b52f0f5,2026-01-30,2026-04-01,act_s1,pre_commencement,typo,yes,stray word; one possible correction
+corr_ita2025:p412l40,393,(B),act:2025:393:v1;act:2025:393:v2;act:2025:393:v3,b42e26f7cfdc5660,37e29babb66014f3,2026-01-30,2026-04-01,act_s1,pre_commencement,typo,yes,verb form; one possible correction
+corr_ita2025:p491l33,536,(c),act:2025:536:v1;act:2025:536:v2,9136a52316fc576b,9049860eb6302ae7,2026-01-30,2026-04-01,act_s1,pre_commencement,substantive,yes,two candidate readings differ on 2026-04-01; alternatives_sha16=9049860eb6302ae7|f39592393ef0859c
+corr_fa2023:p29l1,56,sub-section (2) > clause (xi),act:1961:56:v2;act:1961:56:v3,efaabfd0f4badaa3,5a67e2985706e8d4,2023-04-12,2024-04-01,effect:fa_2023:s32(b),pre_commencement,typo,yes,spelling; one possible correction

@@ -1,0 +1,185 @@
+{
+  "act": "1961",
+  "amended_by": [
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa2_2024:s3(a)(I)",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "omit",
+      "ref": "fa2_2024:s3(a)(II)",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa2_2024:s3(b)(i)",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "omit",
+      "ref": "fa2_2024:s3(b)(ii)(A)",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa2_2024:s3(b)(ii)(B)",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa2_2024:s3(b)(iii)",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2024-08-16",
+      "kind": "finance_act",
+      "operation": "omit",
+      "ref": "fa2_2024:s3(b)(iv)",
+      "url": "https://egazette.gov.in/WriteReadData/2024/256436.pdf"
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2022:s3(a)",
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2022:s3(b)",
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2022:s3(c)",
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "omit",
+      "ref": "fa_2023:s3(a)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(b)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(c)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(d)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(e)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2025-03-29",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2025_gz:s3(a)(i)",
+      "url": "https://egazette.gov.in/WriteReadData/2025/262125.pdf"
+    },
+    {
+      "enacted_on": "2025-03-29",
+      "kind": "finance_act",
+      "operation": "omit",
+      "ref": "fa_2025_gz:s3(a)(ii)",
+      "url": "https://egazette.gov.in/WriteReadData/2025/262125.pdf"
+    },
+    {
+      "enacted_on": "2025-03-29",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2025_gz:s3(b)(i)",
+      "url": "https://egazette.gov.in/WriteReadData/2025/262125.pdf"
+    },
+    {
+      "enacted_on": "2025-03-29",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2025_gz:s3(b)(ii)",
+      "url": "https://egazette.gov.in/WriteReadData/2025/262125.pdf"
+    },
+    {
+      "enacted_on": "2025-03-29",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2025_gz:s3(c)",
+      "url": "https://egazette.gov.in/WriteReadData/2025/262125.pdf"
+    }
+  ],
+  "applies_from_tax_year": "2025-26",
+  "applies_to_tax_year": "2025-26",
+  "basis_category": "charging_ay_rule",
+  "basis_exceptions": [],
+  "body_chars": 67100,
+  "body_sha256": "eba9234847f38de854b6d2204d6f0ddb8674fce7678bc9e6bcc1ffb69bb794f9",
+  "chapter": null,
+  "counterpart": {
+    "notes": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19); corroborated by 2 secondary sources",
+    "ref": "act:2025:2",
+    "source": "SECONDARY",
+    "source_url": ""
+  },
+  "enacted_on": "2025-03-29",
+  "gazette_published": "no",
+  "heading": "Definitions.",
+  "in_force_from": "2026-04-01",
+  "in_force_to": "2026-04-02",
+  "lookup_flags": [
+    "repeal_day_unsettled"
+  ],
+  "modified_by": [],
+  "outstanding_effects": [],
+  "record_id": "act:1961:2:v6",
+  "retrieved_at": "2026-11-13T06:38:45+05:30",
+  "retrospective_from": null,
+  "schema_version": 1,
+  "section": "2",
+  "source_acknowledgement": "Income Tax Department, Government of India",
+  "source_amended_up_to": "2026-03-30",
+  "source_kind": "act",
+  "source_page_act": "Income-tax Act, 1961, edition \"2026\"",
+  "source_page_year": "2026",
+  "source_url": "https://wm.incometaxindia.gov.in/documents/d/guest/income-tax-document-income-tax-act-1961_2026_2026-06-05_05-35-21_3f20ac_en",
+  "status": "in_force",
+  "storage_mode": "local_only",
+  "supersedes": "act:1961:2:v5",
+  "text_current_as_of": "2026-03-30",
+  "unit": "2",
+  "version_id": 6
+}

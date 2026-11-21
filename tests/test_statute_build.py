@@ -1,5 +1,66 @@
 """Tests for divergence/statute_build.py (P09 Part C2). INVENTED data only; no real law text, no network."""
+import pytest
+
 from divergence import statute_build as sb
+
+
+def _synthetic_build(monkeypatch):
+    """All edition/PDF dependencies are synthetic; the existing sheet serializer stays real."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(sb.se, "record_scope", lambda: {"1961": ["7"], "2025": ["7"]})
+    monkeypatch.setattr(sb.ap, "SPINE", {"1961": ["7"], "2025": ["7"]})
+    monkeypatch.setattr(sb.se, "EDITIONS", {"1961": ["ita1961_2023"], "2025": ["ita2025_2025"]})
+    monkeypatch.setattr(sb.se, "edition_view", lambda *a: SimpleNamespace(pages=[]))
+    monkeypatch.setattr(sb.se, "extract_view", lambda *a: {"status": "FOUND", "body": "FAKE FIXTURE - NOT LAW"})
+    monkeypatch.setattr(sb, "assent_by_act", lambda: {})
+    monkeypatch.setattr(sb.se, "convention_note", lambda *a: {})
+    monkeypatch.setattr(sb, "printed_amended_by", lambda *a: [])
+    monkeypatch.setattr(sb, "edition_knowledge", lambda *a: {
+        "date": "2026-03-30", "source": "FAKE", "acts": [], "printed_acts": [], "mismatch": False})
+    monkeypatch.setattr(sb.se, "section_apparatus", lambda *a: [])
+    monkeypatch.setattr(sb.se, "collect_editor_notes", lambda *a: [])
+    monkeypatch.setattr(sb.ss, "pdf_pages", lambda *a: [])
+    monkeypatch.setattr(sb.ss, "corrigendum_items", lambda *a: [])
+    monkeypatch.setattr(sb, "commencement_2025", lambda *a: "2026-04-01")
+    monkeypatch.setattr(sb, "pending_effects", lambda *a: set())
+    monkeypatch.setattr(sb, "s56_candidates", lambda *a: "FAKE")
+    monkeypatch.setattr(sb, "insertion_checks", lambda *a: [])
+
+
+def test_build_no_write_creates_nothing(tmp_path, monkeypatch):
+    _synthetic_build(monkeypatch)
+    folder = tmp_path / "absent"
+    monkeypatch.setattr(sb, "write_sheets", lambda *a: pytest.fail("writer called by write=False"))
+    result = sb.build(tmp_path / "fake_raw", folder, effects=[], write=False)
+    assert not folder.exists() and result["sheets"] == []
+    assert result["know"] and result["versions"] and result["body_sha"]
+
+
+def test_build_write_true_preserves_files_and_hashes(tmp_path, monkeypatch):
+    import hashlib
+    _synthetic_build(monkeypatch)
+    writer, captured = sb.write_sheets, []
+
+    def capture(*args):
+        captured.append(args)
+        return writer(*args)
+
+    monkeypatch.setattr(sb, "write_sheets", capture)
+    default = sb.build(tmp_path / "fake_raw", tmp_path / "default", effects=[])
+    explicit = sb.build(tmp_path / "fake_raw", tmp_path / "explicit", effects=[], write=True)
+    memory = sb.build(tmp_path / "fake_raw", tmp_path / "absent", effects=[], write=False)
+    # Existing, unchanged serializer supplies the reference output directly.
+    writer(tmp_path / "reference", *captured[0][1:])
+
+    def hashes(folder):
+        return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(folder.iterdir())}
+
+    reference = hashes(tmp_path / "reference")
+    assert set(reference) == {"PENDING-23.md", "DIFFS.md", "CROSSCHECK.md", "VERSIONS.md"}
+    assert hashes(tmp_path / "default") == hashes(tmp_path / "explicit") == reference
+    assert {k: v for k, v in default.items() if k != "sheets"} == {
+        k: v for k, v in explicit.items() if k != "sheets"} == {k: v for k, v in memory.items() if k != "sheets"}
+    assert not (tmp_path / "absent").exists()
 
 
 def eff(eid, wef, assent="2099-03-30", **kw):
@@ -18,8 +79,9 @@ def ed(key, knowledge, found=True, pending=()):
 def test_zero_length_original_is_never_operative():
     effs = [eff("x:s3(a)", "2100-04-01", target_act="2025")]
     rows, before, _ = sb.propose_versions("2025", "7", effs, [ed("e2100", "2100-03-30")], "2100-04-01", None)
-    assert (rows[0]["state"], rows[0]["in_force_from"], rows[0]["in_force_to"]) == (
-        "never_operative", "2100-04-01", "2100-04-01")
+    assert (rows[0]["state"], rows[0]["in_force_from"], rows[0]["in_force_to"]) == ("never_operative", "", "")
+    assert rows[0]["code_note"].startswith("zero_length; zero-length at 2100-04-01")
+    assert rows[0]["basis_category"] == rows[0]["basis"] == ""
     assert rows[1]["state"] == "in_force" and rows[1]["effect_ids"] == "x:s3(a)" and rows[1]["in_force_to"] == ""
     assert rows[1]["record_key"] == "act:2025:7:v2" and before == []
 
@@ -30,7 +92,7 @@ def test_unprinted_intermediate_state_is_ambiguous():
     rows, before, _ = sb.propose_versions("1961", "7", effs, eds, None, None)
     assert before == []
     states = [(r["in_force_from"], r["state"], r["reason_codes"]) for r in rows]
-    assert states == [("", "in_force", ""), ("2099-04-01", "AMBIGUOUS", "unprinted_intermediate"),
+    assert states == [("2099-01-01", "in_force", ""), ("2099-04-01", "", "unprinted_intermediate"),
                       ("2099-10-01", "in_force", "")]
 
 
@@ -38,15 +100,15 @@ def test_earliest_matching_edition_supplies_the_text():
     effs = [eff("x:a", "2099-04-01")]
     eds = [ed("e1", "2099-01-01"), ed("e2", "2099-05-01"), ed("e3", "2099-06-01")]
     rows, _, _ = sb.propose_versions("1961", "7", effs, eds, None, None)
-    assert rows[-1]["basis"] == "text = e2"
+    assert rows[-1]["code_note"] == "effect_start; text = e2" and rows[-1]["basis"] == ""
 
 
 def test_pending_effect_excluded_from_printed_state():
     effs = [eff("x:a", "2099-04-01"), eff("x:b", "2100-04-01")]
     eds = [ed("e1", "2099-05-01", pending={"x:b"}), ed("e2", "2100-05-01")]
     rows, _, _ = sb.propose_versions("1961", "7", effs, eds, None, None)
-    assert [(r["in_force_from"], r["basis"]) for r in rows if r["state"] == "in_force"][-2:] == [
-        ("2099-04-01", "text = e1"), ("2100-04-01", "text = e2")]
+    assert [(r["in_force_from"], r["code_note"]) for r in rows if r["state"] == "in_force"][-2:] == [
+        ("2099-04-01", "effect_start; text = e1"), ("2100-04-01", "effect_start; text = e2")]
 
 
 def test_retro_and_corrigendum_and_applicability_reasons():
@@ -69,7 +131,7 @@ def test_repeal_day_version_is_unsettled_not_never_operative():
     rows, _, _ = sb.propose_versions("1961", "7", effs, eds, None, "2101-04-01", repeal_day="2101-04-01")
     last = rows[-1]
     assert (last["state"], last["in_force_from"], last["in_force_to"]) == ("in_force", "2101-04-01", "2101-04-01")
-    assert last["reason_codes"].startswith("repeal_day_unsettled") and sb.REPEAL_NOTE in last["basis"]
+    assert last["reason_codes"].startswith("repeal_day_unsettled") and sb.REPEAL_NOTE in last["code_note"]
     assert rows[-2]["in_force_to"] == "2101-04-01"
 
 
@@ -169,3 +231,71 @@ def test_edition_knowledge_note_vs_printed_title(monkeypatch):
     assert k3["date"] is None and k3["source"] == "unknown"
     assert sb.printed_amended_by(["x\n[AS AMENDED BY ZETA ACT, 2099 AND ZETA (NO. 2) ACT, 2099]\n"]) == [
         "ZETA ACT, 2099", "ZETA (NO. 2) ACT, 2099"]
+
+
+def test_states_and_owner_carry_rule():
+    effs = [eff("x:a", "2099-04-01"), eff("y:b", "2099-10-01", assent="2099-08-01")]
+    rows, _, _ = sb.propose_versions("1961", "7", effs, [ed("e1", "2099-01-01"), ed("e2", "2099-12-31")], None, None)
+    assert {r["state"] for r in rows} <= set(sb.STATES) and list(rows[0])[:13] == sb.VERSION_COLUMNS
+    assert sb.owner_value({"basis_category": "procedural"}, "basis_category")
+    assert not sb.owner_value({"basis_category": "effect_start"}, "basis_category")
+    assert not sb.owner_value({"basis_category": "effect_start", "basis": "text = e1"}, "basis")
+
+
+def test_corrigendum_context_and_glued_word():
+    h = sb.word_hunks("tax on interest creditor paid to him", "tax on interest credited or paid to him")[0]
+    c = {"for": "interest credit", "read": "interest credited", "gazette_page": "9", "gazette_lines": "1"}
+    assert sb.corr_explains(c, h) and sb.explain_hunk(h, [], set(), [c])[0] == "corrigendum"
+    d = sb.word_hunks("where shall such income is", "where such income is")[0]
+    assert sb.corr_explains({"for": "shall such income", "read": "such income"}, d)
+    assert not sb.corr_explains({"for": "zeta", "read": "eta"}, d)
+    assert len(h["key"]) == 16 and h["key"] == sb.hunk_key(h)
+
+
+def test_owner_label_data_over_rule(monkeypatch):
+    monkeypatch.setattr(sb, "OWNER_RELABELS", {("1961", "7", "e2", "k1"): ("layout", "owner 2099-01-01: moved")})
+    monkeypatch.setattr(sb, "OWNER_EYE_CHECK", {("1961", "7", "e2", "k2")})
+    assert sb.owner_label(("1961", "7", "e2", "k1"), "effect_in_window", "x") == (
+        "layout", "owner 2099-01-01: moved; rule label effect_in_window")
+    assert sb.owner_label(("1961", "7", "e2", "k2"), "span_unlinked", "d")[0] == "owner_eye_check_pending"
+    assert sb.owner_label(("1961", "7", "e2", "k3"), "effect", "Act") == ("effect", "Act")
+
+
+GZ = ("THE ZETA ACT, 2099\nBE it enacted by Parliament as follows:—\n"
+      "1. (1) This Act may be called the Zeta Act, 2099 and applies to invented levies everywhere.\n"
+      "Definitions. 2. In this Act, unless the context otherwise requires, an invented word means a thing.\n"
+      "3. (1) The Zeta Levy Act, 2098 is hereby repealed for every invented purpose at once.\n"
+      "THE FIRST SCHEDULE\n")
+
+
+def test_gazette_locator_number_line_and_schedule_end():
+    gi = sb.gazette_index([GZ])
+    body2 = "Definitions.—In this Act, unless the context otherwise requires, an invented word means a thing."
+    r = sb.locate_gazette(gi, "2", body2, "Definitions.")
+    assert gi["lines"][r["start"]].text.startswith("Definitions. 2.") and r["how"].startswith("number line")
+    body3 = "(1) The Zeta Levy Act, 2098 (4 of 2098) is hereby repealed for every invented purpose at once."
+    r3 = sb.locate_gazette(gi, "3", body3, None)                  # ITD-added '(4 of 2098)' is ignored
+    assert gi["lines"][r3["start"]].text.startswith("3. (1)")
+    assert sb.locate_gazette(gi, "9", "(1) Nothing like this exists in the invented text at all.", None)["start"] is None
+
+
+def test_gazette_classes():
+    k = sb.gazette_class
+    assert k({"op": "replace", "old": "1992;", "new": "1992 (15 of 1992);", "at": 5}, [])[0] == "itd_addition"
+    assert k({"op": "replace", "old": "A B C D", "new": "[Table 1 Sl. 2]", "at": 5}, [])[0] == "itd_addition"
+    assert k({"op": "insert", "old": "", "new": "92.", "at": 0}, [], "92")[0] == "boundary"
+    assert k({"op": "delete", "old": "CHAPTER II BASIS", "new": "", "at": 7}, [], "3", 10)[0] == "boundary"
+    assert k({"op": "replace", "old": "Centers", "new": "Centres", "at": 3}, [])[0] == "content"
+    c = [(5, {"for": "on after", "read": "on or after"})]
+    h = sb.word_hunks("applies on after the date", "applies on or after the date")[0]
+    assert k(h, c) == ("corrigendum", "corr_ita2025 item 5")
+
+
+def test_open_start_gets_coverage_start_not_commencement():
+    rows, before, _ = sb.propose_versions("1961", "7", [], [ed("e1", "2099-03-31"), ed("e2", "2100-03-31")], None,
+                                          "2101-04-01")
+    r = rows[0]
+    assert (r["in_force_from"], r["in_force_to"], r["state"], r["reason_codes"]) == (
+        "2099-03-31", "2101-04-01", "in_force", "")
+    assert r["code_note"].startswith("coverage_start; coverage start, not commencement (knowledge date of e1)")
+    assert "before_coverage applies to earlier dates" in r["code_note"] and before == []

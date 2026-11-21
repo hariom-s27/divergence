@@ -1,0 +1,28 @@
+caveat_id,record_id,start,end,unit_label,source,nature,ref_row_id,span_sha16,note
+caveat:2a08e64e0d02be47,act:2025:393:v2,37220,37225,s.393,amended_span,substantive,v3:9255c33aa23d7927,483e7d45ba01be0f,not owner-confirmed by protocol P09D-38
+caveat:82617d578a5ee79c,act:2025:393:v2,39114,39114,s.393(8),amended_span,substantive,v3:d6e0e4b1fb1042ac,c495a37c414952eb,not owner-confirmed by protocol P09D-38;absence;itd_word_gap:6897;point;anchor_window:40
+caveat:f402d61ea47f6566,act:2025:536:v2,3285,3285,s.536(2),amended_span,substantive,v2:8708535b92f6500b,b03076b1e9bf125b,not owner-confirmed by protocol P09D-38;absence;itd_word_gap:559;point;anchor_window:40
+caveat:c6508a96018f9891,act:2025:2:v2,23623,23626,s.2,itd_diff,accidental,v2:1198795e7740ed71,e3eebb9cbb21b92e,
+caveat:1b5f2906f6090751,act:2025:2:v2,19312,19325,s.2,itd_diff,substantive,v2:1d058f3a49580ed1,910f8d7ced1b4ebe,
+caveat:2aae6c16fb46b4d1,act:2025:2:v2,8419,8426,s.2,itd_diff,accidental,v2:90a1d83cadaac911,dc9f51d58b8dc5ae,
+caveat:d8d32690e18b5b8b,act:2025:393:v2,12836,12842,s.393,itd_diff,accidental,v2:04ca6540edc66d66,12886f9d00055adf,
+caveat:b0fa364767e1afa5,act:2025:393:v2,5630,5643,s.393,itd_diff,accidental,v2:4ba98c8a53b744f6,d555b526aea0a253,
+caveat:76e3b8424aff1858,act:2025:393:v2,7383,7488,s.393,itd_diff,accidental,v2:7d4478c559067e47,5b77793298e03d53,moved_pair:6-7
+caveat:b6adfa0a81b221cb,act:2025:393:v2,22646,22649,s.393,itd_diff,accidental,v2:a19d5fbf04b8fc9c,f89bf797c3b1dda4,
+caveat:74b1e1e25e649c79,act:2025:393:v2,7689,7689,s.393,itd_diff,accidental,v2:fb5f97c86c27aa13,924644377ea9400d,moved_pair:6-7;absence;itd_word_gap:1336;point;anchor_window:40
+caveat:2fcd3e3d695609fb,act:2025:536:v2,9489,9497,s.536,itd_diff,accidental,v2:3bc1d541e6b2c29c,4697ef322d1be992,
+caveat:d4f4fae43e53ce5a,act:1961:2:v1,,,(12A),label_gap,,label-gap:02b59faf4c6288da,,source:ledger;evidence:fa_2022:s3(a)
+caveat:6164391c6dbab5c1,act:1961:2:v1,,,(37A),label_gap,,label-gap:2bcfa43d6d2b5ec0,,source:ledger;evidence:fa_2023:s3(d)
+caveat:a2144894529ac13e,act:1961:2:v1,,,(47A),label_gap,,label-gap:3a91dc099acfdf92,,source:ledger;evidence:fa_2022:s3(c)
+caveat:a48a8a6af000f3fb,act:1961:2:v1,,,(19B),label_gap,,label-gap:43ddb1c41312db21,,source:ledger;evidence:fa_2023:s3(a)
+caveat:79fad5ece2a88152,act:1961:2:v1,,,(28CA),label_gap,,label-gap:6d572499f40b67bb,,source:ledger;evidence:fa_2023:s3(c)
+caveat:94b1971e187e6403,act:1961:2:v1,,,(28C),label_gap,,label-gap:ce6226b19cbf5b0c,,source:ledger;evidence:fa_2023:s3(c)
+caveat:da4a857a8a6d5959,act:1961:2:v1,,,(42C),label_gap,,label-gap:fb7b5ae6640bad16,,source:ledger;evidence:fa_2022:s3(b)
+caveat:f362d0bfd3ee32c4,act:1961:56:v1,,,(viib),label_gap,,label-gap:0026eb910cf4ae70,,source:ledger;evidence:fa_2022:s16(a)
+caveat:b6aa3b0009f22814,act:1961:56:v1,,,(viib),label_gap,,label-gap:0b602f594446b5b6,,source:ledger;evidence:fa_2023:s32(a)(ii)
+caveat:b21662c08eeb1bc3,act:1961:56:v2,,,(viib),label_gap,,label-gap:0ee09303095be086,,source:ledger;evidence:fa_2023:s32(a)(ii)
+caveat:86246466bcd3c926,act:1961:56:v2,,,(XI),label_gap,,label-gap:20332098bc3f866d,,source:ledger;evidence:fa_2022:s16(b)(i)
+caveat:b1aa31bcdcb791bc,act:1961:56:v2,,,(xii),label_gap,,label-gap:42d6a0dd887aea4a,,source:ledger;evidence:fa_2023:s32(b)
+caveat:139f504fdf41f14f,act:1961:56:v2,,,(viib),label_gap,,label-gap:442b4bfdc970b2e7,,source:ledger;evidence:fa_2023:s32(a)(i)
+caveat:1ed441dcfde54a56,act:1961:56:v2,,,(viib),label_gap,,label-gap:de8f85dfa3e8ca9c,,source:ledger;evidence:fa_2022:s16(a)
+caveat:b81be01fb8f911c3,act:1961:56:v2,,,(XI),label_gap,,label-gap:e7f087e5a7d4362f,,source:continuity;evidence:ita1961_2024n2

@@ -23,6 +23,7 @@ import hashlib
 import json
 import re
 import sys
+from contextlib import contextmanager
 from datetime import date, datetime
 from pathlib import Path
 
@@ -36,6 +37,8 @@ SOURCES_PATH = se.STATUTES_DIR / "SOURCES.json"
 
 # Approved C0 plan (15 Nov 2026, D2 = a, D3 = a): key -> (folder under _raw/, file, expected kind, source_kind, url)
 INSTRUMENTS = {
+    "corr_ita2025_sep": (MANUAL_REL, "265935.pdf", "corrigendum", "gazette_corrigendum",
+                         "https://egazette.gov.in/WriteReadData/2025/265935.pdf"),
     "fa_2022": (MANUAL_REL, "fa_2022.pdf", "act", "gazette", "https://egazette.gov.in/WriteReadData/2022/234693.pdf"),
     "fa_2023": (MANUAL_REL, "244830.pdf", "act", "gazette", "https://egazette.gov.in/WriteReadData/2023/244830.pdf"),
     "fa_2024": (MANUAL_REL, "252143.pdf", "act", "gazette", "https://egazette.gov.in/WriteReadData/2024/252143.pdf"),
@@ -53,6 +56,7 @@ INSTRUMENTS = {
                      "https://egazette.gov.in/WriteReadData/2026/269669.pdf"),
     "corr_fa2026": (MANUAL_REL, "271980.pdf", "corrigendum", "gazette_corrigendum",
                     "https://egazette.gov.in/WriteReadData/2026/271980.pdf"),
+    "ita2025_gz": (MANUAL_REL, "265620.pdf", "act", "gazette", None),      # C3 D5: owner's Gazette copy, Act 30 of 2025
     "fa_2025": (Path("2026-11-13"), "fa_2025.pdf", "act", "itd_reproduction", None),
     "tola_2026": (Path("2026-11-13"), "tola_2026.pdf", "act", "itd_reproduction", None),
     "ord_2_2026": (Path("2026-11-13"), "ord_2_2026.pdf", "ordinance", "itd_reproduction", None),
@@ -62,7 +66,7 @@ INSTRUMENTS = {
 }
 # MANUAL-SOURCES.txt: keys whose line is written in Part C, and the owner's tag (approved fix 4)
 MANUAL_LINE_KEYS = ["fa_2023", "fa_2024", "fa2_2024", "corr_fa2022", "corr_fa2023", "corr_ita2025", "corr_fa2026",
-                    "fa_2025_gz", "tola_2026_gz"]
+                    "fa_2025_gz", "tola_2026_gz", "ita2025_gz"]
 OWNER_DOWNLOADED_TAG = {"fa_2025_gz": "downloaded by owner from this URL, 2026-11-15",
                         "tola_2026_gz": "downloaded by owner from this URL, 2026-11-15"}
 # Fields written into SOURCES.json from --instruments and compared by --check-sources
@@ -423,6 +427,162 @@ def _emit(text: str, out_dir: Path | None, name: str) -> None:
         print(f"written {path}")
 
 
+def corrigendum_items_v3(pages):  # noqa: C901 - audited parser compatibility
+    state, result = ({}, {})
+    items = corrigendum_items(pages)
+    for item in items:
+        if item['parsed']:
+            continue
+        lines = pages[item['pdf_page'] - 1].splitlines()
+        index = item['pdf_line'] - 1
+        first_line = lines[index]
+        first_quotes = list(re.finditer('[\\u201c\\u201d"]', first_line))
+        next_is_row = index + 1 < len(lines) and CORR_ROW_RE.match(lines[index + 1])
+        if len(first_quotes) == 3 and next_is_row:
+            old = fold_ws(first_line[first_quotes[0].end():first_quotes[1].start()])
+            tail = first_line[first_quotes[1].end():]
+            if tail[:1].isspace():
+                cell = tail.strip()
+                if cell[:1] in {'"', chr(8220), chr(8221)}:
+                    new = cell[1:].strip()
+                elif cell[-1:] in {'"', chr(8220), chr(8221)}:
+                    new = cell[:-1].strip()
+                else:
+                    new = ''
+                if old and new:
+                    item.update({'for': old, 'read': fold_ws(new), 'parsed': True})
+                    identity = (id(pages), item['pdf_page'], item['pdf_line'])
+                    seen = state.setdefault('extended_parser_rows', set())
+                    if identity not in seen:
+                        seen.add(identity)
+                        counts = result.setdefault('corrigendum_parser_extension_counts', {})
+                        rule = (
+                            'three double quotes; complete old cell; one read-cell boundary quote; next '
+                            'numbered row fixes row end'
+                        )
+                        counts[rule] = counts.get(rule, 0) + 1
+                    continue
+        block = ''
+        for continuation_index in range(index, min(index + 20, len(lines))):
+            if continuation_index > index and CORR_ROW_RE.match(lines[continuation_index]):
+                break
+            block += (' ' if block else '') + lines[continuation_index]
+            quotes = list(re.finditer('[\\u201c\\u201d"]', block))
+            if len(quotes) >= 4:
+                gap = block[quotes[1].end():quotes[2].start()]
+                if not gap.strip():
+                    old = fold_ws(block[quotes[0].end():quotes[1].start()])
+                    new = fold_ws(block[quotes[2].end():quotes[3].start()])
+                    if old and new:
+                        item.update({'for': old, 'read': new, 'parsed': True})
+                        identity = (id(pages), item['pdf_page'], item['pdf_line'])
+                        seen = state.setdefault('extended_parser_rows', set())
+                        if identity not in seen:
+                            seen.add(identity)
+                            counts = result.setdefault('corrigendum_parser_extension_counts', {})
+                            rule = 'two sequential quoted cells, whitespace-only gap, arbitrary double-quote orientation'
+                            counts[rule] = counts.get(rule, 0) + 1
+                break
+        if item['parsed']:
+            continue
+        match = CORR_ROW_RE.match(lines[index])
+        parts = re.split('[\\u201c]|(?<=\\s)"', match.group(3)) if match else []
+        if len(parts) < 2 or index + 1 >= len(lines):
+            continue
+        (old, old_closed), (new, new_closed) = (_close_cell(part) for part in parts[:2])
+        if old_closed or new_closed:
+            continue
+        continuation = lines[index + 1].strip()
+        closing = re.split('[\\u201d"]', continuation)
+        if len(closing) != 3 or closing[2].strip(' ,;.'):
+            result.setdefault(
+                'corrigendum_parser_diagnostics',
+                [
+
+                ]
+            ).append(
+                {
+                    'continuation_char_count': len(
+                        continuation
+                    ),
+                    'closing_quote_count': len(
+                        closing
+                    ) - 1
+                }
+            )
+            continue
+        item.update({'for': fold_ws(old + ' ' + closing[0]), 'read': fold_ws(new + ' ' + closing[1]), 'parsed': True})
+        identity = (id(pages), item['pdf_page'], item['pdf_line'])
+        seen = state.setdefault('extended_parser_rows', set())
+        if identity not in seen:
+            seen.add(identity)
+            counts = result.setdefault('corrigendum_parser_extension_counts', {})
+            rule = 'both quoted cells wrap; two closing quotes on next line; no trailing content'
+            counts[rule] = counts.get(rule, 0) + 1
+    return items
+
+
+def _required_page_cache(view, page, kind):
+    if page in view._mem or view.pdf is None:
+        return
+    if kind == 'font':
+        directory = view._page_dir()
+    else:
+        pdf_sha = se.file_sha256(view.pdf)
+        version = se.pypdf_version()
+        directory = view.cache_dir / f'{pdf_sha}__pypdf-{version}'
+    if not (directory / f'p{page}.json').is_file():
+        raise ValueError(f'CACHE MISS: {view.pdf.name}; page={page}; kind={kind}')
+
+
+def _required_cache(path, pdf, page, kind):
+    if not path.is_file():
+        raise ValueError(f"CACHE MISS: {pdf.name}; page={page}; kind={kind}")
+
+
+@contextmanager
+def existing_local_sources():
+    """Require edition caches; registered instruments may be parsed in memory."""
+    originals = (se.load_pages, se.FontView.page_codes, se.BracketView.links, pdf_pages, se._write_json_new)
+    load, fonts, brackets, instrument, writer = originals
+    memory = {}
+
+    def cached(pdf, cache_dir=se.CACHE_DIR):
+        pdf = Path(pdf)
+        cache = cache_dir / f'{se.file_sha256(pdf)}__pypdf-{se.pypdf_version()}.jsonl'
+        _required_cache(cache, pdf, 'all', 'text')
+        return load(pdf, cache_dir)
+
+    def font(self, page):
+        _required_page_cache(self, page, 'font')
+        return fonts(self, page)
+
+    def bracket(self, page):
+        _required_page_cache(self, page, 'bracket')
+        return brackets(self, page)
+
+    def pages(path):
+        path = Path(path).resolve()
+        allowed = {(se.RAW_DIR / folder / name).resolve() for folder, name, *rest in INSTRUMENTS.values()}
+        if path not in allowed:
+            raise ValueError('unregistered instrument read')
+        if path not in memory:
+            memory[path] = instrument(path)
+        return memory[path]
+
+    def refuse(*args, **kwargs):
+        raise ValueError('cache write blocked')
+    se.load_pages, se.FontView.page_codes, se.BracketView.links = (cached, font, bracket)
+    globals()['pdf_pages'] = pages
+    se._write_json_new = refuse
+    try:
+        yield memory
+    finally:
+        se.load_pages, se.FontView.page_codes, se.BracketView.links = (load, fonts, brackets)
+        globals()['pdf_pages'] = instrument
+        se._write_json_new = writer
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="python -m divergence.statute_sources", description=__doc__.splitlines()[0])
     mode = ap.add_mutually_exclusive_group(required=True)
@@ -484,5 +644,5 @@ def main(argv=None) -> int:
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

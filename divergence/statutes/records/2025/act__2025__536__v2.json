@@ -1,0 +1,67 @@
+{
+  "act": "2025",
+  "amended_by": [
+    {
+      "enacted_on": "2026-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2026:s122(i)",
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
+    },
+    {
+      "enacted_on": "2026-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2026:s122(ii)",
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
+    },
+    {
+      "enacted_on": "2026-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2026:s122(iii)",
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
+    },
+    {
+      "enacted_on": "2026-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2026:s122(iv)",
+      "url": "https://egazette.gov.in/WriteReadData/2026/271439.pdf"
+    }
+  ],
+  "applies_from_tax_year": "2026-27",
+  "applies_to_tax_year": null,
+  "basis_category": "procedural",
+  "basis_exceptions": [],
+  "body_chars": 11906,
+  "body_sha256": "451d3e66ed80b9746647d54163a48172cbd572dba0d923e528c307b2c642e8b2",
+  "chapter": null,
+  "counterpart": null,
+  "enacted_on": "2026-03-30",
+  "gazette_published": "no",
+  "heading": "Repeal and savings.",
+  "in_force_from": "2026-04-01",
+  "in_force_to": null,
+  "lookup_flags": [],
+  "modified_by": [],
+  "notes": "corrigendum_applied:corr_ita2025:p491l33 (pre_commencement, substantive)",
+  "outstanding_effects": [],
+  "record_id": "act:2025:536:v2",
+  "retrieved_at": "2026-11-13T06:51:48+05:30",
+  "retrospective_from": null,
+  "schema_version": 1,
+  "section": "536",
+  "source_acknowledgement": "Income Tax Department, Government of India",
+  "source_amended_up_to": "2026-03-30",
+  "source_kind": "act",
+  "source_page_act": "Income-tax Act, 2025, edition \"2026\"",
+  "source_page_year": "2026",
+  "source_url": "https://wm.incometaxindia.gov.in/documents/d/guest/income-tax-document-income-tax-act-2025_2026_2026-05-29_05-47-30_5d8348_en",
+  "status": "in_force",
+  "storage_mode": "local_only",
+  "supersedes": "act:2025:536:v1",
+  "text_current_as_of": "2026-03-30",
+  "unit": "536",
+  "version_id": 2
+}

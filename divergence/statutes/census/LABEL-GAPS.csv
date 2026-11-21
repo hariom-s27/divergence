@@ -1,0 +1,16 @@
+record_id,label,source,evidence_key
+act:1961:2:v1,(12A),ledger,fa_2022:s3(a)
+act:1961:2:v1,(19B),ledger,fa_2023:s3(a)
+act:1961:2:v1,(28C),ledger,fa_2023:s3(c)
+act:1961:2:v1,(28CA),ledger,fa_2023:s3(c)
+act:1961:2:v1,(37A),ledger,fa_2023:s3(d)
+act:1961:2:v1,(42C),ledger,fa_2022:s3(b)
+act:1961:2:v1,(47A),ledger,fa_2022:s3(c)
+act:1961:56:v1,(viib),ledger,fa_2022:s16(a)
+act:1961:56:v1,(viib),ledger,fa_2023:s32(a)(ii)
+act:1961:56:v2,(XI),continuity,ita1961_2024n2
+act:1961:56:v2,(XI),ledger,fa_2022:s16(b)(i)
+act:1961:56:v2,(viib),ledger,fa_2022:s16(a)
+act:1961:56:v2,(viib),ledger,fa_2023:s32(a)(i)
+act:1961:56:v2,(viib),ledger,fa_2023:s32(a)(ii)
+act:1961:56:v2,(xii),ledger,fa_2023:s32(b)

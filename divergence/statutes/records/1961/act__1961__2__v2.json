@@ -1,0 +1,100 @@
+{
+  "act": "1961",
+  "amended_by": [
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2022:s3(a)",
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "substitute",
+      "ref": "fa_2022:s3(b)",
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
+    },
+    {
+      "enacted_on": "2022-03-30",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2022:s3(c)",
+      "url": "https://egazette.gov.in/WriteReadData/2022/234693.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "omit",
+      "ref": "fa_2023:s3(a)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(b)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(c)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(d)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    },
+    {
+      "enacted_on": "2023-03-31",
+      "kind": "finance_act",
+      "operation": "insert",
+      "ref": "fa_2023:s3(e)",
+      "url": "https://egazette.gov.in/WriteReadData/2023/244830.pdf"
+    }
+  ],
+  "applies_from_tax_year": null,
+  "applies_to_tax_year": null,
+  "basis_category": "unclear",
+  "basis_exceptions": [],
+  "body": null,
+  "body_chars": null,
+  "body_sha256": null,
+  "chapter": null,
+  "counterpart": {
+    "notes": "matches ITD 1961-2025 utility (tool-assisted, 2026-11-19); corroborated by 2 secondary sources",
+    "ref": "act:2025:2",
+    "source": "SECONDARY",
+    "source_url": ""
+  },
+  "enacted_on": "2023-03-31",
+  "gazette_published": "no",
+  "heading": "Definitions.",
+  "in_force_from": "2024-04-01",
+  "in_force_to": "2024-08-16",
+  "lookup_flags": [],
+  "modified_by": [],
+  "outstanding_effects": [],
+  "record_id": "act:1961:2:v2",
+  "retrieved_at": "2026-11-13T06:38:45+05:30",
+  "retrospective_from": null,
+  "schema_version": 1,
+  "section": "2",
+  "source_acknowledgement": "Income Tax Department, Government of India",
+  "source_amended_up_to": "2026-03-30",
+  "source_kind": "act",
+  "source_page_act": "Income-tax Act, 1961, edition \"2026\"",
+  "source_page_year": "2026",
+  "source_url": "https://wm.incometaxindia.gov.in/documents/d/guest/income-tax-document-income-tax-act-1961_2026_2026-06-05_05-35-21_3f20ac_en",
+  "status": "unprinted",
+  "storage_mode": "local_only",
+  "supersedes": "act:1961:2:v1",
+  "text_current_as_of": "2026-03-30",
+  "unit": "2",
+  "version_id": 2
+}

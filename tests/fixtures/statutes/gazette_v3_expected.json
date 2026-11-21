@@ -1,0 +1,485 @@
+{
+  "deferred": [
+    {
+      "agreement": true,
+      "editor_note": "yes",
+      "effect_id": "fa_2026:s84(c)/renumber",
+      "wef": "2027-04-01"
+    },
+    {
+      "agreement": true,
+      "editor_note": "yes",
+      "effect_id": "fa_2026:s84(c)/insert",
+      "wef": "2027-04-01"
+    }
+  ],
+  "distinct_final_hunks": 12,
+  "eligible": [
+    "fa_2026:s35(a)",
+    "fa_2026:s35(b)(A)",
+    "fa_2026:s35(b)(B)",
+    "fa_2026:s35(c)",
+    "fa_2026:s84(a)",
+    "fa_2026:s84(b)(i)",
+    "fa_2026:s84(b)(ii)",
+    "fa_2026:s84(d)",
+    "fa_2026:s89",
+    "fa_2026:s101",
+    "fa_2026:s122(i)",
+    "fa_2026:s122(ii)",
+    "fa_2026:s122(iii)",
+    "fa_2026:s122(iv)"
+  ],
+  "guard_body_count": 26,
+  "heading_count": 11,
+  "inputs": {
+    "divergence\\statutes\\AMENDMENT-EFFECTS.csv": "b3ecb5dd1fb2c2587e01f27dab90494772474d3c3ed7456cc8ad12dc741baf5c",
+    "divergence\\statutes\\CORRIGENDUM-DISPOSITION.csv": "d701fd5bcb972e97ffe3303fa32e7e0aae0cae8f12f7812f010147c11ae768e4",
+    "divergence\\statutes\\SOURCES.json": "0bf4e03dac155837619740e2318b7b5bd9f4574c061f524990ffccec3f7c22c8",
+    "divergence\\statutes\\VERSION-DATES.csv": "572ea9315a05ffd16cec9b592821177e2dbfd2e95712759faf21adeede52bca4",
+    "divergence\\statutes\\_local_text\\census\\partC\\C2-20261116-071401\\PENDING-23.md": "5e0c17599b4ab5c6c051a2bacbba3ecab9241be288ca0634aa5bd9b9dd2b001d",
+    "divergence\\statutes\\_local_text\\census\\partD\\20261119-172809\\B-v3\\rules.json": "5832bf405419ebe82604fbe889f3ddab535dfe59bc779eafe00134cf57449115",
+    "divergence\\statutes\\_local_text\\census\\partD\\20261119-172809\\ITD-GAZETTE-DIFFS.v2.csv": "f448c2242b29c10e33a77b5304ecc211ab57ad4a442eaf28fe7bc87ef746aaab"
+  },
+  "knowledge_date": "2026-03-30",
+  "nature_reasons": {
+    "v2:04ca6540edc66d66": "regular_or_irregular_plural",
+    "v2:076c77c357598cac": "no_accidental_certificate",
+    "v2:0f04d1d9bf83779f": "no_accidental_certificate",
+    "v2:1198795e7740ed71": "no_accidental_certificate",
+    "v2:13a16b77e4908ad2": "no_accidental_certificate",
+    "v2:1d058f3a49580ed1": "no_accidental_certificate",
+    "v2:3bc1d541e6b2c29c": "regular_or_irregular_plural",
+    "v2:4ba98c8a53b744f6": "no_accidental_certificate",
+    "v2:769b157db1b2ea8c": "no_accidental_certificate",
+    "v2:7d4478c559067e47": "no_accidental_certificate",
+    "v2:8708535b92f6500b": "no_accidental_certificate",
+    "v2:90a1d83cadaac911": "no_accidental_certificate",
+    "v2:a19d5fbf04b8fc9c": "no_accidental_certificate",
+    "v2:b68db0e0456aeb34": "no_accidental_certificate",
+    "v2:fb5f97c86c27aa13": "no_accidental_certificate",
+    "v3:9255c33aa23d7927": "no_accidental_certificate",
+    "v3:d6e0e4b1fb1042ac": "no_accidental_certificate"
+  },
+  "occurrence_reconciliation": {
+    "all_covered": true,
+    "covered_occurrences": 12,
+    "final_occurrences": 12,
+    "rows": [
+      {
+        "current_occurrences": [
+          "1d3dd57ad61315c2"
+        ],
+        "row_id": "v2:90a1d83cadaac911"
+      },
+      {
+        "current_occurrences": [],
+        "row_id": "v2:769b157db1b2ea8c"
+      },
+      {
+        "current_occurrences": [
+          "ce529d13975a90f1"
+        ],
+        "row_id": "v2:1d058f3a49580ed1"
+      },
+      {
+        "current_occurrences": [
+          "ad5b0c0633d46c4c"
+        ],
+        "row_id": "v2:1198795e7740ed71"
+      },
+      {
+        "current_occurrences": [
+          "0135d31af2a10d3c"
+        ],
+        "row_id": "v2:4ba98c8a53b744f6"
+      },
+      {
+        "current_occurrences": [
+          "42f18f5592ae604b"
+        ],
+        "row_id": "v2:7d4478c559067e47"
+      },
+      {
+        "current_occurrences": [
+          "b1cb62b46bc6b9c2"
+        ],
+        "row_id": "v2:fb5f97c86c27aa13"
+      },
+      {
+        "current_occurrences": [
+          "39ebf7e43fd6d512"
+        ],
+        "row_id": "v2:04ca6540edc66d66"
+      },
+      {
+        "current_occurrences": [
+          "b1f44a3893d8e47b"
+        ],
+        "row_id": "v2:a19d5fbf04b8fc9c"
+      },
+      {
+        "current_occurrences": [],
+        "row_id": "v2:0f04d1d9bf83779f"
+      },
+      {
+        "current_occurrences": [],
+        "row_id": "v2:b68db0e0456aeb34"
+      },
+      {
+        "current_occurrences": [],
+        "row_id": "v2:13a16b77e4908ad2"
+      },
+      {
+        "current_occurrences": [],
+        "row_id": "v2:076c77c357598cac"
+      },
+      {
+        "current_occurrences": [
+          "ed6545663170589e"
+        ],
+        "row_id": "v2:8708535b92f6500b"
+      },
+      {
+        "current_occurrences": [
+          "1a01cd0c49dc3da3"
+        ],
+        "row_id": "v2:3bc1d541e6b2c29c"
+      },
+      {
+        "current_occurrences": [
+          "9255c33aa23d7927"
+        ],
+        "row_id": "v3:9255c33aa23d7927"
+      },
+      {
+        "current_occurrences": [
+          "d6e0e4b1fb1042ac"
+        ],
+        "row_id": "v3:d6e0e4b1fb1042ac"
+      }
+    ]
+  },
+  "rows": [
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate;current:1d3dd57ad61315c2",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "90a1d83cadaac911",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "spelling of another Act's short title; Gazette defect fixed by ITD; no corrigendum covers it",
+      "owner_ok": "yes",
+      "row_id": "v2:90a1d83cadaac911",
+      "rule": "none",
+      "section": "2",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate",
+      "image_on_page": "",
+      "kind": "missing",
+      "location_sha16": "769b157db1b2ea8c",
+      "nature": "substantive",
+      "origin": "instrument",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v2:769b157db1b2ea8c",
+      "rule": "R5",
+      "section": "2",
+      "status": "removed"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate;current:ce529d13975a90f1",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "1d058f3a49580ed1",
+      "nature": "substantive",
+      "origin": "itd",
+      "owner_note": "formula absent from stored ITD text; image not checked; body caveat either way",
+      "owner_ok": "yes",
+      "row_id": "v2:1d058f3a49580ed1",
+      "rule": "none",
+      "section": "2",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate;current:ad5b0c0633d46c4c",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "1198795e7740ed71",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "label of sub-clause omitted by FA 2026 s.35(b)(A); ITD omission markup",
+      "owner_ok": "yes",
+      "row_id": "v2:1198795e7740ed71",
+      "rule": "none",
+      "section": "2",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate;current:0135d31af2a10d3c",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "4ba98c8a53b744f6",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "singular/plural (GCA 1897 s.13(2)) plus spacing",
+      "owner_ok": "yes",
+      "row_id": "v2:4ba98c8a53b744f6",
+      "rule": "none",
+      "section": "393",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate;current:42f18f5592ae604b",
+      "image_on_page": "",
+      "kind": "missing",
+      "location_sha16": "7d4478c559067e47",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "moved_pair:6-7; identical item across a page break",
+      "owner_ok": "yes",
+      "row_id": "v2:7d4478c559067e47",
+      "rule": "none",
+      "section": "393",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate;current:b1cb62b46bc6b9c2",
+      "image_on_page": "no",
+      "kind": "missing",
+      "location_sha16": "fb5f97c86c27aa13",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "moved_pair:6-7; page number + column headers + same item",
+      "owner_ok": "yes",
+      "row_id": "v2:fb5f97c86c27aa13",
+      "rule": "none",
+      "section": "393",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:regular_or_irregular_plural;current:39ebf7e43fd6d512",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "04ca6540edc66d66",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "singular/plural (GCA 1897 s.13(2))",
+      "owner_ok": "yes",
+      "row_id": "v2:04ca6540edc66d66",
+      "rule": "none",
+      "section": "393",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate;current:b1f44a3893d8e47b",
+      "image_on_page": "",
+      "kind": "missing",
+      "location_sha16": "a19d5fbf04b8fc9c",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "missing list label (a) in Gazette; ITD adds it; no corrigendum",
+      "owner_ok": "yes",
+      "row_id": "v2:a19d5fbf04b8fc9c",
+      "rule": "none",
+      "section": "393",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "0f04d1d9bf83779f",
+      "nature": "substantive",
+      "origin": "pipeline",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v2:0f04d1d9bf83779f",
+      "rule": "R2",
+      "section": "393",
+      "status": "removed"
+    },
+    {
+      "evidence_key": "effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "b68db0e0456aeb34",
+      "nature": "substantive",
+      "origin": "pipeline",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v2:b68db0e0456aeb34",
+      "rule": "R2",
+      "section": "393",
+      "status": "removed"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate",
+      "image_on_page": "",
+      "kind": "missing",
+      "location_sha16": "13a16b77e4908ad2",
+      "nature": "substantive",
+      "origin": "instrument",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v2:13a16b77e4908ad2",
+      "rule": "R5",
+      "section": "446",
+      "status": "removed"
+    },
+    {
+      "evidence_key": "C3;nature:no_accidental_certificate",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "076c77c357598cac",
+      "nature": "substantive",
+      "origin": "instrument",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v2:076c77c357598cac",
+      "rule": "R5",
+      "section": "536",
+      "status": "removed"
+    },
+    {
+      "evidence_key": "effect:fa_2026:s122(iii);nature:no_accidental_certificate;current:ed6545663170589e",
+      "image_on_page": "no",
+      "kind": "missing",
+      "location_sha16": "8708535b92f6500b",
+      "nature": "substantive",
+      "origin": "instrument",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v2:8708535b92f6500b",
+      "rule": "none",
+      "section": "536",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "C3;nature:regular_or_irregular_plural;current:1a01cd0c49dc3da3",
+      "image_on_page": "",
+      "kind": "word",
+      "location_sha16": "3bc1d541e6b2c29c",
+      "nature": "accidental",
+      "origin": "itd",
+      "owner_note": "singular/plural (GCA 1897 s.13(2))",
+      "owner_ok": "yes",
+      "row_id": "v2:3bc1d541e6b2c29c",
+      "rule": "none",
+      "section": "536",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate",
+      "image_on_page": "",
+      "kind": "missing",
+      "location_sha16": "9255c33aa23d7927",
+      "nature": "substantive",
+      "origin": "instrument",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v3:9255c33aa23d7927",
+      "rule": "none",
+      "section": "393",
+      "status": "kept"
+    },
+    {
+      "evidence_key": "effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate",
+      "image_on_page": "no",
+      "kind": "missing",
+      "location_sha16": "d6e0e4b1fb1042ac",
+      "nature": "substantive",
+      "origin": "instrument",
+      "owner_note": "not owner-confirmed by protocol P09D-38",
+      "owner_ok": "",
+      "row_id": "v3:d6e0e4b1fb1042ac",
+      "rule": "none",
+      "section": "393",
+      "status": "kept"
+    }
+  ],
+  "rule_counts": {
+    "kept:none": 12,
+    "removed:R2": 2,
+    "removed:R5": 3
+  },
+  "rules_sha256": "da63871e1f5e330a49479e4d10b3a9a1a9d610aef782d0c09afb7e1f77cb836c",
+  "scoped_witnesses": [
+    {
+      "effect_id": "fa_2026:s35(b)(B)",
+      "source": "primary replacement block uniquely matched in ITD; Gazette boundary aligned and label/parent checked; source words copied only from primary Act",
+      "span": [
+        24231,
+        24584
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s35(c)",
+      "source": "C3 printed-body amendment span linked to the registered Act; location only; primary Act supplies all replacement words; ita2025_2026:p6l24",
+      "span": [
+        26590,
+        26740
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s84(a)",
+      "source": "C3 linked printed-line context locates Gazette old words uniquely; all new words from primary Act; ita2025_2026:p461l19",
+      "span": [
+        3614,
+        3764
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s84(b)(i)",
+      "source": "C3 linked printed-line context locates Gazette old words uniquely; all new words from primary Act; ita2025_2026:p467l30",
+      "span": [
+        27265,
+        27290
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s84(b)(ii)",
+      "source": "primary replacement block uniquely matched in ITD; Gazette boundary aligned and label/parent checked; source words copied only from primary Act",
+      "span": [
+        29565,
+        29795
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s122(i)",
+      "source": "C3 linked printed-line context locates Gazette old words uniquely; all new words from primary Act; ita2025_2026:p624l3",
+      "span": [
+        50,
+        195
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s122(ii)",
+      "source": "primary replacement block uniquely matched in ITD; Gazette boundary aligned and label/parent checked; source words copied only from primary Act",
+      "span": [
+        1929,
+        2395
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s122(iii)",
+      "source": "C3 printed-body amendment span linked to the registered Act; location only; primary Act supplies all replacement words; ita2025_2026:p624l27",
+      "span": [
+        2742,
+        3525
+      ]
+    },
+    {
+      "effect_id": "fa_2026:s122(iv)",
+      "source": "primary replacement block uniquely matched in ITD; Gazette boundary aligned and label/parent checked; source words copied only from primary Act",
+      "span": [
+        5013,
+        5466
+      ]
+    }
+  ],
+  "unanchored": [],
+  "wef_cutoff": "2026-04-01"
+}

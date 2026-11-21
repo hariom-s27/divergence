@@ -228,15 +228,38 @@ def test_alias_number_year_collision():
 
 def test_csv_never_overwritten_and_owner_columns_kept(tmp_path):
     p = tmp_path / "EFFECTS.csv"
+    regen = tmp_path / "regen"
     cols = ["effect_id", "operation", "owner_ok", "owner_note"]
-    ap.write_never_overwrite(p, [{"effect_id": "x:s1", "operation": "omit"}], cols, "effect_id")
+    ap.write_never_overwrite(p, [{"effect_id": "x:s1", "operation": "omit"}], cols, "effect_id", regen_dir=regen)
     rows = ap.read_csv(p)
     rows[0]["owner_ok"], rows[0]["owner_note"] = "yes", "checked"
     p.write_text(ap.csv_text(rows, cols), encoding="utf-8")
     before = p.read_bytes()
     alt, msg = ap.write_never_overwrite(p, [{"effect_id": "x:s1", "operation": "insert"},
-                                            {"effect_id": "x:s2", "operation": "omit"}], cols, "effect_id")
-    assert p.read_bytes() == before and alt != p
+                                            {"effect_id": "x:s2", "operation": "omit"}], cols, "effect_id",
+                                        regen_dir=regen)
+    assert p.read_bytes() == before and alt.parent == regen
     new = {r["effect_id"]: r for r in ap.read_csv(alt)}
     assert new["x:s1"]["owner_ok"] == "yes" and new["x:s1"]["operation"] == "insert"
     assert msg[1].startswith("MERGE PREVIEW: unchanged 0, changed 1, added 1, removed 0")
+
+
+def test_merge_preview_carry_filter_and_lost_owner_values():
+    old = [{"k": "a", "v": "1", "cat": "effect_start", "owner_ok": ""},
+           {"k": "b", "v": "1", "cat": "procedural", "owner_ok": "yes"}]
+    merged, lines = ap.merge_preview(old, [{"k": "a", "v": "1"}], "k", ["k", "v", "cat", "owner_ok"],
+                                     ("cat", "owner_ok"), carry=lambda r, c: c != "cat" or r[c] == "procedural")
+    assert merged[0]["cat"] == "" and any("not an owner value" in x for x in lines)
+    assert any(x.startswith("  - b OWNER VALUES WOULD BE LOST") for x in lines)
+
+
+def test_owner_split_replaces_row():
+    res = {"rows": [{"effect_id": "x:s4(c)", "operation": "other", "commencement_source": "item_deemed", "wef": "2100-04-01",
+                     "assent_date": "2099-03-30", "owner_note": ""}],
+           "review": [{"effect_id": "x:s4(c)", "flags": ["multi_verb"]}]}
+    split = {"date": "2099-12-01", "wef": "2100-04-01", "operations": ["renumber", "insert"], "owner_note": "owner reading"}
+    ap.apply_owner_splits(res, {"x:s4(c)": split})
+    assert [(r["effect_id"], r["operation"], r["wef"], r["owner_note"]) for r in res["rows"]] == [
+        ("x:s4(c)/renumber", "renumber", "2100-04-01", "owner reading"),
+        ("x:s4(c)/insert", "insert", "2100-04-01", "owner reading")]
+    assert res["review"][0]["flags"] == ["owner_split 2099-12-01"]

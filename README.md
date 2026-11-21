@@ -4,9 +4,9 @@
 
 
 **One file, the whole thing, in order:** [`divergence/START-HERE.md`](divergence/START-HERE.md) —
-the mental model, every command to run the full pipeline, and all 24
-dated design decisions merged into a single chronological read instead of
-24 separate files.
+the mental model, every command to run the full pipeline, and all 39
+dated design decisions (D41–D78 and D80; D79 is reserved for the evaluation
+protocol) merged into a single chronological read instead of 39 separate files.
 
 ## The loss, not the refusal
 
@@ -509,11 +509,11 @@ finding than the ordinary silent absences elsewhere in the same rules.
 | [D54](divergence/DECISION-D54.md) | Third scope-reach defect, fixed with one generalized rule instead of a third patch |
 | [D55](divergence/DECISION-D55.md) | Fourth and fifth scope-reach defects; the fifth disclosed rather than chased, per a pre-set hard-stop rule |
 
-Full list: 38 decision documents, `divergence/DECISION-D41.md` to
-`DECISION-D78.md` (D41 predates the sequence). Earlier decisions (such as
+Full list: 39 decision documents, `divergence/DECISION-D41.md` to
+`DECISION-D78.md` and `DECISION-D80.md` (D41 predates the sequence; D79 is reserved for the evaluation protocol). Earlier decisions (such as
 D31 and D38) did not get their own file; they are recorded inline in
 `architecture.md` and `GAZETTE-FINDINGS.md` instead. **D41–D74 are merged
-into one chronological read, and D75–D78 are linked there by title:**
+into one chronological read, and D75–D78 and D80 are linked there by title:**
 [`divergence/START-HERE.md`](divergence/START-HERE.md) Part 3.
 
 ## Evaluation
@@ -563,7 +563,7 @@ Six things, each one checkable against a specific file rather than asserted:
   it.** The commit hash is quoted in [`results.md`](divergence/results.md)'s
   "Pre-registration" section — a reader can check the hash actually
   predates the runs, not just trust that it does.
-- **38 dated decision documents (D41–D78)**, including the ones that record this
+- **39 dated decision documents (D41–D78 and D80; D79 is reserved for the evaluation protocol)**, including the ones that record this
   project's own mistakes — a stale citation, a scoring bug that faked a
   perfect score, three named instances of a resolver citing a real
   provision outside its own scope. None were written after the fact to

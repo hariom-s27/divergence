@@ -56,7 +56,51 @@ def test_tax_year_start_rejects(bad):
 
 
 def test_tax_year_bounds():
-    assert tax_year_bounds("2026-27") == (date(2026, 4, 1), date(2027, 3, 31))
+    assert tax_year_bounds("2026-27") == (date(2026, 4, 1), date(2027, 4, 1))
+
+
+def test_half_open_helpers():
+    from divergence.statute_schema import covers_date, intersects_dates
+    start, end = date(2026, 4, 1), date(2026, 4, 3)
+    assert covers_date(start, end, start)
+    assert covers_date(start, end, date(2026, 4, 2))
+    assert not covers_date(start, end, end)
+    assert not covers_date(None, None, start)
+    assert covers_date(start, None, end)
+    assert not intersects_dates(start, end, end, date(2026, 4, 4))
+    assert intersects_dates(start, end, date(2026, 3, 31), date(2026, 4, 2))
+
+
+def test_reason_classes():
+    from divergence.statute_schema import REASON_CLASS, reason_class
+    expected = {
+        "LEGAL": {"repeal_day_unsettled", "corrigendum_open", "overlap", "applicability_unclear_row"},
+        "QUERY": {"midyear_effect"},
+        "CORPUS": {"unprinted_intermediate", "outstanding_effect", "unknown_enactment_date",
+                   "beyond_corpus_horizon", "before_coverage", "known_text_not_in_corpus"},
+        "NO_LAW": {"never_operative", "prospective", "before_commencement", "after_repeal", "no_version_covers_point"},
+    }
+    assert REASON_CLASS == {reason: cls for cls, reasons in expected.items() for reason in reasons}
+    for cls, reasons in expected.items():
+        assert all(reason_class(reason) == cls for reason in reasons)
+    with pytest.raises(KeyError):
+        reason_class("not_a_reason")
+
+
+def test_optional_fields_schema():
+    import copy
+    rec = copy.deepcopy(_all_records()[0])
+    rec.update(lookup_flags=["corrigendum_open"], basis_category="procedural",
+               basis_exceptions=[{"effect_id": "FAKE", "category": "transaction_date"}])
+    rec["amended_by"] = [{"ref": "FAKE", "kind": "finance_act", "operation": "insert", "url": "", "enacted_on": None}]
+    assert schema_errors(rec) == []
+    for field, value in (("lookup_flags", ["invented"]), ("basis_category", "invented"),
+                         ("basis_exceptions", [{"effect_id": "FAKE", "category": "invented"}])):
+        bad = copy.deepcopy(rec)
+        bad[field] = value
+        assert schema_errors(bad)
+    rec["amended_by"][0]["operation"] = "invented"
+    assert schema_errors(rec)
 
 
 def test_get_span_code_points():

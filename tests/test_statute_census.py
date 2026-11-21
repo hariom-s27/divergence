@@ -1,0 +1,217 @@
+"""C4-D: real metadata small sweep, owner applicability formulas and invariant sensitivity."""
+import csv
+import hashlib
+import json
+from datetime import date, timedelta
+from pathlib import Path
+
+import pytest
+
+from divergence import statute_census as census
+from divergence.statute_census import check_partitions, check_result, load_records, sweep
+from divergence.statute_lookup import LookupResult, lookup
+from divergence.statute_records import project_dates
+from divergence.statute_schema import CORPUS_CHECKED_THROUGH, REPEAL_DAY
+
+ROOT = Path(__file__).resolve().parents[1] / "divergence/statutes"
+
+
+def test_small_real_sweep():
+    records = [r for r in load_records(ROOT / "records") if (r["act"], r["unit"]) == ("1961", "2")]
+    result = sweep(records, start=date(2024, 4, 1), end=date(2025, 4, 1), years=("2024-25",))
+    assert result["records"] == 6 and result["units"] == 1
+    assert result["queries"]["daily"] == 365 and result["queries"]["tax_year"] == 1
+    assert result["queries"]["boundary"] > 0
+    assert result["partitions"] == {"adjacencies": 5, "retro_patterns": 1}
+    assert result["reasons"]["unprinted_intermediate"] > 0
+    assert result["reasons"]["repeal_day_unsettled"] > 0
+    assert sum(result["statuses"].values()) == sum(result["queries"].values())
+
+
+@pytest.mark.parametrize("change", ["unprinted", "flagged", "horizon", "repeal", "reason"])
+def test_reject_unsafe_found(change):
+    record = {"record_id": "act:1961:TEST:v1", "act": "1961", "status": "in_force",
+              "in_force_from": "2024-01-01", "in_force_to": None}
+    point, reasons = date(2024, 6, 1), ()
+    if change == "unprinted":
+        record["status"] = "unprinted"
+    elif change == "flagged":
+        record["lookup_flags"] = ["corrigendum_open"]
+    elif change == "horizon":
+        point = date(2028, 1, 1)
+    elif change == "repeal":
+        point = REPEAL_DAY
+    else:
+        reasons = ("undeclared_reason",)
+    result = LookupResult("FOUND", record["record_id"], (record["record_id"],), reasons)
+    with pytest.raises((AssertionError, KeyError)):
+        check_result([record], result, {"as_of": point})
+
+
+def test_partition_rejects_gap():
+    records = [r for r in load_records(ROOT / "records") if (r["act"], r["unit"]) == ("1961", "194S")]
+    records[0]["in_force_to"] = "2025-03-31"
+    with pytest.raises(AssertionError):
+        check_partitions(records)
+
+
+@pytest.mark.parametrize("unit", ["1", "2", "3", "92", "194", "301", "393", "400", "446", "509", "536"])
+def test_horizon_every_2025_unit(unit):
+    result = lookup(load_records(ROOT / "records"), act="2025", unit=unit,
+                    as_of=CORPUS_CHECKED_THROUGH + timedelta(days=1))
+    assert result == LookupResult("AMBIGUOUS", None, (), ("beyond_corpus_horizon",))
+
+
+def _read_csv(name):
+    with (ROOT / name).open(encoding="utf-8", newline="") as stream:
+        return list(csv.DictReader(stream))
+
+
+def _fy(point):
+    return point.year if (point.month, point.day) >= (4, 1) else point.year - 1
+
+
+def _charging_years(start, end):
+    # Charging law on AY 1 April maps to the preceding FY. Coverage may begin just before that April.
+    first_ay = start.year + ((start.month, start.day) > (4, 1))
+    last_ay = _fy(end - timedelta(days=1)) if end else None
+    return first_ay - 1, last_ay - 1 if last_ay is not None else None
+
+
+def _owner_year_result(row, rec, last_version):
+    start = date.fromisoformat(rec["in_force_from"])
+    end = date.fromisoformat(rec["in_force_to"]) if rec["in_force_to"] else None
+    charging = row["basis_category"] == "charging_ay_rule"
+    expected = (_charging_years(start, end) if charging
+                else (_fy(start), _fy(end - timedelta(days=1)) if end else None))
+    actual = tuple(int(row[field][:4]) if row[field] else None
+                   for field in ("applies_from_tax_year", "applies_to_tax_year"))
+    prefix, version = row["record_key"].rsplit(":v", 1)
+    vd4 = charging and prefix.startswith("act:1961:") and end == REPEAL_DAY and int(version) == last_version[prefix]
+    adjusted = (expected[0], 2025) if vd4 else expected
+    status = "VD-4" if vd4 and actual == adjusted and actual != expected else "OK"
+    return {"record_id": row["record_key"], "expected": adjusted, "actual": actual,
+            "status": status if actual == adjusted else "DIFF"}
+
+
+def owner_years_results():
+    rows = _read_csv("VERSION-DATES.csv")
+    projected = project_dates(rows, _read_csv("AMENDMENT-EFFECTS.csv"),
+                              json.loads((ROOT / "SOURCES.json").read_text(encoding="utf-8")))
+    last_version = {}
+    for row in rows:
+        prefix, version = row["record_key"].rsplit(":v", 1)
+        last_version[prefix] = max(last_version.get(prefix, 0), int(version))
+    results = []
+    for row in rows:
+        rec = projected[row["record_key"]]
+        if row["basis_category"] == "unclear" or not rec["in_force_from"]:
+            continue
+        results.append(_owner_year_result(row, rec, last_version))
+    return results
+
+
+def test_owner_years_projected_ends():
+    results = owner_years_results()
+    assert len(results) == 24
+    assert [r for r in results if r["status"] == "DIFF"] == []
+    assert sum(r["status"] == "OK" for r in results) == 21
+    assert {r["record_id"] for r in results if r["status"] == "VD-4"} == {
+        "act:1961:3:v1", "act:1961:56:v3", "act:1961:115BBH:v1"}
+
+
+def test_serializers_equal_legacy_bytes(tmp_path):
+    result = sweep([])
+    out, committed = tmp_path / "legacy", tmp_path / "committed.md"
+    census.write_timeline(result, out, committed)
+    legacy_json = (json.dumps(result, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    legacy_markdown = census.timeline_markdown(result).encode("utf-8")
+    assert census.sweep_bytes(result) == legacy_json == (out / "sweep.json").read_bytes()
+    assert census.timeline_bytes(result) == legacy_markdown == (out / "TIMELINE.md").read_bytes()
+    assert committed.read_bytes() == legacy_markdown
+    with pytest.raises(FileExistsError):
+        census.write_timeline(result, out, committed)
+
+
+@pytest.fixture
+def golden_args(tmp_path):
+    records = tmp_path / "records"
+    records.mkdir()
+    return ["--records", str(records), "--golden-dir", str(tmp_path / "golden")]
+
+
+def test_update_check_and_no_check_writes(golden_args, tmp_path, capsys):
+    golden = tmp_path / "golden"
+    golden.mkdir()
+    c4 = golden / "C4_TIMELINE.md"
+    c4.write_bytes(b"existing metadata\n")
+    c4_before = c4.read_bytes(), c4.stat().st_mtime_ns
+    assert census.main([*golden_args, "--update"]) == 0
+    update_output = capsys.readouterr().out
+    assert update_output.count("old absent new ") == 2
+    assert (c4.read_bytes(), c4.stat().st_mtime_ns) == c4_before
+    before = {p.name: (p.read_bytes(), p.stat().st_mtime_ns) for p in golden.iterdir()}
+    before_dir = golden.stat().st_mtime_ns
+    assert census.main([*golden_args, "--check"]) == 0
+    output = capsys.readouterr().out
+    assert "golden sweep: OK sweep.json " in output and " D80_TIMELINE.md " in output
+    for name in ("sweep.json", "D80_TIMELINE.md"):
+        assert hashlib.sha256((golden / name).read_bytes()).hexdigest() in output
+    assert {p.name: (p.read_bytes(), p.stat().st_mtime_ns) for p in golden.iterdir()} == before
+    assert golden.stat().st_mtime_ns == before_dir
+    assert census.main([*golden_args, "--update"]) == 0
+    assert "old absent" not in capsys.readouterr().out
+    assert (c4.read_bytes(), c4.stat().st_mtime_ns) == c4_before
+
+
+def test_update_creates_only_two_golden_files(golden_args, tmp_path):
+    assert census.main([*golden_args, "--update"]) == 0
+    assert sorted(p.name for p in (tmp_path / "golden").iterdir()) == ["D80_TIMELINE.md", "sweep.json"]
+
+
+@pytest.mark.parametrize("name", ["sweep.json", "D80_TIMELINE.md"])
+def test_check_detects_changed_byte(golden_args, tmp_path, capsys, name):
+    assert census.main([*golden_args, "--update"]) == 0
+    capsys.readouterr()
+    path = tmp_path / "golden" / name
+    original = path.read_bytes()
+    path.write_bytes(b"!" + original[1:])
+    assert census.main([*golden_args, "--check"]) == 1
+    output = capsys.readouterr().out
+    assert f"golden sweep: MISMATCH {name} first differing line 1" in output
+    assert "golden:" in output and "computed:" in output and "P09C-25" in output
+    assert path.read_bytes() == b"!" + original[1:]
+
+
+def test_missing_golden_check_writes_nothing(golden_args, tmp_path, capsys):
+    before = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*"))
+    assert census.main([*golden_args, "--check"]) == 1
+    output = capsys.readouterr().out
+    assert output.count("first differing line 1") == 2
+    assert "<missing>" in output
+    assert sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*")) == before
+
+
+def test_legacy_cli_still_works(tmp_path, capsys):
+    records = tmp_path / "records"
+    records.mkdir()
+    out, committed = tmp_path / "legacy", tmp_path / "committed.md"
+    assert census.main(["--records", str(records), "--out", str(out), "--committed", str(committed)]) == 0
+    assert json.loads(capsys.readouterr().out)["records"] == 0
+    assert sorted(p.name for p in out.iterdir()) == ["TIMELINE.csv", "TIMELINE.md", "sweep.json"]
+    assert committed.read_bytes() == (out / "TIMELINE.md").read_bytes()
+
+
+@pytest.mark.parametrize("args", [[], ["--check", "--update"], ["--check", "--out", "unused"],
+                                  ["--update", "--committed", "unused"]])
+def test_census_rejects_mixed_or_incomplete_modes(args):
+    with pytest.raises(SystemExit) as error:
+        census.main(args)
+    assert error.value.code == 2
+
+
+def test_committed_golden_sweep_matches():
+    names = ("sweep.json", "D80_TIMELINE.md")
+    if not all((census.GOLDEN_DIR / name).is_file() for name in names):
+        pytest.skip("Committed D80 golden files do not exist yet; owner creates them in Step 3.")
+    assert census.main(["--check"]) == 0

@@ -1,0 +1,11 @@
+effect_id,owner_ok,owner_note,owner_target
+fa_2022:s3(a),yes,words in (12A) substituted; s.1(2) default 1-4-2022; ITD FA2022 s.3 + batch-1 research,
+fa_2022:s3(b),yes,word 'sales'->'transfer' in main clause (42C) (ita1961_2023 p.16 shows 22[transfer] in the clause; not an Explanation); deemed 1-4-2021,
+fa_2022:s3(c),yes,new clause (47A) VDA definition inserted after (47); 1-4-2022,
+fa_2022:s16(a),yes,words added in Explanation (aa) to (viib) (IFSCA-regulated funds); footnote 76 ita1961_2024n2 p.306 w.e.f. 1-4-2023,
+fa_2022:s16(b)(i),yes,new (XII);(XIII) COVID relief after (XI) of first proviso to clause (x); deemed 1-4-2020 (footnote 78); the Explanation they add is not listed in new_units,
+fa_2022:s16(b)(ii),fix,the first proviso belongs to clause (x) not sub-clause (c) (CBDT Notif. 90-92/2022 'first proviso to clause (x)'; consistent with row fa_2022:s16(b)(i)); new unit = second proviso; 1-4-2023 (footnote 79),sub-section (2) > clause (x) > proviso[1]
+fa_2022:s16(b)(iii),yes,whole Explanation to clause (x) substituted ('property' includes VDA); 1-4-2023 (footnote 80),
+fa_2022:s28,yes,new ss.115BBH and 115BBI; 1-4-2023 (ITD FA2022 s.28),
+fa_2022:s60,yes,new s.194S; 1-7-2022 (ITD FA2022 s.60),
+fa_2023:s3(a),yes,words 'or an Additional Commissioner of Income-tax (Appeals)' omitted from (19B); clause stays; s.1(2) default 1-4-2023,

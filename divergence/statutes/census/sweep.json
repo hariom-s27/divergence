@@ -1,0 +1,618 @@
+{
+  "classes": {
+    "CORPUS": 10123,
+    "LEGAL": 26,
+    "NO_LAW": 21730,
+    "QUERY": 3
+  },
+  "from": "2022-04-01",
+  "horizon": "2026-11-15",
+  "partitions": {
+    "adjacencies": 11,
+    "retro_patterns": 2
+  },
+  "queries": {
+    "boundary": 2090,
+    "daily": 39456,
+    "tax_year": 126
+  },
+  "reasons": {
+    "after_repeal": 5395,
+    "applicability_unclear_row": 3,
+    "before_commencement": 16335,
+    "before_coverage": 3518,
+    "beyond_corpus_horizon": 5590,
+    "known_text_not_in_corpus": 597,
+    "midyear_effect": 3,
+    "overlap": 2,
+    "repeal_day_unsettled": 21,
+    "unknown_enactment_date": 108,
+    "unprinted_intermediate": 310
+  },
+  "records": 34,
+  "statuses": {
+    "AMBIGUOUS": 6632,
+    "FOUND": 9792,
+    "NO_APPLICABLE_VERSION": 25248
+  },
+  "timeline": [
+    {
+      "classes": "CORPUS",
+      "from": "2022-04-01",
+      "reasons": "before_coverage",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2023-04-01",
+      "unit": "act:1961:115BBH"
+    },
+    {
+      "classes": "",
+      "from": "2023-04-01",
+      "reasons": "",
+      "records": "act:1961:115BBH:v1",
+      "status": "FOUND",
+      "to": "2026-04-01",
+      "unit": "act:1961:115BBH"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2026-04-01",
+      "reasons": "after_repeal",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2028-04-01",
+      "unit": "act:1961:115BBH"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2022-04-01",
+      "reasons": "before_coverage",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2023-03-31",
+      "unit": "act:1961:158B"
+    },
+    {
+      "classes": "",
+      "from": "2023-03-31",
+      "reasons": "",
+      "records": "act:1961:158B:v1",
+      "status": "FOUND",
+      "to": "2024-09-01",
+      "unit": "act:1961:158B"
+    },
+    {
+      "classes": "",
+      "from": "2024-09-01",
+      "reasons": "",
+      "records": "act:1961:158B:v2",
+      "status": "FOUND",
+      "to": "2025-02-01",
+      "unit": "act:1961:158B"
+    },
+    {
+      "classes": "",
+      "from": "2025-02-01",
+      "reasons": "",
+      "records": "act:1961:158B:v3",
+      "status": "FOUND",
+      "to": "2026-04-01",
+      "unit": "act:1961:158B"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2026-04-01",
+      "reasons": "after_repeal",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2028-04-01",
+      "unit": "act:1961:158B"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2022-04-01",
+      "reasons": "before_coverage",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2022-07-01",
+      "unit": "act:1961:194S"
+    },
+    {
+      "classes": "",
+      "from": "2022-07-01",
+      "reasons": "",
+      "records": "act:1961:194S:v1",
+      "status": "FOUND",
+      "to": "2025-04-01",
+      "unit": "act:1961:194S"
+    },
+    {
+      "classes": "",
+      "from": "2025-04-01",
+      "reasons": "",
+      "records": "act:1961:194S:v2",
+      "status": "FOUND",
+      "to": "2026-04-01",
+      "unit": "act:1961:194S"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2026-04-01",
+      "reasons": "after_repeal",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2028-04-01",
+      "unit": "act:1961:194S"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2022-04-01",
+      "reasons": "before_coverage",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2023-04-01",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "",
+      "from": "2023-04-01",
+      "reasons": "",
+      "records": "act:1961:2:v1",
+      "status": "FOUND",
+      "to": "2024-04-01",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2024-04-01",
+      "reasons": "unprinted_intermediate",
+      "records": "act:1961:2:v2",
+      "status": "AMBIGUOUS",
+      "to": "2024-07-23",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2024-07-23",
+      "reasons": "unprinted_intermediate",
+      "records": "act:1961:2:v3",
+      "status": "AMBIGUOUS",
+      "to": "2024-10-01",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "",
+      "from": "2024-10-01",
+      "reasons": "",
+      "records": "act:1961:2:v4",
+      "status": "FOUND",
+      "to": "2025-04-01",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "",
+      "from": "2025-04-01",
+      "reasons": "",
+      "records": "act:1961:2:v5",
+      "status": "FOUND",
+      "to": "2026-04-01",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "LEGAL",
+      "from": "2026-04-01",
+      "reasons": "repeal_day_unsettled",
+      "records": "act:1961:2:v6",
+      "status": "AMBIGUOUS",
+      "to": "2026-04-02",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2026-04-02",
+      "reasons": "after_repeal",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2028-04-01",
+      "unit": "act:1961:2"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2022-04-01",
+      "reasons": "before_coverage",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:1961:285BAA"
+    },
+    {
+      "classes": "LEGAL",
+      "from": "2026-04-01",
+      "reasons": "repeal_day_unsettled",
+      "records": "act:1961:285BAA:v1",
+      "status": "AMBIGUOUS",
+      "to": "2026-04-02",
+      "unit": "act:1961:285BAA"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2026-04-02",
+      "reasons": "after_repeal",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2028-04-01",
+      "unit": "act:1961:285BAA"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2022-04-01",
+      "reasons": "before_coverage",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2023-03-31",
+      "unit": "act:1961:3"
+    },
+    {
+      "classes": "",
+      "from": "2023-03-31",
+      "reasons": "",
+      "records": "act:1961:3:v1",
+      "status": "FOUND",
+      "to": "2026-04-01",
+      "unit": "act:1961:3"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2026-04-01",
+      "reasons": "after_repeal",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2028-04-01",
+      "unit": "act:1961:3"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2022-04-01",
+      "reasons": "before_coverage",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2023-04-01",
+      "unit": "act:1961:56"
+    },
+    {
+      "classes": "",
+      "from": "2023-04-01",
+      "reasons": "",
+      "records": "act:1961:56:v1",
+      "status": "FOUND",
+      "to": "2024-04-01",
+      "unit": "act:1961:56"
+    },
+    {
+      "classes": "",
+      "from": "2024-04-01",
+      "reasons": "",
+      "records": "act:1961:56:v2",
+      "status": "FOUND",
+      "to": "2025-04-01",
+      "unit": "act:1961:56"
+    },
+    {
+      "classes": "",
+      "from": "2025-04-01",
+      "reasons": "",
+      "records": "act:1961:56:v3",
+      "status": "FOUND",
+      "to": "2026-04-01",
+      "unit": "act:1961:56"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2026-04-01",
+      "reasons": "after_repeal",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2028-04-01",
+      "unit": "act:1961:56"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:1"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:1:v1",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:1"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:1"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:194"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:194:v1",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:194"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:194"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:2"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:2:v2",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:2"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:2"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:3"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:3:v1",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:3"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:3"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:301"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:301:v1",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:301"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:301"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:393"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:393:v2",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:393"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:393"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:400"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:400:v2",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:400"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:400"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:446"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:446:v2",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:446"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:446"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:509"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:509:v1",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:509"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:509"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:536"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:536:v2",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:536"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:536"
+    },
+    {
+      "classes": "NO_LAW",
+      "from": "2022-04-01",
+      "reasons": "before_commencement",
+      "records": "",
+      "status": "NO_APPLICABLE_VERSION",
+      "to": "2026-04-01",
+      "unit": "act:2025:92"
+    },
+    {
+      "classes": "",
+      "from": "2026-04-01",
+      "reasons": "",
+      "records": "act:2025:92:v1",
+      "status": "FOUND",
+      "to": "2026-11-16",
+      "unit": "act:2025:92"
+    },
+    {
+      "classes": "CORPUS",
+      "from": "2026-11-16",
+      "reasons": "beyond_corpus_horizon",
+      "records": "",
+      "status": "AMBIGUOUS",
+      "to": "2028-04-01",
+      "unit": "act:2025:92"
+    }
+  ],
+  "to": "2028-04-01",
+  "units": 18
+}

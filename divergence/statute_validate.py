@@ -14,17 +14,17 @@ import json
 import subprocess
 import sys
 from collections import namedtuple
-from datetime import datetime, timezone
 from pathlib import Path
 
 from divergence.statute_schema import (
     ACT2025_COMMENCEMENT,
     ACT2025_FIRST_TAX_YEAR,
     COUNTERPART_SOURCES,
+    CORPUS_CHECKED_THROUGH,
     DEFAULT_ROOT,
     LAST_1961_TAX_YEAR,
     MODIFIER_KINDS,
-    REPEAL_LAST_DAY,
+    REPEAL_DAY,
     build_record_id,
     parse_date,
     record_filename,
@@ -33,6 +33,17 @@ from divergence.statute_schema import (
 )
 
 MANIFEST_NAME = "STATUTE-HASHES.json"
+MANIFEST_VERSION = 1
+MANIFEST_FIXED = (
+    "VERSION-DATES.csv", "AMENDMENT-EFFECTS.csv", "SOURCES.json", "MAPPING.csv", "SECTION-LIST.json",
+    "CORRIGENDUM-DISPOSITION.csv", "census/sweep.json", "census/ITD-GAZETTE-DIFFS.csv",
+    "census/LABEL-GAPS.csv", "census/BODY-CAVEATS.csv",
+)
+MANIFEST_GLOBS = (("records", "*.json"), ("text", "*.txt"), ("schema", "*.json"), ("owner", "*.csv"))
+MANIFEST_EXCLUDED = (
+    "README.md", "STATUTE-HASHES.json", "census/C4_TIMELINE.md", "census/D80_TIMELINE.md",
+    "census/d80_facts.json", "records/.gitkeep", "text/.gitkeep",
+)
 BOM = b"\xef\xbb\xbf"
 ROOT_LABEL = "(root)"
 
@@ -103,8 +114,8 @@ def check_v03_filename(rec, ctx):
 def check_v05_dates(rec, ctx):
     out = []
     f, t = _date(rec, "in_force_from"), _date(rec, "in_force_to")
-    if f and t and f > t:
-        out.append(("ERROR", f"in_force_from {f} > in_force_to {t}"))
+    if f and t and f >= t:
+        out.append(("ERROR", f"in_force_from {f} must be < in_force_to {t}"))
     starts = {}
     for key in ("applies_from_tax_year", "applies_to_tax_year"):
         v = rec.get(key)
@@ -142,8 +153,8 @@ def check_v07_status(rec, ctx):
     elif s == "repealed_saved":
         if rec.get("act") != "1961":
             out.append("repealed_saved needs act 1961")
-        if t is None or t > REPEAL_LAST_DAY:
-            out.append(f"repealed_saved needs in_force_to <= {REPEAL_LAST_DAY}")
+        if t is None or t > REPEAL_DAY:
+            out.append(f"repealed_saved needs in_force_to <= {REPEAL_DAY}")
         at = _ty(rec.get("applies_to_tax_year"))
         if at is None or at > tax_year_start(LAST_1961_TAX_YEAR):
             out.append(f"repealed_saved needs applies_to_tax_year <= {LAST_1961_TAX_YEAR}")
@@ -158,6 +169,12 @@ def check_v07_status(rec, ctx):
     elif s == "omitted":
         if t is None:
             out.append("omitted needs in_force_to")
+    elif s == "unprinted":
+        if f is None:
+            out.append("unprinted needs a dated in_force_from (in_force_to may be open)")
+        for key in ("body", "body_sha256", "body_chars"):
+            if rec.get(key) is not None:
+                out.append(f"unprinted needs {key} null")
     return [("ERROR", m) for m in out]
 
 
@@ -210,6 +227,10 @@ def check_v10_body(rec, ctx):
         return []
     bp = body_path(ctx.root, rec, ctx.path)
     rel_body = bp.relative_to(ctx.root).as_posix()
+    if rec.get("status") == "unprinted":
+        if bp.exists():
+            return [("ERROR", f"unprinted must have no body file: {rel_body}")]
+        return []
     if not bp.is_file():
         if mode == "local_only":
             return [("WARN", f"body_absent_local {rel_body}")]
@@ -353,14 +374,29 @@ def validate(root: Path, allow_fixtures: bool):
 
 
 def manifest_paths(root: Path) -> list:
-    """Relative '/' paths of records/**/*.json and text/**/*.txt, sorted."""
+    """Sorted POSIX paths in the manifest scope, excluding local-only bodies."""
     root = Path(root)
-    out = []
-    for sub, pattern in (("records", "*.json"), ("text", "*.txt")):
+    out = {rel for rel in MANIFEST_FIXED if (root / rel).is_file()}
+    for sub, pattern in MANIFEST_GLOBS:
         d = root / sub
         if d.is_dir():
-            out += [p.relative_to(root).as_posix() for p in d.rglob(pattern) if p.is_file()]
+            paths = d.rglob(pattern) if sub in ("records", "text") else d.glob(pattern)
+            out.update(p.relative_to(root).as_posix() for p in paths if p.is_file())
     return sorted(out)
+
+
+def missing_scope_files(root: Path) -> list:
+    root = Path(root)
+    missing = [rel for rel in MANIFEST_FIXED if not (root / rel).is_file()]
+    if not any(p.is_file() for p in (root / "records").rglob("*.json")):
+        missing.append("records/*.json")
+    return sorted(missing)
+
+
+def scope_findings(root: Path, *, strict: bool) -> list:
+    """Explicit strictness lets tests enforce default-root rules on temporary metadata."""
+    return [Finding("ERROR", rel, "FREEZE", f"missing_scope_file {rel}")
+            for rel in missing_scope_files(root)] if strict else []
 
 
 def compute_manifest(root: Path) -> dict:
@@ -368,12 +404,16 @@ def compute_manifest(root: Path) -> dict:
     return {rel: hashlib.sha256((root / rel).read_bytes()).hexdigest() for rel in manifest_paths(root)}
 
 
-def freeze(root: Path) -> Path:
+def freeze(root: Path, *, strict=None) -> Path:
+    strict = Path(root).resolve() == DEFAULT_ROOT.resolve() if strict is None else strict
+    missing = scope_findings(root, strict=strict)
+    if missing:
+        raise ValueError("; ".join(f.message for f in missing))
     hashes = compute_manifest(root)
     doc = {
-        "schema_version": 1,
-        "frozen_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "manifest_version": MANIFEST_VERSION,
         "file_count": len(hashes),
+        "corpus_checked_through": CORPUS_CHECKED_THROUGH.isoformat(),
         "hashes": hashes,
     }
     out = Path(root) / MANIFEST_NAME
@@ -381,16 +421,24 @@ def freeze(root: Path) -> Path:
     return out
 
 
-def verify(root: Path) -> list:
+def verify(root: Path, *, strict=None) -> list:
+    strict = Path(root).resolve() == DEFAULT_ROOT.resolve() if strict is None else strict
+    out = scope_findings(root, strict=strict)
     mpath = Path(root) / MANIFEST_NAME
     if not mpath.is_file():
-        return [Finding("ERROR", MANIFEST_NAME, "FREEZE", "no_manifest")]
+        return out + [Finding("ERROR", MANIFEST_NAME, "FREEZE", "no_manifest")]
     try:
-        stored = json.loads(mpath.read_bytes().decode("utf-8"))["hashes"]
+        doc = json.loads(mpath.read_bytes().decode("utf-8"))
+        if not isinstance(doc, dict):
+            raise TypeError("manifest must be an object")
+        if type(doc.get("manifest_version")) is not int or doc["manifest_version"] != MANIFEST_VERSION:
+            out.append(Finding("ERROR", MANIFEST_NAME, "FREEZE", "manifest_version_mismatch"))
+        stored = doc["hashes"]
+        if not isinstance(stored, dict):
+            raise TypeError("hashes must be an object")
     except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError) as e:
-        return [Finding("ERROR", MANIFEST_NAME, "FREEZE", f"unreadable manifest: {e}")]
+        return out + [Finding("ERROR", MANIFEST_NAME, "FREEZE", f"unreadable manifest: {e}")]
     current = compute_manifest(root)
-    out = []
     for rel in sorted(set(stored) | set(current)):
         if rel not in current:
             out.append(Finding("ERROR", MANIFEST_NAME, "FREEZE", f"missing {rel}"))
@@ -419,6 +467,7 @@ def main(argv=None) -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--freeze", action="store_true", help=f"write <root>/{MANIFEST_NAME} if validation passes")
     mode.add_argument("--verify", action="store_true", help=f"recompute and compare with <root>/{MANIFEST_NAME}")
+    mode.add_argument("--preview", action="store_true", help="print scope hashes and missing files without writing")
     try:
         args = parser.parse_args(argv)
     except SystemExit as e:
@@ -441,14 +490,25 @@ def main(argv=None) -> int:
         return 2
 
     findings, n = validate(root, args.allow_fixtures)
+    strict = root.resolve() == DEFAULT_ROOT.resolve()
     if args.verify:
-        findings += verify(root)
+        findings += verify(root, strict=strict)
+    elif args.freeze or args.preview:
+        findings += scope_findings(root, strict=strict)
     errors, _w = _print(findings, n)
+    if args.preview:
+        hashes = compute_manifest(root)
+        missing = missing_scope_files(root)
+        for rel, digest in hashes.items():
+            print(f"{digest[:16]}  {rel}")
+        print(f"preview: {len(hashes)} files, {len(missing)} missing scope files")
+        for rel in missing:
+            print(f"missing_scope_file {rel}")
     if args.freeze:
         if errors:
             print(f"freeze refused: {errors} errors; {MANIFEST_NAME} not written")
             return 1
-        out = freeze(root)
+        out = freeze(root, strict=strict)
         print(f"froze {len(compute_manifest(root))} files -> {out.name}")
     return 1 if errors else 0
 

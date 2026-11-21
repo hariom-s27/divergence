@@ -1,0 +1,18 @@
+row_id,section,location_sha16,kind,status,rule,origin,nature,image_on_page,evidence_key,owner_ok,owner_note
+v2:90a1d83cadaac911,2,90a1d83cadaac911,word,kept,none,itd,accidental,,C3;nature:no_accidental_certificate;current:1d3dd57ad61315c2,yes,spelling of another Act's short title; Gazette defect fixed by ITD; no corrigendum covers it
+v2:769b157db1b2ea8c,2,769b157db1b2ea8c,missing,removed,R5,instrument,substantive,,C3;nature:no_accidental_certificate,,not owner-confirmed by protocol P09D-38
+v2:1d058f3a49580ed1,2,1d058f3a49580ed1,word,kept,none,itd,substantive,,C3;nature:no_accidental_certificate;current:ce529d13975a90f1,yes,formula absent from stored ITD text; image not checked; body caveat either way
+v2:1198795e7740ed71,2,1198795e7740ed71,word,kept,none,itd,accidental,,C3;nature:no_accidental_certificate;current:ad5b0c0633d46c4c,yes,label of sub-clause omitted by FA 2026 s.35(b)(A); ITD omission markup
+v2:4ba98c8a53b744f6,393,4ba98c8a53b744f6,word,kept,none,itd,accidental,,C3;nature:no_accidental_certificate;current:0135d31af2a10d3c,yes,singular/plural (GCA 1897 s.13(2)) plus spacing
+v2:7d4478c559067e47,393,7d4478c559067e47,missing,kept,none,itd,accidental,,C3;nature:no_accidental_certificate;current:42f18f5592ae604b,yes,moved_pair:6-7; identical item across a page break
+v2:fb5f97c86c27aa13,393,fb5f97c86c27aa13,missing,kept,none,itd,accidental,no,C3;nature:no_accidental_certificate;current:b1cb62b46bc6b9c2,yes,moved_pair:6-7; page number + column headers + same item
+v2:04ca6540edc66d66,393,04ca6540edc66d66,word,kept,none,itd,accidental,,C3;nature:regular_or_irregular_plural;current:39ebf7e43fd6d512,yes,singular/plural (GCA 1897 s.13(2))
+v2:a19d5fbf04b8fc9c,393,a19d5fbf04b8fc9c,missing,kept,none,itd,accidental,,C3;nature:no_accidental_certificate;current:b1f44a3893d8e47b,yes,missing list label (a) in Gazette; ITD adds it; no corrigendum
+v2:0f04d1d9bf83779f,393,0f04d1d9bf83779f,word,removed,R2,pipeline,substantive,,effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate,,not owner-confirmed by protocol P09D-38
+v2:b68db0e0456aeb34,393,b68db0e0456aeb34,word,removed,R2,pipeline,substantive,,effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate,,not owner-confirmed by protocol P09D-38
+v2:13a16b77e4908ad2,446,13a16b77e4908ad2,missing,removed,R5,instrument,substantive,,C3;nature:no_accidental_certificate,,not owner-confirmed by protocol P09D-38
+v2:076c77c357598cac,536,076c77c357598cac,word,removed,R5,instrument,substantive,,C3;nature:no_accidental_certificate,,not owner-confirmed by protocol P09D-38
+v2:8708535b92f6500b,536,8708535b92f6500b,missing,kept,none,instrument,substantive,no,effect:fa_2026:s122(iii);nature:no_accidental_certificate;current:ed6545663170589e,,not owner-confirmed by protocol P09D-38
+v2:3bc1d541e6b2c29c,536,3bc1d541e6b2c29c,word,kept,none,itd,accidental,,C3;nature:regular_or_irregular_plural;current:1a01cd0c49dc3da3,yes,singular/plural (GCA 1897 s.13(2))
+v3:9255c33aa23d7927,393,9255c33aa23d7927,missing,kept,none,instrument,substantive,,effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate,,not owner-confirmed by protocol P09D-38
+v3:d6e0e4b1fb1042ac,393,d6e0e4b1fb1042ac,missing,kept,none,instrument,substantive,no,effect:fa_2026:s84(b)(ii);nature:no_accidental_certificate,,not owner-confirmed by protocol P09D-38
