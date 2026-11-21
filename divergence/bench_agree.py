@@ -10,6 +10,13 @@ Each dir holds sheet_A.csv and sheet_B.csv from bench_label_sheets. Binary nomin
 Alpha is undefined (null, with a reason) when there are fewer than two pairable values or the expected
 disagreement is 0. Percentile bootstrap 95% CI: 2,000 resamples of the pairable items, seed 20261121;
 resamples with undefined alpha are counted, never dropped silently. Output: codes, counts and ids only.
+
+P10c: --a/--b take one or more dirs (item ids unique across dirs). --seed-key <file...> names the rows whose
+Sheet B key was seeded for labeller --seeded (default b). B1 alpha and specific agreement use unseeded rows:
+2x2 a=YES/YES, b=YES(a)/NO(b), c=NO(a)/YES(b), d=NO/NO; p_pos = 2a/(2a+b+c), p_neg = 2d/(2d+b+c),
+yes_share = (2a+b+c)/(2(a+b+c+d)); null with a reason when a denominator is 0. seed_catch: the seeded
+labeller's B1 on seeded rows; NO = caught, YES/UNSURE/blank = not caught; Clopper-Pearson 95% CI.
+A2 alpha uses all A2 rows (Sheet A is identical on seeded rows).
 """
 from __future__ import annotations
 
@@ -23,8 +30,9 @@ from collections import Counter
 from fractions import Fraction
 from pathlib import Path
 
-from divergence.bench_label_sheets import A2_NOTES, SHEET_A, SHEET_B
+from divergence.bench_label_sheets import A2_NOTES, SEED_TYPES, SHEET_A, SHEET_B
 from divergence.bench_slots import PACKAGE_DIR
+from divergence.binom_ci import clopper_pearson
 
 SEED = 20261121
 RESAMPLES = 2000
@@ -145,27 +153,129 @@ def read_labeller(d, tag):
     return sheet_a, sheet_b, {"sheet_A.csv": sha_a, "sheet_B.csv": sha_b}
 
 
-def agree(dir_a, dir_b, seed=SEED, resamples=RESAMPLES):
-    a_sheet, a_b, a_sha = read_labeller(dir_a, "a")
-    b_sheet, b_b, b_sha = read_labeller(dir_b, "b")
+def _as_list(dirs):
+    return [dirs] if isinstance(dirs, (str, Path)) else list(dirs)
+
+
+def read_labellers(dirs, tag):
+    """Merge one or more pack dirs of one labeller; item ids must be unique across dirs."""
+    dirs = _as_list(dirs)
+    if not dirs:
+        raise AgreeError(f"labeller {tag}: no dirs given")
+    sheet_a, sheet_b, inputs = {}, {}, []
+    for d in dirs:
+        sa, sb, sha = read_labeller(d, tag)
+        dup = sorted(set(sa) & set(sheet_a))
+        if dup:
+            raise AgreeError(f"labeller {tag}: item ids repeated across dirs: {dup}")
+        sheet_a.update(sa)
+        sheet_b.update(sb)
+        inputs.append({"dir": Path(d).name, **sha})
+    return sheet_a, sheet_b, inputs
+
+
+def read_seed_keys(files):
+    """{item_id: seed type} from one or more seed key files, plus {file name: sha256}."""
+    seeds, shas = {}, {}
+    for f in _as_list(files or []):
+        f = Path(f)
+        if not f.is_file():
+            raise AgreeError(f"seed key file {f.name} not found")
+        data = f.read_bytes()
+        try:
+            obj = json.loads(data.decode("utf-8"))
+            rows = obj["seeds"]
+        except (ValueError, KeyError, TypeError):
+            raise AgreeError(f"seed key file {f.name} is not a seed key") from None
+        for row in rows:
+            item_id, seed_type = row.get("item_id"), row.get("type")
+            if seed_type not in SEED_TYPES or not item_id:
+                raise AgreeError(f"seed key file {f.name}: bad row")
+            if item_id in seeds:
+                raise AgreeError(f"seed key files repeat item id {item_id}")
+            seeds[item_id] = seed_type
+        if f.name in shas:
+            raise AgreeError(f"two seed key files named {f.name}")
+        shas[f.name] = hashlib.sha256(data).hexdigest()
+    return seeds, shas
+
+
+def load_pair(dirs_a, dirs_b, seed_keys=None, seeded="b"):
+    """Read both labellers, check ids and lookup notes, read seed keys. Shared with bench_adjudicate."""
+    if seeded not in ("a", "b"):
+        raise AgreeError("--seeded must be a or b")
+    a_sheet, a_b, a_in = read_labellers(dirs_a, "a")
+    b_sheet, b_b, b_in = read_labellers(dirs_b, "b")
     if set(a_sheet) != set(b_sheet):
         raise AgreeError("the two labellers' item ids differ")
     ids = sorted(a_sheet)
     diff = [i for i in ids if a_sheet[i]["lookup_note"] != b_sheet[i]["lookup_note"]]
     if diff:
         raise AgreeError(f"lookup_note differs between labellers for {diff}")
+    seeds, key_shas = read_seed_keys(seed_keys)
+    missing = sorted(set(seeds) - set(ids))
+    if missing:
+        raise AgreeError(f"seeded ids not in the sheets: {missing}")
+    return {"ids": ids, "sheet_a": {"a": a_sheet, "b": b_sheet}, "sheet_b": {"a": a_b, "b": b_b},
+            "inputs": {"a": a_in, "b": b_in}, "seeds": seeds, "key_shas": key_shas, "seeded": seeded}
+
+
+def _ratio(num, den, reason):
+    if den == 0:
+        return {"value": None, "fraction": None, "undefined_reason": reason}
+    return {"value": num / den, "fraction": f"{num}/{den}", "undefined_reason": None}
+
+
+def specific_agreement(ids, codes_a, codes_b):
+    """2x2 over pairable ids (codes 1=YES, 0=NO, None missing), p_pos, p_neg, yes_share."""
+    pairs = [(codes_a[i], codes_b[i]) for i in ids if codes_a[i] is not None and codes_b[i] is not None]
+    a = sum(1 for x, y in pairs if x == 1 and y == 1)
+    b = sum(1 for x, y in pairs if x == 1 and y == 0)
+    c = sum(1 for x, y in pairs if x == 0 and y == 1)
+    d = sum(1 for x, y in pairs if x == 0 and y == 0)
+    return {
+        "two_by_two": {"yes_yes": a, "yes_no": b, "no_yes": c, "no_no": d, "n_pairable": len(pairs)},
+        "p_pos": _ratio(2 * a, 2 * a + b + c, "no YES ratings among pairable rows"),
+        "p_neg": _ratio(2 * d, 2 * d + b + c, "no NO ratings among pairable rows"),
+        "yes_share": _ratio(2 * a + b + c, 2 * len(pairs), "no pairable rows"),
+    }
+
+
+def seed_catch(seed_ids, b1_raw):
+    """b1_raw: {item_id: raw B1 string of the seeded labeller}. NO = caught; anything else = not caught."""
+    ids = sorted(seed_ids)
+    caught = [i for i in ids if b1_raw[i] == "NO"]
+    n, k = len(ids), len(caught)
+    return {"n": n, "caught": k, "not_caught": n - k, "rate": (k / n) if n else None,
+            "rate_fraction": f"{k}/{n}" if n else None,
+            "ci95": list(clopper_pearson(k, n)) if n else None, "ci_method": "clopper-pearson",
+            "ids_not_caught": [i for i in ids if i not in caught]}
+
+
+def agree(dirs_a, dirs_b, seed_keys=None, seeded="b", seed=SEED, resamples=RESAMPLES):
+    p = load_pair(dirs_a, dirs_b, seed_keys, seeded)
+    ids, seeds = p["ids"], p["seeds"]
+    a_sheet, b_sheet = p["sheet_a"]["a"], p["sheet_a"]["b"]
+    a_b, b_b = p["sheet_b"]["a"], p["sheet_b"]["b"]
+    real = [i for i in ids if i not in seeds]
     a2_ids = [i for i in ids if a_sheet[i]["lookup_note"] in A2_NOTES]
     ignored = {tag: sorted(i for i in ids if i not in a2_ids and sheet[i]["a2_answerability"])
                for tag, sheet in (("a", a_sheet), ("b", b_sheet))}
-    b1 = measure(ids, {i: B1_CODES[a_b[i]["b1_key_supported"]] for i in ids},
-                 {i: B1_CODES[b_b[i]["b1_key_supported"]] for i in ids}, seed, resamples)
+    b1_a = {i: B1_CODES[a_b[i]["b1_key_supported"]] for i in real}
+    b1_b = {i: B1_CODES[b_b[i]["b1_key_supported"]] for i in real}
+    b1 = measure(real, b1_a, b1_b, seed, resamples)
     a2 = measure(a2_ids, {i: A2_CODES[a_sheet[i]["a2_answerability"]] for i in a2_ids},
                  {i: A2_CODES[b_sheet[i]["a2_answerability"]] for i in a2_ids}, seed, resamples)
     per_item = Counter(b1["disagreements"]) + Counter(a2["disagreements"])
+    seeded_b = p["sheet_b"][seeded]
     return {
-        "tool": "bench_agree", "version": 1, "n_items": len(ids),
-        "inputs": {"a": a_sha, "b": b_sha},
+        "tool": "bench_agree", "version": 2, "n_items": len(ids),
+        "inputs": p["inputs"],
         "measures": {"b1_key_supported": b1, "a2_answerability": a2},
+        "b1_unseeded": specific_agreement(real, b1_a, b1_b),
+        "seeded": {"labeller": seeded, "n_seed_rows": len(seeds), "key_files": p["key_shas"]},
+        "seed_catch": (seed_catch(seeds, {i: seeded_b[i]["b1_key_supported"] for i in seeds})
+                       if p["key_shas"] else None),
         "a2_ignored": {"a": ignored["a"], "b": ignored["b"], "count_a": len(ignored["a"]),
                        "count_b": len(ignored["b"])},
         "disagreement_count_by_item": dict(sorted(per_item.items())),
@@ -186,12 +296,14 @@ def write_result(result, out):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--a", type=Path, required=True, help="labeller 1 sheets dir")
-    parser.add_argument("--b", type=Path, required=True, help="labeller 2 sheets dir")
+    parser.add_argument("--a", type=Path, nargs="+", required=True, help="labeller 1 sheets dir(s)")
+    parser.add_argument("--b", type=Path, nargs="+", required=True, help="labeller 2 sheets dir(s)")
+    parser.add_argument("--seed-key", type=Path, nargs="+", default=None, help="seed key file(s)")
+    parser.add_argument("--seeded", choices=("a", "b"), default="b", help="labeller who got the seeds")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        result = agree(args.a, args.b)
+        result = agree(args.a, args.b, args.seed_key, args.seeded)
         sha = write_result(result, args.out)
     except AgreeError as exc:
         print(f"bench agree: ERROR {exc}", file=sys.stderr)
@@ -200,6 +312,12 @@ def main(argv=None):
         print(f"{name}: alpha {m['alpha_fraction'] or 'undefined'} pairable {m['n_pairable']}"
               f"/{m['n_items_considered']} ci95 {m['ci95']} bootstrap undefined {m['bootstrap']['n_undefined']}"
               f" disagreements {len(m['disagreements'])}")
+    sa = result["b1_unseeded"]
+    print(f"b1 unseeded 2x2 {sa['two_by_two']} p_pos {sa['p_pos']['fraction']} p_neg {sa['p_neg']['fraction']}"
+          f" yes_share {sa['yes_share']['fraction']}")
+    sc = result["seed_catch"]
+    if sc is not None:
+        print(f"seed catch: caught {sc['caught']}/{sc['n']} ci95 {sc['ci95']}")
     print(f"a2 ignored: a {result['a2_ignored']['count_a']}, b {result['a2_ignored']['count_b']}")
     print(f"wrote {args.out} sha256 {sha}")
     return 0
