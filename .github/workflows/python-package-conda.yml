@@ -49,6 +49,12 @@ jobs:
     - name: Golden lookup sweep check (D80)
       run: |
         python -m divergence.statute_census --check
+    - name: Statute manifest verify (D80)
+      run: |
+        python -m divergence.statute_validate --verify
+    - name: D80 facts check
+      run: |
+        python -m divergence.statute_facts --check divergence/statutes/census/d80_facts.json
     - name: Prompt-injection scanner self-test
       run: |
         cd divergence

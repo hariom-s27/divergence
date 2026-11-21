@@ -1,0 +1,323 @@
+{
+  "facts": [
+    {
+      "definition": "amended_by items with missing, null, empty or whitespace-only url; checks amended_by[*].url only.",
+      "key": "amended_by.empty_url",
+      "source": "records/**/*.json",
+      "value": 0
+    },
+    {
+      "definition": "Total amended_by array items across records.",
+      "key": "amended_by.items",
+      "source": "records/**/*.json",
+      "value": 127
+    },
+    {
+      "definition": "Records with body_chars == 0; null body_chars are excluded.",
+      "key": "bodies.empty_placeholders",
+      "source": "records/**/*.json",
+      "value": 5
+    },
+    {
+      "definition": "Records with body_chars > 0; no body files are read.",
+      "key": "bodies.nonempty",
+      "source": "records/**/*.json",
+      "value": 26
+    },
+    {
+      "definition": "Caveat rows by source / nature: amended_span / substantive.",
+      "key": "caveats.amended_span.substantive",
+      "source": "census/BODY-CAVEATS.csv",
+      "value": 3
+    },
+    {
+      "definition": "Caveat rows by source / nature: itd_diff / accidental.",
+      "key": "caveats.itd_diff.accidental",
+      "source": "census/BODY-CAVEATS.csv",
+      "value": 8
+    },
+    {
+      "definition": "Caveat rows by source / nature: itd_diff / substantive.",
+      "key": "caveats.itd_diff.substantive",
+      "source": "census/BODY-CAVEATS.csv",
+      "value": 1
+    },
+    {
+      "definition": "Caveat rows by source / nature: label_gap / .",
+      "key": "caveats.label_gap.unspecified",
+      "source": "census/BODY-CAVEATS.csv",
+      "value": 15
+    },
+    {
+      "definition": "Number of body caveat metadata rows.",
+      "key": "caveats.total",
+      "source": "census/BODY-CAVEATS.csv",
+      "value": 27
+    },
+    {
+      "definition": "Inclusive corpus knowledge horizon from CORPUS_CHECKED_THROUGH.",
+      "key": "corpus_checked_through",
+      "source": "divergence/statute_schema.py:CORPUS_CHECKED_THROUGH",
+      "value": "2026-11-15"
+    },
+    {
+      "definition": "Corrigenda by class: substantive.",
+      "key": "corrigenda.class.substantive",
+      "source": "CORRIGENDUM-DISPOSITION.csv",
+      "value": 1
+    },
+    {
+      "definition": "Corrigenda by class: typo.",
+      "key": "corrigenda.class.typo",
+      "source": "CORRIGENDUM-DISPOSITION.csv",
+      "value": 6
+    },
+    {
+      "definition": "Diff rows by status / origin / nature: kept / instrument / substantive.",
+      "key": "diffs.kept.instrument.substantive",
+      "source": "census/ITD-GAZETTE-DIFFS.csv",
+      "value": 3
+    },
+    {
+      "definition": "Diff rows by status / origin / nature: kept / itd / accidental.",
+      "key": "diffs.kept.itd.accidental",
+      "source": "census/ITD-GAZETTE-DIFFS.csv",
+      "value": 8
+    },
+    {
+      "definition": "Diff rows by status / origin / nature: kept / itd / substantive.",
+      "key": "diffs.kept.itd.substantive",
+      "source": "census/ITD-GAZETTE-DIFFS.csv",
+      "value": 1
+    },
+    {
+      "definition": "Diff rows by status / origin / nature: removed / instrument / substantive.",
+      "key": "diffs.removed.instrument.substantive",
+      "source": "census/ITD-GAZETTE-DIFFS.csv",
+      "value": 3
+    },
+    {
+      "definition": "Diff rows by status / origin / nature: removed / pipeline / substantive.",
+      "key": "diffs.removed.pipeline.substantive",
+      "source": "census/ITD-GAZETTE-DIFFS.csv",
+      "value": 2
+    },
+    {
+      "definition": "Number of ITD/Gazette diff rows.",
+      "key": "diffs.total",
+      "source": "census/ITD-GAZETTE-DIFFS.csv",
+      "value": 17
+    },
+    {
+      "definition": "Number of label-gap rows.",
+      "key": "label_gaps.rows",
+      "source": "census/LABEL-GAPS.csv",
+      "value": 15
+    },
+    {
+      "definition": "Manifest-declared file_count; null when the manifest is absent.",
+      "key": "manifest.file_count",
+      "source": "STATUTE-HASHES.json",
+      "value": 55
+    },
+    {
+      "definition": "Whether STATUTE-HASHES.json exists.",
+      "key": "manifest.present",
+      "source": "STATUTE-HASHES.json",
+      "value": true
+    },
+    {
+      "definition": "SHA-256 of manifest bytes; null when absent.",
+      "key": "manifest.sha256",
+      "source": "STATUTE-HASHES.json",
+      "value": "5b163396f1d98e0c5e4b08c4cf2cdc89adf879603a6edb60922f906db7fe6033"
+    },
+    {
+      "definition": "Records by Act: 1961.",
+      "key": "records.act.1961",
+      "source": "records/**/*.json",
+      "value": 17
+    },
+    {
+      "definition": "Records by Act: 2025.",
+      "key": "records.act.2025",
+      "source": "records/**/*.json",
+      "value": 17
+    },
+    {
+      "definition": "Records whose lookup_flags include repeal_day_unsettled.",
+      "key": "records.repeal_day_unsettled",
+      "source": "records/**/*.json",
+      "value": 2
+    },
+    {
+      "definition": "Records by status: in_force.",
+      "key": "records.status.in_force",
+      "source": "records/**/*.json",
+      "value": 20
+    },
+    {
+      "definition": "Records by status: never_operative.",
+      "key": "records.status.never_operative",
+      "source": "records/**/*.json",
+      "value": 5
+    },
+    {
+      "definition": "Records by status: repealed_saved.",
+      "key": "records.status.repealed_saved",
+      "source": "records/**/*.json",
+      "value": 6
+    },
+    {
+      "definition": "Records by status: unprinted.",
+      "key": "records.status.unprinted",
+      "source": "records/**/*.json",
+      "value": 3
+    },
+    {
+      "definition": "Number of record JSON files.",
+      "key": "records.total",
+      "source": "records/**/*.json",
+      "value": 34
+    },
+    {
+      "definition": "Sweep classes count for CORPUS; read from sweep.json without recomputation.",
+      "key": "sweep.classes.corpus",
+      "source": "census/sweep.json",
+      "value": 10123
+    },
+    {
+      "definition": "Sweep classes count for LEGAL; read from sweep.json without recomputation.",
+      "key": "sweep.classes.legal",
+      "source": "census/sweep.json",
+      "value": 26
+    },
+    {
+      "definition": "Sweep classes count for NO_LAW; read from sweep.json without recomputation.",
+      "key": "sweep.classes.no_law",
+      "source": "census/sweep.json",
+      "value": 21730
+    },
+    {
+      "definition": "Sweep classes count for QUERY; read from sweep.json without recomputation.",
+      "key": "sweep.classes.query",
+      "source": "census/sweep.json",
+      "value": 3
+    },
+    {
+      "definition": "Sweep queries count for boundary; read from sweep.json without recomputation.",
+      "key": "sweep.queries.boundary",
+      "source": "census/sweep.json",
+      "value": 2090
+    },
+    {
+      "definition": "Sweep queries count for daily; read from sweep.json without recomputation.",
+      "key": "sweep.queries.daily",
+      "source": "census/sweep.json",
+      "value": 39456
+    },
+    {
+      "definition": "Sweep queries count for tax_year; read from sweep.json without recomputation.",
+      "key": "sweep.queries.tax_year",
+      "source": "census/sweep.json",
+      "value": 126
+    },
+    {
+      "definition": "Sum of sweep query counts across kinds; null when sweep.json is absent.",
+      "key": "sweep.queries.total",
+      "source": "census/sweep.json",
+      "value": 41672
+    },
+    {
+      "definition": "Sweep reasons count for after_repeal; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.after_repeal",
+      "source": "census/sweep.json",
+      "value": 5395
+    },
+    {
+      "definition": "Sweep reasons count for applicability_unclear_row; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.applicability_unclear_row",
+      "source": "census/sweep.json",
+      "value": 3
+    },
+    {
+      "definition": "Sweep reasons count for before_commencement; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.before_commencement",
+      "source": "census/sweep.json",
+      "value": 16335
+    },
+    {
+      "definition": "Sweep reasons count for before_coverage; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.before_coverage",
+      "source": "census/sweep.json",
+      "value": 3518
+    },
+    {
+      "definition": "Sweep reasons count for beyond_corpus_horizon; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.beyond_corpus_horizon",
+      "source": "census/sweep.json",
+      "value": 5590
+    },
+    {
+      "definition": "Sweep reasons count for known_text_not_in_corpus; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.known_text_not_in_corpus",
+      "source": "census/sweep.json",
+      "value": 597
+    },
+    {
+      "definition": "Sweep reasons count for midyear_effect; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.midyear_effect",
+      "source": "census/sweep.json",
+      "value": 3
+    },
+    {
+      "definition": "Sweep reasons count for overlap; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.overlap",
+      "source": "census/sweep.json",
+      "value": 2
+    },
+    {
+      "definition": "Sweep reasons count for repeal_day_unsettled; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.repeal_day_unsettled",
+      "source": "census/sweep.json",
+      "value": 21
+    },
+    {
+      "definition": "Sweep reasons count for unknown_enactment_date; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.unknown_enactment_date",
+      "source": "census/sweep.json",
+      "value": 108
+    },
+    {
+      "definition": "Sweep reasons count for unprinted_intermediate; read from sweep.json without recomputation.",
+      "key": "sweep.reasons.unprinted_intermediate",
+      "source": "census/sweep.json",
+      "value": 310
+    },
+    {
+      "definition": "SHA-256 of committed sweep.json bytes; null when absent.",
+      "key": "sweep.sha256",
+      "source": "census/sweep.json",
+      "value": "e503aecec0efcc28fb2e37ae91e5c2444e97e5de57ee6f471c3400ec472fb051"
+    },
+    {
+      "definition": "Sweep statuses count for AMBIGUOUS; read from sweep.json without recomputation.",
+      "key": "sweep.statuses.ambiguous",
+      "source": "census/sweep.json",
+      "value": 6632
+    },
+    {
+      "definition": "Sweep statuses count for FOUND; read from sweep.json without recomputation.",
+      "key": "sweep.statuses.found",
+      "source": "census/sweep.json",
+      "value": 9792
+    },
+    {
+      "definition": "Sweep statuses count for NO_APPLICABLE_VERSION; read from sweep.json without recomputation.",
+      "key": "sweep.statuses.no_applicable_version",
+      "source": "census/sweep.json",
+      "value": 25248
+    }
+  ],
+  "facts_version": 1
+}
