@@ -289,6 +289,13 @@ def _cap_ok(state, split, units, cap):
     return all(state.loads[split][u] + n <= cap for u, n in need.items())
 
 
+def combo_score(state, split, combo):
+    """Rank key, lower first: prior uses of the combo (diversity, owner decision (b)), then unit load."""
+    units = {combo["a"]["ukey"], combo["b"]["ukey"]}
+    load = max(state.loads[split][u] + state.rloads[split][u] for u in units)
+    return state.uses[combo["key"]], load
+
+
 def _pick_pair(rng, state, split, stratum, pool, cap):
     eligible = []
     for combo in pool:
@@ -298,13 +305,9 @@ def _pick_pair(rng, state, split, stratum, pool, cap):
         if _cap_ok(state, split, (combo["a"]["ukey"], combo["b"]["ukey"]), cap):
             eligible.append((combo, ra, rb))
     while eligible:
-        def score(item):
-            units = {item[0]["a"]["ukey"], item[0]["b"]["ukey"]}
-            load = max(state.loads[split][u] + state.rloads[split][u] for u in units)
-            return load, state.uses[item[0]["key"]]
-        best = min(score(item) for item in eligible)
-        group = [item for item in eligible if score(item) == best]
-        combo, ra, rb = rng.choice(group)
+        best = min(combo_score(state, split, item[0]) for item in eligible)
+        group = [item for item in eligible if combo_score(state, split, item[0]) == best]
+        combo, ra, rb = rng.choice(group)  # seeded tie-break
         for _ in range(DATE_TRIES):
             va, vb = _draw_value(rng, combo["a"], ra), _draw_value(rng, combo["b"], rb)
             key = (combo["a"]["ukey"], combo["b"]["ukey"], va, vb)

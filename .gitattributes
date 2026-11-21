@@ -12,3 +12,4 @@
 *.zip binary
 divergence/statutes/** text eol=lf
 tests/fixtures/statutes/** text eol=lf
+divergence/bench/** text eol=lf

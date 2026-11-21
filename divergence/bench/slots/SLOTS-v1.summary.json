@@ -1,0 +1,232 @@
+{
+  "counts": {
+    "dev": {
+      "abstain_categories": {
+        "answer_unknown": 1,
+        "false_premise": 4,
+        "stale": 1,
+        "underspecified_intent": 3
+      },
+      "abstain_items": 9,
+      "abstain_share": 0.2812,
+      "abstain_share_in_target": true,
+      "items": 32,
+      "pairs": {
+        "abstain_boundary": 3,
+        "cross_act_counterpart": 3,
+        "cross_year_change": 4,
+        "proviso_condition": 1,
+        "version_lookup": 4
+      },
+      "reserve_pairs": {
+        "abstain_boundary": 1,
+        "cross_act_counterpart": 1,
+        "cross_year_change": 1,
+        "proviso_condition": 1,
+        "version_lookup": 1
+      },
+      "reserve_undated": 1,
+      "undated": 2
+    },
+    "test": {
+      "abstain_categories": {
+        "false_premise": 16,
+        "stale": 4,
+        "underspecified_intent": 8
+      },
+      "abstain_items": 28,
+      "abstain_share": 0.28,
+      "abstain_share_in_target": true,
+      "items": 100,
+      "pairs": {
+        "abstain_boundary": 9,
+        "cross_act_counterpart": 9,
+        "cross_year_change": 11,
+        "proviso_condition": 5,
+        "version_lookup": 12
+      },
+      "reserve_pairs": {
+        "abstain_boundary": 2,
+        "cross_act_counterpart": 2,
+        "cross_year_change": 3,
+        "proviso_condition": 1,
+        "version_lookup": 3
+      },
+      "reserve_undated": 2,
+      "undated": 8
+    }
+  },
+  "excluded_corpus_gap_intervals": {
+    "as_of": [
+      {
+        "from": "2022-04-01",
+        "reasons": "before_coverage",
+        "to": "2023-04-01",
+        "unit": "1961:115BBH"
+      },
+      {
+        "from": "2022-04-01",
+        "reasons": "before_coverage",
+        "to": "2023-03-31",
+        "unit": "1961:158B"
+      },
+      {
+        "from": "2023-03-31",
+        "reasons": "unknown_enactment_date",
+        "to": "2024-09-01",
+        "unit": "1961:158B"
+      },
+      {
+        "from": "2022-04-01",
+        "reasons": "before_coverage",
+        "to": "2022-07-01",
+        "unit": "1961:194S"
+      },
+      {
+        "from": "2022-04-01",
+        "reasons": "before_coverage",
+        "to": "2023-04-01",
+        "unit": "1961:2"
+      },
+      {
+        "from": "2024-04-01",
+        "reasons": "unprinted_intermediate",
+        "to": "2024-07-23",
+        "unit": "1961:2"
+      },
+      {
+        "from": "2024-07-23",
+        "reasons": "unprinted_intermediate",
+        "to": "2024-10-01",
+        "unit": "1961:2"
+      },
+      {
+        "from": "2022-04-01",
+        "reasons": "before_coverage",
+        "to": "2026-04-01",
+        "unit": "1961:285BAA"
+      },
+      {
+        "from": "2022-04-01",
+        "reasons": "before_coverage",
+        "to": "2023-03-31",
+        "unit": "1961:3"
+      },
+      {
+        "from": "2023-03-31",
+        "reasons": "unknown_enactment_date",
+        "to": "2026-04-01",
+        "unit": "1961:3"
+      },
+      {
+        "from": "2022-04-01",
+        "reasons": "before_coverage",
+        "to": "2023-04-01",
+        "unit": "1961:56"
+      }
+    ],
+    "count_as_of": 11,
+    "count_tax_year": 8,
+    "tax_year": [
+      {
+        "reasons": "unprinted_intermediate",
+        "tax_year": "2023-24",
+        "unit": "1961:2"
+      },
+      {
+        "reasons": "before_coverage",
+        "tax_year": "2022-23",
+        "unit": "1961:285BAA"
+      },
+      {
+        "reasons": "before_coverage",
+        "tax_year": "2023-24",
+        "unit": "1961:285BAA"
+      },
+      {
+        "reasons": "before_coverage",
+        "tax_year": "2024-25",
+        "unit": "1961:285BAA"
+      },
+      {
+        "reasons": "unknown_enactment_date",
+        "tax_year": "2022-23",
+        "unit": "1961:3"
+      },
+      {
+        "reasons": "unknown_enactment_date",
+        "tax_year": "2023-24",
+        "unit": "1961:3"
+      },
+      {
+        "reasons": "unknown_enactment_date",
+        "tax_year": "2024-25",
+        "unit": "1961:3"
+      },
+      {
+        "reasons": "unknown_enactment_date",
+        "tax_year": "2025-26",
+        "unit": "1961:3"
+      }
+    ]
+  },
+  "frame": {
+    "combos": {
+      "abstain_boundary": 27,
+      "cross_act_counterpart": 16,
+      "cross_year_change": 20,
+      "proviso_condition": 8,
+      "version_lookup": 8
+    },
+    "intervals": 53,
+    "tax_year_entries": 82
+  },
+  "max_test_items_per_unit_observed": 10,
+  "per_unit_items": {
+    "dev": {
+      "1961:115BBH": 0,
+      "1961:158B": 4,
+      "1961:194S": 4,
+      "1961:2": 5,
+      "1961:285BAA": 1,
+      "1961:3": 1,
+      "1961:56": 6,
+      "2025:1": 0,
+      "2025:194": 2,
+      "2025:2": 1,
+      "2025:3": 0,
+      "2025:301": 2,
+      "2025:393": 1,
+      "2025:400": 1,
+      "2025:446": 0,
+      "2025:509": 2,
+      "2025:536": 2,
+      "2025:92": 0
+    },
+    "test": {
+      "1961:115BBH": 5,
+      "1961:158B": 10,
+      "1961:194S": 10,
+      "1961:2": 10,
+      "1961:285BAA": 4,
+      "1961:3": 4,
+      "1961:56": 10,
+      "2025:1": 4,
+      "2025:194": 5,
+      "2025:2": 4,
+      "2025:3": 4,
+      "2025:301": 4,
+      "2025:393": 5,
+      "2025:400": 5,
+      "2025:446": 4,
+      "2025:509": 4,
+      "2025:536": 4,
+      "2025:92": 4
+    }
+  },
+  "shared_record_combos_dev_test": 5,
+  "shared_unit_date_keys_dev_test": 0,
+  "slots_sha256": "aa2b98eef17931d62e2fe43c244eecbb4ded10fda43b6a357360c02386e7ac0f",
+  "spec_sha256": "7ce2c86544fcf2f9370a6e4583b6ef079b268d522d63ed1e25a294268c4348a7",
+  "unfilled": []
+}

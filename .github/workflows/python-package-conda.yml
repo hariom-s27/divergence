@@ -55,6 +55,9 @@ jobs:
     - name: D80 facts check
       run: |
         python -m divergence.statute_facts --check divergence/statutes/census/d80_facts.json
+    - name: Bench slots check (P10)
+      run: |
+        python -m divergence.bench_slots --spec divergence/bench/SPEC-v1.json --out divergence/bench/slots/SLOTS-v1.csv --check
     - name: Prompt-injection scanner self-test
       run: |
         cd divergence

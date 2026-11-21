@@ -150,6 +150,28 @@ def test_frame_excludes_corpus_gaps_and_checks_golden_boundaries(tmp_path):
         bs.build_frame(records, broken, spec)
 
 
+def test_rank_prefers_unused_combo_over_lower_unit_load(tmp_path):
+    """Owner decision (b): rank by prior combo uses first, unit load second, seeded tie-break."""
+    import random
+    root, spec, _ = make_corpus(tmp_path)
+    timeline = json.loads((root / "census" / "sweep.json").read_text(encoding="utf-8"))["timeline"]
+    frame = bs.build_frame(load_records(root / "records"), timeline, spec)
+    pool = bs.combos(frame, "abstain_boundary", [])
+    on_x = next(c for c in pool if c["a"]["ukey"] == "1961:X")
+    on_y = next(c for c in pool if c["a"]["ukey"] == "2025:Y")
+    state = bs._State()
+    state.loads["test"]["1961:X"] = 5       # X heavily loaded ...
+    state.uses[on_y["key"]] = 1             # ... but the Y combo was already used once
+    assert bs.combo_score(state, "test", on_x) < bs.combo_score(state, "test", on_y)
+    picked = bs._pick_pair(random.Random(1), state, "test", "abstain_boundary", [on_x, on_y], None)
+    assert picked[0] is on_x
+    # equal scores: the choice depends only on the seed
+    ties = [c for c in pool if c["a"]["ukey"] == "2025:W"]
+    picks = {bs._pick_pair(random.Random(7), bs._State(), "test", "abstain_boundary", ties, None)[0]["key"]
+             for _ in range(3)}
+    assert len(picks) == 1
+
+
 def test_determinism_two_runs_same_bytes(tmp_path):
     root, spec, _ = make_corpus(tmp_path)
     first = bs.generate(spec, root)
