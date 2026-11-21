@@ -24,7 +24,10 @@ SCHEMA_PATH = Path(__file__).resolve().parent / "bench" / "schema" / "bench_item
 RULES = (("R01", "schema"), ("R02", "slot_match"), ("R03", "lookup_gold"), ("R04", "abstain_consistency"),
          ("R05", "dated_has_date"), ("R06", "undated_no_date"), ("R07", "nugget_bounds"),
          ("R08", "nugget_sha16"), ("R09", "nugget_caveat"), ("R10", "quotas"), ("R11", "per_unit_cap"),
-         ("R12", "pair_complete"), ("R13", "duplicates"), ("R14", "active_slots"), ("R15", "split_disjoint"))
+         ("R12", "pair_complete"), ("R13", "duplicates"), ("R14", "active_slots"), ("R15", "split_disjoint"),
+         ("R16", "clock_phrase"))
+MONTH_NAMES = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+               "November", "December")
 MONTHS = ("January|February|March|April|May|June|July|August|September|October|November|December|"
           "Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec")
 DATE_PATTERNS = tuple(re.compile(p, re.IGNORECASE) for p in (
@@ -39,6 +42,43 @@ DATE_PATTERNS = tuple(re.compile(p, re.IGNORECASE) for p in (
 
 def has_date_expression(text):
     return any(p.search(text or "") for p in DATE_PATTERNS)
+
+
+def date_words(iso):
+    """'2025-09-05' -> '5 September 2025' (day without leading zero; English month name)."""
+    d = parse_date(iso)
+    return f"{d.day} {MONTH_NAMES[d.month - 1]} {d.year}"
+
+
+def _next_tax_year(tax_year):
+    y = int(tax_year[:4]) + 1
+    return f"{y}-{(y + 1) % 100:02d}"
+
+
+def clock_phrase_ok(item):
+    """R16 (P10b-D2): the question names the time basis of the gold.
+    as_of item: contains 'in force on <D Month YYYY>' with its own date (case-insensitive).
+    1961 tax_year item: contains 'previous year X' and 'assessment year X+1'.
+    2025 tax_year and undated items: not applicable (True)."""
+    question = " ".join(str(item.get("question") or "").split()).lower()
+    if item.get("dated") and item.get("as_of"):
+        return f"in force on {date_words(item['as_of'])}".lower() in question
+    if item.get("dated") and item.get("tax_year") and item.get("act") == "1961":
+        ty = item["tax_year"]
+        return f"previous year {ty}" in question and f"assessment year {_next_tax_year(ty)}" in question
+    return True
+
+
+def caveat_spans(caveat_rows):
+    """record_id -> [(start, end)]; rows without offsets (label_gap rows by design) carry no span and are skipped."""
+    spans, skipped = {}, 0
+    for row in caveat_rows:
+        start, end = str(row.get("start") or "").strip(), str(row.get("end") or "").strip()
+        if not start or not end:
+            skipped += 1
+            continue
+        spans.setdefault(row["record_id"], []).append((int(start), int(end)))
+    return spans, skipped
 
 
 def read_jsonl(path):
@@ -144,14 +184,14 @@ def validate(items, slot_rows, spec, root, caveat_rows, status_rows, partial=Fal
                 res.check("R04", item.get("should_abstain") is True
                           and item.get("abstain_category") == spec["undated_category"], iid)
                 res.check("R06", not has_date_expression(item.get("question")), iid)
+            # R16 question names the gold's time basis
+            res.check("R16", clock_phrase_ok(item), iid)
         except (KeyError, TypeError, ValueError):
             res.check("R02", False, iid)
 
     # R07-R09 nuggets (body-dependent)
     bodies, skipped, checked = {}, 0, 0
-    caveats = {}
-    for row in caveat_rows:
-        caveats.setdefault(row["record_id"], []).append((int(row["start"]), int(row["end"])))
+    caveats, offsetless = caveat_spans(caveat_rows)
     for item in items:
         iid = item.get("item_id")
         for nug in item.get("nuggets") or []:
@@ -185,6 +225,9 @@ def validate(items, slot_rows, spec, root, caveat_rows, status_rows, partial=Fal
             res.mark(rid, "SKIP", "skipped (no local bodies)")
         elif skipped:
             res.out[rid]["note"] = f"{skipped} nugget(s) skipped (no local body)"
+    if offsetless:
+        sep = "; " if res.out["R09"]["note"] else ""
+        res.out["R09"]["note"] += f"{sep}{offsetless} offset-less caveat row(s) skipped"
 
     # R14 active slots (status file + reserve order)
     unusable = {r["slot_id"]: r.get("reason", "") for r in status_rows if r.get("status") == "unusable"}

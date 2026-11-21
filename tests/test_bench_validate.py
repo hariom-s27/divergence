@@ -212,6 +212,45 @@ def test_date_expression_patterns():
         assert not bv.has_date_expression(text), text
 
 
+def test_r16_clock_phrase():
+    base = {"dated": True, "act": "1961", "as_of": "2025-09-05", "tax_year": None}
+    ok = dict(base, question="As in force on 5 September 2025, which version applies?")
+    assert bv.clock_phrase_ok(ok)
+    assert bv.clock_phrase_ok(dict(ok, question="AS IN FORCE ON 5  September 2025, which version?"))
+    assert not bv.clock_phrase_ok(dict(base, question="Which version applies on 5 September 2025?"))
+    assert not bv.clock_phrase_ok(dict(base, question="As in force on 6 September 2025, which version?"))
+    assert not bv.clock_phrase_ok(dict(base, question="As in force on 05 September 2025, which version?"))
+    ty = {"dated": True, "act": "1961", "as_of": None, "tax_year": "2024-25"}
+    assert bv.clock_phrase_ok(dict(ty, question="For previous year 2024-25 (assessment year 2025-26), which?"))
+    assert not bv.clock_phrase_ok(dict(ty, question="For previous year 2024-25, which version applies?"))
+    assert not bv.clock_phrase_ok(dict(ty, question="For tax year 2024-25, which version applies?"))
+    assert bv.clock_phrase_ok({"dated": True, "act": "2025", "as_of": None, "tax_year": "2026-27",
+                               "question": "Which version applies for tax year 2026-27?"})
+    assert bv.clock_phrase_ok({"dated": False, "act": "1961", "as_of": None, "tax_year": None,
+                               "question": "Which version of the provision applies?"})
+    assert bv.date_words("2024-01-31") == "31 January 2024"
+
+
+def test_r16_integration(world):
+    assert run(world)["R16"] == "PASS"
+    items = copy.deepcopy(world["built"]["test"][0])
+    item = _item(items, lambda i: i["dated"] and i["as_of"])
+    item["question"] = item["question"].replace("As in force on", "Which version applied on")
+    result = run(world, items=items)
+    assert result["R16"] == "FAIL" and result["R05"] == "PASS"
+
+
+def test_offsetless_caveat_rows_skipped(world):
+    items = world["built"]["test"][0]
+    nug = _item(items, lambda i: i["nuggets"])["nuggets"][0]
+    gap = {"caveat_id": "G1", "record_id": nug["record_id"], "start": "", "end": ""}
+    out, _ = bv.validate(items, world["slots"], world["spec"], world["root"], [gap],
+                         world["built"]["test"][1], False)
+    assert out["R09"]["status"] == "PASS" and "1 offset-less caveat row(s) skipped" in out["R09"]["note"]
+    crossing = [gap, _caveat(nug, nug["start"] + 1, nug["end"] + 3)]
+    assert run(world, items=items, caveats=crossing)["R09"] == "FAIL"
+
+
 def test_cli_exit_codes(world, tmp_path, capsys):
     items, status = world["built"]["test"]
     path = tmp_path / "TEST.jsonl"

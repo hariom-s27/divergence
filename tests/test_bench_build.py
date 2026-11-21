@@ -3,6 +3,7 @@ import json
 
 from divergence import bench_build as bb
 from divergence import bench_slots as bs
+from divergence.bench_validate import date_words
 from divergence.statute_schema import body_sha256
 
 from test_bench_slots import BODIES, PHRASES, _rows, make_corpus
@@ -17,7 +18,11 @@ def draft_rows(slot_rows, split, slot_ids=None):
             continue
         tag = f"({r['slot_id']} {r['side']})"
         if r["as_of"]:
-            question = f"Which version applies on {r['as_of']}? {tag}"
+            question = f"As in force on {date_words(r['as_of'])}, which version applies? {tag}"
+        elif r["tax_year"] and r["act"] == "1961":
+            nxt = int(r["tax_year"][:4]) + 1
+            question = (f"For previous year {r['tax_year']} (assessment year {nxt}-{(nxt + 1) % 100:02d}), "
+                        f"which version applies? {tag}")
         elif r["tax_year"]:
             question = f"Which version applies for tax year {r['tax_year']}? {tag}"
         else:

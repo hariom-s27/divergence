@@ -44,6 +44,14 @@ unknown_enactment_date or unprinted_intermediate are excluded from the frame.
    - `side`: `a`, `b` or `single`, exactly as in SLOTS-v1.csv. Write both sides of a pair.
    - `question`: dated sides must name the date (e.g. "1 May 2025") or the tax year ("tax year 2024-25");
      undated questions must name neither. Bare years such as "Income-tax Act, 1961" are fine.
+     The question must also name the time basis of the gold (rule R16, P10b-D2):
+     - `as_of` sides: "As in force on D Month YYYY, …" with the slot's own date, day without a leading
+       zero and the month in English words (e.g. "As in force on 5 September 2025, …"). Gold is the text
+       in force on that date, not the version that governs income earned on it.
+     - 1961 Act `tax_year` sides: "previous year X (assessment year X+1)", e.g.
+       "For previous year 2024-25 (assessment year 2025-26), …". The slot's tax year is the financial-year
+       (previous-year) label used by `statute_schema.tax_year_bounds`.
+     - 2025 Act `tax_year` sides keep "tax year X"; undated sides are not affected.
    - Nuggets: an exact phrase from the body of the slot's `gold_record_id` (abstain sides have none).
      If the phrase occurs more than once, set `nugget_occurrence_n` (1-based). `nugget_match_n` is
      exact, regex or numeric. Set `quotes_gazette_n` true only if the phrase deliberately quotes a span
@@ -55,6 +63,15 @@ unknown_enactment_date or unprinted_intermediate are excluded from the frame.
 3. Validate:
    `python -m divergence.bench_validate --items divergence/bench/items/DEV.jsonl --partial`
    Drop `--partial` once every slot of the split has been written. Exit 1 means at least one rule failed.
+   Rules R01–R16. R09 checks nugget spans against BODY-CAVEATS.csv rows that have offsets; rows without
+   offsets (`label_gap`, by design) carry no span and are skipped (counted in the R09 note).
+
+## Clock audit (P10b-D3)
+
+`python -m divergence.bench_clock_audit` compares, for every 1961 slot side with a date, the record
+`lookup()` returns by date with the one it returns by the financial year containing that date, and
+writes counts, ids and record ids (no text) to `audit/2026-11-21_clock_audit.json`. It refuses to
+overwrite an existing file or to write under `divergence/runs/`.
 
 ### Unusable slots and reserves
 

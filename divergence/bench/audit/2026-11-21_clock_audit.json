@@ -1,0 +1,741 @@
+{
+ "as_known_on": "2026-11-15",
+ "audit": "P10b-D3 clock audit (by date vs by financial year)",
+ "boundaries": {
+  "on_1_april": 6,
+  "per_unit": {
+   "158B": [
+    "2024-09-01",
+    "2025-03-29"
+   ],
+   "194S": [
+    "2025-04-01"
+   ],
+   "2": [
+    "2024-04-01",
+    "2024-08-16",
+    "2024-10-01",
+    "2025-04-01",
+    "2026-04-01"
+   ],
+   "56": [
+    "2024-04-01",
+    "2025-04-01"
+   ]
+  },
+  "total": 10,
+  "units_1961": 7
+ },
+ "counts": {
+  "dev_main": {
+   "agree": 3,
+   "as_of_sides": 13,
+   "both_nonfound": 0,
+   "disagree": 10,
+   "found_found_diff_record": 5,
+   "found_vs_nonfound": 5,
+   "na_tax_year": 6,
+   "na_undated": 2,
+   "window_as_of": 11,
+   "window_tax_year": 0
+  },
+  "dev_reserve": {
+   "agree": 1,
+   "as_of_sides": 5,
+   "both_nonfound": 0,
+   "disagree": 4,
+   "found_found_diff_record": 1,
+   "found_vs_nonfound": 3,
+   "na_tax_year": 2,
+   "na_undated": 0,
+   "window_as_of": 4,
+   "window_tax_year": 2
+  },
+  "test_main": {
+   "agree": 21,
+   "as_of_sides": 43,
+   "both_nonfound": 0,
+   "disagree": 22,
+   "found_found_diff_record": 6,
+   "found_vs_nonfound": 16,
+   "na_tax_year": 2,
+   "na_undated": 8,
+   "window_as_of": 17,
+   "window_tax_year": 0
+  },
+  "test_reserve": {
+   "agree": 2,
+   "as_of_sides": 10,
+   "both_nonfound": 0,
+   "disagree": 8,
+   "found_found_diff_record": 3,
+   "found_vs_nonfound": 5,
+   "na_tax_year": 6,
+   "na_undated": 0,
+   "window_as_of": 7,
+   "window_tax_year": 1
+  }
+ },
+ "definitions": {
+  "agree": "both FOUND with the same record_id",
+  "boundary": "each later distinct in_force_from of a 1961 act unit's versions (first start excluded)",
+  "by_date": "lookup(act='1961', unit, as_of=d, as_known_on=SPEC.as_known_on)",
+  "by_ty": "lookup(act='1961', unit, tax_year=FY(d), as_known_on=SPEC.as_known_on)",
+  "disagree": "both FOUND with different record_id, or exactly one FOUND",
+  "fy_of_date": "FY(d) = 'Y-(Y+1)' with Y = d.year if d.month >= 4 else d.year - 1; the financial-year label used by statute_schema.tax_year_bounds (1 April Y .. 1 April Y+1).",
+  "scope": "1961 slot sides in SLOTS (main and reserve counted separately); tax_year and undated sides have no date and are counted as not applicable",
+  "window": "B - 12 months <= d < B for a 1 April boundary B on the same unit; tax_year slots tested with 1 April of the FY's first year"
+ },
+ "records": 34,
+ "sides": {
+  "dev_main": [
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2024-01-31",
+    "fy": "2023-24",
+    "id": "D-001-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v2",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-01-15",
+    "fy": "2024-25",
+    "id": "D-001-b",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:2:v4",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2025-02-01",
+    "fy": "2024-25",
+    "id": "D-002-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v5",
+    "by_ty": "AMBIGUOUS(repeal_day_unsettled)",
+    "date": "2025-12-10",
+    "fy": "2025-26",
+    "id": "D-002-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2024-03-13",
+    "fy": "2023-24",
+    "id": "D-003-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v3",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-09-05",
+    "fy": "2025-26",
+    "id": "D-003-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:2:v4",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-12-18",
+    "fy": "2024-25",
+    "id": "D-004-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v5",
+    "by_ty": "AMBIGUOUS(repeal_day_unsettled)",
+    "date": "2025-05-03",
+    "fy": "2025-26",
+    "id": "D-004-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2023-12-11",
+    "fy": "2023-24",
+    "id": "D-005-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v2",
+    "by_ty": "act:1961:56:v3",
+    "date": "2024-05-11",
+    "fy": "2024-25",
+    "id": "D-005-b",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:194S:v1",
+    "by_ty": "act:1961:194S:v1",
+    "date": "2023-05-11",
+    "fy": "2023-24",
+    "id": "D-006-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v1",
+    "by_ty": "act:1961:194S:v1",
+    "date": "2024-06-15",
+    "fy": "2024-25",
+    "id": "D-007-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2024-02-08",
+    "fy": "2023-24",
+    "id": "D-008-a",
+    "result": "found_vs_nonfound"
+   }
+  ],
+  "dev_reserve": [
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2023-12-21",
+    "fy": "2023-24",
+    "id": "D-R01-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v4",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-12-02",
+    "fy": "2024-25",
+    "id": "D-R01-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2023-12-21",
+    "fy": "2023-24",
+    "id": "D-R02-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v3",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-10-08",
+    "fy": "2025-26",
+    "id": "D-R02-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:2:v5",
+    "by_ty": "AMBIGUOUS(repeal_day_unsettled)",
+    "date": "2025-10-15",
+    "fy": "2025-26",
+    "id": "D-R03-a",
+    "result": "found_vs_nonfound"
+   }
+  ],
+  "test_main": [
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2023-08-23",
+    "fy": "2023-24",
+    "id": "T-001-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v4",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-12-30",
+    "fy": "2024-25",
+    "id": "T-001-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:56:v2",
+    "by_ty": "act:1961:56:v3",
+    "date": "2024-05-14",
+    "fy": "2024-25",
+    "id": "T-002-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v3",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-09-21",
+    "fy": "2025-26",
+    "id": "T-002-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:158B:v2",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-09-03",
+    "fy": "2024-25",
+    "id": "T-003-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v3",
+    "by_ty": "act:1961:158B:v3",
+    "date": "2025-05-05",
+    "fy": "2025-26",
+    "id": "T-003-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v1",
+    "by_ty": "act:1961:194S:v1",
+    "date": "2023-07-07",
+    "fy": "2023-24",
+    "id": "T-004-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v2",
+    "by_ty": "act:1961:194S:v2",
+    "date": "2025-09-28",
+    "fy": "2025-26",
+    "id": "T-004-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:2:v4",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-11-13",
+    "fy": "2024-25",
+    "id": "T-005-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v5",
+    "by_ty": "AMBIGUOUS(repeal_day_unsettled)",
+    "date": "2026-01-31",
+    "fy": "2025-26",
+    "id": "T-005-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2023-10-20",
+    "fy": "2023-24",
+    "id": "T-006-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v3",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-09-28",
+    "fy": "2025-26",
+    "id": "T-006-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2024-02-04",
+    "fy": "2023-24",
+    "id": "T-007-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v2",
+    "by_ty": "act:1961:56:v3",
+    "date": "2024-05-31",
+    "fy": "2024-25",
+    "id": "T-007-b",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2023-10-28",
+    "fy": "2023-24",
+    "id": "T-008-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v5",
+    "by_ty": "AMBIGUOUS(repeal_day_unsettled)",
+    "date": "2025-05-11",
+    "fy": "2025-26",
+    "id": "T-008-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:194S:v1",
+    "by_ty": "AMBIGUOUS(midyear_effect)",
+    "date": "2022-09-20",
+    "fy": "2022-23",
+    "id": "T-009-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:194S:v2",
+    "by_ty": "act:1961:194S:v2",
+    "date": "2025-09-16",
+    "fy": "2025-26",
+    "id": "T-009-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:158B:v2",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-09-25",
+    "fy": "2024-25",
+    "id": "T-010-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v3",
+    "by_ty": "act:1961:158B:v3",
+    "date": "2025-05-31",
+    "fy": "2025-26",
+    "id": "T-010-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:56:v2",
+    "by_ty": "act:1961:56:v3",
+    "date": "2024-07-18",
+    "fy": "2024-25",
+    "id": "T-011-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v3",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-10-08",
+    "fy": "2025-26",
+    "id": "T-011-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2023-09-28",
+    "fy": "2023-24",
+    "id": "T-012-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v4",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2025-02-12",
+    "fy": "2024-25",
+    "id": "T-012-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2023-04-14",
+    "fy": "2023-24",
+    "id": "T-013-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v3",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-07-22",
+    "fy": "2025-26",
+    "id": "T-013-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2024-02-11",
+    "fy": "2023-24",
+    "id": "T-014-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v5",
+    "by_ty": "AMBIGUOUS(repeal_day_unsettled)",
+    "date": "2025-06-30",
+    "fy": "2025-26",
+    "id": "T-014-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v2",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-11-08",
+    "fy": "2024-25",
+    "id": "T-015-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v3",
+    "by_ty": "act:1961:158B:v3",
+    "date": "2025-12-16",
+    "fy": "2025-26",
+    "id": "T-015-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v1",
+    "by_ty": "act:1961:194S:v1",
+    "date": "2024-12-27",
+    "fy": "2024-25",
+    "id": "T-016-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v2",
+    "by_ty": "act:1961:194S:v2",
+    "date": "2025-10-10",
+    "fy": "2025-26",
+    "id": "T-016-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v1",
+    "by_ty": "act:1961:194S:v1",
+    "date": "2023-09-19",
+    "fy": "2023-24",
+    "id": "T-017-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v2",
+    "by_ty": "act:1961:194S:v2",
+    "date": "2026-01-25",
+    "fy": "2025-26",
+    "id": "T-017-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:115BBH:v1",
+    "by_ty": "act:1961:115BBH:v1",
+    "date": "2025-09-02",
+    "fy": "2025-26",
+    "id": "T-018-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:158B:v2",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-10-28",
+    "fy": "2024-25",
+    "id": "T-019-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v3",
+    "by_ty": "act:1961:158B:v3",
+    "date": "2025-09-29",
+    "fy": "2025-26",
+    "id": "T-020-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v2",
+    "by_ty": "act:1961:194S:v2",
+    "date": "2025-10-21",
+    "fy": "2025-26",
+    "id": "T-021-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:194S:v2",
+    "by_ty": "act:1961:194S:v2",
+    "date": "2025-05-31",
+    "fy": "2025-26",
+    "id": "T-022-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:115BBH:v1",
+    "by_ty": "act:1961:115BBH:v1",
+    "date": "2025-04-12",
+    "fy": "2025-26",
+    "id": "T-023-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:158B:v2",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-12-11",
+    "fy": "2024-25",
+    "id": "T-024-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v3",
+    "by_ty": "act:1961:158B:v3",
+    "date": "2025-07-27",
+    "fy": "2025-26",
+    "id": "T-025-a",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:115BBH:v1",
+    "by_ty": "act:1961:115BBH:v1",
+    "date": "2024-04-06",
+    "fy": "2024-25",
+    "id": "T-026-a",
+    "result": "agree"
+   }
+  ],
+  "test_reserve": [
+   {
+    "by_date": "act:1961:56:v2",
+    "by_ty": "act:1961:56:v3",
+    "date": "2024-11-17",
+    "fy": "2024-25",
+    "id": "T-R01-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v3",
+    "by_ty": "act:1961:56:v3",
+    "date": "2025-12-29",
+    "fy": "2025-26",
+    "id": "T-R01-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2023-07-07",
+    "fy": "2023-24",
+    "id": "T-R02-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v4",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2025-03-21",
+    "fy": "2024-25",
+    "id": "T-R02-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v1",
+    "by_ty": "AMBIGUOUS(unprinted_intermediate)",
+    "date": "2023-11-04",
+    "fy": "2023-24",
+    "id": "T-R03-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:2:v5",
+    "by_ty": "AMBIGUOUS(repeal_day_unsettled)",
+    "date": "2025-05-25",
+    "fy": "2025-26",
+    "id": "T-R03-b",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v2",
+    "by_ty": "AMBIGUOUS(midyear_effect;overlap)",
+    "date": "2024-09-05",
+    "fy": "2024-25",
+    "id": "T-R04-a",
+    "result": "found_vs_nonfound"
+   },
+   {
+    "by_date": "act:1961:158B:v3",
+    "by_ty": "act:1961:158B:v3",
+    "date": "2025-11-21",
+    "fy": "2025-26",
+    "id": "T-R04-b",
+    "result": "agree"
+   },
+   {
+    "by_date": "act:1961:56:v2",
+    "by_ty": "act:1961:56:v3",
+    "date": "2024-08-05",
+    "fy": "2024-25",
+    "id": "T-R05-a",
+    "result": "found_found_diff_record"
+   },
+   {
+    "by_date": "act:1961:56:v1",
+    "by_ty": "act:1961:56:v2",
+    "date": "2023-07-25",
+    "fy": "2023-24",
+    "id": "T-R06-a",
+    "result": "found_found_diff_record"
+   }
+  ]
+ },
+ "slots_sha256": "aa2b98eef17931d62e2fe43c244eecbb4ded10fda43b6a357360c02386e7ac0f",
+ "totals": {
+  "agree": 27,
+  "as_of_sides": 71,
+  "both_nonfound": 0,
+  "disagree": 44
+ },
+ "window_ids": {
+  "dev_main": {
+   "as_of": [
+    "D-001-a@2024-04-01",
+    "D-001-b@2025-04-01",
+    "D-002-a@2025-04-01",
+    "D-002-b@2026-04-01",
+    "D-003-a@2024-04-01",
+    "D-004-a@2025-04-01",
+    "D-004-b@2026-04-01",
+    "D-005-a@2024-04-01",
+    "D-005-b@2025-04-01",
+    "D-007-a@2025-04-01",
+    "D-008-a@2024-04-01"
+   ],
+   "tax_year": []
+  },
+  "dev_reserve": {
+   "as_of": [
+    "D-R01-a@2024-04-01",
+    "D-R01-b@2025-04-01",
+    "D-R02-a@2024-04-01",
+    "D-R03-a@2026-04-01"
+   ],
+   "tax_year": [
+    "D-R04-a@2024-04-01",
+    "D-R04-b@2025-04-01"
+   ]
+  },
+  "test_main": {
+   "as_of": [
+    "T-001-a@2024-04-01",
+    "T-001-b@2025-04-01",
+    "T-002-a@2025-04-01",
+    "T-005-a@2025-04-01",
+    "T-005-b@2026-04-01",
+    "T-006-a@2024-04-01",
+    "T-007-a@2024-04-01",
+    "T-007-b@2025-04-01",
+    "T-008-a@2024-04-01",
+    "T-008-b@2026-04-01",
+    "T-011-a@2025-04-01",
+    "T-012-a@2024-04-01",
+    "T-012-b@2025-04-01",
+    "T-013-a@2024-04-01",
+    "T-014-a@2024-04-01",
+    "T-014-b@2026-04-01",
+    "T-016-a@2025-04-01"
+   ],
+   "tax_year": []
+  },
+  "test_reserve": {
+   "as_of": [
+    "T-R01-a@2025-04-01",
+    "T-R02-a@2024-04-01",
+    "T-R02-b@2025-04-01",
+    "T-R03-a@2024-04-01",
+    "T-R03-b@2026-04-01",
+    "T-R05-a@2025-04-01",
+    "T-R06-a@2024-04-01"
+   ],
+   "tax_year": [
+    "T-R08-a@2025-04-01"
+   ]
+  }
+ }
+}
